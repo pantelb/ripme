@@ -9,6 +9,7 @@ import 'rippers/imagefap_ripper.dart';
 import 'rippers/redgifs_ripper.dart';
 import 'rippers/motherless_ripper.dart';
 import 'rippers/eightmuses_ripper.dart';
+import 'rippers/nhentai_ripper.dart';
 
 class RipperFactory {
   static AbstractRipper? getRipper(Uri uri) {
@@ -23,6 +24,7 @@ class RipperFactory {
     if (host.contains('redgifs.com') || host.contains('gifdeliverynetwork.com')) return RedgifsRipper(uri);
     if (host.contains('motherless.com')) return MotherlessRipper(uri);
     if (host.contains('8muses.com')) return EightmusesRipper(uri);
+    if (host.contains('nhentai.net')) return NhentaiRipper(uri);
     return null;
   }
 }
