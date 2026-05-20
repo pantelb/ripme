@@ -95,4 +95,36 @@ void main() {
 
     expect(await saveAs.readAsString(), 'ok');
   });
+
+  test('sends custom headers and cookies on downloads', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 0,
+      'download.timeout': 1000,
+    });
+    await Utils.init();
+
+    late String? referer;
+    late String? cookie;
+    final server = await _server((request) async {
+      referer = request.headers.value('referer');
+      cookie = request.headers.value('cookie');
+      request.response.write('ok');
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final directory = await Directory.systemTemp.createTemp('ripme_http_test');
+    addTearDown(() => directory.delete(recursive: true));
+
+    await Http.downloadFile(
+      Uri.parse('http://127.0.0.1:${server.port}/file'),
+      File('${directory.path}/file.txt'),
+      headers: {'Referer': 'https://example.com/page'},
+      cookies: {'session': 'abc', 'pref': 'dark'},
+    );
+
+    expect(referer, 'https://example.com/page');
+    expect(cookie, contains('session=abc'));
+    expect(cookie, contains('pref=dark'));
+  });
 }

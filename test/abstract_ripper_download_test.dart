@@ -39,7 +39,7 @@ class ParallelTestRipper extends TestRipper {
 
   @override
   Future<void> downloadFile(Uri url, File saveAs,
-      {Map<String, String>? headers}) async {
+      {Map<String, String>? headers, Map<String, String>? cookies}) async {
     startedUrls.add(url);
     activeDownloads++;
     if (activeDownloads > maxActiveDownloads) {
@@ -47,6 +47,20 @@ class ParallelTestRipper extends TestRipper {
     }
     await Future<void>.delayed(const Duration(milliseconds: 20));
     activeDownloads--;
+  }
+}
+
+class HeaderCookieTestRipper extends TestRipper {
+  HeaderCookieTestRipper(super.url, super.directory);
+
+  Map<String, String>? receivedHeaders;
+  Map<String, String>? receivedCookies;
+
+  @override
+  Future<void> downloadFile(Uri url, File saveAs,
+      {Map<String, String>? headers, Map<String, String>? cookies}) async {
+    receivedHeaders = headers;
+    receivedCookies = cookies;
   }
 }
 
@@ -131,5 +145,29 @@ void main() {
 
     expect(ripper.startedUrls, hasLength(5));
     expect(ripper.maxActiveDownloads, 2);
+  });
+
+  test('passes headers and cookies through scheduled downloads', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_download_options_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper = HeaderCookieTestRipper(
+        Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+
+    await ripper.downloadFiles([
+      RipperDownload(
+        url: Uri.parse('https://example.com/image.jpg'),
+        saveAs: File('${directory.path}/image.jpg'),
+        headers: {'Referer': 'https://example.com/page'},
+        cookies: {'session': 'abc'},
+      ),
+    ]);
+
+    expect(ripper.receivedHeaders, {'Referer': 'https://example.com/page'});
+    expect(ripper.receivedCookies, {'session': 'abc'});
   });
 }

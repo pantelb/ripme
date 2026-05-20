@@ -12,11 +12,13 @@ class RipperDownload {
   final Uri url;
   final File saveAs;
   final Map<String, String>? headers;
+  final Map<String, String>? cookies;
 
   const RipperDownload({
     required this.url,
     required this.saveAs,
     this.headers,
+    this.cookies,
   });
 }
 
@@ -79,7 +81,12 @@ abstract class AbstractRipper {
     Future<void> worker() async {
       while (!isStopped && queue.isNotEmpty) {
         final item = queue.removeFirst();
-        await downloadFile(item.url, item.saveAs, headers: item.headers);
+        await downloadFile(
+          item.url,
+          item.saveAs,
+          headers: item.headers,
+          cookies: item.cookies,
+        );
       }
     }
 
@@ -87,7 +94,7 @@ abstract class AbstractRipper {
   }
 
   Future<void> downloadFile(Uri url, File saveAs,
-      {Map<String, String>? headers}) async {
+      {Map<String, String>? headers, Map<String, String>? cookies}) async {
     if (isStopped) return;
     try {
       if (!Utils.getConfigBoolean('file.overwrite', false) &&
@@ -108,7 +115,7 @@ abstract class AbstractRipper {
       }
 
       sendUpdate(RipStatus.downloadStarted, url.toString());
-      await Http.downloadFile(url, saveAs, headers: headers);
+      await Http.downloadFile(url, saveAs, headers: headers, cookies: cookies);
       await DownloadHistoryProvider.markDownloaded(url);
       alreadyDownloadedUrls = 0;
       sendUpdate(RipStatus.downloadComplete, saveAs.path);
