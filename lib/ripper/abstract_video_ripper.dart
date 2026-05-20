@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'abstract_ripper.dart';
-import '../utils/http_utils.dart';
 import '../ui/rip_status_message.dart';
 
 abstract class AbstractVideoRipper extends AbstractRipper {
@@ -14,9 +13,7 @@ abstract class AbstractVideoRipper extends AbstractRipper {
       String fileName = await _getFileName(videoUrl);
       File saveAs = File(workingDir.path + Platform.pathSeparator + fileName);
 
-      sendUpdate(RipStatus.downloadStarted, videoUrl.toString());
-      await Http.downloadFile(videoUrl, saveAs);
-      sendUpdate(RipStatus.downloadComplete, saveAs.path);
+      await downloadFile(videoUrl, saveAs);
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
     }
