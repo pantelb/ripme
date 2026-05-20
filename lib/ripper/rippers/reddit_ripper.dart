@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:html/parser.dart' show parseFragment;
 import 'package:path/path.dart' as p;
 
 import '../abstract_ripper.dart';
 import '../abstract_json_ripper.dart';
+import '../../ui/rip_status_message.dart';
 import '../../utils/http_utils.dart';
 import '../../utils/utils.dart';
 import 'redgifs_ripper.dart';
@@ -19,6 +22,18 @@ class RedditMedia {
     required this.prefix,
     this.subdirectory,
     this.headers,
+  });
+}
+
+class RedditSelfPostHtml {
+  final String id;
+  final String title;
+  final String html;
+
+  const RedditSelfPostHtml({
+    required this.id,
+    required this.title,
+    required this.html,
   });
 }
 
@@ -73,6 +88,7 @@ class RedditRipper extends AbstractJSONRipper {
     Uri? jsonUrl = getJsonUrl(this.url);
     while (jsonUrl != null && !isStopped) {
       final json = await _getRedditJson(jsonUrl);
+      await _saveSelfPostHtmlFiles(json);
       final media = await extractMediaFromJson(json);
       final downloads = <RipperDownload>[];
       for (final item in media) {
@@ -92,6 +108,22 @@ class RedditRipper extends AbstractJSONRipper {
       }
       await downloadFiles(downloads);
       jsonUrl = nextPageUrl(json, jsonUrl);
+    }
+  }
+
+  Future<void> _saveSelfPostHtmlFiles(dynamic json) async {
+    for (final selfPost in extractSelfPostHtmlFromJson(json)) {
+      if (isStopped) break;
+      final file = File(p.join(
+        workingDir.path,
+        Utils.sanitizeSaveAs(
+            '${selfPost.id}_${Utils.filesystemSafe(selfPost.title)}.html'),
+      ));
+      if (!await file.parent.exists()) {
+        await file.parent.create(recursive: true);
+      }
+      await file.writeAsString(selfPost.html);
+      sendUpdate(RipStatus.downloadComplete, file.path);
     }
   }
 
@@ -129,6 +161,33 @@ class RedditRipper extends AbstractJSONRipper {
       result.addAll(await _mediaFromChild(child));
     }
     return result;
+  }
+
+  static List<RedditSelfPostHtml> extractSelfPostHtmlFromJson(dynamic json) {
+    final posts = <RedditSelfPostHtml>[];
+    final listings = _asListings(json);
+    if (listings.length < 2) return posts;
+    for (var i = 0; i < listings.length; i++) {
+      final children = listings[i]['data']?['children'];
+      if (children is! List) continue;
+
+      final nextListingData =
+          (i + 1 < listings.length) ? listings[i + 1]['data'] : null;
+      final comments =
+          nextListingData is Map ? nextListingData['children'] : const [];
+      for (final child in children) {
+        final data = child['data'];
+        if (child['kind'] != 't3' || data is! Map || data['is_self'] != true) {
+          continue;
+        }
+        final selfText = data['selftext']?.toString() ?? '';
+        if (selfText.isEmpty) continue;
+        posts
+            .add(_selfPostHtmlFromData(data, comments is List ? comments : []));
+      }
+      if (posts.isNotEmpty) break;
+    }
+    return posts;
   }
 
   Future<dynamic> _getRedditJson(Uri url) async {
@@ -282,6 +341,100 @@ class RedditRipper extends AbstractJSONRipper {
     return result;
   }
 
+  static RedditSelfPostHtml _selfPostHtmlFromData(
+      Map data, List<dynamic> comments) {
+    final title = data['title']?.toString() ?? '';
+    final id = data['id']?.toString() ?? 'reddit';
+    final author = data['author']?.toString() ?? '';
+    final subreddit = data['subreddit']?.toString() ?? '';
+    final permalink = data['url']?.toString() ??
+        (data['permalink'] == null
+            ? ''
+            : 'https://www.reddit.com${data['permalink']}');
+    final created = _redditDate(data['created']);
+    final selfText = _plainTextFromHtml(
+      data['selftext_html']?.toString() ?? data['selftext']?.toString() ?? '',
+    );
+    final escapedTitle = const HtmlEscape().convert(title);
+    final escapedAuthor = const HtmlEscape().convert(author);
+    final escapedSubreddit = const HtmlEscape().convert(subreddit);
+    final escapedPermalink = const HtmlEscape().convert(permalink);
+    final escapedSelfText = const HtmlEscape().convert(selfText);
+    final renderedComments = comments
+        .map((comment) => _renderComment(comment, author))
+        .where((comment) => comment.isNotEmpty)
+        .join();
+
+    return RedditSelfPostHtml(
+      id: id,
+      title: title,
+      html: '''
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>$escapedTitle</title>
+<style>$_htmlStyling</style>
+</head>
+<body>
+<div class="thing">
+<h1>$escapedTitle</h1>
+<a href="https://www.reddit.com/r/$escapedSubreddit">$escapedSubreddit</a>
+<a href="$escapedPermalink">Original</a><br>
+</div>
+<div class="flex"><div class="thing oppost"><span class="author op">$escapedAuthor</span> $created<div class="md">$escapedSelfText</div></div></div>
+<div id="comments">$renderedComments</div>
+<script>$_htmlScript</script>
+</body>
+</html>
+''',
+    );
+  }
+
+  static String _renderComment(dynamic comment, String originalAuthor) {
+    final data = comment is Map ? comment['data'] : null;
+    if (data is! Map) return '';
+    final author = data['author']?.toString() ?? '';
+    if (author.isEmpty) return '';
+    final name = data['name']?.toString() ?? '';
+    final body = _plainTextFromHtml(
+      data['body_html']?.toString() ?? data['body']?.toString() ?? '',
+    );
+    final authorClass = author == originalAuthor ? 'author op' : 'author';
+    final replies = data['replies'];
+    var children = '';
+    if (replies is Map) {
+      final replyChildren = replies['data']?['children'];
+      if (replyChildren is List) {
+        children = replyChildren
+            .map((reply) => _renderComment(reply, originalAuthor))
+            .where((reply) => reply.isNotEmpty)
+            .join();
+        if (children.isNotEmpty) {
+          children = '<div class="child">$children</div>';
+        }
+      }
+    }
+    return '<div class="thing comment" id="${const HtmlEscape().convert(name)}">'
+        '<span class="$authorClass">${const HtmlEscape().convert(author)}</span> '
+        '<a href="#${const HtmlEscape().convert(name)}">${_redditDate(data['created'])}</a>'
+        '<div class="md">${const HtmlEscape().convert(body)}</div>'
+        '$children</div>';
+  }
+
+  static String _plainTextFromHtml(String value) {
+    return parseFragment(value).text ?? value;
+  }
+
+  static String _redditDate(dynamic value) {
+    final seconds =
+        value is num ? value : num.tryParse(value?.toString() ?? '');
+    if (seconds == null) return '';
+    return DateTime.fromMillisecondsSinceEpoch((seconds * 1000).round())
+        .toLocal()
+        .toString();
+  }
+
   static Future<Uri?> _bestRedditVideoUrl(Uri uri) async {
     try {
       final manifest =
@@ -365,4 +518,9 @@ class RedditRipper extends AbstractJSONRipper {
     if (json is Map) return [json];
     return const [];
   }
+
+  static const String _htmlStyling =
+      ' .author { font-weight: bold; } .op { color: blue; } .comment { border: 0px; margin: 0 0 25px; padding-left: 5px; } .child { margin: 2px 0 0 20px; border-left: 2px dashed #AAF; } .md { max-width: 840px; padding-right: 1em; } h1 { margin: 0; } body { position: relative; background-color: #eeeeec; color: #00000a; font-family: Helvetica,Arial,sans-serif; line-height: 1.4 } .thing { overflow: hidden; margin: 0 5px 3px 40px; border: 1px solid #e0e0e0; background-color: #fcfcfb; } .oppost { background-color: #EEF; } .flex { display: flex; flex-flow: wrap; flex-direction: row-reverse; justify-content: flex-end; } ';
+  static const String _htmlScript =
+      "document.addEventListener('mousedown', function(e) { var t = e.target; if (t.className == 'author') { t = t.parentElement; } if (t.classList.contains('comment')) { t.classList.toggle('collapsed'); e.preventDefault(); e.stopPropagation(); return false; } });";
 }

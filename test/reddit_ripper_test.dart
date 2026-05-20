@@ -156,6 +156,96 @@ void main() {
     expect(media.single.subdirectory, isNull);
   });
 
+  test('builds self-post HTML export with comments', () {
+    final posts = RedditRipper.extractSelfPostHtmlFromJson([
+      {
+        'data': {
+          'children': [
+            {
+              'kind': 't3',
+              'data': {
+                'id': 'abc123',
+                'title': 'Self Post',
+                'author': 'op_user',
+                'subreddit': 'pics',
+                'created': 1760000000,
+                'is_self': true,
+                'selftext': 'Body text',
+                'selftext_html': '<p>Body <strong>text</strong></p>',
+                'url':
+                    'https://www.reddit.com/r/pics/comments/abc123/self_post',
+              },
+            },
+          ],
+        },
+      },
+      {
+        'data': {
+          'children': [
+            {
+              'kind': 't1',
+              'data': {
+                'name': 't1_comment',
+                'author': 'commenter',
+                'created': 1760000100,
+                'body_html': '<p>First comment</p>',
+                'replies': {
+                  'data': {
+                    'children': [
+                      {
+                        'kind': 't1',
+                        'data': {
+                          'name': 't1_reply',
+                          'author': 'op_user',
+                          'created': 1760000200,
+                          'body_html': '<p>Nested reply</p>',
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    ]);
+
+    expect(posts, hasLength(1));
+    expect(posts.single.id, 'abc123');
+    expect(posts.single.title, 'Self Post');
+    expect(posts.single.html, contains('<h1>Self Post</h1>'));
+    expect(posts.single.html, contains('Body text'));
+    expect(posts.single.html, contains('commenter'));
+    expect(posts.single.html, contains('First comment'));
+    expect(posts.single.html, contains('Nested reply'));
+    expect(
+        posts.single.html, contains('<span class="author op">op_user</span>'));
+  });
+
+  test('does not export self-post HTML from listing-only JSON', () {
+    final posts = RedditRipper.extractSelfPostHtmlFromJson({
+      'data': {
+        'children': [
+          {
+            'kind': 't3',
+            'data': {
+              'id': 'abc123',
+              'title': 'Listing Self Post',
+              'author': 'op_user',
+              'subreddit': 'pics',
+              'created': 1760000000,
+              'is_self': true,
+              'selftext': 'Body text',
+            },
+          },
+        ],
+      },
+    });
+
+    expect(posts, isEmpty);
+  });
+
   test('builds next page URL from listing after token', () {
     final next = RedditRipper.nextPageUrl(
       {

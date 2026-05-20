@@ -6,6 +6,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 
 - [x] Migration tracking and unsupported legacy ripper visibility
 - [x] Reddit ripper migrated media pass: JSON URL handling, GIDs, listings, comments/selftext URL extraction, galleries, direct media, Redgifs links, v.redd.it manifest selection, upvote filters, subfolder config, and ordered gallery naming
+- [x] Reddit self-post/comment HTML export for post JSON responses
 - [x] Redgifs ripper parity pass: URL sanitization, singleton/profile/search/tags modes, auth, pagination, and galleries
 - [x] Persisted downloaded URL history plus skip behavior for existing/already-seen files
 - [x] Centralized Java `rip.properties` defaults for migrated Flutter runtime settings
