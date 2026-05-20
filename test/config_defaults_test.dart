@@ -10,9 +10,11 @@ void main() {
 
     expect(Utils.getConfigInteger('threads.size', 10), 5);
     expect(Utils.getConfigInteger('download.retries', 0), 3);
+    expect(Utils.getConfigInteger('download.retry.sleep', 5000), 0);
     expect(Utils.getConfigBoolean('file.overwrite', true), isFalse);
     expect(Utils.getConfigBoolean('download.save_order', false), isTrue);
     expect(Utils.getConfigBoolean('album_titles.save', false), isTrue);
+    expect(Utils.getConfigString('twitter.auth', null), isNotEmpty);
     expect(Utils.getConfigString('tumblr.auth', null), isNotEmpty);
   });
 

@@ -326,7 +326,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               title: 'Wait between retries (ms)',
               icon: Icons.timer,
               keyName: 'download.retry.sleep',
-              defaultValue: 5000,
+              defaultValue: 0,
               min: 0,
               max: 600000,
               onChanged: _refresh,

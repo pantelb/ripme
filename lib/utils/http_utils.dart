@@ -43,8 +43,13 @@ class Http {
 
   static Future<void> downloadFile(Uri url, File saveAs,
       {Map<String, String>? headers, Map<String, String>? cookies}) async {
-    final response =
-        await _getResponse(url, headers: headers, cookies: cookies);
+    final response = await _getResponse(
+      url,
+      headers: headers,
+      cookies: cookies,
+      timeoutKey: 'download.timeout',
+      defaultTimeoutMs: 60000,
+    );
 
     if (response.statusCode == 200) {
       final maxSize = Utils.getConfigInteger('download.max_size', 104857600);
@@ -81,13 +86,15 @@ class Http {
     Uri url, {
     Map<String, String>? headers,
     Map<String, String>? cookies,
+    String timeoutKey = 'page.timeout',
+    int defaultTimeoutMs = 5000,
   }) async {
     final combinedHeaders = _buildHeaders(headers, cookies);
     final retries = Utils.getConfigInteger('download.retries', 3);
-    final timeout =
-        Duration(milliseconds: Utils.getConfigInteger('page.timeout', 5000));
+    final timeout = Duration(
+        milliseconds: Utils.getConfigInteger(timeoutKey, defaultTimeoutMs));
     final retrySleep = Duration(
-        milliseconds: Utils.getConfigInteger('download.retry.sleep', 5000));
+        milliseconds: Utils.getConfigInteger('download.retry.sleep', 0));
     Object? lastError;
 
     for (var attempt = 0; attempt <= retries; attempt++) {

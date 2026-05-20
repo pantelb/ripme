@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripme/ripper/rippers/reddit_ripper.dart';
+import 'package:ripme/utils/utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   test('builds Reddit JSON URLs like the Java ripper', () {
@@ -40,6 +42,9 @@ void main() {
   });
 
   test('extracts direct media and gallery media from listing JSON', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+
     final json = {
       'data': {
         'children': [
@@ -93,6 +98,62 @@ void main() {
     ]);
     expect(media[1].subdirectory, 'Album Post');
     expect(media[1].prefix, 'def456-01-');
+  });
+
+  test('honors migrated Reddit filter and naming settings', () async {
+    SharedPreferences.setMockInitialValues({
+      'reddit.rip_by_upvote': true,
+      'reddit.min_upvotes': 10,
+      'reddit.max_upvotes': 20,
+      'download.save_order': false,
+      'reddit.use_sub_dirs': false,
+      'album_titles.save': false,
+    });
+    await Utils.init();
+
+    final json = {
+      'data': {
+        'children': [
+          {
+            'kind': 't3',
+            'data': {
+              'id': 'low',
+              'title': 'Too Low',
+              'score': 5,
+              'is_self': false,
+              'url': 'https://i.redd.it/low.jpg',
+            },
+          },
+          {
+            'kind': 't3',
+            'data': {
+              'id': 'ok',
+              'title': 'Kept Gallery',
+              'score': 15,
+              'is_self': false,
+              'gallery_data': {
+                'items': [
+                  {'media_id': 'm1'},
+                ],
+              },
+              'media_metadata': {
+                'm1': {
+                  's': {'u': 'https://preview.redd.it/one.jpg?width=800'},
+                },
+              },
+            },
+          },
+        ],
+      },
+    };
+
+    final media = await RedditRipper.extractMediaFromJson(json);
+
+    expect(media, hasLength(1));
+    expect(media.single.url.toString(),
+        'https://preview.redd.it/one.jpg?width=800');
+    expect(media.single.prefix, 'ok-');
+    expect(media.single.subdirectory, isNull);
   });
 
   test('builds next page URL from listing after token', () {

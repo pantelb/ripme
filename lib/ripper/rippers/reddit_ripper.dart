@@ -156,6 +156,10 @@ class RedditRipper extends AbstractJSONRipper {
     final id = data['id']?.toString() ?? 'reddit';
     final title = data['title']?.toString() ?? '';
 
+    if (kind == 't3' && _shouldSkipByUpvotes(data)) {
+      return const [];
+    }
+
     if (kind == 't1') {
       media.addAll(
           await _mediaFromBody(data['body']?.toString() ?? '', id, title));
@@ -212,7 +216,6 @@ class RedditRipper extends AbstractJSONRipper {
         RedditMedia(
           url: uri,
           prefix: _safePrefix(id, title),
-          subdirectory: title.isEmpty ? null : title,
         ),
       ];
     }
@@ -223,7 +226,6 @@ class RedditRipper extends AbstractJSONRipper {
         RedditMedia(
           url: uri,
           prefix: _safePrefix('$id-$uploadId', title),
-          subdirectory: title.isEmpty ? null : title,
         ),
       ];
     }
@@ -235,7 +237,6 @@ class RedditRipper extends AbstractJSONRipper {
         RedditMedia(
           url: videoUrl,
           prefix: _safePrefix('$id-${uri.pathSegments.first}', title),
-          subdirectory: title.isEmpty ? null : title,
         ),
       ];
     }
@@ -247,7 +248,6 @@ class RedditRipper extends AbstractJSONRipper {
         RedditMedia(
           url: Uri.parse(videoUrl),
           prefix: _safePrefix(id, title),
-          subdirectory: title.isEmpty ? null : title,
           headers: {'Referer': 'https://www.redgifs.com/'},
         ),
       ];
@@ -268,11 +268,14 @@ class RedditRipper extends AbstractJSONRipper {
       final source = media?['s'];
       final url = source?['gif'] ?? source?['u'];
       if (url is! String) continue;
+      final orderPrefix = Utils.getConfigBoolean('download.save_order', true)
+          ? '${(i + 1).toString().padLeft(2, '0')}-'
+          : '';
       result.add(
         RedditMedia(
           url: Uri.parse(url.replaceAll('&amp;', '&')),
-          prefix: '$id-${(i + 1).toString().padLeft(2, '0')}-',
-          subdirectory: title.isEmpty ? null : title,
+          prefix: '$id-$orderPrefix',
+          subdirectory: _redditSubdirectory(title),
         ),
       );
     }
@@ -310,8 +313,29 @@ class RedditRipper extends AbstractJSONRipper {
   }
 
   static String _safePrefix(String id, String title) {
-    final safeTitle = title.isEmpty ? '' : '-${Utils.filesystemSafe(title)}-';
+    final saveAlbumTitle = Utils.getConfigBoolean('album_titles.save', true);
+    final safeTitle = saveAlbumTitle && title.isNotEmpty
+        ? '-${Utils.filesystemSafe(title)}-'
+        : '';
     return Utils.filesystemSafe('$id$safeTitle');
+  }
+
+  static String? _redditSubdirectory(String title) {
+    if (title.isEmpty) return null;
+    if (!Utils.getConfigBoolean('reddit.use_sub_dirs', true)) return null;
+    if (!Utils.getConfigBoolean('album_titles.save', true)) return null;
+    return title;
+  }
+
+  static bool _shouldSkipByUpvotes(Map data) {
+    if (!Utils.getConfigBoolean('reddit.rip_by_upvote', false)) {
+      return false;
+    }
+    final score = data['score'];
+    if (score is! int) return false;
+    final minScore = Utils.getConfigInteger('reddit.min_upvotes', 0);
+    final maxScore = Utils.getConfigInteger('reddit.max_upvotes', 10000);
+    return score < minScore || score > maxScore;
   }
 
   static bool _isDirectMedia(Uri uri) {

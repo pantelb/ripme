@@ -5,7 +5,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 ## Runtime Areas
 
 - [x] Migration tracking and unsupported legacy ripper visibility
-- [x] Reddit ripper parity pass: JSON URL handling, GIDs, listings, galleries, direct media, Redgifs links, and v.redd.it manifest selection
+- [x] Reddit ripper migrated media pass: JSON URL handling, GIDs, listings, comments/selftext URL extraction, galleries, direct media, Redgifs links, v.redd.it manifest selection, upvote filters, subfolder config, and ordered gallery naming
 - [x] Redgifs ripper parity pass: URL sanitization, singleton/profile/search/tags modes, auth, pagination, and galleries
 - [x] Persisted downloaded URL history plus skip behavior for existing/already-seen files
 - [x] Centralized Java `rip.properties` defaults for migrated Flutter runtime settings
@@ -14,6 +14,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] History clear flows for album history and persisted downloaded URL history
 - [x] Bounded parallel downloads using `threads.size` for migrated HTML, Reddit, and Redgifs flows
 - [ ] Download engine parity: parallelism, retry policy, duplicate/already-seen tracking, overwrite/skip behavior, ordered naming, stop semantics
+- [ ] Reddit full Java parity: saved self-post/comment HTML export, full `RipUtils.getFilesFromURL` expansion for non-direct hosts, and exact Java filename behavior
 - [ ] Configuration parity: Java `rip.properties` defaults and UI controls for thread count, retries, retry sleep, save order, album title folders, Reddit filters, proxy/auth/API keys, timeouts, and max download size
 - [ ] History parity: album history plus persisted downloaded URL history, history cutoff behavior, history actions, and import/export/clear flows
 - [ ] UI parity: detailed progress, per-file status, queue controls, log filtering/copying, context menus, clipboard autorip, and complete configuration panels

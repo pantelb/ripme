@@ -5,7 +5,7 @@ class ConfigDefaults {
     'download.timeout': 60000,
     'page.timeout': 5000,
     'download.max_size': 104857600,
-    'download.retry.sleep': 5000,
+    'download.retry.sleep': 0,
     'twitter.max_requests': 10,
     'reddit.min_upvotes': 0,
     'reddit.max_upvotes': 10000,
@@ -27,6 +27,8 @@ class ConfigDefaults {
   };
 
   static const Map<String, String> strings = {
+    'twitter.auth':
+        'VW9Ybjdjb1pkd2J0U3kwTUh2VXVnOm9GTzVQVzNqM29LQU1xVGhnS3pFZzhKbGVqbXU0c2lHQ3JrUFNNZm8=',
     'tumblr.auth': 'JFNLu3CbINQjRdUvZibXW9VpSEVYYtiPJ86o8YmvgLZIoKyuNX',
     'gw.api': 'gonewild',
   };

@@ -68,4 +68,31 @@ void main() {
       throwsA(isA<HttpException>()),
     );
   });
+
+  test('uses download timeout for file downloads', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.timeout': 1000,
+      'page.timeout': 1,
+      'download.retries': 0,
+    });
+    await Utils.init();
+
+    final server = await _server((request) async {
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      request.response.write('ok');
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final directory = await Directory.systemTemp.createTemp('ripme_http_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final saveAs = File('${directory.path}/file.txt');
+
+    await Http.downloadFile(
+      Uri.parse('http://127.0.0.1:${server.port}/file'),
+      saveAs,
+    );
+
+    expect(await saveAs.readAsString(), 'ok');
+  });
 }
