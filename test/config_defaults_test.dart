@@ -16,6 +16,8 @@ void main() {
     expect(Utils.getConfigBoolean('album_titles.save', false), isTrue);
     expect(Utils.getConfigBoolean('remember.url_history', false), isTrue);
     expect(Utils.getConfigBoolean('urls_only.save', true), isFalse);
+    expect(Utils.getConfigString('download.ignore_extensions', 'fallback'), '');
+    expect(Utils.getConfigStringList('download.ignore_extensions'), isEmpty);
     expect(Utils.getConfigString('twitter.auth', null), isNotEmpty);
     expect(Utils.getConfigString('tumblr.auth', null), isNotEmpty);
   });
@@ -29,5 +31,15 @@ void main() {
 
     expect(Utils.getConfigInteger('threads.size', 10), 2);
     expect(Utils.getConfigBoolean('download.save_order', true), isFalse);
+  });
+
+  test('parses comma-separated string list config values', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.ignore_extensions': 'mp4, gif, , webm',
+    });
+    await Utils.init();
+
+    expect(Utils.getConfigStringList('download.ignore_extensions'),
+        ['mp4', 'gif', 'webm']);
   });
 }

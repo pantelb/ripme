@@ -35,6 +35,7 @@ void main() {
 
     expect(find.text('Maximum download threads'), findsOneWidget);
     expect(find.text('Retry download count'), findsOneWidget);
+    expect(find.text('Ignored extensions'), findsOneWidget);
     expect(find.text('Save URLs only'), findsOneWidget);
 
     await tester.scrollUntilVisible(

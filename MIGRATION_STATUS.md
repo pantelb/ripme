@@ -15,6 +15,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] Bounded parallel downloads using `threads.size` for migrated HTML, Reddit, and Redgifs flows
 - [x] Queued download request options for migrated flows: custom headers/referrers and cookies pass through the shared scheduler
 - [x] Shared duplicate URL suppression and `download.ignore_extensions` filtering for migrated download flows
+- [x] Flutter configuration control for `download.ignore_extensions`
 - [x] `urls_only.save` mode for migrated download flows with a Flutter configuration control
 - [x] Java-compatible `remember.url_history` toggle with fallback for the earlier Flutter history key
 - [ ] Download engine parity: parallelism, retry policy, duplicate/already-seen tracking, overwrite/skip behavior, ordered naming, stop semantics

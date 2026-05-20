@@ -372,6 +372,14 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               defaultValue: true,
               onChanged: _refresh,
             ),
+            _ConfigStringTile(
+              title: 'Ignored extensions',
+              icon: Icons.block,
+              keyName: 'download.ignore_extensions',
+              defaultValue: '',
+              helperText: 'Comma-separated extensions',
+              onChanged: _refresh,
+            ),
           ],
         ),
         const SizedBox(height: 16),
@@ -594,6 +602,70 @@ class _ConfigIntegerTile extends StatelessWidget {
 
     if (nextValue != null) {
       await Utils.setConfigInteger(keyName, nextValue);
+      onChanged();
+    }
+  }
+}
+
+class _ConfigStringTile extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final String keyName;
+  final String defaultValue;
+  final String helperText;
+  final VoidCallback onChanged;
+
+  const _ConfigStringTile({
+    required this.title,
+    required this.icon,
+    required this.keyName,
+    required this.defaultValue,
+    required this.helperText,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final value = Utils.getConfigString(keyName, defaultValue) ?? defaultValue;
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      subtitle: Text(value.isEmpty ? 'None' : value),
+      trailing: const Icon(Icons.edit),
+      onTap: () => _editValue(context, value),
+    );
+  }
+
+  Future<void> _editValue(BuildContext context, String currentValue) async {
+    final controller = TextEditingController(text: currentValue);
+    final nextValue = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: InputDecoration(helperText: helperText),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(context).pop(controller.text.trim());
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (nextValue != null) {
+      await Utils.setConfigString(keyName, nextValue);
       onChanged();
     }
   }
