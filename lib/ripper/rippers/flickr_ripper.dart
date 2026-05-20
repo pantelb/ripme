@@ -1,10 +1,8 @@
 import 'package:html/dom.dart';
-import '../ripper/abstract_html_ripper.dart';
-import '../utils/http_utils.dart';
-import '../ui/rip_status_message.dart';
+import '../abstract_html_ripper.dart';
 
 class FlickrRipper extends AbstractHTMLRipper {
-  FlickrRipper(Uri url) : super(url);
+  FlickrRipper(super.url);
 
   @override
   String getHost() => "flickr";
@@ -25,7 +23,7 @@ class FlickrRipper extends AbstractHTMLRipper {
     for (var img in images) {
       String? src = img.attributes['src'];
       if (src != null) {
-        if (src.startsWith('//')) src = 'https:\$src';
+        if (src.startsWith('//')) src = 'https:$src';
         urls.add(src);
       }
     }

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
+import '../config_defaults.dart';
 
 class Utils {
   static const String ripDirectory = "rips";
@@ -19,7 +20,8 @@ class Utils {
 
     Directory baseDir;
     if (Platform.isAndroid) {
-      baseDir = (await getExternalStorageDirectory()) ?? (await getApplicationDocumentsDirectory());
+      baseDir = (await getExternalStorageDirectory()) ??
+          (await getApplicationDocumentsDirectory());
     } else {
       // For desktop, use a folder next to the executable or in documents
       baseDir = await getApplicationDocumentsDirectory();
@@ -33,15 +35,17 @@ class Utils {
   }
 
   static String? getConfigString(String key, String? defaultValue) {
-    return _prefs?.getString(key) ?? defaultValue;
+    return _prefs?.getString(key) ??
+        ConfigDefaults.strings[key] ??
+        defaultValue;
   }
 
   static int getConfigInteger(String key, int defaultValue) {
-    return _prefs?.getInt(key) ?? defaultValue;
+    return _prefs?.getInt(key) ?? ConfigDefaults.integers[key] ?? defaultValue;
   }
 
   static bool getConfigBoolean(String key, bool defaultValue) {
-    return _prefs?.getBool(key) ?? defaultValue;
+    return _prefs?.getBool(key) ?? ConfigDefaults.booleans[key] ?? defaultValue;
   }
 
   static Future<void> setConfigString(String key, String value) async {

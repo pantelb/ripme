@@ -1,11 +1,9 @@
 import 'package:html/dom.dart';
-import '../ripper/abstract_html_ripper.dart';
-import '../utils/http_utils.dart';
-import 'dart:io';
-import 'package:path/path.dart' as p;
+import '../abstract_html_ripper.dart';
+import '../../utils/http_utils.dart';
 
 class ImagefapRipper extends AbstractHTMLRipper {
-  ImagefapRipper(Uri url) : super(url);
+  ImagefapRipper(super.url);
 
   @override
   String getHost() => "imagefap";
@@ -20,7 +18,7 @@ class ImagefapRipper extends AbstractHTMLRipper {
     if (match != null) {
       return match.group(2)!;
     }
-    throw Exception("Could not find GID for \$url");
+    throw Exception("Could not find GID for $url");
   }
 
   @override
@@ -33,7 +31,7 @@ class ImagefapRipper extends AbstractHTMLRipper {
       if (parent != null && parent.localName == 'a') {
         String? href = parent.attributes['href'];
         if (href != null) {
-          String? imageUrl = await _getFullSizedImage("https://www.imagefap.com\$href");
+          String? imageUrl = await _getFullSizedImage("https://www.imagefap.com$href");
           if (imageUrl != null) {
             urls.add(imageUrl);
           }
@@ -59,7 +57,7 @@ class ImagefapRipper extends AbstractHTMLRipper {
     if (nextLink != null) {
       String? href = nextLink.attributes['href'];
       if (href != null) {
-        return Uri.parse("https://www.imagefap.com\$href");
+        return Uri.parse("https://www.imagefap.com$href");
       }
     }
     return null;

@@ -1,8 +1,8 @@
 import 'package:html/dom.dart';
-import '../ripper/abstract_html_ripper.dart';
+import '../abstract_html_ripper.dart';
 
 class ImgurRipper extends AbstractHTMLRipper {
-  ImgurRipper(Uri url) : super(url);
+  ImgurRipper(super.url);
 
   @override
   String getHost() => "imgur";

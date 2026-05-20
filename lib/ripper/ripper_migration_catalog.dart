@@ -1,0 +1,204 @@
+class LegacyRipperMatch {
+  final String javaClass;
+  final String displayName;
+
+  const LegacyRipperMatch({
+    required this.javaClass,
+    required this.displayName,
+  });
+}
+
+class RipperMigrationCatalog {
+  static const List<String> legacyRipperClasses = [
+    'AllporncomicRipper',
+    'ArtStationRipper',
+    'ArtstnRipper',
+    'BaraagRipper',
+    'BatoRipper',
+    'BooruRipper',
+    'CfakeRipper',
+    'ChanRipper',
+    'CheveretoRipper',
+    'CliphunterRipper',
+    'CoomerPartyRipper',
+    'DanbooruRipper',
+    'DerpiRipper',
+    'DeviantartRipper',
+    'DribbbleRipper',
+    'DynastyscansRipper',
+    'E621Ripper',
+    'EHentaiRipper',
+    'EightmusesRipper',
+    'ErofusRipper',
+    'EromeRipper',
+    'FapDungeonRipper',
+    'FapwizRipper',
+    'FemjoyhunterRipper',
+    'FitnakedgirlsRipper',
+    'FivehundredpxRipper',
+    'FlickrRipper',
+    'FreeComicOnlineRipper',
+    'FuraffinityRipper',
+    'FuskatorRipper',
+    'GirlsOfDesireRipper',
+    'Hentai2readRipper',
+    'HentaiNexusRipper',
+    'HentaifoundryRipper',
+    'HentaifoxRipper',
+    'HentaiimageRipper',
+    'HitomiRipper',
+    'HqpornerRipper',
+    'HypnohubRipper',
+    'ImagebamRipper',
+    'ImagefapRipper',
+    'ImagevenueRipper',
+    'ImgboxRipper',
+    'ImgurRipper',
+    'InstagramRipper',
+    'JabArchivesRipper',
+    'JagodibujaRipper',
+    'Jpg3Ripper',
+    'KingcomixRipper',
+    'ListalRipper',
+    'LusciousRipper',
+    'MangadexRipper',
+    'MastodonRipper',
+    'MastodonXyzRipper',
+    'ModelmayhemRipper',
+    'MotherlessRipper',
+    'MotherlessVideoRipper',
+    'MrCongRipper',
+    'MultpornRipper',
+    'MyhentaicomicsRipper',
+    'MyhentaigalleryRipper',
+    'MyreadingmangaRipper',
+    'NatalieMuRipper',
+    'NewgroundsRipper',
+    'NfsfwRipper',
+    'NhentaiRipper',
+    'NsfwAlbumRipper',
+    'NsfwXxxRipper',
+    'NudeGalsRipper',
+    'OglafRipper',
+    'PahealRipper',
+    'PawooRipper',
+    'PhotobucketRipper',
+    'PichunterRipper',
+    'PicstatioRipper',
+    'PorncomixRipper',
+    'PorncomixinfoRipper',
+    'PornhubRipper',
+    'PornpicsRipper',
+    'ReadcomicRipper',
+    'RedditRipper',
+    'RedgifsRipper',
+    'Rule34Ripper',
+    'RulePornRipper',
+    'SankakuComplexRipper',
+    'ScrolllerRipper',
+    'ShesFreakyRipper',
+    'SinfestRipper',
+    'SmuttyRipper',
+    'SoundgasmRipper',
+    'SpankbangRipper',
+    'StaRipper',
+    'TapasticRipper',
+    'TeenplanetRipper',
+    'ThechiveRipper',
+    'TheyiffgalleryRipper',
+    'TsuminoRipper',
+    'TumblrRipper',
+    'TwitchVideoRipper',
+    'TwitterRipper',
+    'TwodgalleriesRipper',
+    'VidbleRipper',
+    'ViddmeRipper',
+    'VidearnRipper',
+    'ViewcomicRipper',
+    'VkRipper',
+    'VscoRipper',
+    'WebtoonsRipper',
+    'WordpressComicRipper',
+    'XcartxRipper',
+    'XhamsterRipper',
+    'XlecxRipper',
+    'XvideosRipper',
+    'YoupornRipper',
+    'YuvutuRipper',
+    'ZizkiRipper',
+  ];
+
+  static const Set<String> portedRipperClasses = {
+    'EightmusesRipper',
+    'FlickrRipper',
+    'ImagefapRipper',
+    'ImgurRipper',
+    'InstagramRipper',
+    'MotherlessRipper',
+    'NhentaiRipper',
+    'RedditRipper',
+    'RedgifsRipper',
+    'TumblrRipper',
+    'TwitterRipper',
+  };
+
+  static const Map<String, List<String>> _hostAliases = {
+    'ArtStationRipper': ['artstation'],
+    'ArtstnRipper': ['artstn'],
+    'BooruRipper': ['xbooru'],
+    'EHentaiRipper': ['ehentai', 'exhentai'],
+    'EightmusesRipper': ['8muses', 'eightmuses'],
+    'FivehundredpxRipper': ['500px', 'fivehundredpx'],
+    'FreeComicOnlineRipper': ['freecomiconline'],
+    'GirlsOfDesireRipper': ['girlsofdesire'],
+    'HentaiNexusRipper': ['hentainexus'],
+    'JabArchivesRipper': ['jabarchives'],
+    'MastodonXyzRipper': ['mastodonxyz'],
+    'MotherlessVideoRipper': ['motherless'],
+    'MrCongRipper': ['mrcong'],
+    'NatalieMuRipper': ['nataliemu'],
+    'NsfwAlbumRipper': ['nsfwalbum'],
+    'NsfwXxxRipper': ['nsfwxxx'],
+    'RulePornRipper': ['ruleporn'],
+    'SankakuComplexRipper': ['sankakucomplex'],
+    'ShesFreakyRipper': ['shesfreaky'],
+    'ThechiveRipper': ['thechive'],
+    'TwitchVideoRipper': ['twitch'],
+    'VkRipper': ['vk'],
+  };
+
+  static int get totalLegacyRippers => legacyRipperClasses.length;
+  static int get portedRipperCount => portedRipperClasses.length;
+  static int get unportedRipperCount => totalLegacyRippers - portedRipperCount;
+
+  static LegacyRipperMatch? findUnportedLegacyRipper(Uri uri) {
+    final host = _canonical(uri.host);
+    for (final javaClass in legacyRipperClasses) {
+      if (portedRipperClasses.contains(javaClass)) {
+        continue;
+      }
+
+      final fragments =
+          _hostAliases[javaClass] ?? [_defaultHostFragment(javaClass)];
+      if (fragments.any((fragment) => host.contains(_canonical(fragment)))) {
+        return LegacyRipperMatch(
+          javaClass: javaClass,
+          displayName: _displayName(javaClass),
+        );
+      }
+    }
+    return null;
+  }
+
+  static String _defaultHostFragment(String javaClass) {
+    return javaClass.replaceFirst(RegExp(r'Ripper$'), '').toLowerCase();
+  }
+
+  static String _displayName(String javaClass) {
+    return javaClass.replaceFirst(RegExp(r'Ripper$'), '');
+  }
+
+  static String _canonical(String value) {
+    return value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+  }
+}

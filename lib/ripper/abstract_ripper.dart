@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart' as p;
+import '../download_history_provider.dart';
 import '../utils/utils.dart';
 import '../utils/http_utils.dart';
 import '../ui/rip_status_message.dart';
@@ -11,8 +12,10 @@ abstract class AbstractRipper {
   final Uri url;
   late Directory workingDir;
   bool _shouldStop = false;
+  int alreadyDownloadedUrls = 0;
 
-  final StreamController<RipStatusMessage> _statusController = StreamController<RipStatusMessage>.broadcast();
+  final StreamController<RipStatusMessage> _statusController =
+      StreamController<RipStatusMessage>.broadcast();
   Stream<RipStatusMessage> get statusStream => _statusController.stream;
 
   AbstractRipper(this.url);
@@ -53,14 +56,46 @@ abstract class AbstractRipper {
 
   bool canRip(Uri url);
 
-  Future<void> downloadFile(Uri url, File saveAs, {Map<String, String>? headers}) async {
+  Future<void> downloadFile(Uri url, File saveAs,
+      {Map<String, String>? headers}) async {
     if (isStopped) return;
     try {
+      if (!Utils.getConfigBoolean('file.overwrite', false) &&
+          await saveAs.exists()) {
+        alreadyDownloadedUrls++;
+        sendUpdate(
+            RipStatus.downloadSkip, 'File already exists: ${saveAs.path}');
+        _stopIfHistoryLimitReached();
+        return;
+      }
+
+      if (Utils.getConfigBoolean('history.skip_downloaded_urls', true) &&
+          await DownloadHistoryProvider.hasDownloaded(url)) {
+        alreadyDownloadedUrls++;
+        sendUpdate(RipStatus.downloadSkip, 'Already downloaded: $url');
+        _stopIfHistoryLimitReached();
+        return;
+      }
+
       sendUpdate(RipStatus.downloadStarted, url.toString());
       await Http.downloadFile(url, saveAs, headers: headers);
+      await DownloadHistoryProvider.markDownloaded(url);
+      alreadyDownloadedUrls = 0;
       sendUpdate(RipStatus.downloadComplete, saveAs.path);
     } catch (e) {
-      sendUpdate(RipStatus.downloadErrored, "$url : \${e.toString()}");
+      sendUpdate(RipStatus.downloadErrored, "$url : ${e.toString()}");
+    }
+  }
+
+  void _stopIfHistoryLimitReached() {
+    final limit = Utils.getConfigInteger(
+        'history.end_rip_after_already_seen', 1000000000);
+    if (alreadyDownloadedUrls >= limit) {
+      sendUpdate(
+        RipStatus.downloadSkip,
+        'Already seen the last $alreadyDownloadedUrls files, ending rip',
+      );
+      stop();
     }
   }
 

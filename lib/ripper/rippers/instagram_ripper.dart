@@ -1,8 +1,8 @@
 import 'package:html/dom.dart';
-import '../ripper/abstract_html_ripper.dart';
+import '../abstract_html_ripper.dart';
 
 class InstagramRipper extends AbstractHTMLRipper {
-  InstagramRipper(Uri url) : super(url);
+  InstagramRipper(super.url);
 
   @override
   String getHost() => "instagram";

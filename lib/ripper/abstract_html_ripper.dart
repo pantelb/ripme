@@ -6,7 +6,7 @@ import '../utils/http_utils.dart';
 import '../ui/rip_status_message.dart';
 
 abstract class AbstractHTMLRipper extends AbstractRipper {
-  AbstractHTMLRipper(Uri url) : super(url);
+  AbstractHTMLRipper(super.url);
 
   @override
   Future<void> rip() async {
@@ -56,6 +56,6 @@ abstract class AbstractHTMLRipper extends AbstractRipper {
     if (fileName.contains('?')) {
       fileName = fileName.substring(0, fileName.indexOf('?'));
     }
-    return "\${index.toString().padLeft(3, '0')}_\$fileName";
+    return "${index.toString().padLeft(3, '0')}_$fileName";
   }
 }

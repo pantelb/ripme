@@ -1,11 +1,9 @@
 import 'package:html/dom.dart';
-import '../ripper/abstract_html_ripper.dart';
-import '../utils/http_utils.dart';
-import 'dart:io';
-import 'package:path/path.dart' as p;
+import '../abstract_html_ripper.dart';
+import '../../utils/http_utils.dart';
 
 class MotherlessRipper extends AbstractHTMLRipper {
-  MotherlessRipper(Uri url) : super(url);
+  MotherlessRipper(super.url);
 
   @override
   String getHost() => "motherless";

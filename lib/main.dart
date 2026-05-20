@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:io';
 import 'rip_manager.dart';
 import 'utils/utils.dart';
 
@@ -207,7 +206,7 @@ class QueueView extends StatelessWidget {
       itemBuilder: (context, index) {
         return ListTile(
           title: Text(queue[index]),
-          leading: CircleAvatar(child: Text('\${index + 1}')),
+          leading: CircleAvatar(child: Text('${index + 1}')),
           trailing: IconButton(
             icon: const Icon(Icons.delete_outline),
             onPressed: () {
@@ -239,7 +238,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
             subtitle: Text(Utils.getConfigString('rips.directory', 'Default (Documents/rips)')!),
             trailing: const Icon(Icons.folder_open),
             onTap: () async {
-              String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+              String? selectedDirectory = await FilePicker.getDirectoryPath();
               if (selectedDirectory != null) {
                 await Utils.setConfigString('rips.directory', selectedDirectory);
                 setState(() {});

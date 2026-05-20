@@ -57,14 +57,14 @@ class RipManager extends ChangeNotifier {
 
     Uri? uri = Uri.tryParse(urlText);
     if (uri == null) {
-      _addLog(RipStatusMessage(RipStatus.ripErrored, "Invalid URL: \$urlText"));
+      _addLog(RipStatusMessage(RipStatus.ripErrored, "Invalid URL: $urlText"));
       _ripNext();
       return;
     }
 
     _currentRipper = RipperFactory.getRipper(uri);
     if (_currentRipper == null) {
-      _addLog(RipStatusMessage(RipStatus.ripErrored, "No ripper found for \$urlText"));
+      _addLog(RipStatusMessage(RipStatus.ripErrored, "No ripper found for $urlText"));
       _ripNext();
       return;
     }

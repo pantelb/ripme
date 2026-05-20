@@ -1,11 +1,10 @@
 import 'dart:io';
-import 'package:html/dom.dart';
 import 'abstract_ripper.dart';
 import '../utils/http_utils.dart';
 import '../ui/rip_status_message.dart';
 
 abstract class AbstractVideoRipper extends AbstractRipper {
-  AbstractVideoRipper(Uri url) : super(url);
+  AbstractVideoRipper(super.url);
 
   @override
   Future<void> rip() async {

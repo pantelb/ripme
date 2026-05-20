@@ -1,12 +1,10 @@
-import '../ripper/abstract_json_ripper.dart';
-import '../utils/http_utils.dart';
-import '../utils/utils.dart';
-import '../ui/rip_status_message.dart';
+import '../abstract_json_ripper.dart';
+import '../../utils/http_utils.dart';
 import 'dart:io';
 import 'package:path/path.dart' as p;
 
 class TumblrRipper extends AbstractJSONRipper {
-  TumblrRipper(Uri url) : super(url);
+  TumblrRipper(super.url);
 
   @override
   String getHost() => "tumblr";
@@ -28,7 +26,7 @@ class TumblrRipper extends AbstractJSONRipper {
     while (true) {
       if (isStopped) break;
 
-      String apiUrl = "https://api.tumblr.com/v2/blog/\$hostname/posts?api_key=\$apiKey&offset=\$offset&limit=20";
+      String apiUrl = "https://api.tumblr.com/v2/blog/$hostname/posts?api_key=$apiKey&offset=$offset&limit=20";
       dynamic json = await Http.getJSON(Uri.parse(apiUrl));
 
       var posts = json['response']['posts'] as List;

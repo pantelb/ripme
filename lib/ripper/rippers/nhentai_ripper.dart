@@ -1,8 +1,8 @@
 import 'package:html/dom.dart';
-import '../ripper/abstract_html_ripper.dart';
+import '../abstract_html_ripper.dart';
 
 class NhentaiRipper extends AbstractHTMLRipper {
-  NhentaiRipper(Uri url) : super(url);
+  NhentaiRipper(super.url);
 
   @override
   String getHost() => "nhentai";

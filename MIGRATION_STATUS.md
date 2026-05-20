@@ -1,0 +1,132 @@
+# RipMe Flutter Migration Status
+
+This branch is migrating the Java desktop RipMe application to a unified Flutter/Dart app for Windows, Linux, macOS, and Android.
+
+## Runtime Areas
+
+- [x] Migration tracking and unsupported legacy ripper visibility
+- [x] Reddit ripper parity pass: JSON URL handling, GIDs, listings, galleries, direct media, Redgifs links, and v.redd.it manifest selection
+- [x] Redgifs ripper parity pass: URL sanitization, singleton/profile/search/tags modes, auth, pagination, and galleries
+- [x] Persisted downloaded URL history plus skip behavior for existing/already-seen files
+- [x] Centralized Java `rip.properties` defaults for migrated Flutter runtime settings
+- [x] Shared HTTP retries, timeouts, 404 retry skipping, and max download size checks
+- [ ] Download engine parity: parallelism, retry policy, duplicate/already-seen tracking, overwrite/skip behavior, ordered naming, stop semantics
+- [ ] Configuration parity: Java `rip.properties` defaults and UI controls for thread count, retries, retry sleep, save order, album title folders, Reddit filters, proxy/auth/API keys, timeouts, and max download size
+- [ ] History parity: album history plus persisted downloaded URL history, history cutoff behavior, history actions, and import/export/clear flows
+- [ ] UI parity: detailed progress, per-file status, queue controls, log filtering/copying, context menus, clipboard autorip, and complete configuration panels
+- [ ] HTTP/session parity: retries, timeouts, cookies, proxy support, referers, rate-limit waits, JSON/HTML content-type tolerance, and auth headers
+- [ ] Video handling parity: shared helpers for streamed manifests, referers, extensions, and video-specific rippers
+- [ ] Platform integration: Android storage/scoped permissions, macOS entitlements, Windows/Linux/macOS packaging, file/folder opening, icons, metadata, and release workflows
+- [ ] Localization/resource parity: restore labels/resources from Java bundles or define an equivalent Flutter localization layer
+- [ ] Test parity: mocked parser tests for all rippers, download engine tests, configuration/history tests, and selective live tests for fragile sites
+- [ ] Update/release behavior: replace or intentionally redesign Java update checks and release flow
+
+## Unported Rippers
+
+These Java rippers still need Dart implementations after the current Reddit and Redgifs passes:
+
+- AllporncomicRipper
+- ArtStationRipper
+- ArtstnRipper
+- BaraagRipper
+- BatoRipper
+- BooruRipper
+- CfakeRipper
+- ChanRipper
+- CheveretoRipper
+- CliphunterRipper
+- CoomerPartyRipper
+- DanbooruRipper
+- DerpiRipper
+- DeviantartRipper
+- DribbbleRipper
+- DynastyscansRipper
+- E621Ripper
+- EHentaiRipper
+- ErofusRipper
+- EromeRipper
+- FapDungeonRipper
+- FapwizRipper
+- FemjoyhunterRipper
+- FitnakedgirlsRipper
+- FivehundredpxRipper
+- FreeComicOnlineRipper
+- FuraffinityRipper
+- FuskatorRipper
+- GirlsOfDesireRipper
+- Hentai2readRipper
+- HentaiNexusRipper
+- HentaifoundryRipper
+- HentaifoxRipper
+- HentaiimageRipper
+- HitomiRipper
+- HqpornerRipper
+- HypnohubRipper
+- ImagebamRipper
+- ImagevenueRipper
+- ImgboxRipper
+- JabArchivesRipper
+- JagodibujaRipper
+- Jpg3Ripper
+- KingcomixRipper
+- ListalRipper
+- LusciousRipper
+- MangadexRipper
+- MastodonRipper
+- MastodonXyzRipper
+- ModelmayhemRipper
+- MotherlessVideoRipper
+- MrCongRipper
+- MultpornRipper
+- MyhentaicomicsRipper
+- MyhentaigalleryRipper
+- MyreadingmangaRipper
+- NatalieMuRipper
+- NewgroundsRipper
+- NfsfwRipper
+- NsfwAlbumRipper
+- NsfwXxxRipper
+- NudeGalsRipper
+- OglafRipper
+- PahealRipper
+- PawooRipper
+- PhotobucketRipper
+- PichunterRipper
+- PicstatioRipper
+- PorncomixRipper
+- PorncomixinfoRipper
+- PornhubRipper
+- PornpicsRipper
+- ReadcomicRipper
+- Rule34Ripper
+- RulePornRipper
+- SankakuComplexRipper
+- ScrolllerRipper
+- ShesFreakyRipper
+- SinfestRipper
+- SmuttyRipper
+- SoundgasmRipper
+- SpankbangRipper
+- StaRipper
+- TapasticRipper
+- TeenplanetRipper
+- ThechiveRipper
+- TheyiffgalleryRipper
+- TsuminoRipper
+- TwitchVideoRipper
+- TwodgalleriesRipper
+- VidbleRipper
+- ViddmeRipper
+- VidearnRipper
+- ViewcomicRipper
+- VkRipper
+- VscoRipper
+- WebtoonsRipper
+- WordpressComicRipper
+- XcartxRipper
+- XhamsterRipper
+- XlecxRipper
+- XvideosRipper
+- YoupornRipper
+- YuvutuRipper
+- ZizkiRipper

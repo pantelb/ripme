@@ -1,11 +1,8 @@
-import '../ripper/abstract_json_ripper.dart';
-import '../utils/http_utils.dart';
-import '../utils/utils.dart';
-import 'dart:io';
-import 'package:path/path.dart' as p;
+import '../abstract_json_ripper.dart';
+import '../../utils/utils.dart';
 
 class TwitterRipper extends AbstractJSONRipper {
-  TwitterRipper(Uri url) : super(url);
+  TwitterRipper(super.url);
 
   @override
   String getHost() => "twitter";
@@ -27,7 +24,6 @@ class TwitterRipper extends AbstractJSONRipper {
       throw Exception("Twitter auth key not found in config");
     }
 
-    // Simplified scraping logic for demonstration
-    // In a full implementation, we'd follow the original's API usage.
+    throw UnimplementedError("Twitter ripping still needs to be ported from the Java implementation");
   }
 }
