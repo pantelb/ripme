@@ -14,6 +14,7 @@ void main() {
     expect(Utils.getConfigBoolean('file.overwrite', true), isFalse);
     expect(Utils.getConfigBoolean('download.save_order', false), isTrue);
     expect(Utils.getConfigBoolean('album_titles.save', false), isTrue);
+    expect(Utils.getConfigBoolean('remember.url_history', false), isTrue);
     expect(Utils.getConfigBoolean('urls_only.save', true), isFalse);
     expect(Utils.getConfigString('twitter.auth', null), isNotEmpty);
     expect(Utils.getConfigString('tumblr.auth', null), isNotEmpty);

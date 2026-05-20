@@ -379,9 +379,9 @@ class _ConfigurationViewState extends State<ConfigurationView> {
           title: 'History',
           children: [
             _ConfigSwitch(
-              title: 'Skip already-downloaded URLs',
+              title: 'Remember URL history',
               icon: Icons.history,
-              keyName: 'history.skip_downloaded_urls',
+              keyName: 'remember.url_history',
               defaultValue: true,
               onChanged: _refresh,
             ),

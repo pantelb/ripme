@@ -22,6 +22,7 @@ class ConfigDefaults {
     'clipboard.autorip': false,
     'reddit.rip_by_upvote': false,
     'reddit.use_sub_dirs': true,
+    'remember.url_history': true,
     'history.skip_downloaded_urls': true,
     'urls_only.save': false,
     'play.sound': false,

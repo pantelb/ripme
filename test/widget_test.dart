@@ -38,13 +38,13 @@ void main() {
     expect(find.text('Save URLs only'), findsOneWidget);
 
     await tester.scrollUntilVisible(
-      find.text('Skip already-downloaded URLs'),
+      find.text('Remember URL history'),
       400,
       scrollable: find.byType(Scrollable).last,
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Skip already-downloaded URLs'), findsOneWidget);
+    expect(find.text('Remember URL history'), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.text('Filter by upvotes'),

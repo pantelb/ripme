@@ -72,7 +72,7 @@ void main() {
   test('skips existing files when overwrite is disabled', () async {
     SharedPreferences.setMockInitialValues({
       'file.overwrite': false,
-      'history.skip_downloaded_urls': false,
+      'remember.url_history': false,
     });
     await Utils.init();
 
@@ -99,7 +99,7 @@ void main() {
 
   test('skips URLs already present in persisted download history', () async {
     SharedPreferences.setMockInitialValues({
-      'history.skip_downloaded_urls': true,
+      'remember.url_history': true,
     });
     await Utils.init();
 
@@ -249,7 +249,7 @@ void main() {
       () async {
     SharedPreferences.setMockInitialValues({
       'urls_only.save': true,
-      'history.skip_downloaded_urls': false,
+      'remember.url_history': false,
     });
     await Utils.init();
 
@@ -288,5 +288,42 @@ void main() {
         await DownloadHistoryProvider.hasDownloaded(
             Uri.parse('https://example.com/one.jpg')),
         isFalse);
+  });
+
+  test('legacy Flutter history key remains a fallback for URL history',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'history.skip_downloaded_urls': false,
+    });
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_history_fallback_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+
+    final statuses = <RipStatusMessage>[];
+    final sub = ripper.statusStream.listen(statuses.add);
+    addTearDown(sub.cancel);
+
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    var requests = 0;
+    server.listen((request) async {
+      requests++;
+      request.response.write('ok');
+      await request.response.close();
+    });
+    addTearDown(server.close);
+    final url = Uri.parse('http://127.0.0.1:${server.port}/image.jpg');
+    await DownloadHistoryProvider.markDownloaded(url);
+
+    await ripper.downloadFile(url, File('${directory.path}/image.jpg'));
+    await Future<void>.delayed(Duration.zero);
+
+    expect(requests, 1);
+    expect(
+        statuses.any((msg) => msg.status == RipStatus.downloadStarted), isTrue);
   });
 }

@@ -58,6 +58,15 @@ class Utils {
     return _prefs?.getBool(key) ?? ConfigDefaults.booleans[key] ?? defaultValue;
   }
 
+  static bool getConfigBooleanWithFallback(
+      String key, String fallbackKey, bool defaultValue) {
+    return _prefs?.getBool(key) ??
+        _prefs?.getBool(fallbackKey) ??
+        ConfigDefaults.booleans[key] ??
+        ConfigDefaults.booleans[fallbackKey] ??
+        defaultValue;
+  }
+
   static Future<void> setConfigString(String key, String value) async {
     await _prefs?.setString(key, value);
   }

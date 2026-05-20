@@ -114,7 +114,7 @@ abstract class AbstractRipper {
         return;
       }
 
-      if (Utils.getConfigBoolean('history.skip_downloaded_urls', true) &&
+      if (_shouldRememberUrlHistory() &&
           await DownloadHistoryProvider.hasDownloaded(url)) {
         alreadyDownloadedUrls++;
         sendUpdate(RipStatus.downloadSkip, 'Already downloaded: $url');
@@ -139,12 +139,22 @@ abstract class AbstractRipper {
 
       sendUpdate(RipStatus.downloadStarted, url.toString());
       await Http.downloadFile(url, saveAs, headers: headers, cookies: cookies);
-      await DownloadHistoryProvider.markDownloaded(url);
+      if (_shouldRememberUrlHistory()) {
+        await DownloadHistoryProvider.markDownloaded(url);
+      }
       alreadyDownloadedUrls = 0;
       sendUpdate(RipStatus.downloadComplete, saveAs.path);
     } catch (e) {
       sendUpdate(RipStatus.downloadErrored, "$url : ${e.toString()}");
     }
+  }
+
+  bool _shouldRememberUrlHistory() {
+    return Utils.getConfigBooleanWithFallback(
+      'remember.url_history',
+      'history.skip_downloaded_urls',
+      true,
+    );
   }
 
   Future<void> _saveUrlOnly(Uri url) async {
