@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:html/parser.dart' show parse;
 import 'package:ripme/ripper/rippers/reddit_ripper.dart';
 import 'package:ripme/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -244,6 +245,59 @@ void main() {
 
     expect(RedditRipper.downloadFileNameFor(media.single),
         'abc123Title Still Keptdirect.jpg');
+  });
+
+  test('expands Imgur gifv links like Java RipUtils', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+
+    final expanded = await RedditRipper.expandNonDirectUrl(
+        Uri.parse('https://i.imgur.com/example.gifv?token=1'));
+    expect(expanded.map((uri) => uri.toString()), [
+      'https://i.imgur.com/example.mp4?token=1',
+    ]);
+
+    final media = await RedditRipper.extractMediaFromJson({
+      'data': {
+        'children': [
+          {
+            'kind': 't3',
+            'data': {
+              'id': 'abc123',
+              'title': 'Imgur Gifv',
+              'is_self': false,
+              'url': 'https://i.imgur.com/example.gifv',
+            },
+          },
+        ],
+      },
+    });
+
+    expect(media.map((item) => item.url.toString()), [
+      'https://i.imgur.com/example.mp4',
+    ]);
+    expect(RedditRipper.downloadFileNameFor(media.single),
+        'abc123-Imgur Gifv-example.mp4');
+  });
+
+  test('extracts Imgur page media from Java meta tags', () {
+    final videoPage = parse('''
+      <html><head>
+      <meta property="og:video" content="https://i.imgur.com/video.mp4">
+      </head></html>
+    ''');
+    expect(
+        RedditRipper.imgurMediaFromPage(videoPage).map((uri) => uri.toString()),
+        ['https://i.imgur.com/video.mp4']);
+
+    final imagePage = parse('''
+      <html><head>
+      <meta name="twitter:image:src" content="//i.imgur.com/image.jpg">
+      </head></html>
+    ''');
+    expect(
+        RedditRipper.imgurMediaFromPage(imagePage).map((uri) => uri.toString()),
+        ['https://i.imgur.com/image.jpg']);
   });
 
   test('builds self-post HTML export with comments', () {

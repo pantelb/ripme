@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:html/dom.dart' show Document;
 import 'package:html/parser.dart' show parseFragment;
 import 'package:path/path.dart' as p;
 
@@ -9,6 +10,7 @@ import '../abstract_json_ripper.dart';
 import '../../ui/rip_status_message.dart';
 import '../../utils/http_utils.dart';
 import '../../utils/utils.dart';
+import 'imgur_ripper.dart';
 import 'redgifs_ripper.dart';
 
 class RedditMedia {
@@ -272,6 +274,11 @@ class RedditRipper extends AbstractJSONRipper {
     if (uri == null) return const [];
 
     final host = uri.host.toLowerCase();
+    final expandedUrls = await expandNonDirectUrl(uri);
+    if (expandedUrls.isNotEmpty) {
+      return _mediaFromExpandedUrls(expandedUrls, id, title);
+    }
+
     if (_isDirectMedia(uri)) {
       return [
         RedditMedia(
@@ -319,6 +326,100 @@ class RedditRipper extends AbstractJSONRipper {
     }
 
     return const [];
+  }
+
+  static Future<List<Uri>> expandNonDirectUrl(Uri uri) async {
+    final host = uri.host.toLowerCase();
+
+    if (host.endsWith('i.imgur.com') &&
+        uri.toString().toLowerCase().contains('.gifv')) {
+      return [
+        Uri.parse(uri.toString().replaceFirst(
+            RegExp(r'\.gifv(?=($|[?#]))', caseSensitive: false), '.mp4'))
+      ];
+    }
+
+    if (host.endsWith('imgur.com') && uri.path.contains('/a/')) {
+      try {
+        final page = await Http.get(uri);
+        return (await ImgurRipper(uri).getURLsFromPage(page))
+            .map(_absoluteMediaUri)
+            .whereType<Uri>()
+            .toList(growable: false);
+      } catch (_) {
+        return const [];
+      }
+    }
+
+    if (host == 'imgur.com' || host == 'm.imgur.com') {
+      try {
+        final page = await Http.get(uri);
+        return imgurMediaFromPage(page);
+      } catch (_) {
+        return const [];
+      }
+    }
+
+    return const [];
+  }
+
+  static List<Uri> imgurMediaFromPage(Document page) {
+    for (final meta in page.querySelectorAll('meta')) {
+      final content = meta.attributes['content'];
+      if (content == null || content.isEmpty) continue;
+      if (meta.attributes['property'] == 'og:video' ||
+          meta.attributes['name'] == 'twitter:image:src' ||
+          meta.attributes['name'] == 'twitter:image') {
+        final mediaUri = _absoluteMediaUri(content);
+        return mediaUri == null ? const [] : [mediaUri];
+      }
+    }
+    return const [];
+  }
+
+  static List<RedditMedia> _mediaFromExpandedUrls(
+      List<Uri> urls, String id, String title) {
+    if (urls.length == 1) {
+      final url = urls.single;
+      if (url.host.toLowerCase().contains('i.reddituploads.com')) {
+        final uploadId =
+            url.pathSegments.isNotEmpty ? url.pathSegments.last : id;
+        return [
+          RedditMedia(
+            url: url,
+            prefix: '',
+            fileName: '$id-$uploadId${_javaSingleTitleSuffix(title)}.jpg',
+          ),
+        ];
+      }
+      if (url.toString().contains('v.redd.it')) {
+        return [
+          RedditMedia(
+            url: url,
+            prefix: '',
+            fileName:
+                '$id-${url.pathSegments.first}${_javaSingleTitleSuffix(title)}.mp4',
+          ),
+        ];
+      }
+      return [
+        RedditMedia(
+          url: url,
+          prefix: _singleUrlPrefix(id, title),
+        ),
+      ];
+    }
+
+    return [
+      for (var i = 0; i < urls.length; i++)
+        RedditMedia(
+          url: urls[i],
+          prefix: Utils.getConfigBoolean('download.save_order', true)
+              ? '$id${(i + 1).toString().padLeft(3, '0')}-'
+              : id,
+          subdirectory: _redditSubdirectory(title),
+        ),
+    ];
   }
 
   static List<RedditMedia> _mediaFromGallery(
@@ -488,6 +589,11 @@ class RedditRipper extends AbstractJSONRipper {
               : '';
     }
     return Utils.filesystemSafe(suffix);
+  }
+
+  static Uri? _absoluteMediaUri(String value) {
+    final uriText = value.startsWith('//') ? 'https:$value' : value;
+    return Uri.tryParse(uriText);
   }
 
   static String? _redditSubdirectory(String title) {
