@@ -139,6 +139,61 @@ void main() {
     expect(ripper.alreadyDownloadedUrls, 1);
   });
 
+  test('stops queued downloads after configured already-seen limit', () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': true,
+      'history.end_rip_after_already_seen': 2,
+      'threads.size': 1,
+    });
+    await Utils.init();
+
+    final firstUrl = Uri.parse('https://example.com/one.jpg');
+    final secondUrl = Uri.parse('https://example.com/two.jpg');
+    final thirdUrl = Uri.parse('https://example.com/three.jpg');
+    await DownloadHistoryProvider.markDownloaded(firstUrl);
+    await DownloadHistoryProvider.markDownloaded(secondUrl);
+    await DownloadHistoryProvider.markDownloaded(thirdUrl);
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_history_limit_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+
+    final statuses = <RipStatusMessage>[];
+    final sub = ripper.statusStream.listen(statuses.add);
+    addTearDown(sub.cancel);
+
+    await ripper.downloadFiles([
+      RipperDownload(
+        url: firstUrl,
+        saveAs: File('${directory.path}/one.jpg'),
+      ),
+      RipperDownload(
+        url: secondUrl,
+        saveAs: File('${directory.path}/two.jpg'),
+      ),
+      RipperDownload(
+        url: thirdUrl,
+        saveAs: File('${directory.path}/three.jpg'),
+      ),
+    ]);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(ripper.isStopped, isTrue);
+    expect(ripper.alreadyDownloadedUrls, 2);
+    expect(
+      statuses
+          .where((msg) => msg.object.toString().contains('Already downloaded')),
+      hasLength(2),
+    );
+    expect(
+      statuses.last.object.toString(),
+      contains('Already seen the last 2 files, ending rip'),
+    );
+  });
+
   test('limits parallel downloads by threads.size', () async {
     SharedPreferences.setMockInitialValues({
       'threads.size': 2,

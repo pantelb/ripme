@@ -23,7 +23,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] Shared final filename sanitization before writing downloaded files
 - [x] `AbstractVideoRipper` uses the shared download path for migrated video flows
 - [x] Shared scheduler stop semantics for queued migrated downloads
-- [ ] Download engine parity: parallelism, retry policy, duplicate/already-seen tracking, overwrite/skip behavior, ordered naming, stop semantics
+- [x] Download engine parity: parallelism, retry policy, duplicate/already-seen tracking, overwrite/skip behavior, ordered naming, stop semantics
 - [ ] Reddit full Java parity: saved self-post/comment HTML export, full `RipUtils.getFilesFromURL` expansion for non-direct hosts, and exact Java filename behavior
 - [ ] Configuration parity: Java `rip.properties` defaults and UI controls for thread count, retries, retry sleep, save order, album title folders, Reddit filters, proxy/auth/API keys, timeouts, and max download size
 - [ ] History parity: album history plus persisted downloaded URL history, history cutoff behavior, history actions, and import/export/clear flows
