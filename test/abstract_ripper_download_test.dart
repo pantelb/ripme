@@ -68,6 +68,21 @@ class HeaderCookieTestRipper extends TestRipper {
   }
 }
 
+class StopAfterFirstDownloadRipper extends TestRipper {
+  StopAfterFirstDownloadRipper(super.url, super.directory);
+
+  final startedUrls = <Uri>[];
+
+  @override
+  Future<void> downloadFile(Uri url, File saveAs,
+      {Map<String, String>? headers,
+      Map<String, String>? cookies,
+      bool allowDuplicate = false}) async {
+    startedUrls.add(url);
+    stop();
+  }
+}
+
 void main() {
   test('skips existing files when overwrite is disabled', () async {
     SharedPreferences.setMockInitialValues({
@@ -173,6 +188,55 @@ void main() {
 
     expect(ripper.receivedHeaders, {'Referer': 'https://example.com/page'});
     expect(ripper.receivedCookies, {'session': 'abc'});
+  });
+
+  test('does not start queued downloads after stop is requested', () async {
+    SharedPreferences.setMockInitialValues({
+      'threads.size': 1,
+    });
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_stop_download_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper = StopAfterFirstDownloadRipper(
+        Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+
+    await ripper.downloadFiles([
+      RipperDownload(
+        url: Uri.parse('https://example.com/one.jpg'),
+        saveAs: File('${directory.path}/one.jpg'),
+      ),
+      RipperDownload(
+        url: Uri.parse('https://example.com/two.jpg'),
+        saveAs: File('${directory.path}/two.jpg'),
+      ),
+    ]);
+
+    expect(ripper.startedUrls, [Uri.parse('https://example.com/one.jpg')]);
+  });
+
+  test('does not start downloads when already stopped', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_prestopped_download_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper = StopAfterFirstDownloadRipper(
+        Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+    ripper.stop();
+
+    await ripper.downloadFiles([
+      RipperDownload(
+        url: Uri.parse('https://example.com/one.jpg'),
+        saveAs: File('${directory.path}/one.jpg'),
+      ),
+    ]);
+
+    expect(ripper.startedUrls, isEmpty);
   });
 
   test('skips duplicate download URLs unless explicitly allowed', () async {
