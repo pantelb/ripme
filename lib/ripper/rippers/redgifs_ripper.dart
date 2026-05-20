@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import '../abstract_ripper.dart';
 import '../abstract_json_ripper.dart';
 import '../../utils/http_utils.dart';
 import '../../utils/utils.dart';
@@ -82,16 +83,20 @@ class RedgifsRipper extends AbstractJSONRipper {
     while (!isStopped) {
       final json = await _loadPage(mode);
       final urls = await _getUrlsFromJson(json, mode);
+      final downloads = <RipperDownload>[];
       for (var i = 0; i < urls.length; i++) {
         if (isStopped) break;
         final mediaUri = Uri.parse(urls[i]);
         final fileName = _fileNameFor(mediaUri, i + 1);
-        await downloadFile(
-          mediaUri,
-          File(p.join(workingDir.path, fileName)),
-          headers: {'Referer': 'https://www.redgifs.com/'},
+        downloads.add(
+          RipperDownload(
+            url: mediaUri,
+            saveAs: File(p.join(workingDir.path, fileName)),
+            headers: {'Referer': 'https://www.redgifs.com/'},
+          ),
         );
       }
+      await downloadFiles(downloads);
 
       if (mode == _RedgifsMode.singleton || _currentPage >= _maxPages) {
         break;

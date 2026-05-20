@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import '../abstract_ripper.dart';
 import '../abstract_json_ripper.dart';
 import '../../utils/http_utils.dart';
 import '../../utils/utils.dart';
@@ -73,6 +74,7 @@ class RedditRipper extends AbstractJSONRipper {
     while (jsonUrl != null && !isStopped) {
       final json = await _getRedditJson(jsonUrl);
       final media = await extractMediaFromJson(json);
+      final downloads = <RipperDownload>[];
       for (final item in media) {
         if (isStopped) break;
         final directory = item.subdirectory == null
@@ -80,9 +82,15 @@ class RedditRipper extends AbstractJSONRipper {
             : Directory(p.join(
                 workingDir.path, Utils.filesystemSafe(item.subdirectory!)));
         final fileName = _fileNameFor(item);
-        await downloadFile(item.url, File(p.join(directory.path, fileName)),
-            headers: item.headers);
+        downloads.add(
+          RipperDownload(
+            url: item.url,
+            saveAs: File(p.join(directory.path, fileName)),
+            headers: item.headers,
+          ),
+        );
       }
+      await downloadFiles(downloads);
       jsonUrl = nextPageUrl(json, jsonUrl);
     }
   }

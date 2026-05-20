@@ -12,6 +12,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] Shared HTTP retries, timeouts, 404 retry skipping, and max download size checks
 - [x] Configuration UI controls for migrated runtime settings: threads, retries, retry sleep, timeouts, max size, save order, album folders, history, clipboard, sound, and Reddit filters
 - [x] History clear flows for album history and persisted downloaded URL history
+- [x] Bounded parallel downloads using `threads.size` for migrated HTML, Reddit, and Redgifs flows
 - [ ] Download engine parity: parallelism, retry policy, duplicate/already-seen tracking, overwrite/skip behavior, ordered naming, stop semantics
 - [ ] Configuration parity: Java `rip.properties` defaults and UI controls for thread count, retries, retry sleep, save order, album title folders, Reddit filters, proxy/auth/API keys, timeouts, and max download size
 - [ ] History parity: album history plus persisted downloaded URL history, history cutoff behavior, history actions, and import/export/clear flows

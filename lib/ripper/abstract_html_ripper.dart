@@ -22,6 +22,7 @@ abstract class AbstractHTMLRipper extends AbstractRipper {
     int index = 0;
     while (true) {
       List<String> imageURLs = await getURLsFromPage(doc);
+      final downloads = <RipperDownload>[];
 
       for (String imageURL in imageURLs) {
         if (isStopped) break;
@@ -29,9 +30,9 @@ abstract class AbstractHTMLRipper extends AbstractRipper {
         Uri imageUri = Uri.parse(imageURL);
         String fileName = _getFileName(imageUri, index);
         File saveAs = File(p.join(workingDir.path, fileName));
-
-        await downloadFile(imageUri, saveAs);
+        downloads.add(RipperDownload(url: imageUri, saveAs: saveAs));
       }
+      await downloadFiles(downloads);
 
       if (isStopped) break;
 
@@ -52,7 +53,8 @@ abstract class AbstractHTMLRipper extends AbstractRipper {
   Future<Uri?> getNextPage(Document page);
 
   String _getFileName(Uri url, int index) {
-    String fileName = url.pathSegments.isNotEmpty ? url.pathSegments.last : "file";
+    String fileName =
+        url.pathSegments.isNotEmpty ? url.pathSegments.last : "file";
     if (fileName.contains('?')) {
       fileName = fileName.substring(0, fileName.indexOf('?'));
     }

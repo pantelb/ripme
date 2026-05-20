@@ -1,11 +1,24 @@
 import 'dart:io';
 import 'dart:async';
+import 'dart:collection';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart' as p;
 import '../download_history_provider.dart';
 import '../utils/utils.dart';
 import '../utils/http_utils.dart';
 import '../ui/rip_status_message.dart';
+
+class RipperDownload {
+  final Uri url;
+  final File saveAs;
+  final Map<String, String>? headers;
+
+  const RipperDownload({
+    required this.url,
+    required this.saveAs,
+    this.headers,
+  });
+}
 
 abstract class AbstractRipper {
   static final Logger logger = Logger();
@@ -55,6 +68,23 @@ abstract class AbstractRipper {
   }
 
   bool canRip(Uri url);
+
+  Future<void> downloadFiles(Iterable<RipperDownload> downloads) async {
+    final queue = Queue<RipperDownload>.of(downloads);
+    if (queue.isEmpty || isStopped) return;
+
+    final configuredThreads = Utils.getConfigInteger('threads.size', 5);
+    final workerCount = configuredThreads.clamp(1, queue.length);
+
+    Future<void> worker() async {
+      while (!isStopped && queue.isNotEmpty) {
+        final item = queue.removeFirst();
+        await downloadFile(item.url, item.saveAs, headers: item.headers);
+      }
+    }
+
+    await Future.wait(List.generate(workerCount, (_) => worker()));
+  }
 
   Future<void> downloadFile(Uri url, File saveAs,
       {Map<String, String>? headers}) async {

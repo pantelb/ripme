@@ -30,6 +30,26 @@ class TestRipper extends AbstractRipper {
   Future<void> rip() async {}
 }
 
+class ParallelTestRipper extends TestRipper {
+  ParallelTestRipper(super.url, super.directory);
+
+  int activeDownloads = 0;
+  int maxActiveDownloads = 0;
+  final startedUrls = <Uri>[];
+
+  @override
+  Future<void> downloadFile(Uri url, File saveAs,
+      {Map<String, String>? headers}) async {
+    startedUrls.add(url);
+    activeDownloads++;
+    if (activeDownloads > maxActiveDownloads) {
+      maxActiveDownloads = activeDownloads;
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    activeDownloads--;
+  }
+}
+
 void main() {
   test('skips existing files when overwrite is disabled', () async {
     SharedPreferences.setMockInitialValues({
@@ -84,5 +104,32 @@ void main() {
 
     expect(statuses.single.status, RipStatus.downloadSkip);
     expect(ripper.alreadyDownloadedUrls, 1);
+  });
+
+  test('limits parallel downloads by threads.size', () async {
+    SharedPreferences.setMockInitialValues({
+      'threads.size': 2,
+    });
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_parallel_download_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        ParallelTestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+
+    await ripper.downloadFiles(
+      List.generate(
+        5,
+        (index) => RipperDownload(
+          url: Uri.parse('https://example.com/$index.jpg'),
+          saveAs: File('${directory.path}/$index.jpg'),
+        ),
+      ),
+    );
+
+    expect(ripper.startedUrls, hasLength(5));
+    expect(ripper.maxActiveDownloads, 2);
   });
 }
