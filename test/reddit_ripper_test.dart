@@ -156,6 +156,96 @@ void main() {
     expect(media.single.subdirectory, isNull);
   });
 
+  test('builds Java-compatible Reddit download filenames', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+
+    final media = await RedditRipper.extractMediaFromJson({
+      'data': {
+        'children': [
+          {
+            'kind': 't3',
+            'data': {
+              'id': 'abc123',
+              'title': 'Direct Post',
+              'is_self': false,
+              'url': 'https://i.redd.it/direct.jpg?width=800',
+            },
+          },
+          {
+            'kind': 't3',
+            'data': {
+              'id': 'up123',
+              'title': 'Upload Post',
+              'is_self': false,
+              'url': 'https://i.reddituploads.com/uploadid?fit=max',
+            },
+          },
+          {
+            'kind': 't3',
+            'data': {
+              'id': 'gal123',
+              'title': 'Gallery Post',
+              'is_self': false,
+              'gallery_data': {
+                'items': [
+                  {'media_id': 'm1'},
+                ],
+              },
+              'media_metadata': {
+                'm1': {
+                  's': {'u': 'https://preview.redd.it/one.jpg?width=800'},
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    expect(RedditRipper.downloadFileNameFor(media[0]),
+        'abc123-Direct Post-direct.jpg');
+    expect(RedditRipper.downloadFileNameFor(media[1]),
+        'up123-uploadid-Upload Post-.jpg');
+    expect(RedditRipper.downloadFileNameFor(media[2]), 'gal123-01-one.jpg');
+
+    final video = RedditMedia(
+      url: Uri.parse('https://v.redd.it/vidid/DASH_720.mp4'),
+      prefix: '',
+      fileName: 'postid-vidid-Video Post-.mp4',
+    );
+    expect(RedditRipper.downloadFileNameFor(video),
+        'postid-vidid-Video Post-.mp4');
+  });
+
+  test('matches Java single-link title behavior when subfolders are disabled',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'reddit.use_sub_dirs': false,
+      'album_titles.save': false,
+    });
+    await Utils.init();
+
+    final media = await RedditRipper.extractMediaFromJson({
+      'data': {
+        'children': [
+          {
+            'kind': 't3',
+            'data': {
+              'id': 'abc123',
+              'title': 'Title Still Kept',
+              'is_self': false,
+              'url': 'https://i.redd.it/direct.jpg',
+            },
+          },
+        ],
+      },
+    });
+
+    expect(RedditRipper.downloadFileNameFor(media.single),
+        'abc123Title Still Keptdirect.jpg');
+  });
+
   test('builds self-post HTML export with comments', () {
     final posts = RedditRipper.extractSelfPostHtmlFromJson([
       {

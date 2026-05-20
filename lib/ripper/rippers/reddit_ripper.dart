@@ -14,12 +14,14 @@ import 'redgifs_ripper.dart';
 class RedditMedia {
   final Uri url;
   final String prefix;
+  final String? fileName;
   final String? subdirectory;
   final Map<String, String>? headers;
 
   const RedditMedia({
     required this.url,
     required this.prefix,
+    this.fileName,
     this.subdirectory,
     this.headers,
   });
@@ -97,7 +99,7 @@ class RedditRipper extends AbstractJSONRipper {
             ? workingDir
             : Directory(p.join(
                 workingDir.path, Utils.filesystemSafe(item.subdirectory!)));
-        final fileName = _fileNameFor(item);
+        final fileName = downloadFileNameFor(item);
         downloads.add(
           RipperDownload(
             url: item.url,
@@ -274,17 +276,19 @@ class RedditRipper extends AbstractJSONRipper {
       return [
         RedditMedia(
           url: uri,
-          prefix: _safePrefix(id, title),
+          prefix: _singleUrlPrefix(id, title),
         ),
       ];
     }
 
     if (host.contains('i.reddituploads.com')) {
       final uploadId = uri.pathSegments.isNotEmpty ? uri.pathSegments.last : id;
+      final cleanUploadId = uploadId.split('?').first;
       return [
         RedditMedia(
           url: uri,
-          prefix: _safePrefix('$id-$uploadId', title),
+          prefix: '',
+          fileName: '$id-$cleanUploadId${_javaSingleTitleSuffix(title)}.jpg',
         ),
       ];
     }
@@ -295,7 +299,9 @@ class RedditRipper extends AbstractJSONRipper {
       return [
         RedditMedia(
           url: videoUrl,
-          prefix: _safePrefix('$id-${uri.pathSegments.first}', title),
+          prefix: '',
+          fileName:
+              '$id-${uri.pathSegments.first}${_javaSingleTitleSuffix(title)}.mp4',
         ),
       ];
     }
@@ -306,7 +312,7 @@ class RedditRipper extends AbstractJSONRipper {
       return [
         RedditMedia(
           url: Uri.parse(videoUrl),
-          prefix: _safePrefix(id, title),
+          prefix: _singleUrlPrefix(id, title),
           headers: {'Referer': 'https://www.redgifs.com/'},
         ),
       ];
@@ -457,20 +463,31 @@ class RedditRipper extends AbstractJSONRipper {
     }
   }
 
-  String _fileNameFor(RedditMedia media) {
+  static String downloadFileNameFor(RedditMedia media) {
+    final explicitFileName = media.fileName;
+    if (explicitFileName != null && explicitFileName.isNotEmpty) {
+      return Utils.sanitizeSaveAs(explicitFileName);
+    }
     final sourceName = media.url.pathSegments.isNotEmpty
         ? media.url.pathSegments.last
         : 'file';
     final name = sourceName.contains('.') ? sourceName : '$sourceName.mp4';
-    return Utils.sanitizeSaveAs('${media.prefix}_$name');
+    return Utils.sanitizeSaveAs('${media.prefix}$name');
   }
 
-  static String _safePrefix(String id, String title) {
-    final saveAlbumTitle = Utils.getConfigBoolean('album_titles.save', true);
-    final safeTitle = saveAlbumTitle && title.isNotEmpty
-        ? '-${Utils.filesystemSafe(title)}-'
-        : '';
-    return Utils.filesystemSafe('$id$safeTitle');
+  static String _singleUrlPrefix(String id, String title) {
+    return Utils.filesystemSafe('$id${_javaSingleTitleSuffix(title)}');
+  }
+
+  static String _javaSingleTitleSuffix(String title) {
+    var suffix = title;
+    if (Utils.getConfigBoolean('reddit.use_sub_dirs', true)) {
+      suffix =
+          Utils.getConfigBoolean('album_titles.save', true) && title.isNotEmpty
+              ? '-$title-'
+              : '';
+    }
+    return Utils.filesystemSafe(suffix);
   }
 
   static String? _redditSubdirectory(String title) {
