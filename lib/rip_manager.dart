@@ -64,7 +64,8 @@ class RipManager extends ChangeNotifier {
 
     _currentRipper = RipperFactory.getRipper(uri);
     if (_currentRipper == null) {
-      _addLog(RipStatusMessage(RipStatus.ripErrored, "No ripper found for $urlText"));
+      _addLog(RipStatusMessage(
+          RipStatus.ripErrored, "No ripper found for $urlText"));
       _ripNext();
       return;
     }
@@ -95,6 +96,12 @@ class RipManager extends ChangeNotifier {
   void _addToHistory(String url, String dir) {
     _history.insert(0, HistoryEntry(url: url, dir: dir, date: DateTime.now()));
     HistoryProvider.saveHistory(_history);
+    notifyListeners();
+  }
+
+  Future<void> clearHistory() async {
+    _history = [];
+    await HistoryProvider.clearHistory();
     notifyListeners();
   }
 }

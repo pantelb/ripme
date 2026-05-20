@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'download_history_provider.dart';
 import 'rip_manager.dart';
 import 'utils/utils.dart';
 
@@ -178,25 +179,45 @@ class HistoryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: history.length,
-      itemBuilder: (context, index) {
-        final entry = history[index];
-        return ListTile(
-          title: Text(entry.url),
-          subtitle: Text(entry.dir),
-          trailing: Text(entry.date.toString().split(' ')[0]),
-          onTap: () async {
-            final Uri uri = Uri.file(entry.dir);
-            if (await canLaunchUrl(uri)) {
-              await launchUrl(uri);
-            }
-          },
-          onLongPress: () {
-            ripManager.addUrlToQueue(entry.url);
-          },
-        );
-      },
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          child: Row(
+            children: [
+              const Spacer(),
+              OutlinedButton.icon(
+                onPressed:
+                    history.isEmpty ? null : () => ripManager.clearHistory(),
+                icon: const Icon(Icons.delete_sweep),
+                label: const Text('Clear history'),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: history.length,
+            itemBuilder: (context, index) {
+              final entry = history[index];
+              return ListTile(
+                title: Text(entry.url),
+                subtitle: Text(entry.dir),
+                trailing: Text(entry.date.toString().split(' ')[0]),
+                onTap: () async {
+                  final Uri uri = Uri.file(entry.dir);
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri);
+                  }
+                },
+                onLongPress: () {
+                  ripManager.addUrlToQueue(entry.url);
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -365,6 +386,19 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               min: 1,
               max: 1000000000,
               onChanged: _refresh,
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_forever),
+              title: const Text('Clear downloaded URL history'),
+              onTap: () async {
+                await DownloadHistoryProvider.clear();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Downloaded URL history cleared')),
+                  );
+                }
+              },
             ),
           ],
         ),
