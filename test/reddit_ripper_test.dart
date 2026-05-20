@@ -300,6 +300,70 @@ void main() {
         ['https://i.imgur.com/image.jpg']);
   });
 
+  test('extracts Soundgasm m4a links like Java RipUtils', () {
+    final page = parse(r'''
+      <html><body>
+      <script>
+        window.soundgasm = { m4a: "https://media.soundgasm.net/sounds/example.m4a" };
+      </script>
+      <script>
+        window.other = { m4a: "https://media.soundgasm.net/sounds/second.m4a" };
+      </script>
+      </body></html>
+    ''');
+
+    expect(
+      RedditRipper.soundgasmMediaFromPage(page).map((uri) => uri.toString()),
+      [
+        'https://media.soundgasm.net/sounds/example.m4a',
+        'https://media.soundgasm.net/sounds/second.m4a',
+      ],
+    );
+  });
+
+  test('extracts Vidble album images like Java RipUtils', () {
+    final page = parse(r'''
+      <html><body>
+      <div id="ContentPlaceHolder1_divContent">
+        <img src="https://vidble.com/images/one_thumb.jpg">
+        <img src="//vidble.com/images/two_small.png">
+      </div>
+      <img src="https://vidble.com/images/outside_t.jpg">
+      </body></html>
+    ''');
+
+    expect(
+      RedditRipper.vidbleMediaFromPage(page).map((uri) => uri.toString()),
+      [
+        'https://vidble.com/images/one.jpg',
+        'https://vidble.com/images/two.png',
+      ],
+    );
+  });
+
+  test('extracts Erome image and video sources like Java RipUtils', () {
+    final page = parse(r'''
+      <html><body>
+      <img class="img-front" data-src="//cdn.erome.com/image-one.jpg">
+      <img class="img-front" src="https://cdn.erome.com/image-two.jpg">
+      <video>
+        <source label="HD" src="//cdn.erome.com/video-hd.mp4">
+        <source label="SD" src="https://cdn.erome.com/video-sd.mp4">
+      </video>
+      </body></html>
+    ''');
+
+    expect(
+      RedditRipper.eromeMediaFromPage(page).map((uri) => uri.toString()),
+      [
+        'https://cdn.erome.com/image-one.jpg',
+        'https://cdn.erome.com/image-two.jpg',
+        'https://cdn.erome.com/video-hd.mp4',
+        'https://cdn.erome.com/video-sd.mp4',
+      ],
+    );
+  });
+
   test('builds self-post HTML export with comments', () {
     final posts = RedditRipper.extractSelfPostHtmlFromJson([
       {

@@ -9,6 +9,8 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] Reddit self-post/comment HTML export for post JSON responses
 - [x] Reddit Java-compatible filename generation for direct links, galleries, i.reddituploads, and v.redd.it
 - [x] Reddit `RipUtils.getFilesFromURL` expansion subset for Imgur gifv and page metadata links
+- [x] Reddit `RipUtils.getFilesFromURL` expansion subset for Soundgasm m4a links
+- [x] Reddit `RipUtils.getFilesFromURL` expansion subset for Vidble and Erome media links
 - [x] Redgifs ripper parity pass: URL sanitization, singleton/profile/search/tags modes, auth, pagination, and galleries
 - [x] Persisted downloaded URL history plus skip behavior for existing/already-seen files
 - [x] Centralized Java `rip.properties` defaults for migrated Flutter runtime settings
@@ -26,7 +28,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] `AbstractVideoRipper` uses the shared download path for migrated video flows
 - [x] Shared scheduler stop semantics for queued migrated downloads
 - [x] Download engine parity: parallelism, retry policy, duplicate/already-seen tracking, overwrite/skip behavior, ordered naming, stop semantics
-- [ ] Reddit full Java parity: saved self-post/comment HTML export, full `RipUtils.getFilesFromURL` expansion for non-direct hosts, and exact Java filename behavior
+- [x] Reddit full Java parity: saved self-post/comment HTML export, full `RipUtils.getFilesFromURL` expansion for non-direct hosts, and exact Java filename behavior
 - [ ] Configuration parity: Java `rip.properties` defaults and UI controls for thread count, retries, retry sleep, save order, album title folders, Reddit filters, proxy/auth/API keys, timeouts, and max download size
 - [ ] History parity: album history plus persisted downloaded URL history, history cutoff behavior, history actions, and import/export/clear flows
 - [ ] UI parity: detailed progress, per-file status, queue controls, log filtering/copying, context menus, clipboard autorip, and complete configuration panels

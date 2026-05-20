@@ -360,6 +360,40 @@ class RedditRipper extends AbstractJSONRipper {
       }
     }
 
+    if (host.endsWith('soundgasm.net')) {
+      try {
+        final page = await Http.get(uri);
+        return soundgasmMediaFromPage(page);
+      } catch (_) {
+        return const [];
+      }
+    }
+
+    if (uri.toString().contains('vidble.com/album/') ||
+        uri.toString().contains('vidble.com/show/')) {
+      try {
+        final page = await Http.get(uri);
+        return vidbleMediaFromPage(page);
+      } catch (_) {
+        return const [];
+      }
+    }
+
+    if (uri.toString().contains('erome.com')) {
+      try {
+        final eromeUri = Uri.parse(uri.toString().replaceFirst(
+            RegExp(r'^https?://erome\.com'), 'https://www.erome.com'));
+        final sessionId = Utils.getConfigString('erome.laravel_session', null);
+        final page = await Http.get(
+          eromeUri,
+          cookies: sessionId == null ? null : {'laravel_session': sessionId},
+        );
+        return eromeMediaFromPage(page);
+      } catch (_) {
+        return const [];
+      }
+    }
+
     return const [];
   }
 
@@ -375,6 +409,51 @@ class RedditRipper extends AbstractJSONRipper {
       }
     }
     return const [];
+  }
+
+  static List<Uri> soundgasmMediaFromPage(Document page) {
+    final result = <Uri>[];
+    final pattern = RegExp(r'm4a\s*:\s*"(https?:[^"]+)"');
+    for (final script in page.querySelectorAll('script')) {
+      final match = pattern.firstMatch(script.text);
+      if (match == null) continue;
+      final uri = Uri.tryParse(match.group(1)!);
+      if (uri != null) result.add(uri);
+    }
+    return result;
+  }
+
+  static List<Uri> vidbleMediaFromPage(Document page) {
+    final result = <Uri>[];
+    final content = page.querySelector('#ContentPlaceHolder1_divContent');
+    if (content == null) return result;
+    for (final image in content.querySelectorAll('img')) {
+      var source = image.attributes['src'] ?? '';
+      if (source.isEmpty) continue;
+      if (source.startsWith('//')) source = 'https:$source';
+      final uri =
+          _absoluteMediaUri(source.replaceAll(RegExp(r'_[a-zA-Z]{3,5}'), ''));
+      if (uri != null) result.add(uri);
+    }
+    return result;
+  }
+
+  static List<Uri> eromeMediaFromPage(Document page) {
+    final result = <Uri>[];
+    for (final image in page.querySelectorAll('img.img-front')) {
+      final source = image.attributes['data-src'] ?? image.attributes['src'];
+      final uri = source == null ? null : _absoluteMediaUri(source);
+      if (uri != null) result.add(uri);
+    }
+    for (final source in page.querySelectorAll('source[label=HD]')) {
+      final uri = _absoluteMediaUri(source.attributes['src'] ?? '');
+      if (uri != null) result.add(uri);
+    }
+    for (final source in page.querySelectorAll('source[label=SD]')) {
+      final uri = _absoluteMediaUri(source.attributes['src'] ?? '');
+      if (uri != null) result.add(uri);
+    }
+    return result;
   }
 
   static List<RedditMedia> _mediaFromExpandedUrls(
