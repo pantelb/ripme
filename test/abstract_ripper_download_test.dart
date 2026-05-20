@@ -39,7 +39,9 @@ class ParallelTestRipper extends TestRipper {
 
   @override
   Future<void> downloadFile(Uri url, File saveAs,
-      {Map<String, String>? headers, Map<String, String>? cookies}) async {
+      {Map<String, String>? headers,
+      Map<String, String>? cookies,
+      bool allowDuplicate = false}) async {
     startedUrls.add(url);
     activeDownloads++;
     if (activeDownloads > maxActiveDownloads) {
@@ -58,7 +60,9 @@ class HeaderCookieTestRipper extends TestRipper {
 
   @override
   Future<void> downloadFile(Uri url, File saveAs,
-      {Map<String, String>? headers, Map<String, String>? cookies}) async {
+      {Map<String, String>? headers,
+      Map<String, String>? cookies,
+      bool allowDuplicate = false}) async {
     receivedHeaders = headers;
     receivedCookies = cookies;
   }
@@ -169,5 +173,75 @@ void main() {
 
     expect(ripper.receivedHeaders, {'Referer': 'https://example.com/page'});
     expect(ripper.receivedCookies, {'session': 'abc'});
+  });
+
+  test('skips duplicate download URLs unless explicitly allowed', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_duplicate_download_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+
+    final statuses = <RipStatusMessage>[];
+    final sub = ripper.statusStream.listen(statuses.add);
+    addTearDown(sub.cancel);
+
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    var requests = 0;
+    server.listen((request) async {
+      requests++;
+      request.response.write('ok');
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final url = Uri.parse('http://127.0.0.1:${server.port}/image.jpg');
+    await ripper.downloadFiles([
+      RipperDownload(url: url, saveAs: File('${directory.path}/one.jpg')),
+      RipperDownload(url: url, saveAs: File('${directory.path}/two.jpg')),
+      RipperDownload(
+        url: url,
+        saveAs: File('${directory.path}/three.jpg'),
+        allowDuplicate: true,
+      ),
+    ]);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(requests, 2);
+    expect(statuses.where((msg) => msg.status == RipStatus.downloadSkip),
+        isNotEmpty);
+  });
+
+  test('skips configured ignored file extensions', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.ignore_extensions': 'mp4, gif',
+    });
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_ignore_extension_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+
+    final statuses = <RipStatusMessage>[];
+    final sub = ripper.statusStream.listen(statuses.add);
+    addTearDown(sub.cancel);
+
+    await ripper.downloadFiles([
+      RipperDownload(
+        url: Uri.parse('https://example.com/video.MP4?token=1'),
+        saveAs: File('${directory.path}/video.mp4'),
+      ),
+    ]);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(statuses.single.status, RipStatus.downloadSkip);
+    expect(statuses.single.object.toString(), contains('ignored extension'));
   });
 }

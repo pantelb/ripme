@@ -13,12 +13,14 @@ class RipperDownload {
   final File saveAs;
   final Map<String, String>? headers;
   final Map<String, String>? cookies;
+  final bool allowDuplicate;
 
   const RipperDownload({
     required this.url,
     required this.saveAs,
     this.headers,
     this.cookies,
+    this.allowDuplicate = false,
   });
 }
 
@@ -28,6 +30,7 @@ abstract class AbstractRipper {
   late Directory workingDir;
   bool _shouldStop = false;
   int alreadyDownloadedUrls = 0;
+  final Set<String> _attemptedDownloadUrls = <String>{};
 
   final StreamController<RipStatusMessage> _statusController =
       StreamController<RipStatusMessage>.broadcast();
@@ -86,6 +89,7 @@ abstract class AbstractRipper {
           item.saveAs,
           headers: item.headers,
           cookies: item.cookies,
+          allowDuplicate: item.allowDuplicate,
         );
       }
     }
@@ -94,9 +98,21 @@ abstract class AbstractRipper {
   }
 
   Future<void> downloadFile(Uri url, File saveAs,
-      {Map<String, String>? headers, Map<String, String>? cookies}) async {
+      {Map<String, String>? headers,
+      Map<String, String>? cookies,
+      bool allowDuplicate = false}) async {
     if (isStopped) return;
     try {
+      if (_shouldIgnoreUrl(url)) {
+        sendUpdate(RipStatus.downloadSkip, 'Skipping $url - ignored extension');
+        return;
+      }
+
+      if (!allowDuplicate && !_attemptedDownloadUrls.add(url.toString())) {
+        sendUpdate(RipStatus.downloadSkip, 'Already attempted: $url');
+        return;
+      }
+
       if (!Utils.getConfigBoolean('file.overwrite', false) &&
           await saveAs.exists()) {
         alreadyDownloadedUrls++;
@@ -122,6 +138,20 @@ abstract class AbstractRipper {
     } catch (e) {
       sendUpdate(RipStatus.downloadErrored, "$url : ${e.toString()}");
     }
+  }
+
+  bool _shouldIgnoreUrl(Uri url) {
+    final ignoredExtensions =
+        Utils.getConfigStringList('download.ignore_extensions');
+    if (ignoredExtensions.isEmpty) return false;
+
+    final path = url.path;
+    final lastDot = path.lastIndexOf('.');
+    if (lastDot < 0 || lastDot == path.length - 1) return false;
+
+    final extension = path.substring(lastDot + 1).toLowerCase();
+    return ignoredExtensions
+        .any((ignored) => ignored.toLowerCase() == extension);
   }
 
   void _stopIfHistoryLimitReached() {

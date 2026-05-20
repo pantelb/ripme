@@ -40,6 +40,16 @@ class Utils {
         defaultValue;
   }
 
+  static List<String> getConfigStringList(String key) {
+    final value = getConfigString(key, null);
+    if (value == null || value.trim().isEmpty) return const [];
+    return value
+        .split(',')
+        .map((item) => item.trim())
+        .where((item) => item.isNotEmpty)
+        .toList(growable: false);
+  }
+
   static int getConfigInteger(String key, int defaultValue) {
     return _prefs?.getInt(key) ?? ConfigDefaults.integers[key] ?? defaultValue;
   }
