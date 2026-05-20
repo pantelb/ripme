@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'download_history_provider.dart';
+import 'history_provider.dart';
 import 'rip_manager.dart';
 import 'utils/utils.dart';
 
@@ -183,16 +186,32 @@ class HistoryView extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-          child: Row(
-            children: [
-              const Spacer(),
-              OutlinedButton.icon(
-                onPressed:
-                    history.isEmpty ? null : () => ripManager.clearHistory(),
-                icon: const Icon(Icons.delete_sweep),
-                label: const Text('Clear history'),
-              ),
-            ],
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              alignment: WrapAlignment.end,
+              children: [
+                OutlinedButton.icon(
+                  onPressed:
+                      history.isEmpty ? null : () => ripManager.clearHistory(),
+                  icon: const Icon(Icons.delete_sweep),
+                  label: const Text('Clear history'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () => _importHistory(context),
+                  icon: const Icon(Icons.upload_file),
+                  label: const Text('Import'),
+                ),
+                OutlinedButton.icon(
+                  onPressed:
+                      history.isEmpty ? null : () => _exportHistory(context),
+                  icon: const Icon(Icons.download),
+                  label: const Text('Export'),
+                ),
+              ],
+            ),
           ),
         ),
         Expanded(
@@ -204,6 +223,10 @@ class HistoryView extends StatelessWidget {
                 title: Text(entry.url),
                 subtitle: Text(entry.dir),
                 trailing: Text(entry.date.toString().split(' ')[0]),
+                leading: IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  onPressed: () => ripManager.removeHistoryEntry(index),
+                ),
                 onTap: () async {
                   final Uri uri = Uri.file(entry.dir);
                   if (await canLaunchUrl(uri)) {
@@ -219,6 +242,53 @@ class HistoryView extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _importHistory(BuildContext context) async {
+    final result = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['json'],
+    );
+    final path = result?.files.single.path;
+    if (path == null) return;
+    try {
+      await ripManager.replaceHistory(
+        await HistoryProvider.importFromFile(File(path)),
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('History imported')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('History import failed: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _exportHistory(BuildContext context) async {
+    final directory = await FilePicker.getDirectoryPath();
+    if (directory == null) return;
+    try {
+      await HistoryProvider.exportToFile(
+        history,
+        File('$directory/ripme_history.json'),
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('History exported')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('History export failed: $e')),
+        );
+      }
+    }
   }
 }
 
@@ -548,6 +618,16 @@ class _ConfigurationViewState extends State<ConfigurationView> {
                 }
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.upload_file),
+              title: const Text('Import downloaded URL history'),
+              onTap: () => _importDownloadedUrlHistory(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.download),
+              title: const Text('Export downloaded URL history'),
+              onTap: () => _exportDownloadedUrlHistory(context),
+            ),
           ],
         ),
         const SizedBox(height: 16),
@@ -614,6 +694,50 @@ class _ConfigurationViewState extends State<ConfigurationView> {
 
   void _refresh() {
     setState(() {});
+  }
+
+  Future<void> _importDownloadedUrlHistory(BuildContext context) async {
+    final result = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['json'],
+    );
+    final path = result?.files.single.path;
+    if (path == null) return;
+    try {
+      await DownloadHistoryProvider.importFromFile(File(path));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Downloaded URL history imported')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Downloaded URL history import failed: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _exportDownloadedUrlHistory(BuildContext context) async {
+    final directory = await FilePicker.getDirectoryPath();
+    if (directory == null) return;
+    try {
+      await DownloadHistoryProvider.exportToFile(
+        File('$directory/ripme_downloaded_urls.json'),
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Downloaded URL history exported')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Downloaded URL history export failed: $e')),
+        );
+      }
+    }
   }
 }
 

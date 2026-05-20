@@ -120,6 +120,19 @@ class RipManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> replaceHistory(List<HistoryEntry> history) async {
+    _history = List<HistoryEntry>.of(history);
+    await HistoryProvider.saveHistory(_history);
+    notifyListeners();
+  }
+
+  Future<void> removeHistoryEntry(int index) async {
+    if (index < 0 || index >= _history.length) return;
+    _history.removeAt(index);
+    await HistoryProvider.saveHistory(_history);
+    notifyListeners();
+  }
+
   Future<void> _playCompletionSoundIfEnabled() async {
     if (!Utils.getConfigBoolean('play.sound', false)) return;
     try {
@@ -143,4 +156,23 @@ class HistoryEntry {
   final DateTime date;
 
   HistoryEntry({required this.url, required this.dir, required this.date});
+
+  Map<String, dynamic> toJson() => {
+        'url': url,
+        'dir': dir,
+        'date': date.toIso8601String(),
+      };
+
+  factory HistoryEntry.fromJson(Map<dynamic, dynamic> json) {
+    return HistoryEntry(
+      url: json['url']?.toString() ?? '',
+      dir: json['dir']?.toString() ?? '',
+      date: DateTime.parse(json['date']?.toString() ??
+          DateTime.fromMillisecondsSinceEpoch(
+                  (json['modifiedDate'] as num?)?.toInt() ??
+                      (json['startDate'] as num?)?.toInt() ??
+                      0)
+              .toIso8601String()),
+    );
+  }
 }

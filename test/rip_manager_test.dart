@@ -88,4 +88,37 @@ void main() {
     await _waitFor(() => manager.history.length == 1);
     expect(soundCount, 0);
   });
+
+  test('replaces and removes persisted history entries', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+
+    final manager = RipManager(
+      ripperResolver: (uri) => null,
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+
+    await manager.replaceHistory([
+      HistoryEntry(
+        url: 'https://example.com/one',
+        dir: '/tmp/one',
+        date: DateTime(2026),
+      ),
+      HistoryEntry(
+        url: 'https://example.com/two',
+        dir: '/tmp/two',
+        date: DateTime(2026, 2),
+      ),
+    ]);
+
+    expect(manager.history.map((entry) => entry.url), [
+      'https://example.com/one',
+      'https://example.com/two',
+    ]);
+
+    await manager.removeHistoryEntry(0);
+
+    expect(manager.history.single.url, 'https://example.com/two');
+  });
 }
