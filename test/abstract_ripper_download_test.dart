@@ -326,4 +326,40 @@ void main() {
     expect(
         statuses.any((msg) => msg.status == RipStatus.downloadStarted), isTrue);
   });
+
+  test('sanitizes final save filename in the shared download path', () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': false,
+    });
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_sanitize_filename_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen((request) async {
+      request.response.write('ok');
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final statuses = <RipStatusMessage>[];
+    final sub = ripper.statusStream.listen(statuses.add);
+    addTearDown(sub.cancel);
+
+    await ripper.downloadFile(
+      Uri.parse('http://127.0.0.1:${server.port}/image.jpg'),
+      File('${directory.path}/bad:name?.jpg'),
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    final savedFile = File('${directory.path}/bad_name_.jpg');
+    expect(await savedFile.readAsString(), 'ok');
+    expect(statuses.last.status, RipStatus.downloadComplete);
+    expect(statuses.last.object, savedFile.path);
+  });
 }

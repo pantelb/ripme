@@ -128,6 +128,8 @@ abstract class AbstractRipper {
         return;
       }
 
+      saveAs = _sanitizeSaveAs(saveAs);
+
       if (!Utils.getConfigBoolean('file.overwrite', false) &&
           await saveAs.exists()) {
         alreadyDownloadedUrls++;
@@ -147,6 +149,12 @@ abstract class AbstractRipper {
     } catch (e) {
       sendUpdate(RipStatus.downloadErrored, "$url : ${e.toString()}");
     }
+  }
+
+  File _sanitizeSaveAs(File saveAs) {
+    final sanitizedName = Utils.sanitizeSaveAs(p.basename(saveAs.path));
+    if (sanitizedName == p.basename(saveAs.path)) return saveAs;
+    return File(p.join(p.dirname(saveAs.path), sanitizedName));
   }
 
   bool _shouldRememberUrlHistory() {
