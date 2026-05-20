@@ -1,14 +1,28 @@
 import 'dart:async';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'ripper/abstract_ripper.dart';
 import 'ripper/ripper_factory.dart';
 import 'ui/rip_status_message.dart';
 import 'history_provider.dart';
+import 'utils/utils.dart';
+
+typedef RipperResolver = AbstractRipper? Function(Uri uri);
+typedef CompletionSoundPlayer = Future<void> Function();
 
 class RipManager extends ChangeNotifier {
+  RipManager({
+    RipperResolver? ripperResolver,
+    CompletionSoundPlayer? completionSoundPlayer,
+  })  : _ripperResolver = ripperResolver ?? RipperFactory.getRipper,
+        _completionSoundPlayer =
+            completionSoundPlayer ?? _playDefaultCompletionSound;
+
   final List<String> _queue = [];
   final List<RipStatusMessage> _logs = [];
   List<HistoryEntry> _history = [];
+  final RipperResolver _ripperResolver;
+  final CompletionSoundPlayer _completionSoundPlayer;
 
   bool _isRipping = false;
   AbstractRipper? _currentRipper;
@@ -62,7 +76,7 @@ class RipManager extends ChangeNotifier {
       return;
     }
 
-    _currentRipper = RipperFactory.getRipper(uri);
+    _currentRipper = _ripperResolver(uri);
     if (_currentRipper == null) {
       _addLog(RipStatusMessage(
           RipStatus.ripErrored, "No ripper found for $urlText"));
@@ -74,6 +88,7 @@ class RipManager extends ChangeNotifier {
     _currentRipper!.statusStream.listen((event) {
       _addLog(event);
       if (event.status == RipStatus.ripComplete) {
+        unawaited(_playCompletionSoundIfEnabled());
         _addToHistory(urlText, event.object.toString());
       }
     });
@@ -103,6 +118,22 @@ class RipManager extends ChangeNotifier {
     _history = [];
     await HistoryProvider.clearHistory();
     notifyListeners();
+  }
+
+  Future<void> _playCompletionSoundIfEnabled() async {
+    if (!Utils.getConfigBoolean('play.sound', false)) return;
+    try {
+      await _completionSoundPlayer();
+    } catch (e) {
+      _addLog(RipStatusMessage(
+          RipStatus.downloadWarn, 'Failed to play completion sound: $e'));
+    }
+  }
+
+  static Future<void> _playDefaultCompletionSound() async {
+    final player = AudioPlayer();
+    await player.play(AssetSource('sounds/camera.wav'));
+    unawaited(player.onPlayerComplete.first.then((_) => player.dispose()));
   }
 }
 

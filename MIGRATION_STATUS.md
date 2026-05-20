@@ -18,6 +18,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] Flutter configuration control for `download.ignore_extensions`
 - [x] `urls_only.save` mode for migrated download flows with a Flutter configuration control
 - [x] Java-compatible `remember.url_history` toggle with fallback for the earlier Flutter history key
+- [x] Completion sound playback honors `play.sound` using the bundled camera sound asset
 - [ ] Download engine parity: parallelism, retry policy, duplicate/already-seen tracking, overwrite/skip behavior, ordered naming, stop semantics
 - [ ] Reddit full Java parity: saved self-post/comment HTML export, full `RipUtils.getFilesFromURL` expansion for non-direct hosts, and exact Java filename behavior
 - [ ] Configuration parity: Java `rip.properties` defaults and UI controls for thread count, retries, retry sleep, save order, album title folders, Reddit filters, proxy/auth/API keys, timeouts, and max download size
