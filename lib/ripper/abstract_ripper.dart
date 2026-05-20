@@ -31,6 +31,7 @@ abstract class AbstractRipper {
   bool _shouldStop = false;
   int alreadyDownloadedUrls = 0;
   final Set<String> _attemptedDownloadUrls = <String>{};
+  Future<void> _urlOnlyWrite = Future<void>.value();
 
   final StreamController<RipStatusMessage> _statusController =
       StreamController<RipStatusMessage>.broadcast();
@@ -113,19 +114,25 @@ abstract class AbstractRipper {
         return;
       }
 
+      if (Utils.getConfigBoolean('history.skip_downloaded_urls', true) &&
+          await DownloadHistoryProvider.hasDownloaded(url)) {
+        alreadyDownloadedUrls++;
+        sendUpdate(RipStatus.downloadSkip, 'Already downloaded: $url');
+        _stopIfHistoryLimitReached();
+        return;
+      }
+
+      if (Utils.getConfigBoolean('urls_only.save', false)) {
+        await _saveUrlOnly(url);
+        alreadyDownloadedUrls = 0;
+        return;
+      }
+
       if (!Utils.getConfigBoolean('file.overwrite', false) &&
           await saveAs.exists()) {
         alreadyDownloadedUrls++;
         sendUpdate(
             RipStatus.downloadSkip, 'File already exists: ${saveAs.path}');
-        _stopIfHistoryLimitReached();
-        return;
-      }
-
-      if (Utils.getConfigBoolean('history.skip_downloaded_urls', true) &&
-          await DownloadHistoryProvider.hasDownloaded(url)) {
-        alreadyDownloadedUrls++;
-        sendUpdate(RipStatus.downloadSkip, 'Already downloaded: $url');
         _stopIfHistoryLimitReached();
         return;
       }
@@ -138,6 +145,20 @@ abstract class AbstractRipper {
     } catch (e) {
       sendUpdate(RipStatus.downloadErrored, "$url : ${e.toString()}");
     }
+  }
+
+  Future<void> _saveUrlOnly(Uri url) async {
+    final previousWrite = _urlOnlyWrite;
+    final urlFile = File(p.join(workingDir.path, 'urls.txt'));
+    _urlOnlyWrite = previousWrite.then((_) async {
+      if (!await urlFile.parent.exists()) {
+        await urlFile.parent.create(recursive: true);
+      }
+      await urlFile.writeAsString('$url${Platform.lineTerminator}',
+          mode: FileMode.append);
+    });
+    await _urlOnlyWrite;
+    sendUpdate(RipStatus.downloadComplete, urlFile.path);
   }
 
   bool _shouldIgnoreUrl(Uri url) {

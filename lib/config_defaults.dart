@@ -23,6 +23,7 @@ class ConfigDefaults {
     'reddit.rip_by_upvote': false,
     'reddit.use_sub_dirs': true,
     'history.skip_downloaded_urls': true,
+    'urls_only.save': false,
     'play.sound': false,
   };
 

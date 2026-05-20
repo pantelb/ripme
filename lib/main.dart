@@ -298,6 +298,13 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               defaultValue: true,
               onChanged: _refresh,
             ),
+            _ConfigSwitch(
+              title: 'Save URLs only',
+              icon: Icons.link,
+              keyName: 'urls_only.save',
+              defaultValue: false,
+              onChanged: _refresh,
+            ),
           ],
         ),
         const SizedBox(height: 16),

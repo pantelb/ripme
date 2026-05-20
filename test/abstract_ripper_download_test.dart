@@ -244,4 +244,49 @@ void main() {
     expect(statuses.single.status, RipStatus.downloadSkip);
     expect(statuses.single.object.toString(), contains('ignored extension'));
   });
+
+  test('saves URLs to urls.txt instead of downloading when configured',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'urls_only.save': true,
+      'history.skip_downloaded_urls': false,
+    });
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_urls_only_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+
+    final statuses = <RipStatusMessage>[];
+    final sub = ripper.statusStream.listen(statuses.add);
+    addTearDown(sub.cancel);
+
+    await ripper.downloadFiles([
+      RipperDownload(
+        url: Uri.parse('https://example.com/one.jpg'),
+        saveAs: File('${directory.path}/one.jpg'),
+      ),
+      RipperDownload(
+        url: Uri.parse('https://example.com/two.jpg'),
+        saveAs: File('${directory.path}/two.jpg'),
+      ),
+    ]);
+    await Future<void>.delayed(Duration.zero);
+
+    final urlsFile = File('${directory.path}/urls.txt');
+    expect(await urlsFile.readAsLines(), [
+      'https://example.com/one.jpg',
+      'https://example.com/two.jpg',
+    ]);
+    expect(await File('${directory.path}/one.jpg').exists(), isFalse);
+    expect(statuses.map((msg) => msg.status),
+        everyElement(RipStatus.downloadComplete));
+    expect(
+        await DownloadHistoryProvider.hasDownloaded(
+            Uri.parse('https://example.com/one.jpg')),
+        isFalse);
+  });
 }
