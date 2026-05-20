@@ -10,16 +10,28 @@ void main() {
 
     expect(Utils.getConfigInteger('threads.size', 10), 5);
     expect(Utils.getConfigInteger('download.retries', 0), 3);
-    expect(Utils.getConfigInteger('download.retry.sleep', 5000), 0);
+    expect(Utils.getConfigInteger('download.retry.sleep', 0), 5000);
+    expect(Utils.getConfigInteger('proxy.port', 0), 8080);
     expect(Utils.getConfigBoolean('file.overwrite', true), isFalse);
     expect(Utils.getConfigBoolean('download.save_order', false), isTrue);
     expect(Utils.getConfigBoolean('album_titles.save', false), isTrue);
     expect(Utils.getConfigBoolean('remember.url_history', false), isTrue);
     expect(Utils.getConfigBoolean('urls_only.save', true), isFalse);
+    expect(Utils.getConfigBoolean('proxy.enabled', true), isFalse);
     expect(Utils.getConfigString('download.ignore_extensions', 'fallback'), '');
     expect(Utils.getConfigStringList('download.ignore_extensions'), isEmpty);
     expect(Utils.getConfigString('twitter.auth', null), isNotEmpty);
     expect(Utils.getConfigString('tumblr.auth', null), isNotEmpty);
+    expect(Utils.getConfigString('gw.api', null), 'gonewild');
+    expect(Utils.getConfigString('erome.laravel_session', 'fallback'), '');
+    expect(Utils.getConfigString('proxy.host', 'fallback'), '');
+    expect(Utils.getConfigString('proxy.username', 'fallback'), '');
+    expect(Utils.getConfigString('proxy.password', 'fallback'), '');
+    expect(Utils.getConfigString('cookies.reddit.com', 'fallback'), '');
+    expect(Utils.getConfigString('cookies.imgur.com', 'fallback'), '');
+    expect(Utils.getConfigString('cookies.erome.com', 'fallback'), '');
+    expect(Utils.getConfigString('cookies.soundgasm.net', 'fallback'), '');
+    expect(Utils.getConfigString('cookies.vidble.com', 'fallback'), '');
   });
 
   test('stored preferences override default config values', () async {

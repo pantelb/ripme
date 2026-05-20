@@ -5,11 +5,12 @@ class ConfigDefaults {
     'download.timeout': 60000,
     'page.timeout': 5000,
     'download.max_size': 104857600,
-    'download.retry.sleep': 0,
+    'download.retry.sleep': 5000,
     'twitter.max_requests': 10,
     'reddit.min_upvotes': 0,
     'reddit.max_upvotes': 10000,
     'history.end_rip_after_already_seen': 1000000000,
+    'proxy.port': 8080,
   };
 
   static const Map<String, bool> booleans = {
@@ -26,6 +27,7 @@ class ConfigDefaults {
     'history.skip_downloaded_urls': true,
     'urls_only.save': false,
     'play.sound': false,
+    'proxy.enabled': false,
   };
 
   static const Map<String, String> strings = {
@@ -34,5 +36,14 @@ class ConfigDefaults {
         'VW9Ybjdjb1pkd2J0U3kwTUh2VXVnOm9GTzVQVzNqM29LQU1xVGhnS3pFZzhKbGVqbXU0c2lHQ3JrUFNNZm8=',
     'tumblr.auth': 'JFNLu3CbINQjRdUvZibXW9VpSEVYYtiPJ86o8YmvgLZIoKyuNX',
     'gw.api': 'gonewild',
+    'erome.laravel_session': '',
+    'proxy.host': '',
+    'proxy.username': '',
+    'proxy.password': '',
+    'cookies.reddit.com': '',
+    'cookies.imgur.com': '',
+    'cookies.erome.com': '',
+    'cookies.soundgasm.net': '',
+    'cookies.vidble.com': '',
   };
 }
