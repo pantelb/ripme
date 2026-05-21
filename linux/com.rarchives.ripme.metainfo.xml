@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.rarchives.ripme</id>
+  <name>RipMe</name>
+  <summary>Cross-platform media album ripper</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <description>
+    <p>RipMe downloads supported image and video albums using the migrated Flutter runtime.</p>
+  </description>
+  <launchable type="desktop-id">ripme.desktop</launchable>
+  <provides>
+    <binary>ripme</binary>
+  </provides>
+</component>

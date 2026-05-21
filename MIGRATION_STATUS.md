@@ -34,7 +34,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] UI parity: detailed progress, per-file status, queue controls, log filtering/copying, context menus, clipboard autorip, and complete configuration panels
 - [x] HTTP/session parity: retries, timeouts, cookies, proxy support, referers, rate-limit waits, JSON/HTML content-type tolerance, and auth headers
 - [x] Video handling parity: shared helpers for streamed manifests, referers, extensions, and video-specific rippers
-- [ ] Platform integration: Android storage/scoped permissions, macOS entitlements, Windows/Linux/macOS packaging, file/folder opening, icons, metadata, and release workflows
+- [x] Platform integration: Android storage/scoped permissions, macOS 12-compatible entitlements/deployment target, Windows/Linux/macOS packaging metadata, file/folder opening, icons, metadata, and release workflows
 - [ ] Localization/resource parity: restore labels/resources from Java bundles or define an equivalent Flutter localization layer
 - [ ] Test parity: mocked parser tests for all rippers, download engine tests, configuration/history tests, and selective live tests for fragile sites
 - [ ] Update/release behavior: replace or intentionally redesign Java update checks and release flow

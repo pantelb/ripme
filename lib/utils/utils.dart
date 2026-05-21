@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 import '../config_defaults.dart';
@@ -77,6 +78,20 @@ class Utils {
 
   static Future<void> setConfigBoolean(String key, bool value) async {
     await _prefs?.setBool(key, value);
+  }
+
+  static Future<bool> ensureStorageAccess() async {
+    if (!Platform.isAndroid) return true;
+
+    final storage = await Permission.storage.request();
+    if (storage.isGranted || storage.isLimited) return true;
+
+    final mediaStatuses = await [
+      Permission.photos,
+      Permission.videos,
+    ].request();
+    return mediaStatuses.values.any((status) =>
+        status.isGranted || status.isLimited || status.isProvisional);
   }
 
   static String filesystemSafe(String text) {

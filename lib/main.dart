@@ -600,6 +600,15 @@ class _ConfigurationViewState extends State<ConfigurationView> {
                   'rips.directory', 'Default (Documents/rips)')!),
               leading: const Icon(Icons.folder_open),
               onTap: () async {
+                if (!await Utils.ensureStorageAccess()) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Storage access was not granted')),
+                    );
+                  }
+                  return;
+                }
                 String? selectedDirectory = await FilePicker.getDirectoryPath();
                 if (selectedDirectory != null) {
                   await Utils.setConfigString(

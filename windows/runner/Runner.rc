@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "ripme" "\0"
+            VALUE "CompanyName", "RipMe" "\0"
+            VALUE "FileDescription", "RipMe" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "ripme" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.example. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 RipMe. All rights reserved." "\0"
             VALUE "OriginalFilename", "ripme.exe" "\0"
-            VALUE "ProductName", "ripme" "\0"
+            VALUE "ProductName", "RipMe" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
