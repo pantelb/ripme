@@ -23,7 +23,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] Flutter configuration control for `download.ignore_extensions`
 - [x] `urls_only.save` mode for migrated download flows with a Flutter configuration control
 - [x] Java-compatible `remember.url_history` toggle with fallback for the earlier Flutter history key
-- [x] Completion sound playback honors `play.sound` using the bundled camera sound asset
+- [x] Completion sound playback honors `play.sound` using the platform alert sound
 - [x] Shared final filename sanitization before writing downloaded files
 - [x] `AbstractVideoRipper` uses the shared download path for migrated video flows
 - [x] Shared scheduler stop semantics for queued migrated downloads

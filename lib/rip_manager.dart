@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'ripper/abstract_ripper.dart';
 import 'ripper/ripper_factory.dart';
 import 'ui/rip_status_message.dart';
@@ -175,9 +175,7 @@ class RipManager extends ChangeNotifier {
   }
 
   static Future<void> _playDefaultCompletionSound() async {
-    final player = AudioPlayer();
-    await player.play(AssetSource('sounds/camera.wav'));
-    unawaited(player.onPlayerComplete.first.then((_) => player.dispose()));
+    await SystemSound.play(SystemSoundType.alert);
   }
 }
 

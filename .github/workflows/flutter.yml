@@ -8,6 +8,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -70,11 +73,23 @@ jobs:
     - name: Build ${{ matrix.target }}
       run: flutter build ${{ matrix.target }} --release
 
+    - name: Package ${{ matrix.artifact }}
+      shell: bash
+      run: |
+        mkdir -p dist
+        if [ "${{ matrix.target }}" = "macos" ]; then
+          ditto -c -k --keepParent "${{ matrix.path }}" "dist/${{ matrix.artifact }}.zip"
+        elif [ "${{ matrix.target }}" = "windows" ]; then
+          (cd "${{ matrix.path }}" && 7z a "$GITHUB_WORKSPACE/dist/${{ matrix.artifact }}.zip" .)
+        else
+          tar -C "${{ matrix.path }}" -czf "dist/${{ matrix.artifact }}.tar.gz" .
+        fi
+
     - name: Upload ${{ matrix.artifact }}
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.artifact }}
-        path: ${{ matrix.path }}
+        path: dist/*
 
   build-android:
     needs: test
@@ -105,3 +120,20 @@ jobs:
       with:
         name: ripme-android-apk
         path: build/app/outputs/flutter-apk/app-release.apk
+
+  release:
+    needs: [build-desktop, build-android]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download release artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: release-artifacts
+        merge-multiple: true
+
+    - name: Publish GitHub release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: release-artifacts/*
+        generate_release_notes: true
