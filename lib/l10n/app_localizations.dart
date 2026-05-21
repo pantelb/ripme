@@ -133,6 +133,16 @@ class AppLocalizations {
   String get clipboardAutorip => 'Clipboard autorip';
   String get playSoundWhenRipCompletes =>
       _label('sound.when.rip.completes', 'Play sound when rip completes');
+  String get currentVersion => _label('current.version', 'Current version');
+  String get checkForUpdates =>
+      _label('check.for.updates', 'Check for updates');
+  String get autoUpdateNotAvailable =>
+      'Auto-update has been replaced by GitHub releases';
+  String get latestVersion => 'Latest version';
+  String get updateAvailable => 'Update available';
+  String get noUpdateAvailable => 'You are running the latest version';
+  String get updateCheckFailed => 'Update check failed';
+  String get openReleasePage => 'Open release page';
   String get cancel => 'Cancel';
   String get save => 'Save';
   String get none => 'None';

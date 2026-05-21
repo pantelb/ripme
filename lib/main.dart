@@ -7,11 +7,13 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'app_version.dart';
 import 'download_history_provider.dart';
 import 'history_provider.dart';
 import 'l10n/app_localizations.dart';
 import 'rip_manager.dart';
 import 'ui/rip_status_message.dart';
+import 'update_checker.dart';
 import 'utils/utils.dart';
 
 void main() async {
@@ -613,6 +615,9 @@ class ConfigurationView extends StatefulWidget {
 }
 
 class _ConfigurationViewState extends State<ConfigurationView> {
+  bool _checkingForUpdates = false;
+  UpdateCheckResult? _updateCheckResult;
+
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
@@ -970,6 +975,41 @@ class _ConfigurationViewState extends State<ConfigurationView> {
         _ConfigSection(
           title: strings.app,
           children: [
+            ListTile(
+              leading: const Icon(Icons.info_outline),
+              title: Text(strings.currentVersion),
+              subtitle: const Text('$appVersion+$appBuildNumber'),
+            ),
+            SwitchListTile(
+              secondary: const Icon(Icons.system_update_alt),
+              title: Text(strings.autoUpdateNotAvailable),
+              subtitle: Text(strings.openReleasePage),
+              value: false,
+              onChanged: null,
+            ),
+            ListTile(
+              leading: const Icon(Icons.new_releases_outlined),
+              title: Text(strings.checkForUpdates),
+              subtitle: Text(_updateStatusText(strings)),
+              trailing: _checkingForUpdates
+                  ? const SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.refresh),
+              onTap: _checkingForUpdates ? null : () => _checkForUpdates(),
+            ),
+            if (_updateCheckResult?.releaseUrl != null)
+              ListTile(
+                leading: const Icon(Icons.open_in_new),
+                title: Text(strings.openReleasePage),
+                subtitle: Text(_updateCheckResult!.releaseUrl.toString()),
+                onTap: () => launchUrl(
+                  _updateCheckResult!.releaseUrl,
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
             _ConfigSwitch(
               title: strings.clipboardAutorip,
               icon: Icons.content_paste_search,
@@ -992,6 +1032,40 @@ class _ConfigurationViewState extends State<ConfigurationView> {
 
   void _refresh() {
     setState(() {});
+  }
+
+  String _updateStatusText(AppLocalizations strings) {
+    final result = _updateCheckResult;
+    if (_checkingForUpdates) return '${strings.checkForUpdates}...';
+    if (result == null) return releaseRepository;
+    final latest = '${strings.latestVersion}: ${result.latestVersion}';
+    if (result.updateAvailable) return '${strings.updateAvailable}. $latest';
+    return '${strings.noUpdateAvailable}. $latest';
+  }
+
+  Future<void> _checkForUpdates() async {
+    setState(() => _checkingForUpdates = true);
+    try {
+      final result = await const UpdateChecker().check();
+      if (!mounted) return;
+      setState(() => _updateCheckResult = result);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(_updateStatusText(AppLocalizations.of(context)))),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text('${AppLocalizations.of(context).updateCheckFailed}: $e'),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _checkingForUpdates = false);
+      }
+    }
   }
 
   Future<void> _importDownloadedUrlHistory(BuildContext context) async {
