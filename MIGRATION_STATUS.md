@@ -36,7 +36,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] Video handling parity: shared helpers for streamed manifests, referers, extensions, and video-specific rippers
 - [x] Platform integration: Android storage/scoped permissions, macOS 12-compatible entitlements/deployment target, Windows/Linux/macOS packaging metadata, file/folder opening, icons, metadata, and release workflows
 - [x] Localization/resource parity: restored Java label bundles as Flutter assets and wired migrated UI labels through a Flutter localization layer with English fallback
-- [ ] Test parity: mocked parser tests for all rippers, download engine tests, configuration/history tests, and selective live tests for fragile sites
+- [x] Test parity: mocked parser tests for all ported rippers, download engine tests, configuration/history tests, and opt-in live smoke tests for fragile Reddit/Redgifs checks
 - [ ] Update/release behavior: replace or intentionally redesign Java update checks and release flow
 
 ## Unported Rippers
