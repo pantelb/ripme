@@ -43,6 +43,18 @@ class Http {
     }
   }
 
+  static Future<String> getText(Uri url,
+      {Map<String, String>? headers, Map<String, String>? cookies}) async {
+    final response =
+        await _getResponse(url, headers: headers, cookies: cookies);
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw HttpException('Failed to load $url: Status ${response.statusCode}');
+    }
+  }
+
   static Future<void> downloadFile(Uri url, File saveAs,
       {Map<String, String>? headers, Map<String, String>? cookies}) async {
     final response = await _getResponse(

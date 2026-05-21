@@ -7,6 +7,7 @@ import 'package:path/path.dart' as p;
 
 import '../abstract_ripper.dart';
 import '../abstract_json_ripper.dart';
+import '../abstract_video_ripper.dart';
 import '../../ui/rip_status_message.dart';
 import '../../utils/http_utils.dart';
 import '../../utils/utils.dart';
@@ -623,21 +624,9 @@ class RedditRipper extends AbstractJSONRipper {
 
   static Future<Uri?> _bestRedditVideoUrl(Uri uri) async {
     try {
-      final manifest =
-          await Http.get(Uri.parse('${uri.toString()}/DASHPlaylist.mpd'));
-      var largestHeight = -1;
-      String? baseUrl;
-      for (final representation in manifest
-          .querySelectorAll('MPD > Period > AdaptationSet > Representation')) {
-        final height =
-            int.tryParse(representation.attributes['height'] ?? '') ?? 0;
-        if (height > largestHeight) {
-          largestHeight = height;
-          baseUrl = representation.querySelector('BaseURL')?.text;
-        }
-      }
-      if (baseUrl == null || baseUrl.isEmpty) return null;
-      return Uri.parse('${uri.toString()}/$baseUrl');
+      return AbstractVideoRipper.bestVideoUrlFromManifest(
+        Uri.parse('${uri.toString()}/DASHPlaylist.mpd'),
+      );
     } catch (_) {
       return null;
     }
