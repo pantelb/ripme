@@ -3,11 +3,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'download_history_provider.dart';
 import 'history_provider.dart';
+import 'l10n/app_localizations.dart';
 import 'rip_manager.dart';
 import 'ui/rip_status_message.dart';
 import 'utils/utils.dart';
@@ -29,8 +31,15 @@ class RipMeApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'RipMe',
+      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.blue, brightness: Brightness.light),
@@ -81,10 +90,11 @@ class _MainWindowState extends State<MainWindow>
   @override
   Widget build(BuildContext context) {
     final ripManager = Provider.of<RipManager>(context);
+    final strings = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('RipMe'),
+        title: Text(strings.appTitle),
         bottom: TabControllerWidget(tabController: _tabController),
       ),
       body: Column(
@@ -96,9 +106,9 @@ class _MainWindowState extends State<MainWindow>
                 Expanded(
                   child: TextField(
                     controller: _urlController,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter URL to rip',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      hintText: strings.enterUrlToRip,
+                      border: const OutlineInputBorder(),
                     ),
                     onSubmitted: (value) {
                       if (value.isNotEmpty) {
@@ -117,14 +127,14 @@ class _MainWindowState extends State<MainWindow>
                     }
                   },
                   icon: const Icon(Icons.download),
-                  label: const Text('Rip'),
+                  label: Text(strings.rip),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
                   onPressed:
                       ripManager.isRipping ? () => ripManager.stop() : null,
                   icon: const Icon(Icons.stop, color: Colors.red),
-                  tooltip: 'Stop Ripping',
+                  tooltip: strings.stopRipping,
                 ),
               ],
             ),
@@ -175,6 +185,7 @@ class _StatusSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppLocalizations.of(context);
     return Material(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: Padding(
@@ -184,16 +195,20 @@ class _StatusSummary extends StatelessWidget {
           runSpacing: 4,
           children: [
             _StatusChip(
-                label: 'Queue', value: ripManager.queue.length.toString()),
+                label: strings.queue,
+                value: ripManager.queue.length.toString()),
             _StatusChip(
-                label: 'Active', value: ripManager.activeDownloads.toString()),
+                label: strings.active,
+                value: ripManager.activeDownloads.toString()),
             _StatusChip(
-                label: 'Done', value: ripManager.completedDownloads.toString()),
+                label: strings.done,
+                value: ripManager.completedDownloads.toString()),
             _StatusChip(
-                label: 'Skipped',
+                label: strings.skipped,
                 value: ripManager.skippedDownloads.toString()),
             _StatusChip(
-                label: 'Failed', value: ripManager.failedDownloads.toString()),
+                label: strings.failed,
+                value: ripManager.failedDownloads.toString()),
           ],
         ),
       ),
@@ -223,13 +238,14 @@ class TabControllerWidget extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppLocalizations.of(context);
     return TabBar(
       controller: tabController,
-      tabs: const [
-        Tab(text: 'Log', icon: Icon(Icons.list_alt)),
-        Tab(text: 'History', icon: Icon(Icons.history)),
-        Tab(text: 'Queue', icon: Icon(Icons.queue)),
-        Tab(text: 'Config', icon: Icon(Icons.settings)),
+      tabs: [
+        Tab(text: strings.log, icon: const Icon(Icons.list_alt)),
+        Tab(text: strings.history, icon: const Icon(Icons.history)),
+        Tab(text: strings.queue, icon: const Icon(Icons.queue)),
+        Tab(text: strings.config, icon: const Icon(Icons.settings)),
       ],
     );
   }
@@ -264,6 +280,7 @@ class _FilteredLogViewState extends State<_FilteredLogView> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppLocalizations.of(context);
     final normalizedFilter = _filter.toLowerCase();
     final filteredLogs = normalizedFilter.isEmpty
         ? widget.logs
@@ -284,10 +301,10 @@ class _FilteredLogViewState extends State<_FilteredLogView> {
               SizedBox(
                 width: 280,
                 child: TextField(
-                  decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.filter_list),
-                    hintText: 'Filter log',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.filter_list),
+                    hintText: strings.filterLog,
+                    border: const OutlineInputBorder(),
                     isDense: true,
                   ),
                   onChanged: (value) => setState(() => _filter = value),
@@ -304,13 +321,13 @@ class _FilteredLogViewState extends State<_FilteredLogView> {
                           ),
                         ),
                 icon: const Icon(Icons.copy),
-                label: const Text('Copy'),
+                label: Text(strings.copy),
               ),
               OutlinedButton.icon(
                 onPressed:
                     widget.logs.isEmpty ? null : widget.ripManager.clearLogs,
                 icon: const Icon(Icons.clear_all),
-                label: const Text('Clear'),
+                label: Text(strings.clear),
               ),
             ],
           ),
@@ -333,8 +350,9 @@ class _FilteredLogViewState extends State<_FilteredLogView> {
                       Clipboard.setData(ClipboardData(text: log.toString()));
                     }
                   },
-                  itemBuilder: (context) => const [
-                    PopupMenuItem(value: 'copy', child: Text('Copy log line')),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                        value: 'copy', child: Text(strings.copyLogLine)),
                   ],
                 ),
               );
@@ -372,6 +390,7 @@ class HistoryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppLocalizations.of(context);
     return Column(
       children: [
         Padding(
@@ -387,18 +406,18 @@ class HistoryView extends StatelessWidget {
                   onPressed:
                       history.isEmpty ? null : () => ripManager.clearHistory(),
                   icon: const Icon(Icons.delete_sweep),
-                  label: const Text('Clear history'),
+                  label: Text(strings.clearHistory),
                 ),
                 OutlinedButton.icon(
                   onPressed: () => _importHistory(context),
                   icon: const Icon(Icons.upload_file),
-                  label: const Text('Import'),
+                  label: Text(strings.import),
                 ),
                 OutlinedButton.icon(
                   onPressed:
                       history.isEmpty ? null : () => _exportHistory(context),
                   icon: const Icon(Icons.download),
-                  label: const Text('Export'),
+                  label: Text(strings.export),
                 ),
               ],
             ),
@@ -430,10 +449,13 @@ class HistoryView extends StatelessWidget {
                             break;
                         }
                       },
-                      itemBuilder: (context) => const [
-                        PopupMenuItem(value: 'copy', child: Text('Copy URL')),
-                        PopupMenuItem(value: 'rerip', child: Text('Rip again')),
-                        PopupMenuItem(value: 'remove', child: Text('Remove')),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                            value: 'copy', child: Text(strings.copyUrl)),
+                        PopupMenuItem(
+                            value: 'rerip', child: Text(strings.ripAgain)),
+                        PopupMenuItem(
+                            value: 'remove', child: Text(strings.remove)),
                       ],
                     ),
                   ],
@@ -472,13 +494,15 @@ class HistoryView extends StatelessWidget {
       );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('History imported')),
+          SnackBar(content: Text(AppLocalizations.of(context).historyImported)),
         );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('History import failed: $e')),
+          SnackBar(
+              content:
+                  Text(AppLocalizations.of(context).historyImportFailed(e))),
         );
       }
     }
@@ -494,13 +518,15 @@ class HistoryView extends StatelessWidget {
       );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('History exported')),
+          SnackBar(content: Text(AppLocalizations.of(context).historyExported)),
         );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('History export failed: $e')),
+          SnackBar(
+              content:
+                  Text(AppLocalizations.of(context).historyExportFailed(e))),
         );
       }
     }
@@ -514,6 +540,7 @@ class QueueView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppLocalizations.of(context);
     return Column(
       children: [
         Padding(
@@ -523,7 +550,7 @@ class QueueView extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: queue.isEmpty ? null : ripManager.clearQueue,
               icon: const Icon(Icons.delete_sweep),
-              label: const Text('Clear queue'),
+              label: Text(strings.clearQueue),
             ),
           ),
         ),
@@ -552,20 +579,20 @@ class QueueView extends StatelessWidget {
                     }
                   },
                   itemBuilder: (context) => [
-                    const PopupMenuItem(value: 'copy', child: Text('Copy URL')),
+                    PopupMenuItem(value: 'copy', child: Text(strings.copyUrl)),
                     PopupMenuItem(
                       value: 'up',
                       enabled: index > 0,
-                      child: const Text('Move up'),
+                      child: Text(strings.moveUp),
                     ),
                     PopupMenuItem(
                       value: 'down',
                       enabled: index < queue.length - 1,
-                      child: const Text('Move down'),
+                      child: Text(strings.moveDown),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'remove',
-                      child: Text('Remove from queue'),
+                      child: Text(strings.removeFromQueue),
                     ),
                   ],
                 ),
@@ -588,23 +615,24 @@ class ConfigurationView extends StatefulWidget {
 class _ConfigurationViewState extends State<ConfigurationView> {
   @override
   Widget build(BuildContext context) {
+    final strings = AppLocalizations.of(context);
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         _ConfigSection(
-          title: 'Files',
+          title: strings.files,
           children: [
             ListTile(
-              title: const Text('Save directory'),
+              title: Text(strings.saveDirectory),
               subtitle: Text(Utils.getConfigString(
-                  'rips.directory', 'Default (Documents/rips)')!),
+                  'rips.directory', strings.defaultSaveDirectory)!),
               leading: const Icon(Icons.folder_open),
               onTap: () async {
                 if (!await Utils.ensureStorageAccess()) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Storage access was not granted')),
+                      SnackBar(
+                          content: Text(strings.storageAccessWasNotGranted)),
                     );
                   }
                   return;
@@ -618,28 +646,28 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               },
             ),
             _ConfigSwitch(
-              title: 'Overwrite existing files',
+              title: strings.overwriteExistingFiles,
               icon: Icons.file_copy,
               keyName: 'file.overwrite',
               defaultValue: false,
               onChanged: _refresh,
             ),
             _ConfigSwitch(
-              title: 'Preserve download order',
+              title: strings.preserveDownloadOrder,
               icon: Icons.format_list_numbered,
               keyName: 'download.save_order',
               defaultValue: true,
               onChanged: _refresh,
             ),
             _ConfigSwitch(
-              title: 'Save album titles as folders',
+              title: strings.saveAlbumTitlesAsFolders,
               icon: Icons.drive_file_rename_outline,
               keyName: 'album_titles.save',
               defaultValue: true,
               onChanged: _refresh,
             ),
             _ConfigSwitch(
-              title: 'Save URLs only',
+              title: strings.saveUrlsOnly,
               icon: Icons.link,
               keyName: 'urls_only.save',
               defaultValue: false,
@@ -649,10 +677,10 @@ class _ConfigurationViewState extends State<ConfigurationView> {
         ),
         const SizedBox(height: 16),
         _ConfigSection(
-          title: 'Downloads',
+          title: strings.downloads,
           children: [
             _ConfigIntegerTile(
-              title: 'Maximum download threads',
+              title: strings.maximumDownloadThreads,
               icon: Icons.downloading,
               keyName: 'threads.size',
               defaultValue: 5,
@@ -661,7 +689,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               onChanged: _refresh,
             ),
             _ConfigIntegerTile(
-              title: 'Retry download count',
+              title: strings.retryDownloadCount,
               icon: Icons.refresh,
               keyName: 'download.retries',
               defaultValue: 3,
@@ -670,7 +698,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               onChanged: _refresh,
             ),
             _ConfigIntegerTile(
-              title: 'Wait between retries (ms)',
+              title: strings.waitBetweenRetriesMs,
               icon: Icons.timer,
               keyName: 'download.retry.sleep',
               defaultValue: 5000,
@@ -679,7 +707,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               onChanged: _refresh,
             ),
             _ConfigIntegerTile(
-              title: 'Page timeout (ms)',
+              title: strings.pageTimeoutMs,
               icon: Icons.public,
               keyName: 'page.timeout',
               defaultValue: 5000,
@@ -688,7 +716,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               onChanged: _refresh,
             ),
             _ConfigIntegerTile(
-              title: 'Download timeout (ms)',
+              title: strings.downloadTimeoutMs,
               icon: Icons.cloud_download,
               keyName: 'download.timeout',
               defaultValue: 60000,
@@ -697,7 +725,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               onChanged: _refresh,
             ),
             _ConfigIntegerTile(
-              title: 'Maximum file size (bytes)',
+              title: strings.maximumFileSizeBytes,
               icon: Icons.sd_storage,
               keyName: 'download.max_size',
               defaultValue: 104857600,
@@ -706,43 +734,43 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               onChanged: _refresh,
             ),
             _ConfigSwitch(
-              title: 'Skip retries after 404',
+              title: strings.skipRetriesAfter404,
               icon: Icons.error_outline,
               keyName: 'error.skip404',
               defaultValue: true,
               onChanged: _refresh,
             ),
             _ConfigStringTile(
-              title: 'Ignored extensions',
+              title: strings.ignoredExtensions,
               icon: Icons.block,
               keyName: 'download.ignore_extensions',
               defaultValue: '',
-              helperText: 'Comma-separated extensions',
+              helperText: strings.commaSeparatedExtensions,
               onChanged: _refresh,
             ),
           ],
         ),
         const SizedBox(height: 16),
         _ConfigSection(
-          title: 'Network',
+          title: strings.network,
           children: [
             _ConfigSwitch(
-              title: 'Use proxy',
+              title: strings.useProxy,
               icon: Icons.settings_ethernet,
               keyName: 'proxy.enabled',
               defaultValue: false,
               onChanged: _refresh,
             ),
             _ConfigStringTile(
-              title: 'Proxy host',
+              title: strings.proxyHost,
               icon: Icons.dns,
               keyName: 'proxy.host',
               defaultValue: '',
-              helperText: 'Hostname or IP address',
+              helperText: strings.hostnameOrIpAddress,
               onChanged: _refresh,
             ),
             _ConfigIntegerTile(
-              title: 'Proxy port',
+              title: strings.proxyPort,
               icon: Icons.numbers,
               keyName: 'proxy.port',
               defaultValue: 8080,
@@ -751,62 +779,62 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               onChanged: _refresh,
             ),
             _ConfigStringTile(
-              title: 'Proxy username',
+              title: strings.proxyUsername,
               icon: Icons.person_outline,
               keyName: 'proxy.username',
               defaultValue: '',
-              helperText: 'Optional',
+              helperText: strings.optional,
               onChanged: _refresh,
             ),
             _ConfigStringTile(
-              title: 'Proxy password',
+              title: strings.proxyPassword,
               icon: Icons.password,
               keyName: 'proxy.password',
               defaultValue: '',
-              helperText: 'Optional',
+              helperText: strings.optional,
               onChanged: _refresh,
             ),
             _ConfigStringTile(
-              title: 'Reddit cookies',
+              title: strings.redditCookies,
               icon: Icons.cookie,
               keyName: 'cookies.reddit.com',
               defaultValue: '',
-              helperText: 'key=value; other=value',
+              helperText: strings.cookieHint,
               onChanged: _refresh,
             ),
             _ConfigStringTile(
-              title: 'Imgur cookies',
+              title: strings.imgurCookies,
               icon: Icons.cookie_outlined,
               keyName: 'cookies.imgur.com',
               defaultValue: '',
-              helperText: 'key=value; other=value',
+              helperText: strings.cookieHint,
               onChanged: _refresh,
             ),
             _ConfigStringTile(
-              title: 'Erome cookies',
+              title: strings.eromeCookies,
               icon: Icons.cookie_outlined,
               keyName: 'cookies.erome.com',
               defaultValue: '',
-              helperText: 'key=value; other=value',
+              helperText: strings.cookieHint,
               onChanged: _refresh,
             ),
           ],
         ),
         const SizedBox(height: 16),
         _ConfigSection(
-          title: 'API Keys',
+          title: strings.apiKeys,
           children: [
             _ConfigStringTile(
-              title: 'Twitter auth',
+              title: strings.twitterAuth,
               icon: Icons.key,
               keyName: 'twitter.auth',
               defaultValue:
                   'VW9Ybjdjb1pkd2J0U3kwTUh2VXVnOm9GTzVQVzNqM29LQU1xVGhnS3pFZzhKbGVqbXU0c2lHQ3JrUFNNZm8=',
-              helperText: 'Configured auth token',
+              helperText: strings.configuredAuthToken,
               onChanged: _refresh,
             ),
             _ConfigIntegerTile(
-              title: 'Twitter max requests',
+              title: strings.twitterMaxRequests,
               icon: Icons.speed,
               keyName: 'twitter.max_requests',
               defaultValue: 10,
@@ -815,59 +843,59 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               onChanged: _refresh,
             ),
             _ConfigSwitch(
-              title: 'Rip retweets',
+              title: strings.ripRetweets,
               icon: Icons.repeat,
               keyName: 'twitter.rip_retweets',
               defaultValue: false,
               onChanged: _refresh,
             ),
             _ConfigSwitch(
-              title: 'Exclude replies',
+              title: strings.excludeReplies,
               icon: Icons.comments_disabled,
               keyName: 'twitter.exclude_replies',
               defaultValue: true,
               onChanged: _refresh,
             ),
             _ConfigStringTile(
-              title: 'Tumblr API key',
+              title: strings.tumblrApiKey,
               icon: Icons.key,
               keyName: 'tumblr.auth',
               defaultValue:
                   'JFNLu3CbINQjRdUvZibXW9VpSEVYYtiPJ86o8YmvgLZIoKyuNX',
-              helperText: 'Configured API key',
+              helperText: strings.configuredApiKey,
               onChanged: _refresh,
             ),
             _ConfigStringTile(
-              title: 'GoneWild API key',
+              title: strings.goneWildApiKey,
               icon: Icons.key,
               keyName: 'gw.api',
               defaultValue: 'gonewild',
-              helperText: 'Configured API key',
+              helperText: strings.configuredApiKey,
               onChanged: _refresh,
             ),
             _ConfigStringTile(
-              title: 'Erome session',
+              title: strings.eromeSession,
               icon: Icons.vpn_key,
               keyName: 'erome.laravel_session',
               defaultValue: '',
-              helperText: 'Laravel session cookie value',
+              helperText: strings.laravelSessionCookieValue,
               onChanged: _refresh,
             ),
           ],
         ),
         const SizedBox(height: 16),
         _ConfigSection(
-          title: 'History',
+          title: strings.history,
           children: [
             _ConfigSwitch(
-              title: 'Remember URL history',
+              title: strings.rememberUrlHistory,
               icon: Icons.history,
               keyName: 'remember.url_history',
               defaultValue: true,
               onChanged: _refresh,
             ),
             _ConfigIntegerTile(
-              title: 'Stop after already-seen count',
+              title: strings.stopAfterAlreadySeenCount,
               icon: Icons.stop_circle_outlined,
               keyName: 'history.end_rip_after_already_seen',
               defaultValue: 1000000000,
@@ -877,42 +905,42 @@ class _ConfigurationViewState extends State<ConfigurationView> {
             ),
             ListTile(
               leading: const Icon(Icons.delete_forever),
-              title: const Text('Clear downloaded URL history'),
+              title: Text(strings.clearDownloadedUrlHistory),
               onTap: () async {
                 await DownloadHistoryProvider.clear();
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Downloaded URL history cleared')),
+                    SnackBar(
+                        content: Text(strings.downloadedUrlHistoryCleared)),
                   );
                 }
               },
             ),
             ListTile(
               leading: const Icon(Icons.upload_file),
-              title: const Text('Import downloaded URL history'),
+              title: Text(strings.importDownloadedUrlHistory),
               onTap: () => _importDownloadedUrlHistory(context),
             ),
             ListTile(
               leading: const Icon(Icons.download),
-              title: const Text('Export downloaded URL history'),
+              title: Text(strings.exportDownloadedUrlHistory),
               onTap: () => _exportDownloadedUrlHistory(context),
             ),
           ],
         ),
         const SizedBox(height: 16),
         _ConfigSection(
-          title: 'Reddit',
+          title: strings.reddit,
           children: [
             _ConfigSwitch(
-              title: 'Filter by upvotes',
+              title: strings.filterByUpvotes,
               icon: Icons.arrow_upward,
               keyName: 'reddit.rip_by_upvote',
               defaultValue: false,
               onChanged: _refresh,
             ),
             _ConfigIntegerTile(
-              title: 'Minimum upvotes',
+              title: strings.minimumUpvotes,
               icon: Icons.exposure_plus_1,
               keyName: 'reddit.min_upvotes',
               defaultValue: 0,
@@ -921,7 +949,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               onChanged: _refresh,
             ),
             _ConfigIntegerTile(
-              title: 'Maximum upvotes',
+              title: strings.maximumUpvotes,
               icon: Icons.exposure,
               keyName: 'reddit.max_upvotes',
               defaultValue: 10000,
@@ -930,7 +958,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               onChanged: _refresh,
             ),
             _ConfigSwitch(
-              title: 'Use Reddit post subfolders',
+              title: strings.useRedditPostSubfolders,
               icon: Icons.create_new_folder,
               keyName: 'reddit.use_sub_dirs',
               defaultValue: true,
@@ -940,17 +968,17 @@ class _ConfigurationViewState extends State<ConfigurationView> {
         ),
         const SizedBox(height: 16),
         _ConfigSection(
-          title: 'App',
+          title: strings.app,
           children: [
             _ConfigSwitch(
-              title: 'Clipboard autorip',
+              title: strings.clipboardAutorip,
               icon: Icons.content_paste_search,
               keyName: 'clipboard.autorip',
               defaultValue: false,
               onChanged: _refresh,
             ),
             _ConfigSwitch(
-              title: 'Play sound when rip completes',
+              title: strings.playSoundWhenRipCompletes,
               icon: Icons.volume_up,
               keyName: 'play.sound',
               defaultValue: false,
@@ -977,13 +1005,17 @@ class _ConfigurationViewState extends State<ConfigurationView> {
       await DownloadHistoryProvider.importFromFile(File(path));
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Downloaded URL history imported')),
+          SnackBar(
+              content: Text(
+                  AppLocalizations.of(context).downloadedUrlHistoryImported)),
         );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Downloaded URL history import failed: $e')),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)
+                  .downloadedUrlHistoryImportFailed(e))),
         );
       }
     }
@@ -998,13 +1030,17 @@ class _ConfigurationViewState extends State<ConfigurationView> {
       );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Downloaded URL history exported')),
+          SnackBar(
+              content: Text(
+                  AppLocalizations.of(context).downloadedUrlHistoryExported)),
         );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Downloaded URL history export failed: $e')),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)
+                  .downloadedUrlHistoryExportFailed(e))),
         );
       }
     }
@@ -1095,6 +1131,7 @@ class _ConfigIntegerTile extends StatelessWidget {
   }
 
   Future<void> _editValue(BuildContext context, int currentValue) async {
+    final strings = AppLocalizations.of(context);
     final controller = TextEditingController(text: '$currentValue');
     final nextValue = await showDialog<int>(
       context: context,
@@ -1106,13 +1143,13 @@ class _ConfigIntegerTile extends StatelessWidget {
             keyboardType: TextInputType.number,
             autofocus: true,
             decoration: InputDecoration(
-              helperText: 'Range: $min-$max',
+              helperText: strings.range(min, max),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(strings.cancel),
             ),
             FilledButton(
               onPressed: () {
@@ -1120,7 +1157,7 @@ class _ConfigIntegerTile extends StatelessWidget {
                 if (parsed == null) return;
                 Navigator.of(context).pop(parsed.clamp(min, max));
               },
-              child: const Text('Save'),
+              child: Text(strings.save),
             ),
           ],
         );
@@ -1153,17 +1190,19 @@ class _ConfigStringTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppLocalizations.of(context);
     final value = Utils.getConfigString(keyName, defaultValue) ?? defaultValue;
     return ListTile(
       leading: Icon(icon),
       title: Text(title),
-      subtitle: Text(value.isEmpty ? 'None' : value),
+      subtitle: Text(value.isEmpty ? strings.none : value),
       trailing: const Icon(Icons.edit),
       onTap: () => _editValue(context, value),
     );
   }
 
   Future<void> _editValue(BuildContext context, String currentValue) async {
+    final strings = AppLocalizations.of(context);
     final controller = TextEditingController(text: currentValue);
     final nextValue = await showDialog<String>(
       context: context,
@@ -1178,13 +1217,13 @@ class _ConfigStringTile extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(strings.cancel),
             ),
             FilledButton(
               onPressed: () {
                 Navigator.of(context).pop(controller.text.trim());
               },
-              child: const Text('Save'),
+              child: Text(strings.save),
             ),
           ],
         );
