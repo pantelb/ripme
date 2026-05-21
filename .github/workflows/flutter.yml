@@ -39,13 +39,14 @@ jobs:
     needs: test
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
             target: linux
             artifact: ripme-linux
             path: build/linux/x64/release/bundle
-          - os: windows-latest
+          - os: windows-2022
             target: windows
             artifact: ripme-windows
             path: build/windows/x64/runner/Release
@@ -62,6 +63,10 @@ jobs:
       with:
         channel: 'stable'
         cache: true
+
+    - name: Disable Swift Package Manager for macOS
+      if: matrix.target == 'macos'
+      run: flutter config --no-enable-swift-package-manager
 
     - name: Install Linux build dependencies
       if: matrix.target == 'linux'
