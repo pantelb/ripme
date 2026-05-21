@@ -31,6 +31,19 @@ class RipManager extends ChangeNotifier {
   List<RipStatusMessage> get logs => _logs;
   List<HistoryEntry> get history => _history;
   bool get isRipping => _isRipping;
+  int get completedDownloads =>
+      _logs.where((msg) => msg.status == RipStatus.downloadComplete).length;
+  int get failedDownloads =>
+      _logs.where((msg) => msg.status == RipStatus.downloadErrored).length;
+  int get skippedDownloads =>
+      _logs.where((msg) => msg.status == RipStatus.downloadSkip).length;
+  int get activeDownloads {
+    final active =
+        _logs.where((msg) => msg.status == RipStatus.downloadStarted).length -
+            completedDownloads -
+            failedDownloads;
+    return active < 0 ? 0 : active;
+  }
 
   Future<void> init() async {
     _history = await HistoryProvider.loadHistory();
@@ -50,6 +63,24 @@ class RipManager extends ChangeNotifier {
       _queue.removeAt(index);
       notifyListeners();
     }
+  }
+
+  void moveQueueItem(int fromIndex, int toIndex) {
+    if (fromIndex < 0 || fromIndex >= _queue.length) return;
+    if (toIndex < 0 || toIndex >= _queue.length) return;
+    final item = _queue.removeAt(fromIndex);
+    _queue.insert(toIndex, item);
+    notifyListeners();
+  }
+
+  void clearQueue() {
+    _queue.clear();
+    notifyListeners();
+  }
+
+  void clearLogs() {
+    _logs.clear();
+    notifyListeners();
   }
 
   void stop() {

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripme/rip_manager.dart';
@@ -29,6 +30,32 @@ class CompletingRipper extends AbstractRipper {
   @override
   Future<void> rip() async {
     sendUpdate(RipStatus.ripComplete, workingDir.path);
+  }
+}
+
+class BlockingRipper extends AbstractRipper {
+  BlockingRipper(super.url, this.directory, this.release);
+
+  final Directory directory;
+  final Future<void> release;
+
+  @override
+  Future<void> setup() async {
+    workingDir = directory;
+  }
+
+  @override
+  bool canRip(Uri url) => true;
+
+  @override
+  Future<String> getGID(Uri url) async => 'blocking';
+
+  @override
+  String getHost() => 'test';
+
+  @override
+  Future<void> rip() async {
+    await release;
   }
 }
 
@@ -120,5 +147,46 @@ void main() {
     await manager.removeHistoryEntry(0);
 
     expect(manager.history.single.url, 'https://example.com/two');
+  });
+
+  test('tracks status counters and queue controls', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_manager_queue_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final release = Completer<void>();
+    addTearDown(() {
+      if (!release.isCompleted) release.complete();
+    });
+
+    final manager = RipManager(
+      ripperResolver: (uri) => BlockingRipper(uri, directory, release.future),
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+
+    manager.addUrlToQueue('https://example.com/one');
+    manager.addUrlToQueue('https://example.com/two');
+    manager.addUrlToQueue('https://example.com/three');
+    await _waitFor(() => manager.queue.length == 2);
+    manager.moveQueueItem(1, 0);
+    expect(manager.queue, [
+      'https://example.com/three',
+      'https://example.com/two',
+    ]);
+
+    manager.clearQueue();
+    expect(manager.queue, isEmpty);
+
+    release.complete();
+    manager.stop();
+    await _waitFor(() => !manager.isRipping);
+
+    expect(manager.failedDownloads, 0);
+
+    manager.clearLogs();
+    expect(manager.logs, isEmpty);
   });
 }

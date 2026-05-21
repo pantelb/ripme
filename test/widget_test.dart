@@ -33,10 +33,26 @@ void main() {
     await tester.tap(find.text('Config'));
     await tester.pumpAndSettle();
 
+    expect(find.text('Save URLs only'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('Maximum download threads'),
+      400,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.pumpAndSettle();
+
     expect(find.text('Maximum download threads'), findsOneWidget);
     expect(find.text('Retry download count'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('Ignored extensions'),
+      400,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.pumpAndSettle();
+
     expect(find.text('Ignored extensions'), findsOneWidget);
-    expect(find.text('Save URLs only'), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.text('Remember URL history'),

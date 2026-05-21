@@ -1,12 +1,15 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'download_history_provider.dart';
 import 'history_provider.dart';
 import 'rip_manager.dart';
+import 'ui/rip_status_message.dart';
 import 'utils/utils.dart';
 
 void main() async {
@@ -54,11 +57,25 @@ class _MainWindowState extends State<MainWindow>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _urlController = TextEditingController();
+  Timer? _clipboardTimer;
+  String? _lastClipboardUrl;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    _clipboardTimer = Timer.periodic(
+      const Duration(seconds: 2),
+      (_) => _checkClipboardAutorip(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _clipboardTimer?.cancel();
+    _tabController.dispose();
+    _urlController.dispose();
+    super.dispose();
   }
 
   @override
@@ -85,7 +102,7 @@ class _MainWindowState extends State<MainWindow>
                     ),
                     onSubmitted: (value) {
                       if (value.isNotEmpty) {
-                        ripManager.addUrlToQueue(value);
+                        _enqueueUrl(ripManager, value);
                         _urlController.clear();
                       }
                     },
@@ -95,7 +112,7 @@ class _MainWindowState extends State<MainWindow>
                 ElevatedButton.icon(
                   onPressed: () {
                     if (_urlController.text.isNotEmpty) {
-                      ripManager.addUrlToQueue(_urlController.text);
+                      _enqueueUrl(ripManager, _urlController.text);
                       _urlController.clear();
                     }
                   },
@@ -112,12 +129,13 @@ class _MainWindowState extends State<MainWindow>
               ],
             ),
           ),
+          _StatusSummary(ripManager: ripManager),
           if (ripManager.isRipping) const LinearProgressIndicator(),
           Expanded(
             child: TabBarView(
               controller: _tabController,
               children: [
-                LogView(logs: ripManager.logs),
+                LogView(logs: ripManager.logs, ripManager: ripManager),
                 HistoryView(
                     history: ripManager.history, ripManager: ripManager),
                 QueueView(queue: ripManager.queue, ripManager: ripManager),
@@ -127,6 +145,73 @@ class _MainWindowState extends State<MainWindow>
           ),
         ],
       ),
+    );
+  }
+
+  void _enqueueUrl(RipManager ripManager, String url) {
+    final trimmed = url.trim();
+    if (trimmed.isEmpty) return;
+    ripManager.addUrlToQueue(trimmed);
+  }
+
+  Future<void> _checkClipboardAutorip() async {
+    if (!mounted) return;
+    if (!Utils.getConfigBoolean('clipboard.autorip', false)) return;
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    final text = data?.text?.trim();
+    if (text == null || text == _lastClipboardUrl) return;
+    final uri = Uri.tryParse(text);
+    if (uri == null || !uri.hasScheme || uri.host.isEmpty) return;
+    _lastClipboardUrl = text;
+    if (!mounted) return;
+    Provider.of<RipManager>(context, listen: false).addUrlToQueue(text);
+  }
+}
+
+class _StatusSummary extends StatelessWidget {
+  final RipManager ripManager;
+
+  const _StatusSummary({required this.ripManager});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        child: Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: [
+            _StatusChip(
+                label: 'Queue', value: ripManager.queue.length.toString()),
+            _StatusChip(
+                label: 'Active', value: ripManager.activeDownloads.toString()),
+            _StatusChip(
+                label: 'Done', value: ripManager.completedDownloads.toString()),
+            _StatusChip(
+                label: 'Skipped',
+                value: ripManager.skippedDownloads.toString()),
+            _StatusChip(
+                label: 'Failed', value: ripManager.failedDownloads.toString()),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _StatusChip({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Chip(
+      visualDensity: VisualDensity.compact,
+      label: Text('$label: $value'),
     );
   }
 }
@@ -154,23 +239,128 @@ class TabControllerWidget extends StatelessWidget
 }
 
 class LogView extends StatelessWidget {
-  final List<dynamic> logs;
-  const LogView({super.key, required this.logs});
+  final List<RipStatusMessage> logs;
+  final RipManager ripManager;
+  const LogView({super.key, required this.logs, required this.ripManager});
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: logs.length,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: Text(
-            logs[index].toString(),
-            style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+    return _FilteredLogView(logs: logs, ripManager: ripManager);
+  }
+}
+
+class _FilteredLogView extends StatefulWidget {
+  final List<RipStatusMessage> logs;
+  final RipManager ripManager;
+
+  const _FilteredLogView({required this.logs, required this.ripManager});
+
+  @override
+  State<_FilteredLogView> createState() => _FilteredLogViewState();
+}
+
+class _FilteredLogViewState extends State<_FilteredLogView> {
+  String _filter = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final normalizedFilter = _filter.toLowerCase();
+    final filteredLogs = normalizedFilter.isEmpty
+        ? widget.logs
+        : widget.logs
+            .where((log) =>
+                log.toString().toLowerCase().contains(normalizedFilter))
+            .toList(growable: false);
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              SizedBox(
+                width: 280,
+                child: TextField(
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.filter_list),
+                    hintText: 'Filter log',
+                    border: OutlineInputBorder(),
+                    isDense: true,
+                  ),
+                  onChanged: (value) => setState(() => _filter = value),
+                ),
+              ),
+              OutlinedButton.icon(
+                onPressed: filteredLogs.isEmpty
+                    ? null
+                    : () => Clipboard.setData(
+                          ClipboardData(
+                            text: filteredLogs
+                                .map((log) => log.toString())
+                                .join('\n'),
+                          ),
+                        ),
+                icon: const Icon(Icons.copy),
+                label: const Text('Copy'),
+              ),
+              OutlinedButton.icon(
+                onPressed:
+                    widget.logs.isEmpty ? null : widget.ripManager.clearLogs,
+                icon: const Icon(Icons.clear_all),
+                label: const Text('Clear'),
+              ),
+            ],
           ),
-        );
-      },
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: filteredLogs.length,
+            itemBuilder: (context, index) {
+              final log = filteredLogs[index];
+              return ListTile(
+                dense: true,
+                leading: Icon(_statusIcon(log.status)),
+                title: SelectableText(
+                  log.toString(),
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                ),
+                trailing: PopupMenuButton<String>(
+                  onSelected: (value) {
+                    if (value == 'copy') {
+                      Clipboard.setData(ClipboardData(text: log.toString()));
+                    }
+                  },
+                  itemBuilder: (context) => const [
+                    PopupMenuItem(value: 'copy', child: Text('Copy log line')),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
+  }
+
+  IconData _statusIcon(RipStatus status) {
+    switch (status) {
+      case RipStatus.downloadComplete:
+      case RipStatus.ripComplete:
+        return Icons.check_circle_outline;
+      case RipStatus.downloadErrored:
+      case RipStatus.ripErrored:
+        return Icons.error_outline;
+      case RipStatus.downloadSkip:
+      case RipStatus.downloadWarn:
+        return Icons.warning_amber;
+      case RipStatus.downloadStarted:
+        return Icons.downloading;
+      case RipStatus.loadingResource:
+        return Icons.public;
+    }
   }
 }
 
@@ -222,7 +412,32 @@ class HistoryView extends StatelessWidget {
               return ListTile(
                 title: Text(entry.url),
                 subtitle: Text(entry.dir),
-                trailing: Text(entry.date.toString().split(' ')[0]),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(entry.date.toString().split(' ')[0]),
+                    PopupMenuButton<String>(
+                      onSelected: (value) {
+                        switch (value) {
+                          case 'copy':
+                            Clipboard.setData(ClipboardData(text: entry.url));
+                            break;
+                          case 'rerip':
+                            ripManager.addUrlToQueue(entry.url);
+                            break;
+                          case 'remove':
+                            ripManager.removeHistoryEntry(index);
+                            break;
+                        }
+                      },
+                      itemBuilder: (context) => const [
+                        PopupMenuItem(value: 'copy', child: Text('Copy URL')),
+                        PopupMenuItem(value: 'rerip', child: Text('Rip again')),
+                        PopupMenuItem(value: 'remove', child: Text('Remove')),
+                      ],
+                    ),
+                  ],
+                ),
                 leading: IconButton(
                   icon: const Icon(Icons.delete_outline),
                   onPressed: () => ripManager.removeHistoryEntry(index),
@@ -299,20 +514,66 @@ class QueueView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: queue.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(queue[index]),
-          leading: CircleAvatar(child: Text('${index + 1}')),
-          trailing: IconButton(
-            icon: const Icon(Icons.delete_outline),
-            onPressed: () {
-              ripManager.removeFromQueue(index);
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: OutlinedButton.icon(
+              onPressed: queue.isEmpty ? null : ripManager.clearQueue,
+              icon: const Icon(Icons.delete_sweep),
+              label: const Text('Clear queue'),
+            ),
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: queue.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(queue[index]),
+                leading: CircleAvatar(child: Text('${index + 1}')),
+                trailing: PopupMenuButton<String>(
+                  onSelected: (value) {
+                    switch (value) {
+                      case 'copy':
+                        Clipboard.setData(ClipboardData(text: queue[index]));
+                        break;
+                      case 'up':
+                        ripManager.moveQueueItem(index, index - 1);
+                        break;
+                      case 'down':
+                        ripManager.moveQueueItem(index, index + 1);
+                        break;
+                      case 'remove':
+                        ripManager.removeFromQueue(index);
+                        break;
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(value: 'copy', child: Text('Copy URL')),
+                    PopupMenuItem(
+                      value: 'up',
+                      enabled: index > 0,
+                      child: const Text('Move up'),
+                    ),
+                    PopupMenuItem(
+                      value: 'down',
+                      enabled: index < queue.length - 1,
+                      child: const Text('Move down'),
+                    ),
+                    const PopupMenuItem(
+                      value: 'remove',
+                      child: Text('Remove from queue'),
+                    ),
+                  ],
+                ),
+              );
             },
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 }
