@@ -14,6 +14,10 @@ Future<HttpServer> _server(Future<void> Function(HttpRequest request) handler) {
 }
 
 void main() {
+  tearDown(() {
+    Http.delay = Future.delayed;
+  });
+
   test('retries failed JSON requests', () async {
     SharedPreferences.setMockInitialValues({
       'download.retries': 1,
@@ -126,5 +130,113 @@ void main() {
     expect(referer, 'https://example.com/page');
     expect(cookie, contains('session=abc'));
     expect(cookie, contains('pref=dark'));
+  });
+
+  test('adds configured domain cookies to requests', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 0,
+      'page.timeout': 1000,
+      'cookies.127.0.0.1': 'session=abc; pref=dark',
+    });
+    await Utils.init();
+
+    late String? cookie;
+    final server = await _server((request) async {
+      cookie = request.headers.value('cookie');
+      request.response.write('<html></html>');
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    await Http.get(Uri.parse('http://127.0.0.1:${server.port}/page'));
+
+    expect(cookie, contains('session=abc'));
+    expect(cookie, contains('pref=dark'));
+  });
+
+  test('routes requests through configured HTTP proxy', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 0,
+      'page.timeout': 1000,
+      'proxy.enabled': true,
+    });
+    await Utils.init();
+
+    late Uri proxyRequestUri;
+    final proxy = await _server((request) async {
+      proxyRequestUri = request.uri;
+      request.response.write('<html></html>');
+      await request.response.close();
+    });
+    addTearDown(proxy.close);
+
+    await Utils.setConfigString('proxy.host', '127.0.0.1');
+    await Utils.setConfigInteger('proxy.port', proxy.port);
+
+    await Http.get(Uri.parse('http://example.invalid/proxied'));
+
+    expect(proxyRequestUri.toString(), 'http://example.invalid/proxied');
+  });
+
+  test('waits for retry-after before retrying rate-limited responses',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 1,
+      'download.retry.sleep': 0,
+      'page.timeout': 1000,
+    });
+    await Utils.init();
+
+    final delays = <Duration>[];
+    Http.delay = (duration) async {
+      delays.add(duration);
+    };
+
+    var attempts = 0;
+    final server = await _server((request) async {
+      attempts++;
+      if (attempts == 1) {
+        request.response.statusCode = 429;
+        request.response.headers.set('Retry-After', '3');
+      } else {
+        request.response.write(jsonEncode({'ok': true}));
+      }
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final json =
+        await Http.getJSON(Uri.parse('http://127.0.0.1:${server.port}/data'));
+
+    expect(json['ok'], isTrue);
+    expect(attempts, 2);
+    expect(delays, [const Duration(seconds: 3)]);
+  });
+
+  test('parses JSON and HTML without relying on content type', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 0,
+      'page.timeout': 1000,
+    });
+    await Utils.init();
+
+    final server = await _server((request) async {
+      request.response.headers.contentType = ContentType.text;
+      if (request.uri.path == '/json') {
+        request.response.write(jsonEncode({'ok': true}));
+      } else {
+        request.response.write('<html><body><h1>ok</h1></body></html>');
+      }
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final json =
+        await Http.getJSON(Uri.parse('http://127.0.0.1:${server.port}/json'));
+    final html =
+        await Http.get(Uri.parse('http://127.0.0.1:${server.port}/html'));
+
+    expect(json['ok'], isTrue);
+    expect(html.querySelector('h1')?.text, 'ok');
   });
 }
