@@ -6,6 +6,7 @@ import 'rippers/artstn_ripper.dart';
 import 'rippers/imgur_ripper.dart';
 import 'rippers/reddit_ripper.dart';
 import 'rippers/redgifs_ripper.dart';
+import 'rippers/tumblr_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
 
 class RipperFactory {
@@ -20,6 +21,7 @@ class RipperFactory {
         host.contains('gifdeliverynetwork.com')) {
       return RedgifsRipper(uri);
     }
+    if (host.contains('tumblr.com')) return TumblrRipper(uri);
 
     final legacyMatch = RipperMigrationCatalog.findUnportedLegacyRipper(uri);
     if (legacyMatch != null) return UnsupportedLegacyRipper(uri, legacyMatch);

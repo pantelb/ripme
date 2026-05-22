@@ -20,8 +20,8 @@ class TumblrRipper extends AbstractJSONRipper {
   @override
   Future<void> parseJSON(Uri url) async {
     String hostname = url.host;
-    String apiKey =
-        "JFNLu3CbINQjRdUvZibXW9VpSEVYYtiPJ86o8YmvgLZIoKyuNX"; // One of the defaults
+    String apiKey = Utils.getConfigString('tumblr.auth', null) ??
+        "JFNLu3CbINQjRdUvZibXW9VpSEVYYtiPJ86o8YmvgLZIoKyuNX";
 
     int offset = 0;
     while (true) {
