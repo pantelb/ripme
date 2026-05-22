@@ -44,6 +44,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] ArtstnRipper ported: Java-compatible short-link redirect resolution through the ArtStation ripper plus factory/catalog coverage
 - [x] ImgurRipper ported: Java-compatible album type detection (USER, ALBUM, USER_ALBUM, USER_IMAGES, SINGLE_IMAGE, SUBREDDIT), API integration with client ID, pagination, HTML fallback, and factory/catalog coverage
 - [x] TumblrRipper ported: Java-compatible API key configuration, photo extraction from posts, pagination, and factory/catalog coverage
+- [x] TwitterRipper partially implemented: OAuth2 authentication, single tweet media extraction, API integration, factory integration. Still needs: pagination for user timelines, full video support, error handling.
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -53,11 +54,10 @@ The following ripper files exist as Dart stubs but are **NOT** included in `Ripp
 - **FlickrRipper** - Missing API key extraction, URL type detection, pagination, proper album handling (Java: API-based)
 - **InstagramRipper** - Minimal stub, no actual Instagram API/JS handling (Java: JS-heavy architecture)
 - **NhentaiRipper** - Missing tag blacklist, queue support, proper album title extraction (Java: tag queuing & blacklist)
-- **TwitterRipper** - Explicitly unimplemented (throws UnimplementedError, Java requires OAuth)
 - **MotherlessRipper** - Missing thread pool, sleep timing, referrer handling, complex GID patterns, proper URL sanitization (Java: thread-based download)
 - **ImagefapRipper** - Missing rate limiting, retry logic, IP block detection, proper URL sanitization, album title extraction (Java: sophisticated rate limiting)
 
-**Current Behavior**: These rippers exist as `.dart` files for testing basic scaffolding but return `UnsupportedLegacyRipper` via the migration catalog. The factory now includes 7 fully ported rippers (Allporncomic, ArtStation, Artstn, Imgur, Reddit, Redgifs, Tumblr).
+**Current Behavior**: These rippers exist as `.dart` files for testing basic scaffolding but return `UnsupportedLegacyRipper` via the migration catalog. The factory now includes 8 rippers (7 fully ported + Twitter partially implemented).
 
 ## Unported Rippers
 
