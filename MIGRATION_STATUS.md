@@ -152,9 +152,7 @@ These Java rippers still need Dart implementations after the current Reddit and 
 - ThechiveRipper
 - TheyiffgalleryRipper
 - TsuminoRipper
-- TumblrRipper
 - TwitchVideoRipper
-- TwitterRipper
 - TwodgalleriesRipper
 - VidbleRipper
 - ViddmeRipper

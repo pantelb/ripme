@@ -7,6 +7,7 @@ import 'package:ripme/ripper/rippers/artstn_ripper.dart';
 import 'package:ripme/ripper/rippers/imgur_ripper.dart';
 import 'package:ripme/ripper/rippers/reddit_ripper.dart';
 import 'package:ripme/ripper/rippers/redgifs_ripper.dart';
+import 'package:ripme/ripper/rippers/twitter_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
 
 void main() {
@@ -42,21 +43,19 @@ void main() {
         'DeviantartRipper');
   });
 
-  test('incomplete ripper stubs are not advertised as complete', () {
+  test('partially implemented rippers return their actual class', () {
     final imgur =
         RipperFactory.getRipper(Uri.parse('https://imgur.com/a/G058j5F'));
     final twitter =
         RipperFactory.getRipper(Uri.parse('https://x.com/example/status/123'));
 
     expect(imgur, isA<ImgurRipper>());
-    expect(twitter, isA<UnsupportedLegacyRipper>());
-    expect(
-        (twitter as UnsupportedLegacyRipper).match.javaClass, 'TwitterRipper');
+    expect(twitter, isA<TwitterRipper>());
   });
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 6);
-    expect(RipperMigrationCatalog.unportedRipperCount, 110);
+    expect(RipperMigrationCatalog.portedRipperCount, 8);
+    expect(RipperMigrationCatalog.unportedRipperCount, 108);
   });
 }
