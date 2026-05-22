@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:html/dom.dart';
-import 'package:html/parser.dart' as parser;
 import '../abstract_html_ripper.dart';
 import '../../utils/http_utils.dart';
 import '../../utils/utils.dart';
@@ -281,7 +279,6 @@ class ImgurRipper extends AbstractHTMLRipper {
         for (final album in albums) {
           if (isStopped) break;
           final albumId = album['id'] as String?;
-          final albumTitle = album['title'] as String? ?? '';
           if (albumId != null) {
             final albumUrl = Uri.parse('https://imgur.com/a/$albumId');
             await _ripAlbum(albumUrl);
