@@ -1,5 +1,6 @@
 import '../abstract_json_ripper.dart';
 import '../../utils/http_utils.dart';
+import '../../utils/utils.dart';
 import 'dart:io';
 import 'package:path/path.dart' as p;
 
