@@ -11,7 +11,8 @@ import 'package:ripme/ripper/rippers/tumblr_ripper.dart';
 import 'package:ripme/ripper/rippers/twitter_ripper.dart';
 
 void main() {
-  test('ported HTML rippers advertise Java-compatible hosts', () async {
+  test('unfinished HTML ripper scaffolds advertise Java-compatible hosts',
+      () async {
     final cases = [
       (
         ImgurRipper(Uri.parse('https://imgur.com/a/G058j5F')),
@@ -45,8 +46,7 @@ void main() {
         'example'
       ),
       (
-        ImagefapRipper(
-            Uri.parse('https://www.imagefap.com/gallery/abcdef12')),
+        ImagefapRipper(Uri.parse('https://www.imagefap.com/gallery/abcdef12')),
         Uri.parse('https://www.imagefap.com/gallery/abcdef12'),
         'imagefap',
         'abcdef12'
@@ -69,10 +69,11 @@ void main() {
     }
   });
 
-  test('ported JSON rippers advertise Java-compatible hosts', () async {
+  test('unfinished JSON ripper scaffolds advertise Java-compatible hosts',
+      () async {
     final tumblr = TumblrRipper(Uri.parse('https://example.tumblr.com/post/1'));
-    expect(tumblr.canRip(Uri.parse('https://example.tumblr.com/post/1')),
-        isTrue);
+    expect(
+        tumblr.canRip(Uri.parse('https://example.tumblr.com/post/1')), isTrue);
     expect(tumblr.getHost(), 'tumblr');
     expect(await tumblr.getGID(Uri.parse('https://example.tumblr.com/post/1')),
         'example');
@@ -180,7 +181,8 @@ void main() {
   });
 
   test('Motherless parser finds rel=next pagination links', () async {
-    final ripper = MotherlessRipper(Uri.parse('https://motherless.com/GABCDEF1'));
+    final ripper =
+        MotherlessRipper(Uri.parse('https://motherless.com/GABCDEF1'));
     final page = html.parse('''
       <html><head>
         <link rel="next" href="https://motherless.com/GABCDEF1?page=2">

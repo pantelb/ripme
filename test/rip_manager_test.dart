@@ -59,6 +59,32 @@ class BlockingRipper extends AbstractRipper {
   }
 }
 
+class QueueingRipper extends AbstractRipper {
+  QueueingRipper(super.url, this.directory);
+
+  final Directory directory;
+
+  @override
+  Future<void> setup() async {
+    workingDir = directory;
+  }
+
+  @override
+  bool canRip(Uri url) => true;
+
+  @override
+  Future<String> getGID(Uri url) async => 'queueing';
+
+  @override
+  String getHost() => 'test';
+
+  @override
+  Future<void> rip() async {
+    sendUpdate(RipStatus.queueAdd, 'https://example.com/child');
+    sendUpdate(RipStatus.ripComplete, workingDir.path);
+  }
+}
+
 Future<void> _waitFor(bool Function() condition) async {
   final deadline = DateTime.now().add(const Duration(seconds: 2));
   while (!condition()) {
@@ -188,5 +214,39 @@ void main() {
 
     manager.clearLogs();
     expect(manager.logs, isEmpty);
+  });
+
+  test('adds child URLs emitted by queue-capable rippers', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_manager_child_queue_test');
+    addTearDown(() => directory.delete(recursive: true));
+
+    var childStarted = false;
+    final release = Completer<void>();
+    addTearDown(() {
+      if (!release.isCompleted) release.complete();
+    });
+    final manager = RipManager(
+      ripperResolver: (uri) {
+        if (uri.toString().endsWith('/child')) {
+          childStarted = true;
+          return BlockingRipper(uri, directory, release.future);
+        }
+        return QueueingRipper(uri, directory);
+      },
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+
+    manager.addUrlToQueue('https://example.com/parent');
+
+    await _waitFor(() => childStarted);
+    release.complete();
+    manager.stop();
+
+    expect(manager.logs.any((msg) => msg.status == RipStatus.queueAdd), isTrue);
   });
 }

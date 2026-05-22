@@ -7,6 +7,7 @@ enum RipStatus {
   downloadWarn,
   downloadSkip,
   ripErrored,
+  queueAdd,
 }
 
 class RipStatusMessage {

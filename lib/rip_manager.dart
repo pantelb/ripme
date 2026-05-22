@@ -117,6 +117,9 @@ class RipManager extends ChangeNotifier {
 
     await _currentRipper!.setup();
     _currentRipper!.statusStream.listen((event) {
+      if (event.status == RipStatus.queueAdd) {
+        _queue.add(event.object.toString());
+      }
       _addLog(event);
       if (event.status == RipStatus.ripComplete) {
         unawaited(_playCompletionSoundIfEnabled());

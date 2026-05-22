@@ -36,16 +36,17 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] Video handling parity: shared helpers for streamed manifests, referers, extensions, and video-specific rippers
 - [x] Platform integration: Android storage/scoped permissions, macOS 12-compatible entitlements/deployment target, Windows/Linux/macOS packaging metadata, file/folder opening, icons, metadata, and release workflows
 - [x] Localization/resource parity: restored Java label bundles as Flutter assets and wired migrated UI labels through a Flutter localization layer with English fallback
-- [x] Test parity: mocked parser tests for all ported rippers, download engine tests, configuration/history tests, and opt-in live smoke tests for fragile Reddit/Redgifs checks
+- [x] Test parity: mocked parser tests for completed Reddit/Redgifs behavior, migrated helper parsers, download engine tests, configuration/history tests, and opt-in live smoke tests for fragile Reddit/Redgifs checks
 - [x] Update/release behavior: Java self-updater replaced by GitHub Releases checks in Flutter configuration plus Actions-driven release artifacts
+- [x] Ported ripper parity audit: only fully migrated rippers are currently advertised; earlier shallow Dart scaffolds were moved back to the unported queue until their Java behavior is fully implemented
+- [x] AllporncomicRipper ported: Java-compatible GIDs, chapter image extraction, comic chapter queue expansion, and factory/catalog coverage
+- [x] ArtStationRipper ported: Java-compatible project/user JSON discovery, project asset extraction, portfolio pagination, project subfolders, and factory/catalog coverage
+- [x] ArtstnRipper ported: Java-compatible short-link redirect resolution through the ArtStation ripper plus factory/catalog coverage
 
 ## Unported Rippers
 
 These Java rippers still need Dart implementations after the current Reddit and Redgifs passes:
 
-- AllporncomicRipper
-- ArtStationRipper
-- ArtstnRipper
 - BaraagRipper
 - BatoRipper
 - BooruRipper
@@ -61,6 +62,7 @@ These Java rippers still need Dart implementations after the current Reddit and 
 - DynastyscansRipper
 - E621Ripper
 - EHentaiRipper
+- EightmusesRipper
 - ErofusRipper
 - EromeRipper
 - FapDungeonRipper
@@ -68,6 +70,7 @@ These Java rippers still need Dart implementations after the current Reddit and 
 - FemjoyhunterRipper
 - FitnakedgirlsRipper
 - FivehundredpxRipper
+- FlickrRipper
 - FreeComicOnlineRipper
 - FuraffinityRipper
 - FuskatorRipper
@@ -81,8 +84,11 @@ These Java rippers still need Dart implementations after the current Reddit and 
 - HqpornerRipper
 - HypnohubRipper
 - ImagebamRipper
+- ImagefapRipper
 - ImagevenueRipper
 - ImgboxRipper
+- ImgurRipper
+- InstagramRipper
 - JabArchivesRipper
 - JagodibujaRipper
 - Jpg3Ripper
@@ -93,6 +99,7 @@ These Java rippers still need Dart implementations after the current Reddit and 
 - MastodonRipper
 - MastodonXyzRipper
 - ModelmayhemRipper
+- MotherlessRipper
 - MotherlessVideoRipper
 - MrCongRipper
 - MultpornRipper
@@ -102,6 +109,7 @@ These Java rippers still need Dart implementations after the current Reddit and 
 - NatalieMuRipper
 - NewgroundsRipper
 - NfsfwRipper
+- NhentaiRipper
 - NsfwAlbumRipper
 - NsfwXxxRipper
 - NudeGalsRipper
@@ -131,7 +139,9 @@ These Java rippers still need Dart implementations after the current Reddit and 
 - ThechiveRipper
 - TheyiffgalleryRipper
 - TsuminoRipper
+- TumblrRipper
 - TwitchVideoRipper
+- TwitterRipper
 - TwodgalleriesRipper
 - VidbleRipper
 - ViddmeRipper

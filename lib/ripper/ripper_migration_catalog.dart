@@ -129,17 +129,11 @@ class RipperMigrationCatalog {
   ];
 
   static const Set<String> portedRipperClasses = {
-    'EightmusesRipper',
-    'FlickrRipper',
-    'ImagefapRipper',
-    'ImgurRipper',
-    'InstagramRipper',
-    'MotherlessRipper',
-    'NhentaiRipper',
+    'AllporncomicRipper',
+    'ArtStationRipper',
+    'ArtstnRipper',
     'RedditRipper',
     'RedgifsRipper',
-    'TumblrRipper',
-    'TwitterRipper',
   };
 
   static const Map<String, List<String>> _hostAliases = {
@@ -164,6 +158,7 @@ class RipperMigrationCatalog {
     'ShesFreakyRipper': ['shesfreaky'],
     'ThechiveRipper': ['thechive'],
     'TwitchVideoRipper': ['twitch'],
+    'TwitterRipper': ['twitter', 'x'],
     'VkRipper': ['vk'],
   };
 

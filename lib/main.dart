@@ -380,6 +380,8 @@ class _FilteredLogViewState extends State<_FilteredLogView> {
         return Icons.downloading;
       case RipStatus.loadingResource:
         return Icons.public;
+      case RipStatus.queueAdd:
+        return Icons.queue;
     }
   }
 }

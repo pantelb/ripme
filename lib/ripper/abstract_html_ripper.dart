@@ -19,6 +19,16 @@ abstract class AbstractHTMLRipper extends AbstractRipper {
       return;
     }
 
+    if (hasQueueSupport() && pageContainsAlbums(url)) {
+      final childUrls = await getAlbumsToQueue(doc);
+      for (final childUrl in childUrls) {
+        if (isStopped) break;
+        sendUpdate(RipStatus.queueAdd, childUrl);
+      }
+      sendUpdate(RipStatus.ripComplete, workingDir.path);
+      return;
+    }
+
     int index = 0;
     while (true) {
       List<String> imageURLs = await getURLsFromPage(doc);
@@ -51,6 +61,9 @@ abstract class AbstractHTMLRipper extends AbstractRipper {
 
   Future<List<String>> getURLsFromPage(Document page);
   Future<Uri?> getNextPage(Document page);
+  bool hasQueueSupport() => false;
+  bool pageContainsAlbums(Uri url) => false;
+  Future<List<String>> getAlbumsToQueue(Document page) async => const [];
 
   String _getFileName(Uri url, int index) {
     String fileName =
