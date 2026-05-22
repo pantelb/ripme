@@ -44,7 +44,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] ArtstnRipper ported: Java-compatible short-link redirect resolution through the ArtStation ripper plus factory/catalog coverage
 - [x] ImgurRipper ported: Java-compatible album type detection (USER, ALBUM, USER_ALBUM, USER_IMAGES, SINGLE_IMAGE, SUBREDDIT), API integration with client ID, pagination, HTML fallback, and factory/catalog coverage
 - [x] TumblrRipper ported: Java-compatible API key configuration, photo extraction from posts, pagination, and factory/catalog coverage
-- [x] TwitterRipper partially implemented: OAuth2 authentication, single tweet media extraction, API integration, factory integration. Still needs: pagination for user timelines, full video support, error handling.
+- [x] TwitterRipper implemented: OAuth2 authentication, single tweet media extraction, user timeline pagination, API integration, factory integration. Still needs: full video support (currently downloads preview images), better error handling.
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
