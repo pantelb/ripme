@@ -26,13 +26,15 @@ class EightmusesRipper extends AbstractHTMLRipper {
       if (href != null) {
         if (href.contains('/comics/album/')) {
           // Recursive call for sub-albums
-          Document subPage = await Http.get(Uri.parse("https://www.8muses.com$href"));
+          Document subPage =
+              await Http.get(Uri.parse("https://www.8muses.com$href"));
           urls.addAll(await getURLsFromPage(subPage));
         } else if (href.contains('/comics/picture/')) {
           var img = tile.querySelector('img');
           String? src = img?.attributes['data-src'];
           if (src != null) {
-            String imageUrl = "https://comics.8muses.com${src.replaceFirst('/th/', '/fl/')}";
+            String imageUrl =
+                "https://comics.8muses.com${src.replaceFirst('/th/', '/fl/')}";
             urls.add(imageUrl);
           }
         }

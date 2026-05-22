@@ -8,7 +8,8 @@ class TwitterRipper extends AbstractJSONRipper {
   String getHost() => "twitter";
 
   @override
-  bool canRip(Uri url) => url.host.endsWith("twitter.com") || url.host.endsWith("x.com");
+  bool canRip(Uri url) =>
+      url.host.endsWith("twitter.com") || url.host.endsWith("x.com");
 
   @override
   Future<String> getGID(Uri url) async {
@@ -24,6 +25,7 @@ class TwitterRipper extends AbstractJSONRipper {
       throw Exception("Twitter auth key not found in config");
     }
 
-    throw UnimplementedError("Twitter ripping still needs to be ported from the Java implementation");
+    throw UnimplementedError(
+        "Twitter ripping still needs to be ported from the Java implementation");
   }
 }

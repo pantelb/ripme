@@ -52,19 +52,21 @@ class ImgurRipper extends AbstractHTMLRipper {
     }
 
     // Pattern 3: root imgur account (username.imgur.com)
-    final rootAccountPattern = RegExp(r'^https?://([a-zA-Z0-9\-]{4,})\.imgur\.com/?$');
+    final rootAccountPattern =
+        RegExp(r'^https?://([a-zA-Z0-9\-]{4,})\.imgur\.com/?$');
     match = rootAccountPattern.firstMatch(urlStr);
     if (match != null) {
       final gid = match.group(1)!;
       if (gid == 'www') {
-        throw FormatException('Cannot rip the www.imgur.com homepage');
+        throw const FormatException('Cannot rip the www.imgur.com homepage');
       }
       _albumType = ImgurAlbumType.user;
       return 'user_$gid';
     }
 
     // Pattern 4: new imgur user URL
-    final userPattern = RegExp(r'^https?://(?:www\.|m\.)?imgur\.com/user/([a-zA-Z0-9]+).*$');
+    final userPattern =
+        RegExp(r'^https?://(?:www\.|m\.)?imgur\.com/user/([a-zA-Z0-9]+).*$');
     match = userPattern.firstMatch(urlStr);
     if (match != null) {
       final gid = match.group(1)!;
@@ -73,7 +75,8 @@ class ImgurRipper extends AbstractHTMLRipper {
     }
 
     // Pattern 5: user images (username.imgur.com/all)
-    final userImagesPattern = RegExp(r'^https?://([a-zA-Z0-9\-]{3,})\.imgur\.com/all.*$');
+    final userImagesPattern =
+        RegExp(r'^https?://([a-zA-Z0-9\-]{3,})\.imgur\.com/all.*$');
     match = userImagesPattern.firstMatch(urlStr);
     if (match != null) {
       _albumType = ImgurAlbumType.userImages;
@@ -81,7 +84,8 @@ class ImgurRipper extends AbstractHTMLRipper {
     }
 
     // Pattern 6: user album (username.imgur.com/albumname)
-    final userAlbumPattern = RegExp(r'^https?://([a-zA-Z0-9\-]{3,})\.imgur\.com/([a-zA-Z0-9\-_]+).*$');
+    final userAlbumPattern = RegExp(
+        r'^https?://([a-zA-Z0-9\-]{3,})\.imgur\.com/([a-zA-Z0-9\-_]+).*$');
     match = userAlbumPattern.firstMatch(urlStr);
     if (match != null) {
       _albumType = ImgurAlbumType.userAlbum;
@@ -105,7 +109,8 @@ class ImgurRipper extends AbstractHTMLRipper {
     }
 
     // Pattern 8: subreddit album or image
-    final subredditAlbumPattern = RegExp(r'^https?://(i\.|www\.|m\.)?imgur\.com/r/(\w+)/([a-zA-Z0-9,]{5,}).*$');
+    final subredditAlbumPattern = RegExp(
+        r'^https?://(i\.|www\.|m\.)?imgur\.com/r/(\w+)/([a-zA-Z0-9,]{5,}).*$');
     match = subredditAlbumPattern.firstMatch(urlStr);
     if (match != null) {
       _albumType = ImgurAlbumType.album;
@@ -115,7 +120,8 @@ class ImgurRipper extends AbstractHTMLRipper {
     }
 
     // Pattern 9: single image
-    final singleImagePattern = RegExp(r'^https?://(i\.|www\.|m\.)?imgur\.com/([a-zA-Z0-9]{5,})$');
+    final singleImagePattern =
+        RegExp(r'^https?://(i\.|www\.|m\.)?imgur\.com/([a-zA-Z0-9]{5,})$');
     match = singleImagePattern.firstMatch(urlStr);
     if (match != null) {
       _albumType = ImgurAlbumType.singleImage;
@@ -133,8 +139,10 @@ class ImgurRipper extends AbstractHTMLRipper {
     try {
       // Special case: homepage should return false
       final urlStr = url.toString();
-      if (urlStr == 'https://www.imgur.com' || urlStr == 'http://www.imgur.com' || 
-          urlStr == 'https://imgur.com' || urlStr == 'http://imgur.com') {
+      if (urlStr == 'https://www.imgur.com' ||
+          urlStr == 'http://www.imgur.com' ||
+          urlStr == 'https://imgur.com' ||
+          urlStr == 'http://imgur.com') {
         return false;
       }
       getGID(url);
@@ -153,7 +161,7 @@ class ImgurRipper extends AbstractHTMLRipper {
   Future<List<String>> getURLsFromPage(Document page) async {
     final List<String> urls = [];
     final images = page.querySelectorAll('img');
-    
+
     for (final img in images) {
       var src = img.attributes['src'];
       if (src != null && src.contains('i.imgur.com')) {
@@ -161,7 +169,7 @@ class ImgurRipper extends AbstractHTMLRipper {
         urls.add(src);
       }
     }
-    
+
     return urls;
   }
 
@@ -196,11 +204,12 @@ class ImgurRipper extends AbstractHTMLRipper {
   Future<void> _ripAlbum(Uri url) async {
     sendUpdate(RipStatus.loadingResource, url.toString());
     _albumDoc = await Http.get(url);
-    
+
     // Try to extract from JSON API first
     final albumId = await getGID(url);
-    final apiUrl = Uri.parse('https://api.imgur.com/post/v1/albums/$albumId?client_id=546c25a59c58ad7&include=media');
-    
+    final apiUrl = Uri.parse(
+        'https://api.imgur.com/post/v1/albums/$albumId?client_id=546c25a59c58ad7&include=media');
+
     try {
       final response = await Http.getJSON(apiUrl);
       final items = response['media'] as List?;
@@ -215,7 +224,8 @@ class ImgurRipper extends AbstractHTMLRipper {
                 : '';
             final uri = Uri.parse(imageUrl);
             final fileName = _getFileName(uri, i + 1, prefix);
-            final saveAs = File(workingDir.path + Platform.pathSeparator + fileName);
+            final saveAs =
+                File(workingDir.path + Platform.pathSeparator + fileName);
             await downloadFile(uri, saveAs);
           }
         }
@@ -224,7 +234,7 @@ class ImgurRipper extends AbstractHTMLRipper {
     } catch (e) {
       // Fall back to HTML parsing
     }
-    
+
     // HTML fallback
     final images = _albumDoc!.querySelectorAll('img');
     for (int i = 0; i < images.length; i++) {
@@ -238,7 +248,8 @@ class ImgurRipper extends AbstractHTMLRipper {
             : '';
         final uri = Uri.parse(src);
         final fileName = _getFileName(uri, i + 1, prefix);
-        final saveAs = File(workingDir.path + Platform.pathSeparator + fileName);
+        final saveAs =
+            File(workingDir.path + Platform.pathSeparator + fileName);
         await downloadFile(uri, saveAs);
       }
     }
@@ -250,15 +261,16 @@ class ImgurRipper extends AbstractHTMLRipper {
     if (url.host != 'i.imgur.com') {
       // Extract from page
       final page = await Http.get(url);
-      final meta = page.querySelector('meta[property="og:image"]') ?? 
-                  page.querySelector('meta[name="twitter:image:src"]') ??
-                  page.querySelector('meta[name="twitter:image"]');
+      final meta = page.querySelector('meta[property="og:image"]') ??
+          page.querySelector('meta[name="twitter:image:src"]') ??
+          page.querySelector('meta[name="twitter:image"]');
       final imageSrc = meta?.attributes['content'];
       if (imageSrc != null) {
-        imageUrl = Uri.parse(imageSrc.startsWith('//') ? 'https:$imageSrc' : imageSrc);
+        imageUrl =
+            Uri.parse(imageSrc.startsWith('//') ? 'https:$imageSrc' : imageSrc);
       }
     }
-    
+
     final fileName = _getFileName(imageUrl, 1, '');
     final saveAs = File(workingDir.path + Platform.pathSeparator + fileName);
     await downloadFile(imageUrl, saveAs);
@@ -268,14 +280,15 @@ class ImgurRipper extends AbstractHTMLRipper {
     final gid = await getGID(url);
     final username = gid.replaceFirst('user_', '');
     int page = 0;
-    
+
     while (!isStopped) {
-      final apiUrl = Uri.parse('https://api.imgur.com/3/account/$username/albums/$page?client_id=546c25a59c58ad7');
+      final apiUrl = Uri.parse(
+          'https://api.imgur.com/3/account/$username/albums/$page?client_id=546c25a59c58ad7');
       try {
         final response = await Http.getJSON(apiUrl);
         final albums = response['data'] as List?;
         if (albums == null || albums.isEmpty) break;
-        
+
         for (final album in albums) {
           if (isStopped) break;
           final albumId = album['id'] as String?;
@@ -285,9 +298,9 @@ class ImgurRipper extends AbstractHTMLRipper {
           }
           await Future.delayed(Duration(seconds: _sleepBetweenAlbums));
         }
-        
+
         page++;
-        await Future.delayed(Duration(seconds: 2));
+        await Future.delayed(const Duration(seconds: 2));
       } catch (e) {
         break;
       }
@@ -298,14 +311,15 @@ class ImgurRipper extends AbstractHTMLRipper {
     final gid = await getGID(url);
     final username = gid.replaceFirst('_images', '');
     int page = 0;
-    
+
     while (!isStopped) {
-      final apiUrl = Uri.parse('https://api.imgur.com/3/account/$username/images/$page?client_id=546c25a59c58ad7');
+      final apiUrl = Uri.parse(
+          'https://api.imgur.com/3/account/$username/images/$page?client_id=546c25a59c58ad7');
       try {
         final response = await Http.getJSON(apiUrl);
         final images = response['data'] as List?;
         if (images == null || images.isEmpty) break;
-        
+
         for (int i = 0; i < images.length; i++) {
           if (isStopped) break;
           final image = images[i] as Map<String, dynamic>;
@@ -316,13 +330,14 @@ class ImgurRipper extends AbstractHTMLRipper {
                 : '';
             final uri = Uri.parse(imageUrl);
             final fileName = _getFileName(uri, i + 1, prefix);
-            final saveAs = File(workingDir.path + Platform.pathSeparator + fileName);
+            final saveAs =
+                File(workingDir.path + Platform.pathSeparator + fileName);
             await downloadFile(uri, saveAs);
           }
         }
-        
+
         page++;
-        await Future.delayed(Duration(seconds: 2));
+        await Future.delayed(const Duration(seconds: 2));
       } catch (e) {
         break;
       }
@@ -334,12 +349,12 @@ class ImgurRipper extends AbstractHTMLRipper {
     while (!isStopped) {
       final pageUrl = url.toString().endsWith('/')
           ? '${url}page/$page/miss?scrolled'
-          : '${url}/page/$page/miss?scrolled';
-      
+          : '$url/page/$page/miss?scrolled';
+
       sendUpdate(RipStatus.loadingResource, pageUrl);
       final doc = await Http.get(Uri.parse(pageUrl));
       final images = doc.querySelectorAll('.post img');
-      
+
       for (final img in images) {
         if (isStopped) break;
         var src = img.attributes['src'];
@@ -348,55 +363,61 @@ class ImgurRipper extends AbstractHTMLRipper {
           if (src.contains('b.')) src = src.replaceFirst('b.', '.');
           final uri = Uri.parse(src);
           final fileName = _getFileName(uri, 1, '');
-          final saveAs = File(workingDir.path + Platform.pathSeparator + fileName);
+          final saveAs =
+              File(workingDir.path + Platform.pathSeparator + fileName);
           await downloadFile(uri, saveAs);
         }
       }
-      
+
       if (images.isEmpty) break;
       page++;
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
     }
   }
 
   String _getFileName(Uri url, int index, String prefix) {
-    String fileName = url.pathSegments.isNotEmpty ? url.pathSegments.last : 'file';
+    String fileName =
+        url.pathSegments.isNotEmpty ? url.pathSegments.last : 'file';
     if (fileName.contains('?')) {
       fileName = fileName.substring(0, fileName.indexOf('?'));
     }
-    final extension = fileName.contains('.') ? fileName.substring(fileName.lastIndexOf('.')) : '.jpg';
-    final nameWithoutExt = fileName.contains('.') ? fileName.substring(0, fileName.lastIndexOf('.')) : fileName;
-    
+    final extension = fileName.contains('.')
+        ? fileName.substring(fileName.lastIndexOf('.'))
+        : '.jpg';
+    final nameWithoutExt = fileName.contains('.')
+        ? fileName.substring(0, fileName.lastIndexOf('.'))
+        : fileName;
+
     final orderPrefix = prefix.isNotEmpty ? prefix : '';
-    return '${orderPrefix}${nameWithoutExt}$extension';
+    return '$orderPrefix$nameWithoutExt$extension';
   }
 
   @override
   Future<String> getAlbumTitle(Uri url) async {
-    if (_albumType == ImgurAlbumType.album || _albumType == ImgurAlbumType.userAlbum) {
+    if (_albumType == ImgurAlbumType.album ||
+        _albumType == ImgurAlbumType.userAlbum) {
       try {
-        if (_albumDoc == null) {
-          _albumDoc = await Http.get(url);
-        }
-        
-        final defaultTitle1 = 'Imgur: The most awesome images on the Internet';
-        final defaultTitle2 = 'Imgur: The magic of the Internet';
-        
+        _albumDoc ??= await Http.get(url);
+
+        const defaultTitle1 = 'Imgur: The most awesome images on the Internet';
+        const defaultTitle2 = 'Imgur: The magic of the Internet';
+
         // Try og:title first
         final ogTitle = _albumDoc!.querySelector('meta[property="og:title"]');
         var title = ogTitle?.attributes['content'] ?? '';
-        
+
         if (title.contains(defaultTitle1) || title.contains(defaultTitle2)) {
           // Try title tag
           final titleTag = _albumDoc!.querySelector('title');
           final titleText = titleTag?.text ?? '';
-          if (!titleText.contains(defaultTitle1) && !titleText.contains(defaultTitle2)) {
+          if (!titleText.contains(defaultTitle1) &&
+              !titleText.contains(defaultTitle2)) {
             title = titleText;
           } else {
             title = '';
           }
         }
-        
+
         final gid = await getGID(url);
         final albumTitle = 'imgur_${gid}_$title';
         return Utils.filesystemSafe(albumTitle.trim());
@@ -414,7 +435,7 @@ class ImgurRipper extends AbstractHTMLRipper {
   // Helper method used by RedditRipper
   static Future<List<Uri>> imgurMediaFromPage(Document page) async {
     final result = <Uri>[];
-    
+
     // Check meta tags first (for single images)
     for (final meta in page.querySelectorAll('meta')) {
       final content = meta.attributes['content'];
@@ -425,20 +446,21 @@ class ImgurRipper extends AbstractHTMLRipper {
         final mediaUri = content.startsWith('//')
             ? Uri.parse('https:$content')
             : Uri.parse(content);
-        if (mediaUri != null) result.add(mediaUri);
+        result.add(mediaUri);
         if (result.isNotEmpty) return result;
       }
     }
-    
+
     // Fall back to image elements
     for (final img in page.querySelectorAll('img')) {
       final src = img.attributes['src'];
       if (src != null && src.contains('i.imgur.com')) {
-        final uri = src.startsWith('//') ? Uri.parse('https:$src') : Uri.parse(src);
+        final uri =
+            src.startsWith('//') ? Uri.parse('https:$src') : Uri.parse(src);
         result.add(uri);
       }
     }
-    
+
     return result;
   }
 }

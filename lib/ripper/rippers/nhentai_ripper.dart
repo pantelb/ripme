@@ -24,7 +24,10 @@ class NhentaiRipper extends AbstractHTMLRipper {
       if (src != null) {
         // Convert thumbnail URL to full image URL
         // e.g. https://t.nhentai.net/galleries/12345/1t.jpg -> https://i.nhentai.net/galleries/12345/1.jpg
-        String imageUrl = src.replaceFirst('t.nhentai.net', 'i.nhentai.net').replaceFirst('t.jpg', '.jpg').replaceFirst('t.png', '.png');
+        String imageUrl = src
+            .replaceFirst('t.nhentai.net', 'i.nhentai.net')
+            .replaceFirst('t.jpg', '.jpg')
+            .replaceFirst('t.png', '.png');
         urls.add(imageUrl);
       }
     }

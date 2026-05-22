@@ -20,13 +20,15 @@ class TumblrRipper extends AbstractJSONRipper {
   @override
   Future<void> parseJSON(Uri url) async {
     String hostname = url.host;
-    String apiKey = "JFNLu3CbINQjRdUvZibXW9VpSEVYYtiPJ86o8YmvgLZIoKyuNX"; // One of the defaults
+    String apiKey =
+        "JFNLu3CbINQjRdUvZibXW9VpSEVYYtiPJ86o8YmvgLZIoKyuNX"; // One of the defaults
 
     int offset = 0;
     while (true) {
       if (isStopped) break;
 
-      String apiUrl = "https://api.tumblr.com/v2/blog/$hostname/posts?api_key=$apiKey&offset=$offset&limit=20";
+      String apiUrl =
+          "https://api.tumblr.com/v2/blog/$hostname/posts?api_key=$apiKey&offset=$offset&limit=20";
       dynamic json = await Http.getJSON(Uri.parse(apiUrl));
 
       var posts = json['response']['posts'] as List;
@@ -39,7 +41,8 @@ class TumblrRipper extends AbstractJSONRipper {
           for (var photo in photos) {
             String imageUrl = photo['original_size']['url'];
             Uri imageUri = Uri.parse(imageUrl);
-            File saveAs = File(p.join(workingDir.path, imageUri.pathSegments.last));
+            File saveAs =
+                File(p.join(workingDir.path, imageUri.pathSegments.last));
             await downloadFile(imageUri, saveAs);
           }
         }

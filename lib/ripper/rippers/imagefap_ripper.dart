@@ -31,7 +31,8 @@ class ImagefapRipper extends AbstractHTMLRipper {
       if (parent != null && parent.localName == 'a') {
         String? href = parent.attributes['href'];
         if (href != null) {
-          String? imageUrl = await _getFullSizedImage("https://www.imagefap.com$href");
+          String? imageUrl =
+              await _getFullSizedImage("https://www.imagefap.com$href");
           if (imageUrl != null) {
             urls.add(imageUrl);
           }
@@ -53,7 +54,10 @@ class ImagefapRipper extends AbstractHTMLRipper {
 
   @override
   Future<Uri?> getNextPage(Document page) async {
-    var nextLink = page.querySelectorAll('a.link3').where((e) => e.text.contains('next')).firstOrNull;
+    var nextLink = page
+        .querySelectorAll('a.link3')
+        .where((e) => e.text.contains('next'))
+        .firstOrNull;
     if (nextLink != null) {
       String? href = nextLink.attributes['href'];
       if (href != null) {
