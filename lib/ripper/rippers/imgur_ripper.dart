@@ -153,8 +153,18 @@ class ImgurRipper extends AbstractHTMLRipper {
 
   @override
   Future<List<String>> getURLsFromPage(Document page) async {
-    // This ripper overrides rip() completely, so this method is not used
-    return [];
+    final List<String> urls = [];
+    final images = page.querySelectorAll('img');
+    
+    for (final img in images) {
+      var src = img.attributes['src'];
+      if (src != null && src.contains('i.imgur.com')) {
+        if (src.startsWith('//')) src = 'https:$src';
+        urls.add(src);
+      }
+    }
+    
+    return urls;
   }
 
   @override
