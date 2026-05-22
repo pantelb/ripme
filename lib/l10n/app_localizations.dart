@@ -100,7 +100,10 @@ class AppLocalizations {
   String get redditCookies => 'Reddit cookies';
   String get imgurCookies => 'Imgur cookies';
   String get eromeCookies => 'Erome cookies';
+  String get soundgasmCookies => 'Soundgasm cookies';
+  String get vidbleCookies => 'Vidble cookies';
   String get cookieHint => 'key=value; other=value';
+  String get skipAlreadyDownloadedUrls => 'Skip already downloaded URLs';
   String get apiKeys => 'API Keys';
   String get twitterAuth => 'Twitter auth';
   String get configuredAuthToken => 'Configured auth token';
