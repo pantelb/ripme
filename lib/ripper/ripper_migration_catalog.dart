@@ -132,6 +132,7 @@ class RipperMigrationCatalog {
     'AllporncomicRipper',
     'ArtStationRipper',
     'ArtstnRipper',
+    'ImgurRipper',
     'RedditRipper',
     'RedgifsRipper',
   };

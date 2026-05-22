@@ -4,6 +4,7 @@ import 'package:ripme/ripper/ripper_migration_catalog.dart';
 import 'package:ripme/ripper/rippers/allporncomic_ripper.dart';
 import 'package:ripme/ripper/rippers/artstation_ripper.dart';
 import 'package:ripme/ripper/rippers/artstn_ripper.dart';
+import 'package:ripme/ripper/rippers/imgur_ripper.dart';
 import 'package:ripme/ripper/rippers/reddit_ripper.dart';
 import 'package:ripme/ripper/rippers/redgifs_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
@@ -16,6 +17,8 @@ void main() {
         Uri.parse('https://www.artstation.com/artwork/abc123'));
     final artstn =
         RipperFactory.getRipper(Uri.parse('https://artstn.co/p/JlE15Z'));
+    final imgur =
+        RipperFactory.getRipper(Uri.parse('https://imgur.com/a/G058j5F'));
     final reddit =
         RipperFactory.getRipper(Uri.parse('https://www.reddit.com/r/pics'));
     final redgifs =
@@ -24,6 +27,7 @@ void main() {
     expect(allporncomic, isA<AllporncomicRipper>());
     expect(artstation, isA<ArtStationRipper>());
     expect(artstn, isA<ArtstnRipper>());
+    expect(imgur, isA<ImgurRipper>());
     expect(reddit, isA<RedditRipper>());
     expect(redgifs, isA<RedgifsRipper>());
   });
@@ -44,8 +48,7 @@ void main() {
     final twitter =
         RipperFactory.getRipper(Uri.parse('https://x.com/example/status/123'));
 
-    expect(imgur, isA<UnsupportedLegacyRipper>());
-    expect((imgur as UnsupportedLegacyRipper).match.javaClass, 'ImgurRipper');
+    expect(imgur, isA<ImgurRipper>());
     expect(twitter, isA<UnsupportedLegacyRipper>());
     expect(
         (twitter as UnsupportedLegacyRipper).match.javaClass, 'TwitterRipper');
@@ -53,7 +56,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 5);
-    expect(RipperMigrationCatalog.unportedRipperCount, 111);
+    expect(RipperMigrationCatalog.portedRipperCount, 6);
+    expect(RipperMigrationCatalog.unportedRipperCount, 110);
   });
 }
