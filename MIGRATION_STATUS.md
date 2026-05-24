@@ -51,6 +51,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] NhentaiRipper ported: Java-compatible gallery GIDs, tag-page queue support, album title extraction, tag blacklist skipping, gallery thumbnail conversion, ordered filenames, source-page referrers, and factory/catalog coverage
 - [x] MotherlessRipper ported: Java-compatible GID patterns, homepage-to-all-uploads rewrite, intermediate image page extraction, pornmd filtering, canonical/next-page referrers, `__fileurl` extraction, per-image delay, ordered filenames, and factory/catalog coverage
 - [x] ImagefapRipper ported: Java-compatible gallery URL/GID formats, `/pictures/{gid}/random-string` sanitization, album title cleanup, retry/IP-block handling, rate-limit sleeps, thumbnail filtering, full-size image page extraction, next-page construction, referrer downloads, and factory/catalog coverage
+- [x] MastodonRipper/BaraagRipper/MastodonXyzRipper ported: Java-compatible instance domains, `@user` and `/media` GIDs, `/media` first-page normalization, load-more pagination, `MediaGallery` `data-props` extraction, media-id filename prefixes, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -60,7 +61,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- BaraagRipper
 - BatoRipper
 - BooruRipper
 - CfakeRipper
@@ -103,8 +103,6 @@ These Java rippers still need Dart implementations after the currently completed
 - ListalRipper
 - LusciousRipper
 - MangadexRipper
-- MastodonRipper
-- MastodonXyzRipper
 - ModelmayhemRipper
 - MotherlessVideoRipper
 - MrCongRipper

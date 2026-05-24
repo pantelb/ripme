@@ -2,10 +2,7 @@ class LegacyRipperMatch {
   final String javaClass;
   final String displayName;
 
-  const LegacyRipperMatch({
-    required this.javaClass,
-    required this.displayName,
-  });
+  const LegacyRipperMatch({required this.javaClass, required this.displayName});
 }
 
 class RipperMigrationCatalog {
@@ -132,11 +129,14 @@ class RipperMigrationCatalog {
     'AllporncomicRipper',
     'ArtStationRipper',
     'ArtstnRipper',
+    'BaraagRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',
     'ImgurRipper',
     'InstagramRipper',
+    'MastodonRipper',
+    'MastodonXyzRipper',
     'MotherlessRipper',
     'NhentaiRipper',
     'RedditRipper',
