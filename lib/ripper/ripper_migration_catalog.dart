@@ -130,6 +130,7 @@ class RipperMigrationCatalog {
     'ArtStationRipper',
     'ArtstnRipper',
     'BaraagRipper',
+    'BatoRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',

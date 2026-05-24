@@ -5,6 +5,7 @@ import 'package:ripme/ripper/rippers/allporncomic_ripper.dart';
 import 'package:ripme/ripper/rippers/artstation_ripper.dart';
 import 'package:ripme/ripper/rippers/artstn_ripper.dart';
 import 'package:ripme/ripper/rippers/baraag_ripper.dart';
+import 'package:ripme/ripper/rippers/bato_ripper.dart';
 import 'package:ripme/ripper/rippers/eightmuses_ripper.dart';
 import 'package:ripme/ripper/rippers/flickr_ripper.dart';
 import 'package:ripme/ripper/rippers/imagefap_ripper.dart';
@@ -33,6 +34,9 @@ void main() {
     );
     final baraag = RipperFactory.getRipper(
       Uri.parse('https://baraag.net/@artist'),
+    );
+    final bato = RipperFactory.getRipper(
+      Uri.parse('https://bato.to/chapter/12345/'),
     );
     final eightmuses = RipperFactory.getRipper(
       Uri.parse('https://www.8muses.com/comics/album/example'),
@@ -76,6 +80,7 @@ void main() {
     expect(artstation, isA<ArtStationRipper>());
     expect(artstn, isA<ArtstnRipper>());
     expect(baraag, isA<BaraagRipper>());
+    expect(bato, isA<BatoRipper>());
     expect(eightmuses, isA<EightmusesRipper>());
     expect(flickr, isA<FlickrRipper>());
     expect(imagefap, isA<ImagefapRipper>());
@@ -108,7 +113,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 17);
-    expect(RipperMigrationCatalog.unportedRipperCount, 99);
+    expect(RipperMigrationCatalog.portedRipperCount, 18);
+    expect(RipperMigrationCatalog.unportedRipperCount, 98);
   });
 }
