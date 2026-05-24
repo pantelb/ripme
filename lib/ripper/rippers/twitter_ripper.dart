@@ -1,260 +1,306 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:http/http.dart' as http;
-import '../abstract_json_ripper.dart';
+import 'package:path/path.dart' as p;
+
+import '../../utils/http_utils.dart';
 import '../../utils/utils.dart';
+import '../abstract_json_ripper.dart';
+import '../abstract_ripper.dart';
+
+enum TwitterAlbumType { account, search }
+
+class TwitterUrlMatch {
+  final TwitterAlbumType type;
+  final String gid;
+  final String? accountName;
+  final String? searchText;
+
+  const TwitterUrlMatch({
+    required this.type,
+    required this.gid,
+    this.accountName,
+    this.searchText,
+  });
+}
+
+class TwitterPageMedia {
+  final List<Uri> urls;
+  final int? lastMaxId;
+
+  const TwitterPageMedia(this.urls, this.lastMaxId);
+}
 
 class TwitterRipper extends AbstractJSONRipper {
   TwitterRipper(super.url);
 
-  @override
-  String getHost() => "twitter";
+  TwitterUrlMatch? _match;
+  String? _accessToken;
+  int _currentRequest = 0;
+  int _lastMaxId = 0;
 
   @override
-  bool canRip(Uri url) =>
-      url.host.endsWith("twitter.com") || url.host.endsWith("x.com");
+  String getHost() => 'twitter';
+
+  @override
+  bool canRip(Uri url) => classifyUrl(url) != null;
 
   @override
   Future<String> getGID(Uri url) async {
-    return url.pathSegments.last;
-  }
-
-  /// Returns true if the URL is a single tweet (contains /status/ in path)
-  bool _isTweetUrl(Uri url) {
-    return url.path.contains('/status/');
-  }
-
-  /// Extracts username from profile URL (e.g., https://twitter.com/username)
-  String? _getUsernameFromUrl(Uri url) {
-    final path = url.path;
-    if (path.isEmpty || path == '/') return null;
-
-    final segments = path.split('/').where((s) => s.isNotEmpty).toList();
-    if (segments.isEmpty) return null;
-
-    final username = segments[0];
-    // Check for special paths like 'with_replies', 'media', 'statuses'
-    if (username == 'with_replies' ||
-        username == 'media' ||
-        username == 'statuses') {
-      return null;
+    final parsed = classifyUrl(url);
+    if (parsed == null) {
+      throw FormatException('Expected username or search string in url: $url');
     }
-
-    return username;
-  }
-
-  /// Gets Bearer token for Twitter API v2
-  Future<String> _getBearerToken() async {
-    String? authKey = Utils.getConfigString("twitter.auth", null);
-    if (authKey == null) {
-      throw Exception("Twitter auth key not found in config");
-    }
-
-    // Decode base64 auth key (format: API_KEY:API_SECRET)
-    final decoded = String.fromCharCodes(base64.decode(authKey));
-    final parts = decoded.split(':');
-    if (parts.length != 2) {
-      throw Exception("Invalid Twitter auth key format");
-    }
-
-    final apiKey = parts[0];
-    final apiSecret = parts[1];
-    final basicAuth = base64.encode(utf8.encode('$apiKey:$apiSecret'));
-
-    final tokenResponse = await http.post(
-      Uri.parse('https://api.twitter.com/oauth2/token'),
-      headers: {
-        'Authorization': 'Basic $basicAuth',
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-      },
-      body: 'grant_type=client_credentials',
-    );
-
-    if (tokenResponse.statusCode != 200) {
-      throw Exception(
-          "Failed to get Twitter Bearer token: ${tokenResponse.statusCode}");
-    }
-
-    final tokenData = json.decode(tokenResponse.body);
-    return tokenData['access_token'] as String;
-  }
-
-  /// Gets user ID from username using Twitter API v2
-  Future<String> _getUserIdFromUsername(
-      String username, String bearerToken) async {
-    final response = await http.get(
-      Uri.parse('https://api.twitter.com/2/users/by/username/$username'),
-      headers: {
-        'Authorization': 'Bearer $bearerToken',
-      },
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception(
-          "Failed to get user ID for $username: ${response.statusCode}");
-    }
-
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    final userData = data['data'] as Map<String, dynamic>?;
-    if (userData == null) {
-      throw Exception("User $username not found");
-    }
-
-    return userData['id'] as String;
-  }
-
-  /// Fetches user timeline with pagination
-  Future<void> _fetchUserTimeline(String userId, String bearerToken) async {
-    String? nextToken;
-    int pageCount = 0;
-    const maxPages = 10; // Limit to avoid rate limits
-
-    do {
-      final queryParams = {
-        'max_results': '100', // Max per page
-        'expansions': 'attachments.media_keys',
-        'media.fields': 'url,preview_image_url,type',
-        'exclude': 'retweets,replies', // Only original tweets with media
-      };
-
-      if (nextToken != null) {
-        queryParams['pagination_token'] = nextToken;
-      }
-
-      final uri = Uri.parse('https://api.twitter.com/2/users/$userId/tweets')
-          .replace(queryParameters: queryParams);
-
-      final response = await http.get(
-        uri,
-        headers: {
-          'Authorization': 'Bearer $bearerToken',
-        },
-      );
-
-      if (response.statusCode != 200) {
-        throw Exception(
-            "Failed to fetch user timeline: ${response.statusCode}");
-      }
-
-      final data = json.decode(response.body) as Map<String, dynamic>;
-
-      // Extract media from tweets in this page
-      await _extractMediaFromTweets(
-          data, 'user_timeline_page_${pageCount + 1}');
-
-      // Get next token for pagination
-      final meta = data['meta'] as Map<String, dynamic>?;
-      nextToken = meta?['next_token'] as String?;
-
-      pageCount++;
-      if (pageCount >= maxPages) {
-        break;
-      }
-
-      // Small delay to avoid rate limiting
-      await Future.delayed(const Duration(seconds: 1));
-    } while (nextToken != null);
-  }
-
-  /// Extracts media from tweet data and downloads it
-  Future<void> _extractMediaFromTweets(
-      Map<String, dynamic> tweetData, String pageId) async {
-    final includes = tweetData['includes'] as Map<String, dynamic>?;
-    if (includes == null) return;
-
-    final media = includes['media'] as List<dynamic>?;
-    if (media == null || media.isEmpty) return;
-
-    for (final mediaItem in media) {
-      final item = mediaItem as Map<String, dynamic>;
-      final type = item['type'] as String?;
-      String? mediaUrl;
-
-      if (type == 'photo') {
-        mediaUrl = item['url'] as String?;
-      } else if (type == 'video' || type == 'animated_gif') {
-        // For videos, use preview image or try to get video URL
-        mediaUrl = item['preview_image_url'] as String?;
-      }
-
-      if (mediaUrl != null) {
-        final uri = Uri.parse(mediaUrl);
-        final fileName = uri.pathSegments.isNotEmpty
-            ? uri.pathSegments.last
-            : 'twitter_${pageId}_${media.indexOf(mediaItem)}.jpg';
-        final saveAs =
-            File(workingDir.path + Platform.pathSeparator + fileName);
-        await downloadFile(uri, saveAs);
-      }
-    }
-  }
-
-  /// Extracts media from a single tweet
-  Future<void> _extractMediaFromSingleTweet(
-      Map<String, dynamic> tweetData, String tweetId) async {
-    final includes = tweetData['includes'] as Map<String, dynamic>?;
-    if (includes != null) {
-      final media = includes['media'] as List<dynamic>?;
-      if (media != null && media.isNotEmpty) {
-        for (final mediaItem in media) {
-          final item = mediaItem as Map<String, dynamic>;
-          final type = item['type'] as String?;
-          String? mediaUrl;
-
-          if (type == 'photo') {
-            mediaUrl = item['url'] as String?;
-          } else if (type == 'video' || type == 'animated_gif') {
-            // For videos, use preview image or try to get video URL
-            mediaUrl = item['preview_image_url'] as String?;
-          }
-
-          if (mediaUrl != null) {
-            final uri = Uri.parse(mediaUrl);
-            final fileName = uri.pathSegments.isNotEmpty
-                ? uri.pathSegments.last
-                : 'twitter_${tweetId}_${media.indexOf(mediaItem)}.jpg';
-            final saveAs =
-                File(workingDir.path + Platform.pathSeparator + fileName);
-            await downloadFile(uri, saveAs);
-          }
-        }
-        return; // Successfully downloaded media
-      }
-    }
-    throw Exception("No media found in tweet $tweetId");
+    _match = parsed;
+    return parsed.gid;
   }
 
   @override
   Future<void> parseJSON(Uri url) async {
-    final bearerToken = await _getBearerToken();
+    final parsed = _match ?? classifyUrl(this.url);
+    if (parsed == null) {
+      throw FormatException('Expected username or search string in url: $url');
+    }
 
-    if (_isTweetUrl(url)) {
-      // Single tweet URL
-      final tweetId = await getGID(url);
+    _accessToken = await getAccessToken();
+    await checkRateLimits(parsed);
 
-      final tweetResponse = await http.get(
-        Uri.parse(
-            'https://api.twitter.com/2/tweets/$tweetId?expansions=attachments.media_keys&media.fields=url,preview_image_url,type'),
-        headers: {
-          'Authorization': 'Bearer $bearerToken',
-        },
+    final maxRequests = Utils.getConfigInteger('twitter.max_requests', 10);
+    while (!isStopped && _currentRequest <= maxRequests) {
+      final json = await getTweets(parsed, _lastMaxId > 0 ? _lastMaxId - 1 : 0);
+      final extracted = mediaFromTweets(
+        json,
+        ripRetweets: Utils.getConfigBoolean('twitter.rip_retweets', true),
       );
-
-      if (tweetResponse.statusCode != 200) {
-        throw Exception("Failed to fetch tweet: ${tweetResponse.statusCode}");
+      if (extracted.lastMaxId != null) _lastMaxId = extracted.lastMaxId!;
+      final downloads = <RipperDownload>[];
+      for (var i = 0; i < extracted.urls.length; i++) {
+        final mediaUri = extracted.urls[i];
+        final prefix = Utils.getConfigBoolean('download.save_order', true)
+            ? '${(i + 1).toString().padLeft(3, '0')}_'
+            : '';
+        downloads.add(RipperDownload(
+          url: mediaUri,
+          saveAs:
+              File(p.join(workingDir.path, '$prefix${_fileNameFor(mediaUri)}')),
+        ));
       }
-
-      final tweetData = json.decode(tweetResponse.body) as Map<String, dynamic>;
-      await _extractMediaFromSingleTweet(tweetData, tweetId);
-    } else {
-      // User profile URL
-      final username = _getUsernameFromUrl(url);
-      if (username == null) {
-        throw Exception("Could not extract username from URL: $url");
-      }
-
-      final userId = await _getUserIdFromUsername(username, bearerToken);
-      await _fetchUserTimeline(userId, bearerToken);
+      await downloadFiles(downloads);
+      _currentRequest++;
+      if (_currentRequest > maxRequests) break;
+      await Http.delay(const Duration(seconds: 2));
     }
   }
+
+  Future<String> getAccessToken() async {
+    final authKey = Utils.getConfigString('twitter.auth', null);
+    if (authKey == null) {
+      throw const FormatException('Twitter auth key not found in config');
+    }
+    final response = await http.post(
+      Uri.parse('https://api.twitter.com/oauth2/token'),
+      headers: {
+        'Authorization': 'Basic $authKey',
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        'User-Agent': 'ripe and zipe',
+      },
+      body: 'grant_type=client_credentials',
+    );
+    if (response.statusCode != 200) {
+      throw HttpException(
+          'Failed to get Twitter access token: ${response.statusCode}');
+    }
+    final json = jsonDecode(response.body);
+    return json['access_token'].toString();
+  }
+
+  Future<void> checkRateLimits(TwitterUrlMatch match) async {
+    final resource =
+        match.type == TwitterAlbumType.account ? 'statuses' : 'search';
+    final api = match.type == TwitterAlbumType.account
+        ? '/statuses/user_timeline'
+        : '/search/tweets';
+    final response = await http.get(
+      Uri.parse(
+          'https://api.twitter.com/1.1/application/rate_limit_status.json?resources=$resource'),
+      headers: {
+        'Authorization': 'Bearer $_accessToken',
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        'User-Agent': 'ripe and zipe',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw HttpException(
+          'Failed to check Twitter rate limits: ${response.statusCode}');
+    }
+    final json = jsonDecode(response.body);
+    final remaining =
+        json['resources']?[resource]?[api]?['remaining'] as int? ?? 0;
+    if (remaining < 20) {
+      throw const HttpException(
+          'Less than 20 API calls remaining; not enough to rip.');
+    }
+  }
+
+  Future<dynamic> getTweets(TwitterUrlMatch match, int maxId) async {
+    final uri = getApiUrl(match, maxId);
+    final response = await http.get(uri, headers: {
+      'Authorization': 'Bearer $_accessToken',
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+      'User-Agent': 'ripe and zipe',
+    });
+    if (response.statusCode != 200) {
+      throw HttpException(
+          'Failed to fetch Twitter page: ${response.statusCode}');
+    }
+    final json = jsonDecode(response.body);
+    if (json is Map && json['errors'] != null) {
+      throw HttpException('Twitter responded with errors: ${json['errors']}');
+    }
+    return json is Map && json['statuses'] != null
+        ? {'tweets': json['statuses']}
+        : {'tweets': json};
+  }
+
+  static TwitterUrlMatch? classifyUrl(Uri url) {
+    final text = url.toString();
+    var match = RegExp(
+            r'^https?://(m\.)?(twitter|x)\.com/search\?(.*)q=([a-zA-Z0-9%_-]+).*$')
+        .firstMatch(text);
+    if (match != null) {
+      var search = match.group(4)!;
+      if (search.startsWith('from%3A')) search = search.substring(7);
+      if (search.contains('x')) search = search.replaceAll('x', '');
+      return TwitterUrlMatch(
+        type: TwitterAlbumType.search,
+        searchText: search,
+        gid: 'search_${_searchGid(search)}',
+      );
+    }
+
+    match = RegExp(r'^https?://(m\.)?(twitter|x)\.com/([a-zA-Z0-9_-]+).*$')
+        .firstMatch(text);
+    if (match != null) {
+      final account = match.group(3)!;
+      if (account == 'search') return null;
+      return TwitterUrlMatch(
+        type: TwitterAlbumType.account,
+        accountName: account,
+        gid: 'account_$account',
+      );
+    }
+    return null;
+  }
+
+  static Uri getApiUrl(TwitterUrlMatch match, int maxId) {
+    final params = <String, String>{};
+    if (match.type == TwitterAlbumType.account) {
+      params.addAll({
+        'screen_name': match.accountName!,
+        'include_entities': 'true',
+        'exclude_replies':
+            Utils.getConfigBoolean('twitter.exclude_replies', true).toString(),
+        'trim_user': 'true',
+        'count': '${Utils.getConfigInteger('twitter.max_items_request', 200)}',
+        'tweet_mode': 'extended',
+      });
+    } else {
+      params.addAll({
+        'q': match.searchText!,
+        'include_entities': 'true',
+        'result_type': 'recent',
+        'count': '100',
+        'tweet_mode': 'extended',
+      });
+    }
+    if (maxId > 0) params['max_id'] = '$maxId';
+    return Uri.https(
+      'api.twitter.com',
+      match.type == TwitterAlbumType.account
+          ? '/1.1/statuses/user_timeline.json'
+          : '/1.1/search/tweets.json',
+      params,
+    );
+  }
+
+  static TwitterPageMedia mediaFromTweets(dynamic json,
+      {required bool ripRetweets}) {
+    final tweets = json is Map ? json['tweets'] : null;
+    if (tweets is! List || tweets.isEmpty) {
+      return const TwitterPageMedia([], null);
+    }
+
+    final urls = <Uri>[];
+    int? lastMaxId;
+    for (final rawTweet in tweets.whereType<Map>()) {
+      final id = rawTweet['id'];
+      if (id is int) lastMaxId = id;
+      if (!ripRetweets && rawTweet.containsKey('retweeted_status')) continue;
+      final entities = rawTweet['extended_entities'];
+      final media = entities is Map ? entities['media'] : null;
+      if (media is! List) continue;
+      for (final rawMedia in media.whereType<Map>()) {
+        final url = mediaUrl(rawMedia);
+        if (url != null) urls.add(url);
+      }
+    }
+    return TwitterPageMedia(urls, lastMaxId);
+  }
+
+  static Uri? mediaUrl(Map media) {
+    final type = media['type']?.toString();
+    if (type == 'photo') {
+      final mediaUrl = media['media_url']?.toString();
+      if (mediaUrl != null && mediaUrl.contains('.twimg.com/')) {
+        return Uri.parse('$mediaUrl:orig');
+      }
+      return null;
+    }
+
+    if (type == 'video' || type == 'animated_gif') {
+      final variants = media['video_info'] is Map
+          ? (media['video_info']['variants'] as List?)
+          : null;
+      if (variants == null) return null;
+      Map? selected;
+      var largestBitrate = 0;
+      for (final rawVariant in variants.whereType<Map>()) {
+        if (!rawVariant.containsKey('bitrate')) continue;
+        if (type == 'animated_gif') {
+          selected = rawVariant;
+          continue;
+        }
+        final bitrate = (rawVariant['bitrate'] as num?)?.toInt() ?? 0;
+        if (bitrate > largestBitrate) {
+          largestBitrate = bitrate;
+          selected = rawVariant;
+        }
+      }
+      final selectedUrl = selected?['url']?.toString();
+      return selectedUrl == null ? null : Uri.parse(selectedUrl);
+    }
+
+    return null;
+  }
+
+  static String _searchGid(String searchText) {
+    final gid = StringBuffer();
+    for (var i = 0; i < searchText.length; i++) {
+      final code = searchText.codeUnitAt(i);
+      final char = searchText[i];
+      if (char == '%') {
+        gid.write('_');
+        i += 2;
+      } else if ((code >= 65 && code <= 90) ||
+          (code >= 97 && code <= 122) ||
+          (code >= 48 && code <= 57)) {
+        gid.write(char);
+      }
+    }
+    return gid.toString();
+  }
+
+  static String _fileNameFor(Uri url) =>
+      url.pathSegments.isNotEmpty ? url.pathSegments.last : 'file';
 }

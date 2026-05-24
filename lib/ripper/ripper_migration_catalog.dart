@@ -132,11 +132,17 @@ class RipperMigrationCatalog {
     'AllporncomicRipper',
     'ArtStationRipper',
     'ArtstnRipper',
+    'EightmusesRipper',
+    'FlickrRipper',
+    'ImagefapRipper',
     'ImgurRipper',
+    'InstagramRipper',
+    'MotherlessRipper',
+    'NhentaiRipper',
     'RedditRipper',
     'RedgifsRipper',
-    'TwitterRipper',
     'TumblrRipper',
+    'TwitterRipper',
   };
 
   static const Map<String, List<String>> _hostAliases = {

@@ -1,5 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:html/parser.dart' as html;
 import 'package:ripme/ripper/rippers/imgur_ripper.dart';
+import 'package:ripme/utils/utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   test('ImgurRipper getHost', () {
@@ -83,11 +86,21 @@ void main() {
         throwsA(isA<FormatException>()));
   });
 
-  test('ImgurRipper album title generation', () async {
-    final ripper = ImgurRipper(Uri.parse('https://imgur.com/a/G058j5F'));
-    final title =
-        await ripper.getAlbumTitle(Uri.parse('https://imgur.com/a/G058j5F'));
-    expect(title, startsWith('imgur_G058j5F'));
+  test('ImgurRipper album title parsing follows Java fallback behavior', () {
+    final titled = html.parse('''
+      <html><head>
+        <meta property="og:title" content="Album Title">
+      </head></html>
+    ''');
+    expect(ImgurRipper.albumTitleFromDocument(titled), 'Album Title');
+
+    final fallback = html.parse('''
+      <html><head>
+        <meta property="og:title" content="Imgur: The magic of the Internet">
+        <title>Fallback Title</title>
+      </head></html>
+    ''');
+    expect(ImgurRipper.albumTitleFromDocument(fallback), 'Fallback Title');
   });
 
   test('ImgurRipper allowDuplicates', () async {
@@ -102,5 +115,86 @@ void main() {
     final ripperSingle = ImgurRipper(Uri.parse('https://imgur.com/abcde'));
     await ripperSingle.getGID(Uri.parse('https://imgur.com/abcde'));
     expect(ripperSingle.allowDuplicates(), isFalse);
+  });
+
+  test('ImgurRipper extracts album API images like Java', () {
+    final images = ImgurRipper.albumImagesFromApiJson({
+      'data': {
+        'images': [
+          {'link': 'https://i.imgur.com/one.jpg'},
+          {'link': 'https://i.imgur.com/two.png?1'},
+          {'ignored': true},
+        ],
+      },
+    });
+
+    expect(images.map((image) => image.url.toString()), [
+      'https://i.imgur.com/one.jpg',
+      'https://i.imgur.com/two.png?1',
+    ]);
+    expect(images[1].saveAs, 'two.png');
+  });
+
+  test('ImgurRipper parses noscript fallback images and prefer.mp4', () async {
+    SharedPreferences.setMockInitialValues({'prefer.mp4': true});
+    await Utils.init();
+
+    final doc = html.parse('''
+      <html><body>
+        <div class="image"><a class="zoom" href="//i.imgur.com/one.gif"></a></div>
+        <div class="image"><img src="//i.imgur.com/two.jpg"></div>
+        <div class="image"></div>
+      </body></html>
+    ''');
+
+    expect(
+      ImgurRipper.albumImagesFromNoscript(doc)
+          .map((image) => image.url.toString()),
+      [
+        'http://i.imgur.com/one.mp4',
+        'http://i.imgur.com/two.jpg',
+      ],
+    );
+  });
+
+  test('ImgurRipper builds single media URL from post API JSON', () async {
+    SharedPreferences.setMockInitialValues({'prefer.mp4': true});
+    await Utils.init();
+
+    expect(
+      ImgurRipper.extractImageUrlFromJson({'id': 'abcde', 'ext': 'gif'})
+          .toString(),
+      'https://i.imgur.com/abcde.mp4',
+    );
+    expect(
+      ImgurRipper.extractImageUrlFromJson({'id': 'abcde', 'ext': '.jpg'})
+          .toString(),
+      'https://i.imgur.com/abcde.jpg',
+    );
+  });
+
+  test('ImgurRipper parses user ajax image pages', () {
+    final parsed = ImgurRipper.userImagesFromAjaxJson({
+      'data': {
+        'count': 2,
+        'images': [
+          {'hash': 'one', 'ext': '.jpg'},
+          {'hash': 'two', 'ext': '.png'},
+        ],
+      },
+    });
+
+    expect(parsed.total, 2);
+    expect(parsed.images.map((image) => image.url.toString()), [
+      'https://i.imgur.com/one.jpg',
+      'https://i.imgur.com/two.png',
+    ]);
+  });
+
+  test('ImgurRipper converts album ids to Java page URLs', () {
+    expect(ImgurRipper.albumPageUrl('abc123').toString(),
+        'https://imgur.com/a/abc123');
+    expect(ImgurRipper.albumPageUrl('r_memes_abc123').toString(),
+        'https://imgur.com/r/memes/abc123');
   });
 }

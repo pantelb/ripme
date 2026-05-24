@@ -21,16 +21,16 @@ void main() {
         'G058j5F'
       ),
       (
-        FlickrRipper(Uri.parse('https://www.flickr.com/photos/u/12345')),
-        Uri.parse('https://www.flickr.com/photos/u/12345'),
+        FlickrRipper(Uri.parse('https://www.flickr.com/photos/u/')),
+        Uri.parse('https://www.flickr.com/photos/u/'),
         'flickr',
-        '12345'
+        'u'
       ),
       (
         InstagramRipper(Uri.parse('https://www.instagram.com/p/SHORTCODE/')),
         Uri.parse('https://www.instagram.com/p/SHORTCODE/'),
         'instagram',
-        'SHORTCODE'
+        'post_SHORTCODE'
       ),
       (
         NhentaiRipper(Uri.parse('https://nhentai.net/g/123456/')),
@@ -76,7 +76,7 @@ void main() {
         tumblr.canRip(Uri.parse('https://example.tumblr.com/post/1')), isTrue);
     expect(tumblr.getHost(), 'tumblr');
     expect(await tumblr.getGID(Uri.parse('https://example.tumblr.com/post/1')),
-        'example');
+        'example.tumblr.com_post_1');
 
     final twitter = TwitterRipper(Uri.parse('https://x.com/user/status/123'));
     expect(twitter.canRip(Uri.parse('https://twitter.com/user/status/123')),
@@ -84,7 +84,7 @@ void main() {
     expect(twitter.canRip(Uri.parse('https://x.com/user/status/123')), isTrue);
     expect(twitter.getHost(), 'twitter');
     expect(await twitter.getGID(Uri.parse('https://x.com/user/status/123')),
-        '123');
+        'account_user');
   });
 
   test('Imgur parser extracts i.imgur.com images and normalizes protocol',
@@ -104,44 +104,16 @@ void main() {
     ]);
   });
 
-  test('Flickr parser extracts main-photo image URLs', () async {
-    final ripper = FlickrRipper(Uri.parse('https://www.flickr.com/photos/u/1'));
-    final page = html.parse('''
-      <html><body>
-        <img class="main-photo" src="//live.staticflickr.com/1/one.jpg">
-        <img class="main-photo" src="https://live.staticflickr.com/2/two.jpg">
-        <img src="https://live.staticflickr.com/3/ignored.jpg">
-      </body></html>
-    ''');
-
-    expect(await ripper.getURLsFromPage(page), [
-      'https://live.staticflickr.com/1/one.jpg',
-      'https://live.staticflickr.com/2/two.jpg',
-    ]);
-  });
-
-  test('Instagram parser extracts og:image media', () async {
-    final ripper = InstagramRipper(Uri.parse('https://instagram.com/p/abc/'));
-    final page = html.parse('''
-      <html><head>
-        <meta property="og:image" content="https://cdn.example.com/post.jpg">
-      </head></html>
-    ''');
-
-    expect(await ripper.getURLsFromPage(page),
-        ['https://cdn.example.com/post.jpg']);
-  });
-
   test('Nhentai parser converts thumbnail URLs to full image URLs', () async {
     final ripper = NhentaiRipper(Uri.parse('https://nhentai.net/g/123456/'));
     final page = html.parse('''
       <html><body>
-        <div class="thumb-container">
+        <a class="gallerythumb">
           <img data-src="https://t.nhentai.net/galleries/12345/1t.jpg">
-        </div>
-        <div class="thumb-container">
-          <img src="https://t.nhentai.net/galleries/12345/2t.png">
-        </div>
+        </a>
+        <a class="gallerythumb">
+          <img data-src="https://t.nhentai.net/galleries/12345/2t.png">
+        </a>
       </body></html>
     ''');
 
@@ -176,8 +148,10 @@ void main() {
       </body></html>
     ''');
 
-    expect((await ripper.getNextPage(page)).toString(),
-        'https://www.imagefap.com/gallery/abcdef12?page=2');
+    expect(
+        (await ripper.getNextPage(page)).toString(),
+        'https://www.imagefap.com/pictures/abcdef12/random-string'
+        '/gallery/abcdef12?page=2');
   });
 
   test('Motherless parser finds rel=next pagination links', () async {

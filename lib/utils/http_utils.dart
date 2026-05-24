@@ -55,6 +55,20 @@ class Http {
     }
   }
 
+  static Future<http.Response> getResponse(Uri url,
+      {Map<String, String>? headers,
+      Map<String, String>? cookies,
+      String timeoutKey = 'page.timeout',
+      int defaultTimeoutMs = 5000}) {
+    return _getResponse(
+      url,
+      headers: headers,
+      cookies: cookies,
+      timeoutKey: timeoutKey,
+      defaultTimeoutMs: defaultTimeoutMs,
+    );
+  }
+
   static Future<void> downloadFile(Uri url, File saveAs,
       {Map<String, String>? headers, Map<String, String>? cookies}) async {
     final response = await _getResponse(

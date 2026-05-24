@@ -42,26 +42,23 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] AllporncomicRipper ported: Java-compatible GIDs, chapter image extraction, comic chapter queue expansion, and factory/catalog coverage
 - [x] ArtStationRipper ported: Java-compatible project/user JSON discovery, project asset extraction, portfolio pagination, project subfolders, and factory/catalog coverage
 - [x] ArtstnRipper ported: Java-compatible short-link redirect resolution through the ArtStation ripper plus factory/catalog coverage
-- [x] ImgurRipper ported: Java-compatible album type detection (USER, ALBUM, USER_ALBUM, USER_IMAGES, SINGLE_IMAGE, SUBREDDIT), API integration with client ID, pagination, HTML fallback, and factory/catalog coverage
-- [x] TumblrRipper ported: Java-compatible API key configuration, photo extraction from posts, pagination, and factory/catalog coverage
-- [x] TwitterRipper implemented: OAuth2 authentication, single tweet media extraction, user timeline pagination, API integration, factory integration. Still needs: full video support (currently downloads preview images), better error handling.
+- [x] ImgurRipper ported: Java-compatible URL classification, album API extraction with `/noscript` fallback, single media JSON extraction, user submissions, user images, subreddit pages, `prefer.mp4`, duplicate policy, ordered naming, and factory/catalog coverage
+- [x] TumblrRipper ported: Java-compatible subdomain/tag/post/likes modes, API URL construction, API-key fallback, photo/video/audio/album-art/body image extraction, quality normalization, tag/date prefixes, and factory/catalog coverage
+- [x] TwitterRipper ported: Java-compatible account/search URL classification, OAuth2 bearer-token flow, API v1.1 timeline/search URLs, rate-limit preflight, retweet/reply/max-request config, original photo URLs, highest-bitrate video/animated-gif selection, and factory/catalog coverage
+- [x] EightmusesRipper ported: Java-compatible album URL validation/GIDs, meta-description album titles, first-page cookie capture, subalbum recursion, 8muses-host filtering, thumbnail/full-image normalization, title-derived subdirectories, referrer/cookie download metadata, duplicate-tolerant ASAP-style download queuing, and factory/catalog coverage
+- [x] FlickrRipper ported: Java-compatible URL sanitization, user/photoset/group GIDs, photoset album titles, site API-key extraction with fallback warning, user/photoset REST API URL construction, pagination, largest-size lookup via `flickr.photos.getSizes`, ordered filenames, and factory/catalog coverage
+- [x] InstagramRipper ported: Java-compatible URL mode detection/GIDs, session cookie requirements, shared-data JSON extraction, preload JavaScript query-hash discovery, GraphQL pagination, stories/pinned requests, item detail lookup, sidecar recursion, video page fallback, timestamp/shortcode prefixes, image-only video skipping, and factory/catalog coverage
+- [x] NhentaiRipper ported: Java-compatible gallery GIDs, tag-page queue support, album title extraction, tag blacklist skipping, gallery thumbnail conversion, ordered filenames, source-page referrers, and factory/catalog coverage
+- [x] MotherlessRipper ported: Java-compatible GID patterns, homepage-to-all-uploads rewrite, intermediate image page extraction, pornmd filtering, canonical/next-page referrers, `__fileurl` extraction, per-image delay, ordered filenames, and factory/catalog coverage
+- [x] ImagefapRipper ported: Java-compatible gallery URL/GID formats, `/pictures/{gid}/random-string` sanitization, album title cleanup, retry/IP-block handling, rate-limit sleeps, thumbnail filtering, full-size image page extraction, next-page construction, referrer downloads, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
-The following ripper files exist as Dart stubs but are **NOT** included in `RipperFactory` and return `UnsupportedLegacyRipper` for their URLs. They lack full Java behavioral parity and need complete implementation or removal:
-
-- **EightmusesRipper** - Missing subalbum recursion, cookie management, title sanitization, ASAP ripping support (Java: 200+ lines)
-- **FlickrRipper** - Missing API key extraction, URL type detection, pagination, proper album handling (Java: API-based)
-- **InstagramRipper** - Minimal stub, no actual Instagram API/JS handling (Java: JS-heavy architecture)
-- **NhentaiRipper** - Missing tag blacklist, queue support, proper album title extraction (Java: tag queuing & blacklist)
-- **MotherlessRipper** - Missing thread pool, sleep timing, referrer handling, complex GID patterns, proper URL sanitization (Java: thread-based download)
-- **ImagefapRipper** - Missing rate limiting, retry logic, IP block detection, proper URL sanitization, album title extraction (Java: sophisticated rate limiting)
-
-**Current Behavior**: These rippers exist as `.dart` files for testing basic scaffolding but return `UnsupportedLegacyRipper` via the migration catalog. The factory now includes 8 rippers (7 fully ported + Twitter partially implemented).
+No partial Dart ripper scaffolds remain. New runtime work should move to the unported Java rippers below.
 
 ## Unported Rippers
 
-These Java rippers still need Dart implementations after the current Reddit and Redgifs passes:
+These Java rippers still need Dart implementations after the currently completed ports:
 
 - BaraagRipper
 - BatoRipper
@@ -84,7 +81,6 @@ These Java rippers still need Dart implementations after the current Reddit and 
 - FemjoyhunterRipper
 - FitnakedgirlsRipper
 - FivehundredpxRipper
-- FlickrRipper
 - FreeComicOnlineRipper
 - FuraffinityRipper
 - FuskatorRipper
@@ -98,10 +94,8 @@ These Java rippers still need Dart implementations after the current Reddit and 
 - HqpornerRipper
 - HypnohubRipper
 - ImagebamRipper
-- ImagefapRipper
 - ImagevenueRipper
 - ImgboxRipper
-- InstagramRipper
 - JabArchivesRipper
 - JagodibujaRipper
 - Jpg3Ripper
@@ -112,7 +106,6 @@ These Java rippers still need Dart implementations after the current Reddit and 
 - MastodonRipper
 - MastodonXyzRipper
 - ModelmayhemRipper
-- MotherlessRipper
 - MotherlessVideoRipper
 - MrCongRipper
 - MultpornRipper
@@ -122,7 +115,6 @@ These Java rippers still need Dart implementations after the current Reddit and 
 - NatalieMuRipper
 - NewgroundsRipper
 - NfsfwRipper
-- NhentaiRipper
 - NsfwAlbumRipper
 - NsfwXxxRipper
 - NudeGalsRipper
