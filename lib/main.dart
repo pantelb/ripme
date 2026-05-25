@@ -220,12 +220,7 @@ class _MainWindowState extends State<MainWindow>
               },
             ),
             _StatusSummary(ripManager: ripManager),
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 180),
-              child: ripManager.isRipping
-                  ? const LinearProgressIndicator(minHeight: 3)
-                  : const SizedBox(height: 3),
-            ),
+            _ProgressStrip(ripManager: ripManager),
             Expanded(
               child: TabBarView(
                 controller: _tabController,
@@ -414,6 +409,56 @@ class _StatusSummary extends StatelessWidget {
   }
 }
 
+class _ProgressStrip extends StatelessWidget {
+  final RipManager ripManager;
+
+  const _ProgressStrip({required this.ripManager});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  ripManager.statusText,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: ripManager.isRipping
+                            ? scheme.onSurface
+                            : scheme.onSurfaceVariant,
+                      ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                ripManager.isRipping ? '${ripManager.progressPercent}%' : '',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          LinearProgressIndicator(
+            value: ripManager.progressValue,
+            minHeight: 5,
+            borderRadius: BorderRadius.circular(8),
+            backgroundColor: scheme.surfaceContainerHighest,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _StatusChip extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -548,10 +593,11 @@ class _FilteredLogViewState extends State<_FilteredLogView> {
     final filteredLogs = normalizedFilter.isEmpty
         ? widget.logs
         : widget.logs
-            .where((log) =>
-                log.toString().toLowerCase().contains(normalizedFilter))
+            .where(
+                (log) => _logLine(log).toLowerCase().contains(normalizedFilter))
             .toList(growable: false);
     final scheme = Theme.of(context).colorScheme;
+    final logText = filteredLogs.map(_logLine).join('\n');
 
     return Column(
       children: [
@@ -586,9 +632,7 @@ class _FilteredLogViewState extends State<_FilteredLogView> {
                         ? null
                         : () => Clipboard.setData(
                               ClipboardData(
-                                text: filteredLogs
-                                    .map((log) => log.toString())
-                                    .join('\n'),
+                                text: filteredLogs.map(_logLine).join('\n'),
                               ),
                             ),
                     icon: const Icon(Icons.content_copy_outlined),
@@ -609,96 +653,49 @@ class _FilteredLogViewState extends State<_FilteredLogView> {
         Expanded(
           child: filteredLogs.isEmpty
               ? const _EmptyState(icon: Icons.receipt_long_outlined)
-              : ListView.separated(
+              : Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  itemCount: filteredLogs.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 6),
-                  itemBuilder: (context, index) {
-                    final log = filteredLogs[index];
-                    final color = _statusColor(context, log.status);
-                    return Material(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
                       color: scheme.surfaceContainerLow,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(color: scheme.outlineVariant),
-                      ),
-                      child: ListTile(
-                        dense: true,
-                        leading: _IconBadge(
-                          icon: _statusIcon(log.status),
-                          color: color,
-                          compact: true,
-                        ),
-                        title: SelectableText(
-                          log.toString(),
-                          style: const TextStyle(
-                            fontFamily: 'monospace',
-                            fontSize: 12,
-                          ),
-                        ),
-                        trailing: PopupMenuButton<String>(
-                          icon: const Icon(Icons.more_horiz),
-                          onSelected: (value) {
-                            if (value == 'copy') {
-                              Clipboard.setData(
-                                ClipboardData(text: log.toString()),
-                              );
-                            }
-                          },
-                          itemBuilder: (context) => [
-                            PopupMenuItem(
-                              value: 'copy',
-                              child: Text(strings.copyLogLine),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: scheme.outlineVariant),
+                    ),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(12),
+                      child: SelectableText(
+                        logText,
+                        key: const Key('log_text_block'),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              fontFamily: 'monospace',
+                              height: 1.35,
                             ),
-                          ],
-                        ),
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
         ),
       ],
     );
   }
 
-  IconData _statusIcon(RipStatus status) {
-    switch (status) {
+  String _logLine(RipStatusMessage log) {
+    final object = log.object.toString();
+    switch (log.status) {
+      case RipStatus.loadingResource:
+      case RipStatus.downloadStarted:
+        return 'Downloading $object';
       case RipStatus.downloadComplete:
+        return 'Downloaded $object';
       case RipStatus.ripComplete:
-        return Icons.task_alt_outlined;
+        return 'Rip complete, saved to $object';
       case RipStatus.downloadErrored:
       case RipStatus.ripErrored:
-        return Icons.error_outline;
-      case RipStatus.downloadSkip:
       case RipStatus.downloadWarn:
-        return Icons.warning_amber;
-      case RipStatus.downloadStarted:
-        return Icons.download_for_offline_outlined;
-      case RipStatus.loadingResource:
-        return Icons.travel_explore_outlined;
-      case RipStatus.queueAdd:
-        return Icons.playlist_add_outlined;
-    }
-  }
-
-  Color _statusColor(BuildContext context, RipStatus status) {
-    final scheme = Theme.of(context).colorScheme;
-    switch (status) {
-      case RipStatus.downloadComplete:
-      case RipStatus.ripComplete:
-        return const Color(0xFF059669);
-      case RipStatus.downloadErrored:
-      case RipStatus.ripErrored:
-        return scheme.error;
       case RipStatus.downloadSkip:
-      case RipStatus.downloadWarn:
-        return const Color(0xFFD97706);
-      case RipStatus.downloadStarted:
-        return scheme.primary;
-      case RipStatus.loadingResource:
-        return const Color(0xFF0EA5E9);
+        return object;
       case RipStatus.queueAdd:
-        return const Color(0xFF7C3AED);
+        return 'Queued $object';
     }
   }
 }

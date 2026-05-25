@@ -26,11 +26,22 @@ class RipManager extends ChangeNotifier {
 
   bool _isRipping = false;
   AbstractRipper? _currentRipper;
+  String _statusText = 'Inactive';
+  int _currentRipTotal = 0;
+  int _currentRipFinished = 0;
 
   List<String> get queue => _queue;
   List<RipStatusMessage> get logs => _logs;
   List<HistoryEntry> get history => _history;
   bool get isRipping => _isRipping;
+  String get statusText => _statusText;
+  double get progressValue {
+    if (!_isRipping || _currentRipTotal == 0) return 0;
+    final value = _currentRipFinished / _currentRipTotal;
+    return value.clamp(0, 1).toDouble();
+  }
+
+  int get progressPercent => (progressValue * 100).round();
   int get completedDownloads =>
       _logs.where((msg) => msg.status == RipStatus.downloadComplete).length;
   int get failedDownloads =>
@@ -86,22 +97,31 @@ class RipManager extends ChangeNotifier {
   void stop() {
     _currentRipper?.stop();
     _isRipping = false;
+    _statusText = 'Download interrupted';
+    _currentRipTotal = 0;
+    _currentRipFinished = 0;
     notifyListeners();
   }
 
   Future<void> _ripNext() async {
     if (_queue.isEmpty) {
       _isRipping = false;
+      _currentRipTotal = 0;
+      _currentRipFinished = 0;
       notifyListeners();
       return;
     }
 
     _isRipping = true;
+    _statusText = 'Starting rip...';
+    _currentRipTotal = 0;
+    _currentRipFinished = 0;
     String urlText = _queue.removeAt(0);
     notifyListeners();
 
     Uri? uri = Uri.tryParse(urlText);
     if (uri == null) {
+      _statusText = 'Error: Invalid URL: $urlText';
       _addLog(RipStatusMessage(RipStatus.ripErrored, "Invalid URL: $urlText"));
       _ripNext();
       return;
@@ -109,6 +129,7 @@ class RipManager extends ChangeNotifier {
 
     _currentRipper = _ripperResolver(uri);
     if (_currentRipper == null) {
+      _statusText = 'Error: No ripper found for $urlText';
       _addLog(RipStatusMessage(
           RipStatus.ripErrored, "No ripper found for $urlText"));
       _ripNext();
@@ -120,6 +141,7 @@ class RipManager extends ChangeNotifier {
       if (event.status == RipStatus.queueAdd) {
         _queue.add(event.object.toString());
       }
+      _updateProgressFromEvent(event);
       _addLog(event);
       if (event.status == RipStatus.ripComplete) {
         unawaited(_playCompletionSoundIfEnabled());
@@ -130,6 +152,7 @@ class RipManager extends ChangeNotifier {
     try {
       await _currentRipper!.rip();
     } catch (e) {
+      _statusText = 'Error: $e';
       _addLog(RipStatusMessage(RipStatus.ripErrored, e.toString()));
     } finally {
       _currentRipper!.dispose();
@@ -140,6 +163,55 @@ class RipManager extends ChangeNotifier {
   void _addLog(RipStatusMessage msg) {
     _logs.add(msg);
     notifyListeners();
+  }
+
+  void _updateProgressFromEvent(RipStatusMessage msg) {
+    final object = msg.object.toString();
+    switch (msg.status) {
+      case RipStatus.loadingResource:
+        _statusText = 'Loading $object';
+        break;
+      case RipStatus.downloadStarted:
+        _statusText = 'Downloading $object';
+        _currentRipTotal++;
+        break;
+      case RipStatus.downloadComplete:
+        _statusText = 'Downloaded $object';
+        _currentRipFinished++;
+        if (_currentRipFinished > _currentRipTotal) {
+          _currentRipTotal = _currentRipFinished;
+        }
+        break;
+      case RipStatus.downloadErrored:
+        _statusText = 'Error: $object';
+        _currentRipFinished++;
+        if (_currentRipFinished > _currentRipTotal) {
+          _currentRipTotal = _currentRipFinished;
+        }
+        break;
+      case RipStatus.downloadSkip:
+        _statusText = object;
+        _currentRipTotal++;
+        _currentRipFinished++;
+        break;
+      case RipStatus.downloadWarn:
+        _statusText = object;
+        break;
+      case RipStatus.ripErrored:
+        _statusText = 'Error: $object';
+        _currentRipTotal = 0;
+        _currentRipFinished = 0;
+        break;
+      case RipStatus.ripComplete:
+        _statusText = 'Rip complete, saved to $object';
+        if (_currentRipTotal > 0) {
+          _currentRipFinished = _currentRipTotal;
+        }
+        break;
+      case RipStatus.queueAdd:
+        _statusText = 'Queued $object';
+        break;
+    }
   }
 
   void _addToHistory(String url, String dir) {

@@ -85,6 +85,38 @@ class QueueingRipper extends AbstractRipper {
   }
 }
 
+class ProgressRipper extends AbstractRipper {
+  ProgressRipper(super.url, this.directory, this.release);
+
+  final Directory directory;
+  final Future<void> release;
+
+  @override
+  Future<void> setup() async {
+    workingDir = directory;
+  }
+
+  @override
+  bool canRip(Uri url) => true;
+
+  @override
+  Future<String> getGID(Uri url) async => 'progress';
+
+  @override
+  String getHost() => 'test';
+
+  @override
+  Future<void> rip() async {
+    sendUpdate(RipStatus.loadingResource, url.toString());
+    sendUpdate(RipStatus.downloadStarted, 'https://example.com/one.jpg');
+    sendUpdate(RipStatus.downloadStarted, 'https://example.com/two.jpg');
+    sendUpdate(RipStatus.downloadComplete, '/tmp/one.jpg');
+    await release;
+    sendUpdate(RipStatus.downloadComplete, '/tmp/two.jpg');
+    sendUpdate(RipStatus.ripComplete, workingDir.path);
+  }
+}
+
 Future<void> _waitFor(bool Function() condition) async {
   final deadline = DateTime.now().add(const Duration(seconds: 2));
   while (!condition()) {
@@ -248,5 +280,36 @@ void main() {
     manager.stop();
 
     expect(manager.logs.any((msg) => msg.status == RipStatus.queueAdd), isTrue);
+  });
+
+  test('tracks current rip status text and determinate progress', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_manager_progress_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final release = Completer<void>();
+    addTearDown(() {
+      if (!release.isCompleted) release.complete();
+    });
+
+    final manager = RipManager(
+      ripperResolver: (uri) => ProgressRipper(uri, directory, release.future),
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+
+    manager.addUrlToQueue('https://example.com/progress');
+
+    await _waitFor(() => manager.progressPercent == 50);
+    expect(manager.statusText, 'Downloaded /tmp/one.jpg');
+    expect(manager.isRipping, isTrue);
+
+    release.complete();
+    await _waitFor(() => manager.history.length == 1);
+
+    expect(manager.statusText, 'Rip complete, saved to ${directory.path}');
+    expect(manager.progressValue, 0);
   });
 }
