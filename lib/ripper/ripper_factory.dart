@@ -5,6 +5,7 @@ import 'rippers/artstation_ripper.dart';
 import 'rippers/artstn_ripper.dart';
 import 'rippers/baraag_ripper.dart';
 import 'rippers/bato_ripper.dart';
+import 'rippers/booru_ripper.dart';
 import 'rippers/eightmuses_ripper.dart';
 import 'rippers/flickr_ripper.dart';
 import 'rippers/imagefap_ripper.dart';
@@ -28,6 +29,9 @@ class RipperFactory {
     if (host.contains('artstn.co')) return ArtstnRipper(uri);
     if (host.contains('baraag.net')) return BaraagRipper(uri);
     if (host.contains('bato.to')) return BatoRipper(uri);
+    if (host.contains('xbooru.com') || host.contains('gelbooru.com')) {
+      return BooruRipper(uri);
+    }
     if (host.contains('8muses.com')) return EightmusesRipper(uri);
     if (host.contains('flickr.com')) return FlickrRipper(uri);
     if (host.contains('imagefap.com')) return ImagefapRipper(uri);
