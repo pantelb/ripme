@@ -188,6 +188,7 @@ class RipperMigrationCatalog {
     'MyhentaigalleryRipper',
     'MyreadingmangaRipper',
     'NatalieMuRipper',
+    'NewgroundsRipper',
     'NhentaiRipper',
     'RedditRipper',
     'RedgifsRipper',

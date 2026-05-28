@@ -62,6 +62,7 @@ import 'rippers/myhentaicomics_ripper.dart';
 import 'rippers/myhentaigallery_ripper.dart';
 import 'rippers/myreadingmanga_ripper.dart';
 import 'rippers/natalie_mu_ripper.dart';
+import 'rippers/newgrounds_ripper.dart';
 import 'rippers/nhentai_ripper.dart';
 import 'rippers/reddit_ripper.dart';
 import 'rippers/redgifs_ripper.dart';
@@ -164,6 +165,7 @@ class RipperFactory {
       final natalieMuRipper = NatalieMuRipper(uri);
       if (natalieMuRipper.canRip(uri)) return natalieMuRipper;
     }
+    if (host.endsWith('newgrounds.com')) return NewgroundsRipper(uri);
     if (host.contains('nhentai.net')) return NhentaiRipper(uri);
     if (host.contains('reddit.com')) return RedditRipper(uri);
     if (host.contains('redgifs.com') ||
