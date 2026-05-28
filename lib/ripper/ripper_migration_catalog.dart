@@ -150,6 +150,7 @@ class RipperMigrationCatalog {
     'FemjoyhunterRipper',
     'FitnakedgirlsRipper',
     'FivehundredpxRipper',
+    'FreeComicOnlineRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',
