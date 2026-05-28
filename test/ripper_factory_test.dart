@@ -62,6 +62,7 @@ import 'package:ripme/ripper/rippers/multporn_ripper.dart';
 import 'package:ripme/ripper/rippers/myhentaicomics_ripper.dart';
 import 'package:ripme/ripper/rippers/myhentaigallery_ripper.dart';
 import 'package:ripme/ripper/rippers/myreadingmanga_ripper.dart';
+import 'package:ripme/ripper/rippers/natalie_mu_ripper.dart';
 import 'package:ripme/ripper/rippers/nhentai_ripper.dart';
 import 'package:ripme/ripper/rippers/reddit_ripper.dart';
 import 'package:ripme/ripper/rippers/redgifs_ripper.dart';
@@ -262,6 +263,9 @@ void main() {
         'https://myreadingmanga.info/zelo-lee-brave-lover-dj-slave-market-jp/',
       ),
     );
+    final natalieMu = RipperFactory.getRipper(
+      Uri.parse('http://cdn2.natalie.mu/music/news/140411'),
+    );
     final nhentai = RipperFactory.getRipper(
       Uri.parse('https://nhentai.net/g/123456/'),
     );
@@ -337,6 +341,7 @@ void main() {
     expect(myhentaicomics, isA<MyhentaicomicsRipper>());
     expect(myhentaigallery, isA<MyhentaigalleryRipper>());
     expect(myreadingmanga, isA<MyreadingmangaRipper>());
+    expect(natalieMu, isA<NatalieMuRipper>());
     expect(nhentai, isA<NhentaiRipper>());
     expect(reddit, isA<RedditRipper>());
     expect(redgifs, isA<RedgifsRipper>());
@@ -348,20 +353,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://nataliemu.com/gallery/example'),
+        Uri.parse('https://www.newgrounds.com/art/view/example/title'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'NatalieMuRipper',
+        'NewgroundsRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 66);
-    expect(RipperMigrationCatalog.unportedRipperCount, 50);
+    expect(RipperMigrationCatalog.portedRipperCount, 67);
+    expect(RipperMigrationCatalog.unportedRipperCount, 49);
   });
 }
