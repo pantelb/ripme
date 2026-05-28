@@ -93,6 +93,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] KingcomixRipper ported: Java-compatible strict HTTPS comic GIDs, broad host detection, `div.entry-content > p > img` extraction including empty sources, ordered filename prefixes, and factory/catalog coverage
 - [x] ListalRipper ported: Java-compatible list/folder URL GIDs, list ID capture, list POST pagination, folder next-page handling, viewimage detail-page expansion, `.pure-img` final image resolution, `.jpg` image-page filenames, and factory/catalog coverage
 - [x] LusciousRipper ported: Java-compatible `old.luscious.net` URL sanitization, album GID/id parsing, GraphQL API URL construction, API pagination, `url_to_original` extraction, album referrer downloads, ordered filename prefixes, and factory/catalog coverage
+- [x] MangadexRipper ported: Java-compatible legacy numeric chapter/title URL parsing, old MangaDex API endpoint construction, single-chapter page-array extraction, English manga chapter sorting, one-second download pacing, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -102,7 +103,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- MangadexRipper
 - ModelmayhemRipper
 - MotherlessVideoRipper
 - MrCongRipper

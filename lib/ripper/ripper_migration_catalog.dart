@@ -176,6 +176,7 @@ class RipperMigrationCatalog {
     'KingcomixRipper',
     'ListalRipper',
     'LusciousRipper',
+    'MangadexRipper',
     'MastodonRipper',
     'MastodonXyzRipper',
     'MotherlessRipper',

@@ -50,6 +50,7 @@ import 'rippers/jpg3_ripper.dart';
 import 'rippers/kingcomix_ripper.dart';
 import 'rippers/listal_ripper.dart';
 import 'rippers/luscious_ripper.dart';
+import 'rippers/mangadex_ripper.dart';
 import 'rippers/mastodon_ripper.dart';
 import 'rippers/mastodon_xyz_ripper.dart';
 import 'rippers/motherless_ripper.dart';
@@ -130,6 +131,7 @@ class RipperFactory {
     if (host.endsWith('listal.com')) return ListalRipper(uri);
     final lusciousRipper = LusciousRipper(uri);
     if (lusciousRipper.canRip(uri)) return lusciousRipper;
+    if (host.endsWith('mangadex.org')) return MangadexRipper(uri);
     if (host.contains('mastodon.social')) return MastodonRipper(uri);
     if (host.contains('mastodon.xyz')) return MastodonXyzRipper(uri);
     if (host.contains('motherless.com')) return MotherlessRipper(uri);
