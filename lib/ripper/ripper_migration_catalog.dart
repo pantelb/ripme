@@ -158,6 +158,7 @@ class RipperMigrationCatalog {
     'HentaiNexusRipper',
     'HentaifoundryRipper',
     'HentaifoxRipper',
+    'HentaiimageRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',

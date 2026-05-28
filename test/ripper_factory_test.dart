@@ -35,6 +35,7 @@ import 'package:ripme/ripper/rippers/hentai2read_ripper.dart';
 import 'package:ripme/ripper/rippers/hentai_nexus_ripper.dart';
 import 'package:ripme/ripper/rippers/hentaifoundry_ripper.dart';
 import 'package:ripme/ripper/rippers/hentaifox_ripper.dart';
+import 'package:ripme/ripper/rippers/hentaiimage_ripper.dart';
 import 'package:ripme/ripper/rippers/imagefap_ripper.dart';
 import 'package:ripme/ripper/rippers/imgur_ripper.dart';
 import 'package:ripme/ripper/rippers/instagram_ripper.dart';
@@ -148,6 +149,9 @@ void main() {
     final hentaifox = RipperFactory.getRipper(
       Uri.parse('https://hentaifox.com/gallery/38544/'),
     );
+    final hentaiimage = RipperFactory.getRipper(
+      Uri.parse('https://hentai-img-xxx.com/image/example/'),
+    );
     final eightmuses = RipperFactory.getRipper(
       Uri.parse('https://www.8muses.com/comics/album/example'),
     );
@@ -218,6 +222,7 @@ void main() {
     expect(hentaiNexus, isA<HentaiNexusRipper>());
     expect(hentaifoundry, isA<HentaifoundryRipper>());
     expect(hentaifox, isA<HentaifoxRipper>());
+    expect(hentaiimage, isA<HentaiimageRipper>());
     expect(eightmuses, isA<EightmusesRipper>());
     expect(flickr, isA<FlickrRipper>());
     expect(imagefap, isA<ImagefapRipper>());
@@ -250,7 +255,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 45);
-    expect(RipperMigrationCatalog.unportedRipperCount, 71);
+    expect(RipperMigrationCatalog.portedRipperCount, 46);
+    expect(RipperMigrationCatalog.unportedRipperCount, 70);
   });
 }
