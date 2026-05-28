@@ -55,6 +55,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] BatoRipper ported: Java-compatible chapter/series URL handling, series queue expansion, title-based album naming, `imgHttps` script JSON extraction, ordered filename prefixes, 500ms download pacing, and factory/catalog coverage
 - [x] BooruRipper ported: Java-compatible xbooru/gelbooru URL detection, host/domain/GID parsing, DAPI page construction and pagination, XML `file_url` extraction with post-id filename prefixes, and factory/catalog coverage
 - [x] CfakeRipper ported: Java-compatible celebrity URL/GID parsing, gallery thumbnail-to-photo URL extraction, pagination span handling, ordered filename prefixes, and factory/catalog coverage
+- [x] ChanRipper ported: Java-compatible baked-in and configured chan/CDN domains, thread GID parsing quirks, album host naming, direct media extraction, URL blacklist/dedupe behavior, off-site expansion reuse, video pacing, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -64,7 +65,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- ChanRipper
 - CheveretoRipper
 - CliphunterRipper
 - CoomerPartyRipper
