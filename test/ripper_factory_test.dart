@@ -21,6 +21,7 @@ import 'package:ripme/ripper/rippers/e621_ripper.dart';
 import 'package:ripme/ripper/rippers/eightmuses_ripper.dart';
 import 'package:ripme/ripper/rippers/ehentai_ripper.dart';
 import 'package:ripme/ripper/rippers/erome_ripper.dart';
+import 'package:ripme/ripper/rippers/fapdungeon_ripper.dart';
 import 'package:ripme/ripper/rippers/flickr_ripper.dart';
 import 'package:ripme/ripper/rippers/imagefap_ripper.dart';
 import 'package:ripme/ripper/rippers/imgur_ripper.dart';
@@ -95,6 +96,9 @@ void main() {
     final erome = RipperFactory.getRipper(
       Uri.parse('https://erome.com/a/albumid'),
     );
+    final fapDungeon = RipperFactory.getRipper(
+      Uri.parse('https://fapdungeon.com/white/example-album/'),
+    );
     final eightmuses = RipperFactory.getRipper(
       Uri.parse('https://www.8muses.com/comics/album/example'),
     );
@@ -152,6 +156,7 @@ void main() {
     expect(e621, isA<E621Ripper>());
     expect(ehentai, isA<EHentaiRipper>());
     expect(erome, isA<EromeRipper>());
+    expect(fapDungeon, isA<FapDungeonRipper>());
     expect(eightmuses, isA<EightmusesRipper>());
     expect(flickr, isA<FlickrRipper>());
     expect(imagefap, isA<ImagefapRipper>());
@@ -171,20 +176,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://fapdungeon.com/pics/123/title'),
+        Uri.parse('https://fapwiz.com/gallery/example'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'FapDungeonRipper',
+        'FapwizRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 32);
-    expect(RipperMigrationCatalog.unportedRipperCount, 84);
+    expect(RipperMigrationCatalog.portedRipperCount, 33);
+    expect(RipperMigrationCatalog.unportedRipperCount, 83);
   });
 }

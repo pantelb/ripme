@@ -145,6 +145,7 @@ class RipperMigrationCatalog {
     'E621Ripper',
     'EHentaiRipper',
     'EromeRipper',
+    'FapDungeonRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',
