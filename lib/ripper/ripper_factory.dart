@@ -57,6 +57,7 @@ import 'rippers/modelmayhem_ripper.dart';
 import 'rippers/motherless_ripper.dart';
 import 'rippers/motherless_video_ripper.dart';
 import 'rippers/mrcong_ripper.dart';
+import 'rippers/multporn_ripper.dart';
 import 'rippers/nhentai_ripper.dart';
 import 'rippers/reddit_ripper.dart';
 import 'rippers/redgifs_ripper.dart';
@@ -145,6 +146,7 @@ class RipperFactory {
       if (motherlessVideoRipper.canRip(uri)) return motherlessVideoRipper;
     }
     if (host.endsWith('misskon.com')) return MrCongRipper(uri);
+    if (host.endsWith('multporn.net')) return MultpornRipper(uri);
     if (host.contains('nhentai.net')) return NhentaiRipper(uri);
     if (host.contains('reddit.com')) return RedditRipper(uri);
     if (host.contains('redgifs.com') ||

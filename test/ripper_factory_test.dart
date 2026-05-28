@@ -58,6 +58,7 @@ import 'package:ripme/ripper/rippers/modelmayhem_ripper.dart';
 import 'package:ripme/ripper/rippers/motherless_ripper.dart';
 import 'package:ripme/ripper/rippers/motherless_video_ripper.dart';
 import 'package:ripme/ripper/rippers/mrcong_ripper.dart';
+import 'package:ripme/ripper/rippers/multporn_ripper.dart';
 import 'package:ripme/ripper/rippers/nhentai_ripper.dart';
 import 'package:ripme/ripper/rippers/reddit_ripper.dart';
 import 'package:ripme/ripper/rippers/redgifs_ripper.dart';
@@ -244,6 +245,9 @@ void main() {
     final mrCong = RipperFactory.getRipper(
       Uri.parse('https://misskon.com/xiaoyu-vol-799-lin-xing-lan-87-anh/'),
     );
+    final multporn = RipperFactory.getRipper(
+      Uri.parse('https://multporn.net/node/12345/example-comic'),
+    );
     final nhentai = RipperFactory.getRipper(
       Uri.parse('https://nhentai.net/g/123456/'),
     );
@@ -315,6 +319,7 @@ void main() {
     expect(motherless, isA<MotherlessRipper>());
     expect(motherlessVideo, isA<MotherlessVideoRipper>());
     expect(mrCong, isA<MrCongRipper>());
+    expect(multporn, isA<MultpornRipper>());
     expect(nhentai, isA<NhentaiRipper>());
     expect(reddit, isA<RedditRipper>());
     expect(redgifs, isA<RedgifsRipper>());
@@ -326,20 +331,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://multporn.net/comics/example'),
+        Uri.parse('https://myhentaicomics.com/comics/example'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'MultpornRipper',
+        'MyhentaicomicsRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 62);
-    expect(RipperMigrationCatalog.unportedRipperCount, 54);
+    expect(RipperMigrationCatalog.portedRipperCount, 63);
+    expect(RipperMigrationCatalog.unportedRipperCount, 53);
   });
 }
