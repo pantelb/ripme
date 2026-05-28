@@ -152,6 +152,7 @@ class RipperMigrationCatalog {
     'FivehundredpxRipper',
     'FreeComicOnlineRipper',
     'FuraffinityRipper',
+    'FuskatorRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',
