@@ -11,6 +11,7 @@ import 'package:ripme/ripper/rippers/cfake_ripper.dart';
 import 'package:ripme/ripper/rippers/chan_ripper.dart';
 import 'package:ripme/ripper/rippers/chevereto_ripper.dart';
 import 'package:ripme/ripper/rippers/cliphunter_ripper.dart';
+import 'package:ripme/ripper/rippers/coomer_party_ripper.dart';
 import 'package:ripme/ripper/rippers/eightmuses_ripper.dart';
 import 'package:ripme/ripper/rippers/flickr_ripper.dart';
 import 'package:ripme/ripper/rippers/imagefap_ripper.dart';
@@ -57,6 +58,9 @@ void main() {
     );
     final cliphunter = RipperFactory.getRipper(
       Uri.parse('https://www.cliphunter.com/w/12345/example-video'),
+    );
+    final coomer = RipperFactory.getRipper(
+      Uri.parse('https://coomer.su/onlyfans/user/soogsx'),
     );
     final eightmuses = RipperFactory.getRipper(
       Uri.parse('https://www.8muses.com/comics/album/example'),
@@ -106,6 +110,7 @@ void main() {
     expect(chan, isA<ChanRipper>());
     expect(chevereto, isA<CheveretoRipper>());
     expect(cliphunter, isA<CliphunterRipper>());
+    expect(coomer, isA<CoomerPartyRipper>());
     expect(eightmuses, isA<EightmusesRipper>());
     expect(flickr, isA<FlickrRipper>());
     expect(imagefap, isA<ImagefapRipper>());
@@ -138,7 +143,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 23);
-    expect(RipperMigrationCatalog.unportedRipperCount, 93);
+    expect(RipperMigrationCatalog.portedRipperCount, 24);
+    expect(RipperMigrationCatalog.unportedRipperCount, 92);
   });
 }
