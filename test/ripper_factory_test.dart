@@ -59,6 +59,7 @@ import 'package:ripme/ripper/rippers/motherless_ripper.dart';
 import 'package:ripme/ripper/rippers/motherless_video_ripper.dart';
 import 'package:ripme/ripper/rippers/mrcong_ripper.dart';
 import 'package:ripme/ripper/rippers/multporn_ripper.dart';
+import 'package:ripme/ripper/rippers/myhentaicomics_ripper.dart';
 import 'package:ripme/ripper/rippers/nhentai_ripper.dart';
 import 'package:ripme/ripper/rippers/reddit_ripper.dart';
 import 'package:ripme/ripper/rippers/redgifs_ripper.dart';
@@ -248,6 +249,9 @@ void main() {
     final multporn = RipperFactory.getRipper(
       Uri.parse('https://multporn.net/node/12345/example-comic'),
     );
+    final myhentaicomics = RipperFactory.getRipper(
+      Uri.parse('https://myhentaicomics.com/index.php/Nienna-Lost-Tales'),
+    );
     final nhentai = RipperFactory.getRipper(
       Uri.parse('https://nhentai.net/g/123456/'),
     );
@@ -320,6 +324,7 @@ void main() {
     expect(motherlessVideo, isA<MotherlessVideoRipper>());
     expect(mrCong, isA<MrCongRipper>());
     expect(multporn, isA<MultpornRipper>());
+    expect(myhentaicomics, isA<MyhentaicomicsRipper>());
     expect(nhentai, isA<NhentaiRipper>());
     expect(reddit, isA<RedditRipper>());
     expect(redgifs, isA<RedgifsRipper>());
@@ -331,20 +336,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://myhentaicomics.com/comics/example'),
+        Uri.parse('https://myhentaigallery.com/gallery/thumbnails.php?album=1'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'MyhentaicomicsRipper',
+        'MyhentaigalleryRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 63);
-    expect(RipperMigrationCatalog.unportedRipperCount, 53);
+    expect(RipperMigrationCatalog.portedRipperCount, 64);
+    expect(RipperMigrationCatalog.unportedRipperCount, 52);
   });
 }
