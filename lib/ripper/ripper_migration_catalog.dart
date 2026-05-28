@@ -137,6 +137,7 @@ class RipperMigrationCatalog {
     'CheveretoRipper',
     'CliphunterRipper',
     'CoomerPartyRipper',
+    'DanbooruRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',

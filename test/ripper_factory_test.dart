@@ -12,6 +12,7 @@ import 'package:ripme/ripper/rippers/chan_ripper.dart';
 import 'package:ripme/ripper/rippers/chevereto_ripper.dart';
 import 'package:ripme/ripper/rippers/cliphunter_ripper.dart';
 import 'package:ripme/ripper/rippers/coomer_party_ripper.dart';
+import 'package:ripme/ripper/rippers/danbooru_ripper.dart';
 import 'package:ripme/ripper/rippers/eightmuses_ripper.dart';
 import 'package:ripme/ripper/rippers/flickr_ripper.dart';
 import 'package:ripme/ripper/rippers/imagefap_ripper.dart';
@@ -62,6 +63,9 @@ void main() {
     final coomer = RipperFactory.getRipper(
       Uri.parse('https://coomer.su/onlyfans/user/soogsx'),
     );
+    final danbooru = RipperFactory.getRipper(
+      Uri.parse('https://danbooru.donmai.us/posts?tags=brown_necktie'),
+    );
     final eightmuses = RipperFactory.getRipper(
       Uri.parse('https://www.8muses.com/comics/album/example'),
     );
@@ -111,6 +115,7 @@ void main() {
     expect(chevereto, isA<CheveretoRipper>());
     expect(cliphunter, isA<CliphunterRipper>());
     expect(coomer, isA<CoomerPartyRipper>());
+    expect(danbooru, isA<DanbooruRipper>());
     expect(eightmuses, isA<EightmusesRipper>());
     expect(flickr, isA<FlickrRipper>());
     expect(imagefap, isA<ImagefapRipper>());
@@ -143,7 +148,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 24);
-    expect(RipperMigrationCatalog.unportedRipperCount, 92);
+    expect(RipperMigrationCatalog.portedRipperCount, 25);
+    expect(RipperMigrationCatalog.unportedRipperCount, 91);
   });
 }

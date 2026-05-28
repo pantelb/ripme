@@ -11,6 +11,7 @@ import 'rippers/chan_ripper.dart';
 import 'rippers/chevereto_ripper.dart';
 import 'rippers/cliphunter_ripper.dart';
 import 'rippers/coomer_party_ripper.dart';
+import 'rippers/danbooru_ripper.dart';
 import 'rippers/eightmuses_ripper.dart';
 import 'rippers/flickr_ripper.dart';
 import 'rippers/imagefap_ripper.dart';
@@ -47,6 +48,7 @@ class RipperFactory {
     if (host.endsWith('coomer.party') || host.endsWith('coomer.su')) {
       return CoomerPartyRipper(uri);
     }
+    if (host.endsWith('danbooru.donmai.us')) return DanbooruRipper(uri);
     if (host.contains('8muses.com')) return EightmusesRipper(uri);
     if (host.contains('flickr.com')) return FlickrRipper(uri);
     if (host.contains('imagefap.com')) return ImagefapRipper(uri);
