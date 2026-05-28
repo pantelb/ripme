@@ -7,6 +7,7 @@ import 'package:ripme/ripper/rippers/artstn_ripper.dart';
 import 'package:ripme/ripper/rippers/baraag_ripper.dart';
 import 'package:ripme/ripper/rippers/bato_ripper.dart';
 import 'package:ripme/ripper/rippers/booru_ripper.dart';
+import 'package:ripme/ripper/rippers/cfake_ripper.dart';
 import 'package:ripme/ripper/rippers/eightmuses_ripper.dart';
 import 'package:ripme/ripper/rippers/flickr_ripper.dart';
 import 'package:ripme/ripper/rippers/imagefap_ripper.dart';
@@ -41,6 +42,9 @@ void main() {
     );
     final booru = RipperFactory.getRipper(
       Uri.parse('https://xbooru.com/index.php?page=post&s=list&tags=furry'),
+    );
+    final cfake = RipperFactory.getRipper(
+      Uri.parse('https://cfake.com/images/celebrity/Zooey_Deschanel/1264'),
     );
     final eightmuses = RipperFactory.getRipper(
       Uri.parse('https://www.8muses.com/comics/album/example'),
@@ -86,6 +90,7 @@ void main() {
     expect(baraag, isA<BaraagRipper>());
     expect(bato, isA<BatoRipper>());
     expect(booru, isA<BooruRipper>());
+    expect(cfake, isA<CfakeRipper>());
     expect(eightmuses, isA<EightmusesRipper>());
     expect(flickr, isA<FlickrRipper>());
     expect(imagefap, isA<ImagefapRipper>());
@@ -118,7 +123,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 19);
-    expect(RipperMigrationCatalog.unportedRipperCount, 97);
+    expect(RipperMigrationCatalog.portedRipperCount, 20);
+    expect(RipperMigrationCatalog.unportedRipperCount, 96);
   });
 }
