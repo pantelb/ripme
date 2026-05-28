@@ -47,6 +47,7 @@ import 'package:ripme/ripper/rippers/imgur_ripper.dart';
 import 'package:ripme/ripper/rippers/instagram_ripper.dart';
 import 'package:ripme/ripper/rippers/jabarchives_ripper.dart';
 import 'package:ripme/ripper/rippers/jagodibuja_ripper.dart';
+import 'package:ripme/ripper/rippers/jpg3_ripper.dart';
 import 'package:ripme/ripper/rippers/mastodon_ripper.dart';
 import 'package:ripme/ripper/rippers/mastodon_xyz_ripper.dart';
 import 'package:ripme/ripper/rippers/motherless_ripper.dart';
@@ -203,6 +204,9 @@ void main() {
     final jagodibuja = RipperFactory.getRipper(
       Uri.parse('https://www.jagodibuja.com/comic-in-me/'),
     );
+    final jpg3 = RipperFactory.getRipper(
+      Uri.parse('https://jpg3.su/a/abcdef'),
+    );
     final mastodon = RipperFactory.getRipper(
       Uri.parse('https://mastodon.social/@alice'),
     );
@@ -272,6 +276,7 @@ void main() {
     expect(instagram, isA<InstagramRipper>());
     expect(jabArchives, isA<JabArchivesRipper>());
     expect(jagodibuja, isA<JagodibujaRipper>());
+    expect(jpg3, isA<Jpg3Ripper>());
     expect(mastodon, isA<MastodonRipper>());
     expect(mastodonXyz, isA<MastodonXyzRipper>());
     expect(motherless, isA<MotherlessRipper>());
@@ -286,20 +291,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://jpg3.su/a/abcdef'),
+        Uri.parse('https://kingcomix.com/comic/example'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'Jpg3Ripper',
+        'KingcomixRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 54);
-    expect(RipperMigrationCatalog.unportedRipperCount, 62);
+    expect(RipperMigrationCatalog.portedRipperCount, 55);
+    expect(RipperMigrationCatalog.unportedRipperCount, 61);
   });
 }
