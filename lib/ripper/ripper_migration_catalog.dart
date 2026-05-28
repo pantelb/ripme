@@ -151,6 +151,7 @@ class RipperMigrationCatalog {
     'FitnakedgirlsRipper',
     'FivehundredpxRipper',
     'FreeComicOnlineRipper',
+    'FuraffinityRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',

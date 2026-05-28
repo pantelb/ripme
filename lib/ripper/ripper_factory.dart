@@ -27,6 +27,7 @@ import 'rippers/fitnakedgirls_ripper.dart';
 import 'rippers/fivehundredpx_ripper.dart';
 import 'rippers/flickr_ripper.dart';
 import 'rippers/free_comic_online_ripper.dart';
+import 'rippers/furaffinity_ripper.dart';
 import 'rippers/imagefap_ripper.dart';
 import 'rippers/imgur_ripper.dart';
 import 'rippers/instagram_ripper.dart';
@@ -77,6 +78,7 @@ class RipperFactory {
     if (host.endsWith('freecomiconline.me')) {
       return FreeComicOnlineRipper(uri);
     }
+    if (host.endsWith('furaffinity.net')) return FuraffinityRipper(uri);
     if (host.contains('8muses.com')) return EightmusesRipper(uri);
     if (host.contains('flickr.com')) return FlickrRipper(uri);
     if (host.contains('imagefap.com')) return ImagefapRipper(uri);
