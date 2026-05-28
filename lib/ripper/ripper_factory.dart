@@ -23,6 +23,7 @@ import 'rippers/erome_ripper.dart';
 import 'rippers/fapdungeon_ripper.dart';
 import 'rippers/fapwiz_ripper.dart';
 import 'rippers/femjoyhunter_ripper.dart';
+import 'rippers/fitnakedgirls_ripper.dart';
 import 'rippers/flickr_ripper.dart';
 import 'rippers/imagefap_ripper.dart';
 import 'rippers/imgur_ripper.dart';
@@ -69,6 +70,7 @@ class RipperFactory {
     if (host.endsWith('fapdungeon.com')) return FapDungeonRipper(uri);
     if (host.endsWith('fapwiz.com')) return FapwizRipper(uri);
     if (host.endsWith('femjoyhunter.com')) return FemjoyhunterRipper(uri);
+    if (host.endsWith('fitnakedgirls.com')) return FitnakedgirlsRipper(uri);
     if (host.contains('8muses.com')) return EightmusesRipper(uri);
     if (host.contains('flickr.com')) return FlickrRipper(uri);
     if (host.contains('imagefap.com')) return ImagefapRipper(uri);
@@ -84,7 +86,9 @@ class RipperFactory {
       return RedgifsRipper(uri);
     }
     if (host.contains('tumblr.com')) return TumblrRipper(uri);
-    if (host.contains('twitter.com') || host.contains('x.com')) {
+    if (host.endsWith('twitter.com') ||
+        host == 'x.com' ||
+        host.endsWith('.x.com')) {
       return TwitterRipper(uri);
     }
 
