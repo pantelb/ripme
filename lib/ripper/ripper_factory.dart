@@ -59,6 +59,7 @@ import 'rippers/motherless_video_ripper.dart';
 import 'rippers/mrcong_ripper.dart';
 import 'rippers/multporn_ripper.dart';
 import 'rippers/myhentaicomics_ripper.dart';
+import 'rippers/myhentaigallery_ripper.dart';
 import 'rippers/nhentai_ripper.dart';
 import 'rippers/reddit_ripper.dart';
 import 'rippers/redgifs_ripper.dart';
@@ -150,6 +151,9 @@ class RipperFactory {
     if (host.endsWith('multporn.net')) return MultpornRipper(uri);
     if (host.endsWith('myhentaicomics.com')) {
       return MyhentaicomicsRipper(uri);
+    }
+    if (host.endsWith('myhentaigallery.com')) {
+      return MyhentaigalleryRipper(uri);
     }
     if (host.contains('nhentai.net')) return NhentaiRipper(uri);
     if (host.contains('reddit.com')) return RedditRipper(uri);

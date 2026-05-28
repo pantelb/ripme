@@ -185,6 +185,7 @@ class RipperMigrationCatalog {
     'MrCongRipper',
     'MultpornRipper',
     'MyhentaicomicsRipper',
+    'MyhentaigalleryRipper',
     'NhentaiRipper',
     'RedditRipper',
     'RedgifsRipper',
