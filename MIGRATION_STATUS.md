@@ -69,6 +69,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] EromeRipper ported: Java-compatible `www.erome.com` URL sanitization, album/profile GID parsing, profile queue support, optional `laravel_session` cookie auth, `og:title` album naming, lazy image extraction, HD/SD video source extraction, empty-media auth warning, ordered filename prefixes, and factory/catalog coverage
 - [x] FapDungeonRipper ported: Java-compatible category/album URL detection, category GIDs, category+album titles, largest-width `srcset` image selection, `video source` extraction, one-second download pacing, ordered filename prefixes, and factory/catalog coverage
 - [x] FapwizRipper ported: Java-compatible category/user/post URL patterns and GIDs, percent-encoded post slugs, user/category thumbnail-to-mp4 conversion, thumbnail-icon skips, post `video source` extraction, `a.next` pagination, two-second download pacing, ordered filename prefixes, and factory/catalog coverage
+- [x] FemjoyhunterRipper ported: Java-compatible `www.femjoyhunter.com` gallery GIDs, all-page `img[src]` extraction including empty attributes, fixed image download referrer, ordered filename prefixes, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -78,7 +79,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- FemjoyhunterRipper
 - FitnakedgirlsRipper
 - FivehundredpxRipper
 - FreeComicOnlineRipper

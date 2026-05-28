@@ -22,6 +22,7 @@ import 'rippers/ehentai_ripper.dart';
 import 'rippers/erome_ripper.dart';
 import 'rippers/fapdungeon_ripper.dart';
 import 'rippers/fapwiz_ripper.dart';
+import 'rippers/femjoyhunter_ripper.dart';
 import 'rippers/flickr_ripper.dart';
 import 'rippers/imagefap_ripper.dart';
 import 'rippers/imgur_ripper.dart';
@@ -67,6 +68,7 @@ class RipperFactory {
     if (host.endsWith('erome.com')) return EromeRipper(uri);
     if (host.endsWith('fapdungeon.com')) return FapDungeonRipper(uri);
     if (host.endsWith('fapwiz.com')) return FapwizRipper(uri);
+    if (host.endsWith('femjoyhunter.com')) return FemjoyhunterRipper(uri);
     if (host.contains('8muses.com')) return EightmusesRipper(uri);
     if (host.contains('flickr.com')) return FlickrRipper(uri);
     if (host.contains('imagefap.com')) return ImagefapRipper(uri);
