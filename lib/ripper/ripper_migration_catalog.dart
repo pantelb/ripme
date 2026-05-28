@@ -149,6 +149,7 @@ class RipperMigrationCatalog {
     'FapwizRipper',
     'FemjoyhunterRipper',
     'FitnakedgirlsRipper',
+    'FivehundredpxRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',
