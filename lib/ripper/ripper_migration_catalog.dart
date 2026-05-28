@@ -156,6 +156,7 @@ class RipperMigrationCatalog {
     'GirlsOfDesireRipper',
     'Hentai2readRipper',
     'HentaiNexusRipper',
+    'HentaifoundryRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',
