@@ -160,6 +160,7 @@ class RipperMigrationCatalog {
     'HentaifoxRipper',
     'HentaiimageRipper',
     'HitomiRipper',
+    'HqpornerRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',

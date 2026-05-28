@@ -82,6 +82,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] HentaifoxRipper ported: Java-compatible strict HTTPS gallery GIDs, album title extraction from `div.info > h1`, preview thumbnail-to-full image normalization, and factory/catalog coverage
 - [x] HentaiimageRipper ported: Java-compatible hentai-image/comic/img-xxx URL detection, host-derived album naming, Java GID quirk, icon-overlay image extraction, next-page reconstruction, ordered filename prefixes, and factory/catalog coverage
 - [x] HitomiRipper ported: Java-compatible category URL detection, disabled-test behavior, ltn.hitomi JavaScript page fetching, galleryinfo extraction, title suffix cleanup, ordered filename prefixes, and factory/catalog coverage
+- [x] HqpornerRipper ported: Java-compatible video/listing URL parsing, listing video link extraction, pagination, embed-host video resolution for mydaddy/flyflv/generic MP4 pages, best-quality selection, video filenames, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -91,7 +92,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- HqpornerRipper
 - HypnohubRipper
 - ImagebamRipper
 - ImagevenueRipper

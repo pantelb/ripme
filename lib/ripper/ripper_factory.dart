@@ -36,6 +36,7 @@ import 'rippers/hentaifoundry_ripper.dart';
 import 'rippers/hentaifox_ripper.dart';
 import 'rippers/hentaiimage_ripper.dart';
 import 'rippers/hitomi_ripper.dart';
+import 'rippers/hqporner_ripper.dart';
 import 'rippers/imagefap_ripper.dart';
 import 'rippers/imgur_ripper.dart';
 import 'rippers/instagram_ripper.dart';
@@ -101,6 +102,8 @@ class RipperFactory {
     if (hentaiimageRipper.canRip(uri)) return hentaiimageRipper;
     final hitomiRipper = HitomiRipper(uri);
     if (hitomiRipper.canRip(uri)) return hitomiRipper;
+    final hqpornerRipper = HqpornerRipper(uri);
+    if (hqpornerRipper.canRip(uri)) return hqpornerRipper;
     if (host.contains('8muses.com')) return EightmusesRipper(uri);
     if (host.contains('flickr.com')) return FlickrRipper(uri);
     if (host.contains('imagefap.com')) return ImagefapRipper(uri);
