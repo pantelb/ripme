@@ -9,6 +9,7 @@ import 'rippers/booru_ripper.dart';
 import 'rippers/cfake_ripper.dart';
 import 'rippers/chan_ripper.dart';
 import 'rippers/chevereto_ripper.dart';
+import 'rippers/cliphunter_ripper.dart';
 import 'rippers/eightmuses_ripper.dart';
 import 'rippers/flickr_ripper.dart';
 import 'rippers/imagefap_ripper.dart';
@@ -41,6 +42,7 @@ class RipperFactory {
     if (CheveretoRipper.explicitDomains.contains(host)) {
       return CheveretoRipper(uri);
     }
+    if (host.contains('cliphunter.com')) return CliphunterRipper(uri);
     if (host.contains('8muses.com')) return EightmusesRipper(uri);
     if (host.contains('flickr.com')) return FlickrRipper(uri);
     if (host.contains('imagefap.com')) return ImagefapRipper(uri);
