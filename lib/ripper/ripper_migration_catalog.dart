@@ -154,6 +154,7 @@ class RipperMigrationCatalog {
     'FuraffinityRipper',
     'FuskatorRipper',
     'GirlsOfDesireRipper',
+    'Hentai2readRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',
