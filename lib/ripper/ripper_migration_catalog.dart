@@ -140,6 +140,7 @@ class RipperMigrationCatalog {
     'DanbooruRipper',
     'DerpiRipper',
     'DeviantartRipper',
+    'DribbbleRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',

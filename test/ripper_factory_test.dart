@@ -15,6 +15,7 @@ import 'package:ripme/ripper/rippers/coomer_party_ripper.dart';
 import 'package:ripme/ripper/rippers/danbooru_ripper.dart';
 import 'package:ripme/ripper/rippers/derpi_ripper.dart';
 import 'package:ripme/ripper/rippers/deviantart_ripper.dart';
+import 'package:ripme/ripper/rippers/dribbble_ripper.dart';
 import 'package:ripme/ripper/rippers/eightmuses_ripper.dart';
 import 'package:ripme/ripper/rippers/flickr_ripper.dart';
 import 'package:ripme/ripper/rippers/imagefap_ripper.dart';
@@ -75,6 +76,9 @@ void main() {
       Uri.parse(
           'https://www.deviantart.com/apofiss/gallery/41388863/sceneries'),
     );
+    final dribbble = RipperFactory.getRipper(
+      Uri.parse('https://dribbble.com/typogriff'),
+    );
     final eightmuses = RipperFactory.getRipper(
       Uri.parse('https://www.8muses.com/comics/album/example'),
     );
@@ -127,6 +131,7 @@ void main() {
     expect(danbooru, isA<DanbooruRipper>());
     expect(derpi, isA<DerpiRipper>());
     expect(deviantart, isA<DeviantartRipper>());
+    expect(dribbble, isA<DribbbleRipper>());
     expect(eightmuses, isA<EightmusesRipper>());
     expect(flickr, isA<FlickrRipper>());
     expect(imagefap, isA<ImagefapRipper>());
@@ -146,20 +151,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://dribbble.com/example'),
+        Uri.parse('https://dynasty-scans.com/chapters/example'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'DribbbleRipper',
+        'DynastyscansRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 27);
-    expect(RipperMigrationCatalog.unportedRipperCount, 89);
+    expect(RipperMigrationCatalog.portedRipperCount, 28);
+    expect(RipperMigrationCatalog.unportedRipperCount, 88);
   });
 }

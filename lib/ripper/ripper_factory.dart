@@ -14,6 +14,7 @@ import 'rippers/coomer_party_ripper.dart';
 import 'rippers/danbooru_ripper.dart';
 import 'rippers/derpi_ripper.dart';
 import 'rippers/deviantart_ripper.dart';
+import 'rippers/dribbble_ripper.dart';
 import 'rippers/eightmuses_ripper.dart';
 import 'rippers/flickr_ripper.dart';
 import 'rippers/imagefap_ripper.dart';
@@ -53,6 +54,7 @@ class RipperFactory {
     if (host.endsWith('danbooru.donmai.us')) return DanbooruRipper(uri);
     if (host.endsWith('derpibooru.org')) return DerpiRipper(uri);
     if (host.endsWith('deviantart.com')) return DeviantartRipper(uri);
+    if (host.endsWith('dribbble.com')) return DribbbleRipper(uri);
     if (host.contains('8muses.com')) return EightmusesRipper(uri);
     if (host.contains('flickr.com')) return FlickrRipper(uri);
     if (host.contains('imagefap.com')) return ImagefapRipper(uri);
