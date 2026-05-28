@@ -77,6 +77,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] FuskatorRipper ported: Java-compatible `/thumbs/` and `/expanded/` URL sanitization, full-gallery GIDs including tilde IDs, first-page cookie capture, AJAX auth token flow, gallery JSON image extraction, ordered filename prefixes, and factory/catalog coverage
 - [x] GirlsOfDesireRipper ported: Java-compatible gallery URL/GID handling, `.albumName` album titles, thumbnail-to-full image normalization, gallery referrer downloads, ordered filename prefixes, and factory/catalog coverage
 - [x] Hentai2readRipper ported: Java-compatible root-page chapter queueing, chapter GIDs, thumbnail-page discovery, thumbnail image URL normalization, pagination loop stop behavior, ordered filename prefixes, and factory/catalog coverage
+- [x] HentaiNexusRipper ported: Java-compatible view/read URL GIDs with page fragments, read-page `initReader` extraction, Base64 byte-scramble JSON decoding, image URL construction, ordered filename prefixes, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -86,7 +87,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- HentaiNexusRipper
 - HentaifoundryRipper
 - HentaifoxRipper
 - HentaiimageRipper

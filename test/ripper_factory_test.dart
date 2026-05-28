@@ -32,6 +32,7 @@ import 'package:ripme/ripper/rippers/furaffinity_ripper.dart';
 import 'package:ripme/ripper/rippers/fuskator_ripper.dart';
 import 'package:ripme/ripper/rippers/girls_of_desire_ripper.dart';
 import 'package:ripme/ripper/rippers/hentai2read_ripper.dart';
+import 'package:ripme/ripper/rippers/hentai_nexus_ripper.dart';
 import 'package:ripme/ripper/rippers/imagefap_ripper.dart';
 import 'package:ripme/ripper/rippers/imgur_ripper.dart';
 import 'package:ripme/ripper/rippers/instagram_ripper.dart';
@@ -136,6 +137,9 @@ void main() {
     final hentai2read = RipperFactory.getRipper(
       Uri.parse('https://hentai2read.com/sm_school_memorial/1/'),
     );
+    final hentaiNexus = RipperFactory.getRipper(
+      Uri.parse('https://hentainexus.com/view/9202#001'),
+    );
     final eightmuses = RipperFactory.getRipper(
       Uri.parse('https://www.8muses.com/comics/album/example'),
     );
@@ -203,6 +207,7 @@ void main() {
     expect(fuskator, isA<FuskatorRipper>());
     expect(girlsOfDesire, isA<GirlsOfDesireRipper>());
     expect(hentai2read, isA<Hentai2readRipper>());
+    expect(hentaiNexus, isA<HentaiNexusRipper>());
     expect(eightmuses, isA<EightmusesRipper>());
     expect(flickr, isA<FlickrRipper>());
     expect(imagefap, isA<ImagefapRipper>());
@@ -222,20 +227,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://hentainexus.com/view/123'),
+        Uri.parse('https://hentaifoundry.com/pictures/user/artist'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'HentaiNexusRipper',
+        'HentaifoundryRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 42);
-    expect(RipperMigrationCatalog.unportedRipperCount, 74);
+    expect(RipperMigrationCatalog.portedRipperCount, 43);
+    expect(RipperMigrationCatalog.unportedRipperCount, 73);
   });
 }
