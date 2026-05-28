@@ -91,6 +91,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] JagodibujaRipper ported: Java-compatible strict `www.jagodibuja.com` gallery GIDs, broad host detection, gallery comic-page discovery, full-size page resolution, 500ms page pacing, malformed/failing page skip behavior, unprefixed filenames, and factory/catalog coverage
 - [x] Jpg3Ripper ported: Java-compatible `jpg3.su` album URL sanitization, broad host detection, split-string GIDs, `.image-container` image extraction with `.md` removal, `data-pagination` next-page links, album referer downloads, ordered filename prefixes, and factory/catalog coverage
 - [x] KingcomixRipper ported: Java-compatible strict HTTPS comic GIDs, broad host detection, `div.entry-content > p > img` extraction including empty sources, ordered filename prefixes, and factory/catalog coverage
+- [x] ListalRipper ported: Java-compatible list/folder URL GIDs, list ID capture, list POST pagination, folder next-page handling, viewimage detail-page expansion, `.pure-img` final image resolution, `.jpg` image-page filenames, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -100,7 +101,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- ListalRipper
 - LusciousRipper
 - MangadexRipper
 - ModelmayhemRipper

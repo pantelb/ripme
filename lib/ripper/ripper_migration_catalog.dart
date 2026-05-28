@@ -174,6 +174,7 @@ class RipperMigrationCatalog {
     'JagodibujaRipper',
     'Jpg3Ripper',
     'KingcomixRipper',
+    'ListalRipper',
     'MastodonRipper',
     'MastodonXyzRipper',
     'MotherlessRipper',
