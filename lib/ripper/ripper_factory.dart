@@ -33,6 +33,7 @@ import 'rippers/girls_of_desire_ripper.dart';
 import 'rippers/hentai2read_ripper.dart';
 import 'rippers/hentai_nexus_ripper.dart';
 import 'rippers/hentaifoundry_ripper.dart';
+import 'rippers/hentaifox_ripper.dart';
 import 'rippers/imagefap_ripper.dart';
 import 'rippers/imgur_ripper.dart';
 import 'rippers/instagram_ripper.dart';
@@ -93,6 +94,7 @@ class RipperFactory {
     if (host.endsWith('hentai-foundry.com')) {
       return HentaifoundryRipper(uri);
     }
+    if (host.endsWith('hentaifox.com')) return HentaifoxRipper(uri);
     if (host.contains('8muses.com')) return EightmusesRipper(uri);
     if (host.contains('flickr.com')) return FlickrRipper(uri);
     if (host.contains('imagefap.com')) return ImagefapRipper(uri);
