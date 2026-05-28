@@ -29,6 +29,7 @@ import 'rippers/flickr_ripper.dart';
 import 'rippers/free_comic_online_ripper.dart';
 import 'rippers/furaffinity_ripper.dart';
 import 'rippers/fuskator_ripper.dart';
+import 'rippers/girls_of_desire_ripper.dart';
 import 'rippers/imagefap_ripper.dart';
 import 'rippers/imgur_ripper.dart';
 import 'rippers/instagram_ripper.dart';
@@ -81,6 +82,9 @@ class RipperFactory {
     }
     if (host.endsWith('furaffinity.net')) return FuraffinityRipper(uri);
     if (host.endsWith('fuskator.com')) return FuskatorRipper(uri);
+    if (host.endsWith('girlsofdesire.org')) {
+      return GirlsOfDesireRipper(uri);
+    }
     if (host.contains('8muses.com')) return EightmusesRipper(uri);
     if (host.contains('flickr.com')) return FlickrRipper(uri);
     if (host.contains('imagefap.com')) return ImagefapRipper(uri);
