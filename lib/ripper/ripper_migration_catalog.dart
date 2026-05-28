@@ -143,6 +143,7 @@ class RipperMigrationCatalog {
     'DribbbleRipper',
     'DynastyscansRipper',
     'E621Ripper',
+    'EHentaiRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',

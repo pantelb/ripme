@@ -65,6 +65,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] DribbbleRipper ported: Java-compatible `dribbble.com` GID parsing, thumbnail `data-srcset` largest-width selection, next-page URL construction with paging delay, ordered filename prefixes, and factory/catalog coverage
 - [x] DynastyscansRipper ported: Java-compatible chapter GID parsing, `var pages` script JSON cleanup, relative page image URL extraction, `next_link` pagination, ordered filename prefixes, and factory/catalog coverage
 - [x] E621Ripper ported: Java-compatible old/new search and pool URL parsing, old search sanitization, configured cookies/user-agent handling, blacklist warnings, post link pagination, full-size download-link extraction, 3-second post pacing, ordered filename prefixes, and factory/catalog coverage
+- [x] EHentaiRipper ported: Java-compatible gallery GIDs, title-based album naming, `nw`/`tip` cookies, tag blacklist checks, rate-limit retry waits, thumbnail/image-page extraction, `.sni`/`img#img` image lookup, special `ehg/image.php` filename handling, pagination sleeps, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -74,7 +75,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- EHentaiRipper
 - EromeRipper
 - FapDungeonRipper
 - FapwizRipper
