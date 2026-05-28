@@ -104,6 +104,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] NatalieMuRipper ported: Java-compatible Natalie news/gallery URL detection, section-derived hosts, news/news_id GIDs, gallery CSS thumbnail extraction with URL normalization and de-duplication, ordered filename prefixes, download referrers, and factory/catalog coverage
 - [x] NewgroundsRipper ported: Java-compatible username GIDs, canonical user art page loading, AJAX pagination headers and 60-item stop rule, thumbnail metadata parsing, detail-page extension detection, art.ngfiles URL construction, ordered filename prefixes, and factory/catalog coverage
 - [x] NfsfwRipper ported: Java-compatible query-stripping gallery URL sanitization, nested gallery GIDs, image-page and subalbum extraction, subalbum queue detection, next-page/subalbum traversal with pacing, `.gbBlock` image resolution with page referrers, subalbum index resets, ordered filename prefixes, and factory/catalog coverage
+- [x] NsfwAlbumRipper ported: Java-compatible nsfwalbum host/domain handling, digit-run GIDs, `.album img` `data-src` extraction, imgspice/imagetwist/pixhost/imx thumbnail rewrites, ordered filename prefixes, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -113,7 +114,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- NsfwAlbumRipper
 - NsfwXxxRipper
 - NudeGalsRipper
 - OglafRipper
