@@ -44,6 +44,7 @@ import 'rippers/imagevenue_ripper.dart';
 import 'rippers/imgbox_ripper.dart';
 import 'rippers/imgur_ripper.dart';
 import 'rippers/instagram_ripper.dart';
+import 'rippers/jabarchives_ripper.dart';
 import 'rippers/mastodon_ripper.dart';
 import 'rippers/mastodon_xyz_ripper.dart';
 import 'rippers/motherless_ripper.dart';
@@ -117,6 +118,7 @@ class RipperFactory {
     if (host.contains('imagefap.com')) return ImagefapRipper(uri);
     if (host.contains('imgur.com')) return ImgurRipper(uri);
     if (host.contains('instagram.com')) return InstagramRipper(uri);
+    if (host.endsWith('jabarchives.com')) return JabArchivesRipper(uri);
     if (host.contains('mastodon.social')) return MastodonRipper(uri);
     if (host.contains('mastodon.xyz')) return MastodonXyzRipper(uri);
     if (host.contains('motherless.com')) return MotherlessRipper(uri);

@@ -170,6 +170,7 @@ class RipperMigrationCatalog {
     'ImagefapRipper',
     'ImgurRipper',
     'InstagramRipper',
+    'JabArchivesRipper',
     'MastodonRipper',
     'MastodonXyzRipper',
     'MotherlessRipper',
