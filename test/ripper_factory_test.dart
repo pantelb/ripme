@@ -9,6 +9,7 @@ import 'package:ripme/ripper/rippers/bato_ripper.dart';
 import 'package:ripme/ripper/rippers/booru_ripper.dart';
 import 'package:ripme/ripper/rippers/cfake_ripper.dart';
 import 'package:ripme/ripper/rippers/chan_ripper.dart';
+import 'package:ripme/ripper/rippers/chevereto_ripper.dart';
 import 'package:ripme/ripper/rippers/eightmuses_ripper.dart';
 import 'package:ripme/ripper/rippers/flickr_ripper.dart';
 import 'package:ripme/ripper/rippers/imagefap_ripper.dart';
@@ -49,6 +50,9 @@ void main() {
     );
     final chan = RipperFactory.getRipper(
       Uri.parse('https://boards.4chan.org/hr/thread/3015701'),
+    );
+    final chevereto = RipperFactory.getRipper(
+      Uri.parse('https://kenzato.uk/album/TnEc'),
     );
     final eightmuses = RipperFactory.getRipper(
       Uri.parse('https://www.8muses.com/comics/album/example'),
@@ -96,6 +100,7 @@ void main() {
     expect(booru, isA<BooruRipper>());
     expect(cfake, isA<CfakeRipper>());
     expect(chan, isA<ChanRipper>());
+    expect(chevereto, isA<CheveretoRipper>());
     expect(eightmuses, isA<EightmusesRipper>());
     expect(flickr, isA<FlickrRipper>());
     expect(imagefap, isA<ImagefapRipper>());
@@ -128,7 +133,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 21);
-    expect(RipperMigrationCatalog.unportedRipperCount, 95);
+    expect(RipperMigrationCatalog.portedRipperCount, 22);
+    expect(RipperMigrationCatalog.unportedRipperCount, 94);
   });
 }
