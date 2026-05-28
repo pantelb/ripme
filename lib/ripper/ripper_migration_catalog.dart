@@ -182,6 +182,7 @@ class RipperMigrationCatalog {
     'ModelmayhemRipper',
     'MotherlessRipper',
     'MotherlessVideoRipper',
+    'MrCongRipper',
     'NhentaiRipper',
     'RedditRipper',
     'RedgifsRipper',
