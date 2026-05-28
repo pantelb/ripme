@@ -138,6 +138,7 @@ class RipperMigrationCatalog {
     'CliphunterRipper',
     'CoomerPartyRipper',
     'DanbooruRipper',
+    'DerpiRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',

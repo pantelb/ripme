@@ -13,6 +13,7 @@ import 'package:ripme/ripper/rippers/chevereto_ripper.dart';
 import 'package:ripme/ripper/rippers/cliphunter_ripper.dart';
 import 'package:ripme/ripper/rippers/coomer_party_ripper.dart';
 import 'package:ripme/ripper/rippers/danbooru_ripper.dart';
+import 'package:ripme/ripper/rippers/derpi_ripper.dart';
 import 'package:ripme/ripper/rippers/eightmuses_ripper.dart';
 import 'package:ripme/ripper/rippers/flickr_ripper.dart';
 import 'package:ripme/ripper/rippers/imagefap_ripper.dart';
@@ -66,6 +67,9 @@ void main() {
     final danbooru = RipperFactory.getRipper(
       Uri.parse('https://danbooru.donmai.us/posts?tags=brown_necktie'),
     );
+    final derpi = RipperFactory.getRipper(
+      Uri.parse('https://derpibooru.org/search?q=twilight+sparkle'),
+    );
     final eightmuses = RipperFactory.getRipper(
       Uri.parse('https://www.8muses.com/comics/album/example'),
     );
@@ -116,6 +120,7 @@ void main() {
     expect(cliphunter, isA<CliphunterRipper>());
     expect(coomer, isA<CoomerPartyRipper>());
     expect(danbooru, isA<DanbooruRipper>());
+    expect(derpi, isA<DerpiRipper>());
     expect(eightmuses, isA<EightmusesRipper>());
     expect(flickr, isA<FlickrRipper>());
     expect(imagefap, isA<ImagefapRipper>());
@@ -148,7 +153,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 25);
-    expect(RipperMigrationCatalog.unportedRipperCount, 91);
+    expect(RipperMigrationCatalog.portedRipperCount, 26);
+    expect(RipperMigrationCatalog.unportedRipperCount, 90);
   });
 }

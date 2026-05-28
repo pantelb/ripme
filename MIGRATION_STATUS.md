@@ -60,6 +60,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] CliphunterRipper ported: Java-compatible `/w/{id}` URL/GID parsing, nested Base64 flashVars decoding, encrypted video URL translation, Java-style filename prefixes, video referrer behavior, and factory/catalog coverage
 - [x] CoomerPartyRipper ported: Java-compatible `coomer.party`/`coomer.su` URL parsing, service/user GIDs, 50-post API offsets, image/video CDN selection, attachment extraction, ordered filename prefixes, and download pacing
 - [x] DanbooruRipper ported: Java-compatible `danbooru.donmai.us` URL/tag/GID parsing, `posts.json` page construction, mobile JSON request headers, array-to-resources wrapping, `file_url` extraction, ordered filename prefixes, and factory/catalog coverage
+- [x] DerpiRipper ported: Java-compatible `derpibooru.org` URL sanitization, search/tag/gallery/image GIDs, API key query handling, `images`/`search`/single-image JSON extraction, and Derpibooru-native filename behavior
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -69,7 +70,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- DerpiRipper
 - DeviantartRipper
 - DribbbleRipper
 - DynastyscansRipper
