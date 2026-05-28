@@ -162,6 +162,7 @@ class RipperMigrationCatalog {
     'HitomiRipper',
     'HqpornerRipper',
     'HypnohubRipper',
+    'ImagebamRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',
