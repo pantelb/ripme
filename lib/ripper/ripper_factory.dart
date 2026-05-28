@@ -53,6 +53,7 @@ import 'rippers/luscious_ripper.dart';
 import 'rippers/mangadex_ripper.dart';
 import 'rippers/mastodon_ripper.dart';
 import 'rippers/mastodon_xyz_ripper.dart';
+import 'rippers/modelmayhem_ripper.dart';
 import 'rippers/motherless_ripper.dart';
 import 'rippers/nhentai_ripper.dart';
 import 'rippers/reddit_ripper.dart';
@@ -134,6 +135,7 @@ class RipperFactory {
     if (host.endsWith('mangadex.org')) return MangadexRipper(uri);
     if (host.contains('mastodon.social')) return MastodonRipper(uri);
     if (host.contains('mastodon.xyz')) return MastodonXyzRipper(uri);
+    if (host.endsWith('modelmayhem.com')) return ModelmayhemRipper(uri);
     if (host.contains('motherless.com')) return MotherlessRipper(uri);
     if (host.contains('nhentai.net')) return NhentaiRipper(uri);
     if (host.contains('reddit.com')) return RedditRipper(uri);

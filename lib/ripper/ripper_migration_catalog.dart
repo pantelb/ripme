@@ -179,6 +179,7 @@ class RipperMigrationCatalog {
     'MangadexRipper',
     'MastodonRipper',
     'MastodonXyzRipper',
+    'ModelmayhemRipper',
     'MotherlessRipper',
     'NhentaiRipper',
     'RedditRipper',

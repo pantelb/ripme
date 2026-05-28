@@ -54,6 +54,7 @@ import 'package:ripme/ripper/rippers/luscious_ripper.dart';
 import 'package:ripme/ripper/rippers/mangadex_ripper.dart';
 import 'package:ripme/ripper/rippers/mastodon_ripper.dart';
 import 'package:ripme/ripper/rippers/mastodon_xyz_ripper.dart';
+import 'package:ripme/ripper/rippers/modelmayhem_ripper.dart';
 import 'package:ripme/ripper/rippers/motherless_ripper.dart';
 import 'package:ripme/ripper/rippers/nhentai_ripper.dart';
 import 'package:ripme/ripper/rippers/reddit_ripper.dart';
@@ -229,6 +230,9 @@ void main() {
     final mastodonXyz = RipperFactory.getRipper(
       Uri.parse('https://mastodon.xyz/@bob'),
     );
+    final modelmayhem = RipperFactory.getRipper(
+      Uri.parse('https://www.modelmayhem.com/portfolio/123456/viewall'),
+    );
     final motherless = RipperFactory.getRipper(
       Uri.parse('https://motherless.com/GABCDEF1'),
     );
@@ -299,6 +303,7 @@ void main() {
     expect(mangadex, isA<MangadexRipper>());
     expect(mastodon, isA<MastodonRipper>());
     expect(mastodonXyz, isA<MastodonXyzRipper>());
+    expect(modelmayhem, isA<ModelmayhemRipper>());
     expect(motherless, isA<MotherlessRipper>());
     expect(nhentai, isA<NhentaiRipper>());
     expect(reddit, isA<RedditRipper>());
@@ -311,20 +316,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://www.modelmayhem.com/portfolio/123456/viewall'),
+        Uri.parse('https://www.mrcong.com/albums/example'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'ModelmayhemRipper',
+        'MrCongRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 59);
-    expect(RipperMigrationCatalog.unportedRipperCount, 57);
+    expect(RipperMigrationCatalog.portedRipperCount, 60);
+    expect(RipperMigrationCatalog.unportedRipperCount, 56);
   });
 }
