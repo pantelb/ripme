@@ -16,6 +16,7 @@ import 'rippers/derpi_ripper.dart';
 import 'rippers/deviantart_ripper.dart';
 import 'rippers/dribbble_ripper.dart';
 import 'rippers/dynastyscans_ripper.dart';
+import 'rippers/e621_ripper.dart';
 import 'rippers/eightmuses_ripper.dart';
 import 'rippers/flickr_ripper.dart';
 import 'rippers/imagefap_ripper.dart';
@@ -57,6 +58,7 @@ class RipperFactory {
     if (host.endsWith('deviantart.com')) return DeviantartRipper(uri);
     if (host.endsWith('dribbble.com')) return DribbbleRipper(uri);
     if (host.endsWith('dynasty-scans.com')) return DynastyscansRipper(uri);
+    if (host.endsWith('e621.net')) return E621Ripper(uri);
     if (host.contains('8muses.com')) return EightmusesRipper(uri);
     if (host.contains('flickr.com')) return FlickrRipper(uri);
     if (host.contains('imagefap.com')) return ImagefapRipper(uri);
