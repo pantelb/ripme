@@ -181,6 +181,7 @@ class RipperMigrationCatalog {
     'MastodonXyzRipper',
     'ModelmayhemRipper',
     'MotherlessRipper',
+    'MotherlessVideoRipper',
     'NhentaiRipper',
     'RedditRipper',
     'RedgifsRipper',

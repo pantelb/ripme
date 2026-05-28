@@ -56,6 +56,7 @@ import 'package:ripme/ripper/rippers/mastodon_ripper.dart';
 import 'package:ripme/ripper/rippers/mastodon_xyz_ripper.dart';
 import 'package:ripme/ripper/rippers/modelmayhem_ripper.dart';
 import 'package:ripme/ripper/rippers/motherless_ripper.dart';
+import 'package:ripme/ripper/rippers/motherless_video_ripper.dart';
 import 'package:ripme/ripper/rippers/nhentai_ripper.dart';
 import 'package:ripme/ripper/rippers/reddit_ripper.dart';
 import 'package:ripme/ripper/rippers/redgifs_ripper.dart';
@@ -236,6 +237,9 @@ void main() {
     final motherless = RipperFactory.getRipper(
       Uri.parse('https://motherless.com/GABCDEF1'),
     );
+    final motherlessVideo = RipperFactory.getRipper(
+      Uri.parse('https://motherless.com/0D2D897'),
+    );
     final nhentai = RipperFactory.getRipper(
       Uri.parse('https://nhentai.net/g/123456/'),
     );
@@ -305,6 +309,7 @@ void main() {
     expect(mastodonXyz, isA<MastodonXyzRipper>());
     expect(modelmayhem, isA<ModelmayhemRipper>());
     expect(motherless, isA<MotherlessRipper>());
+    expect(motherlessVideo, isA<MotherlessVideoRipper>());
     expect(nhentai, isA<NhentaiRipper>());
     expect(reddit, isA<RedditRipper>());
     expect(redgifs, isA<RedgifsRipper>());
@@ -329,7 +334,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 60);
-    expect(RipperMigrationCatalog.unportedRipperCount, 56);
+    expect(RipperMigrationCatalog.portedRipperCount, 61);
+    expect(RipperMigrationCatalog.unportedRipperCount, 55);
   });
 }

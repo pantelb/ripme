@@ -55,6 +55,7 @@ import 'rippers/mastodon_ripper.dart';
 import 'rippers/mastodon_xyz_ripper.dart';
 import 'rippers/modelmayhem_ripper.dart';
 import 'rippers/motherless_ripper.dart';
+import 'rippers/motherless_video_ripper.dart';
 import 'rippers/nhentai_ripper.dart';
 import 'rippers/reddit_ripper.dart';
 import 'rippers/redgifs_ripper.dart';
@@ -136,7 +137,12 @@ class RipperFactory {
     if (host.contains('mastodon.social')) return MastodonRipper(uri);
     if (host.contains('mastodon.xyz')) return MastodonXyzRipper(uri);
     if (host.endsWith('modelmayhem.com')) return ModelmayhemRipper(uri);
-    if (host.contains('motherless.com')) return MotherlessRipper(uri);
+    if (host.contains('motherless.com')) {
+      final motherlessRipper = MotherlessRipper(uri);
+      if (motherlessRipper.canRip(uri)) return motherlessRipper;
+      final motherlessVideoRipper = MotherlessVideoRipper(uri);
+      if (motherlessVideoRipper.canRip(uri)) return motherlessVideoRipper;
+    }
     if (host.contains('nhentai.net')) return NhentaiRipper(uri);
     if (host.contains('reddit.com')) return RedditRipper(uri);
     if (host.contains('redgifs.com') ||
