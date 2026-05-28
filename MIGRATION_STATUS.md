@@ -100,6 +100,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] MultpornRipper ported: Java-compatible node URL GIDs, simple-mode comic URL canonicalization, gallery item extraction, ordered filename prefixes, and factory/catalog coverage
 - [x] MyhentaicomicsRipper ported: Java-compatible comic/search/tag GIDs, search/tag queue-page detection, album queue extraction, relative thumbnail-to-resize image extraction, single-digit pagination, pacing, and ordered filename prefixes
 - [x] MyhentaigalleryRipper ported: Java-compatible strict gallery thumbnail GIDs, comic thumbnail image extraction, thumbnail-to-original URL rewriting, ordered filename prefixes, and factory/catalog coverage
+- [x] MyreadingmangaRipper ported: Java-compatible strict HTTPS slug GIDs, `data-lazy-src` image extraction from descendant div images, ordered filename prefixes, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -109,7 +110,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- MyreadingmangaRipper
 - NatalieMuRipper
 - NewgroundsRipper
 - NfsfwRipper
