@@ -164,6 +164,7 @@ class RipperMigrationCatalog {
     'HypnohubRipper',
     'ImagebamRipper',
     'ImagevenueRipper',
+    'ImgboxRipper',
     'EightmusesRipper',
     'FlickrRipper',
     'ImagefapRipper',

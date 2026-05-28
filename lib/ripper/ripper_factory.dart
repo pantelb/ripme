@@ -41,6 +41,7 @@ import 'rippers/hypnohub_ripper.dart';
 import 'rippers/imagebam_ripper.dart';
 import 'rippers/imagefap_ripper.dart';
 import 'rippers/imagevenue_ripper.dart';
+import 'rippers/imgbox_ripper.dart';
 import 'rippers/imgur_ripper.dart';
 import 'rippers/instagram_ripper.dart';
 import 'rippers/mastodon_ripper.dart';
@@ -110,6 +111,7 @@ class RipperFactory {
     if (host.endsWith('hypnohub.net')) return HypnohubRipper(uri);
     if (host.endsWith('imagebam.com')) return ImagebamRipper(uri);
     if (host.endsWith('imagevenue.com')) return ImagevenueRipper(uri);
+    if (host.endsWith('imgbox.com')) return ImgboxRipper(uri);
     if (host.contains('8muses.com')) return EightmusesRipper(uri);
     if (host.contains('flickr.com')) return FlickrRipper(uri);
     if (host.contains('imagefap.com')) return ImagefapRipper(uri);
