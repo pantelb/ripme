@@ -221,6 +221,7 @@ class RipperMigrationCatalog {
     'TeenplanetRipper',
     'ThechiveRipper',
     'TheyiffgalleryRipper',
+    'TsuminoRipper',
     'TumblrRipper',
     'TwitterRipper',
   };

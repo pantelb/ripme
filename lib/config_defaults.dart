@@ -35,6 +35,7 @@ class ConfigDefaults {
     'twitter.auth':
         'VW9Ybjdjb1pkd2J0U3kwTUh2VXVnOm9GTzVQVzNqM29LQU1xVGhnS3pFZzhKbGVqbXU0c2lHQ3JrUFNNZm8=',
     'tumblr.auth': 'JFNLu3CbINQjRdUvZibXW9VpSEVYYtiPJ86o8YmvgLZIoKyuNX',
+    'tsumino.blacklist.tags': '',
     'gw.api': 'gonewild',
     'erome.laravel_session': '',
     'proxy.host': '',
