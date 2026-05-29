@@ -104,6 +104,7 @@ import 'package:ripme/ripper/rippers/twitter_ripper.dart';
 import 'package:ripme/ripper/rippers/vidble_ripper.dart';
 import 'package:ripme/ripper/rippers/viddme_ripper.dart';
 import 'package:ripme/ripper/rippers/videarn_ripper.dart';
+import 'package:ripme/ripper/rippers/viewcomic_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
 
 void main() {
@@ -437,6 +438,9 @@ void main() {
     final videarn = RipperFactory.getRipper(
       Uri.parse('https://videarn.com/example-title/12345'),
     );
+    final viewcomic = RipperFactory.getRipper(
+      Uri.parse('https://view-comic.com/batman-no-mans-land-vol-1/'),
+    );
 
     expect(allporncomic, isA<AllporncomicRipper>());
     expect(artstation, isA<ArtStationRipper>());
@@ -542,6 +546,7 @@ void main() {
     expect(vidble, isA<VidbleRipper>());
     expect(viddme, isA<ViddmeRipper>());
     expect(videarn, isA<VidearnRipper>());
+    expect(viewcomic, isA<ViewcomicRipper>());
   });
 
   test(
@@ -561,7 +566,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 103);
-    expect(RipperMigrationCatalog.unportedRipperCount, 13);
+    expect(RipperMigrationCatalog.portedRipperCount, 104);
+    expect(RipperMigrationCatalog.unportedRipperCount, 12);
   });
 }

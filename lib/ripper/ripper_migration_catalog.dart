@@ -229,6 +229,7 @@ class RipperMigrationCatalog {
     'VidbleRipper',
     'ViddmeRipper',
     'VidearnRipper',
+    'ViewcomicRipper',
   };
 
   static const Map<String, List<String>> _hostAliases = {
