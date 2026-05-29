@@ -113,6 +113,7 @@ import 'rippers/xhamster_ripper.dart';
 import 'rippers/xlecx_ripper.dart';
 import 'rippers/xvideos_ripper.dart';
 import 'rippers/youporn_ripper.dart';
+import 'rippers/yuvutu_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
 
 class RipperFactory {
@@ -297,6 +298,8 @@ class RipperFactory {
     if (xvideosRipper.canRip(uri)) return xvideosRipper;
     final youpornRipper = YoupornRipper(uri);
     if (youpornRipper.canRip(uri)) return youpornRipper;
+    final yuvutuRipper = YuvutuRipper(uri);
+    if (yuvutuRipper.canRip(uri)) return yuvutuRipper;
 
     final legacyMatch = RipperMigrationCatalog.findUnportedLegacyRipper(uri);
     if (legacyMatch != null) return UnsupportedLegacyRipper(uri, legacyMatch);

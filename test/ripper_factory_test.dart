@@ -114,6 +114,7 @@ import 'package:ripme/ripper/rippers/xhamster_ripper.dart';
 import 'package:ripme/ripper/rippers/xlecx_ripper.dart';
 import 'package:ripme/ripper/rippers/xvideos_ripper.dart';
 import 'package:ripme/ripper/rippers/youporn_ripper.dart';
+import 'package:ripme/ripper/rippers/yuvutu_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
 
 void main() {
@@ -478,6 +479,11 @@ void main() {
     final youporn = RipperFactory.getRipper(
       Uri.parse('https://www.youporn.com/watch/13158849/example/'),
     );
+    final yuvutu = RipperFactory.getRipper(
+      Uri.parse(
+        'http://www.yuvutu.com/modules.php?name=YuGallery&action=view&set_id=420333',
+      ),
+    );
 
     expect(allporncomic, isA<AllporncomicRipper>());
     expect(artstation, isA<ArtStationRipper>());
@@ -593,26 +599,27 @@ void main() {
     expect(xlecx, isA<XlecxRipper>());
     expect(xvideos, isA<XvideosRipper>());
     expect(youporn, isA<YoupornRipper>());
+    expect(yuvutu, isA<YuvutuRipper>());
   });
 
   test(
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://www.yuvutu.com/video/123/example.html'),
+        Uri.parse('https://zizki.com/photo/123/example'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'YuvutuRipper',
+        'ZizkiRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 113);
-    expect(RipperMigrationCatalog.unportedRipperCount, 3);
+    expect(RipperMigrationCatalog.portedRipperCount, 114);
+    expect(RipperMigrationCatalog.unportedRipperCount, 2);
   });
 }
