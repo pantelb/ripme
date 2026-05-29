@@ -95,6 +95,7 @@ import 'package:ripme/ripper/rippers/sta_ripper.dart';
 import 'package:ripme/ripper/rippers/tapastic_ripper.dart';
 import 'package:ripme/ripper/rippers/teenplanet_ripper.dart';
 import 'package:ripme/ripper/rippers/thechive_ripper.dart';
+import 'package:ripme/ripper/rippers/theyiffgallery_ripper.dart';
 import 'package:ripme/ripper/rippers/tumblr_ripper.dart';
 import 'package:ripme/ripper/rippers/twitter_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
@@ -402,6 +403,9 @@ void main() {
         'https://thechive.com/2019/03/16/beautiful-badasses/',
       ),
     );
+    final theyiffgallery = RipperFactory.getRipper(
+      Uri.parse('https://theyiffgallery.com/index?/category/4303'),
+    );
     final tumblr = RipperFactory.getRipper(
       Uri.parse('https://example.tumblr.com/post/1'),
     );
@@ -501,6 +505,7 @@ void main() {
     expect(tapastic, isA<TapasticRipper>());
     expect(teenplanet, isA<TeenplanetRipper>());
     expect(thechive, isA<ThechiveRipper>());
+    expect(theyiffgallery, isA<TheyiffgalleryRipper>());
     expect(tumblr, isA<TumblrRipper>());
     expect(twitter, isA<TwitterRipper>());
   });
@@ -509,20 +514,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://theyiffgallery.com/image/123'),
+        Uri.parse('https://www.tsumino.com/Book/Info/123'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'TheyiffgalleryRipper',
+        'TsuminoRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 96);
-    expect(RipperMigrationCatalog.unportedRipperCount, 20);
+    expect(RipperMigrationCatalog.portedRipperCount, 97);
+    expect(RipperMigrationCatalog.unportedRipperCount, 19);
   });
 }

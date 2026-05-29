@@ -94,6 +94,7 @@ import 'rippers/sta_ripper.dart';
 import 'rippers/tapastic_ripper.dart';
 import 'rippers/teenplanet_ripper.dart';
 import 'rippers/thechive_ripper.dart';
+import 'rippers/theyiffgallery_ripper.dart';
 import 'rippers/tumblr_ripper.dart';
 import 'rippers/twitter_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
@@ -244,6 +245,7 @@ class RipperFactory {
     if (host.endsWith('teenplanet.org')) return TeenplanetRipper(uri);
     final thechiveRipper = ThechiveRipper(uri);
     if (thechiveRipper.canRip(uri)) return thechiveRipper;
+    if (host == 'theyiffgallery.com') return TheyiffgalleryRipper(uri);
     if (host.contains('tumblr.com')) return TumblrRipper(uri);
     if (host.endsWith('twitter.com') ||
         host == 'x.com' ||
