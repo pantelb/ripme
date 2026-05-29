@@ -73,6 +73,7 @@ import 'package:ripme/ripper/rippers/oglaf_ripper.dart';
 import 'package:ripme/ripper/rippers/paheal_ripper.dart';
 import 'package:ripme/ripper/rippers/pawoo_ripper.dart';
 import 'package:ripme/ripper/rippers/photobucket_ripper.dart';
+import 'package:ripme/ripper/rippers/pichunter_ripper.dart';
 import 'package:ripme/ripper/rippers/reddit_ripper.dart';
 import 'package:ripme/ripper/rippers/redgifs_ripper.dart';
 import 'package:ripme/ripper/rippers/tumblr_ripper.dart';
@@ -307,6 +308,9 @@ void main() {
         'http://s844.photobucket.com/user/SpazzySpizzy/library/Album%20Covers',
       ),
     );
+    final pichunter = RipperFactory.getRipper(
+      Uri.parse('https://www.pichunter.com/models/Madison_Ivy'),
+    );
     final reddit = RipperFactory.getRipper(
       Uri.parse('https://www.reddit.com/r/pics'),
     );
@@ -390,6 +394,7 @@ void main() {
     expect(paheal, isA<PahealRipper>());
     expect(pawoo, isA<PawooRipper>());
     expect(photobucket, isA<PhotobucketRipper>());
+    expect(pichunter, isA<PichunterRipper>());
     expect(reddit, isA<RedditRipper>());
     expect(redgifs, isA<RedgifsRipper>());
     expect(tumblr, isA<TumblrRipper>());
@@ -400,20 +405,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://pichunter.com/gallery/123/example'),
+        Uri.parse('https://picstatio.com/gallery/123/example'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'PichunterRipper',
+        'PicstatioRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 76);
-    expect(RipperMigrationCatalog.unportedRipperCount, 40);
+    expect(RipperMigrationCatalog.portedRipperCount, 77);
+    expect(RipperMigrationCatalog.unportedRipperCount, 39);
   });
 }
