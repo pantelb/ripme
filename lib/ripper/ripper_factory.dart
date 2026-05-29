@@ -102,6 +102,7 @@ import 'rippers/twodgalleries_ripper.dart';
 import 'rippers/twitter_ripper.dart';
 import 'rippers/vidble_ripper.dart';
 import 'rippers/viddme_ripper.dart';
+import 'rippers/videarn_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
 
 class RipperFactory {
@@ -264,6 +265,8 @@ class RipperFactory {
     if (host.endsWith('vidble.com')) return VidbleRipper(uri);
     final viddmeRipper = ViddmeRipper(uri);
     if (viddmeRipper.canRip(uri)) return viddmeRipper;
+    final videarnRipper = VidearnRipper(uri);
+    if (videarnRipper.canRip(uri)) return videarnRipper;
 
     final legacyMatch = RipperMigrationCatalog.findUnportedLegacyRipper(uri);
     if (legacyMatch != null) return UnsupportedLegacyRipper(uri, legacyMatch);
