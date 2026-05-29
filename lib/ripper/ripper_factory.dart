@@ -104,6 +104,7 @@ import 'rippers/vidble_ripper.dart';
 import 'rippers/viddme_ripper.dart';
 import 'rippers/videarn_ripper.dart';
 import 'rippers/viewcomic_ripper.dart';
+import 'rippers/vk_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
 
 class RipperFactory {
@@ -269,6 +270,8 @@ class RipperFactory {
     final videarnRipper = VidearnRipper(uri);
     if (videarnRipper.canRip(uri)) return videarnRipper;
     if (host.endsWith('view-comic.com')) return ViewcomicRipper(uri);
+    final vkRipper = VkRipper(uri);
+    if (vkRipper.canRip(uri)) return vkRipper;
 
     final legacyMatch = RipperMigrationCatalog.findUnportedLegacyRipper(uri);
     if (legacyMatch != null) return UnsupportedLegacyRipper(uri, legacyMatch);
