@@ -106,6 +106,7 @@ import 'package:ripme/ripper/rippers/viddme_ripper.dart';
 import 'package:ripme/ripper/rippers/videarn_ripper.dart';
 import 'package:ripme/ripper/rippers/viewcomic_ripper.dart';
 import 'package:ripme/ripper/rippers/vk_ripper.dart';
+import 'package:ripme/ripper/rippers/vsco_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
 
 void main() {
@@ -445,6 +446,9 @@ void main() {
     final vk = RipperFactory.getRipper(
       Uri.parse('https://vk.com/album45506334_0'),
     );
+    final vsco = RipperFactory.getRipper(
+      Uri.parse('https://vsco.co/jolly-roger/gallery'),
+    );
 
     expect(allporncomic, isA<AllporncomicRipper>());
     expect(artstation, isA<ArtStationRipper>());
@@ -552,6 +556,7 @@ void main() {
     expect(videarn, isA<VidearnRipper>());
     expect(viewcomic, isA<ViewcomicRipper>());
     expect(vk, isA<VkRipper>());
+    expect(vsco, isA<VscoRipper>());
   });
 
   test(
@@ -571,7 +576,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 105);
-    expect(RipperMigrationCatalog.unportedRipperCount, 11);
+    expect(RipperMigrationCatalog.portedRipperCount, 106);
+    expect(RipperMigrationCatalog.unportedRipperCount, 10);
   });
 }
