@@ -1,0 +1,214 @@
+name: Flutter Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to publish, for example v1.0.0. Required for manual releases.'
+        required: true
+        type: string
+      build_ref:
+        description: 'Git ref to build. Leave empty to build the selected branch or tag.'
+        required: false
+        type: string
+      draft:
+        description: 'Create the GitHub Release as a draft.'
+        required: false
+        default: false
+        type: boolean
+      prerelease:
+        description: 'Mark the GitHub Release as a prerelease.'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: flutter-release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  FLUTTER_CHANNEL: stable
+  JAVA_VERSION: '17'
+  RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+  RELEASE_REF: ${{ github.event.inputs.build_ref || github.ref }}
+
+jobs:
+  test:
+    name: Analyze and test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.RELEASE_REF }}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install Linux build dependencies
+        run: sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+
+      - name: Install Dart dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+  build-desktop:
+    name: Build ${{ matrix.target }}
+    needs: test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: linux
+            artifact: ripme-linux-x64
+            build_path: build/linux/x64/release/bundle
+            archive_type: tar.gz
+          - os: windows-2022
+            target: windows
+            artifact: ripme-windows-x64
+            build_path: build/windows/x64/runner/Release
+            archive_type: zip
+          - os: macos-latest
+            target: macos
+            artifact: ripme-macos-universal
+            build_path: build/macos/Build/Products/Release/RipMe.app
+            archive_type: zip
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.RELEASE_REF }}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Enable ${{ matrix.target }} desktop
+        run: flutter config --enable-${{ matrix.target }}-desktop
+
+      - name: Disable Swift Package Manager for macOS
+        if: matrix.target == 'macos'
+        run: flutter config --no-enable-swift-package-manager
+
+      - name: Install Linux build dependencies
+        if: matrix.target == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+
+      - name: Install Dart dependencies
+        run: flutter pub get
+
+      - name: Build ${{ matrix.target }} release
+        run: flutter build ${{ matrix.target }} --release
+
+      - name: Package ${{ matrix.artifact }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          archive_name="${{ matrix.artifact }}-${RELEASE_TAG}"
+
+          if [ "${{ matrix.archive_type }}" = "tar.gz" ]; then
+            tar -C "${{ matrix.build_path }}" -czf "dist/${archive_name}.tar.gz" .
+          elif [ "${{ matrix.target }}" = "macos" ]; then
+            ditto -c -k --keepParent "${{ matrix.build_path }}" "dist/${archive_name}.zip"
+          else
+            (cd "${{ matrix.build_path }}" && 7z a "$GITHUB_WORKSPACE/dist/${archive_name}.zip" .)
+          fi
+
+      - name: Upload ${{ matrix.artifact }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/*
+          if-no-files-found: error
+
+  build-android:
+    name: Build Android
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.RELEASE_REF }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install Dart dependencies
+        run: flutter pub get
+
+      - name: Build Android APK
+        run: flutter build apk --release
+
+      - name: Build Android App Bundle
+        run: flutter build appbundle --release
+
+      - name: Package Android artifacts
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk "dist/ripme-android-${RELEASE_TAG}.apk"
+          cp build/app/outputs/bundle/release/app-release.aab "dist/ripme-android-${RELEASE_TAG}.aab"
+
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: ripme-android
+          path: dist/*
+          if-no-files-found: error
+
+  publish:
+    name: Publish GitHub Release
+    needs:
+      - build-desktop
+      - build-android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: release-artifacts
+          merge-multiple: true
+
+      - name: List release artifacts
+        run: ls -la release-artifacts
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: RipMe ${{ env.RELEASE_TAG }}
+          draft: ${{ github.event.inputs.draft == 'true' }}
+          prerelease: ${{ github.event.inputs.prerelease == 'true' }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: release-artifacts/*
