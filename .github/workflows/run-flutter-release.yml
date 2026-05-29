@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       build_ref:
-        description: 'Branch or tag containing the Flutter release workflow.'
+        description: 'Git ref to build.'
         required: true
         default: 'Flutter'
         type: string
@@ -24,26 +24,15 @@ on:
         type: boolean
 
 permissions:
-  actions: write
-  contents: read
+  contents: write
 
 jobs:
-  dispatch-flutter-release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Start Flutter branch release workflow
-        uses: actions/github-script@v8
-        with:
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'release.yml',
-              ref: '${{ inputs.build_ref }}',
-              inputs: {
-                tag: '${{ inputs.tag }}',
-                build_ref: '${{ inputs.build_ref }}',
-                draft: '${{ inputs.draft }}',
-                prerelease: '${{ inputs.prerelease }}'
-              }
-            })
+  flutter-release:
+    uses: pantelb/ripme/.github/workflows/release.yml@Flutter
+    permissions:
+      contents: write
+    with:
+      tag: ${{ inputs.tag }}
+      build_ref: ${{ inputs.build_ref }}
+      draft: ${{ inputs.draft }}
+      prerelease: ${{ inputs.prerelease }}
