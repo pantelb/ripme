@@ -11,8 +11,30 @@ on:
         required: true
         type: string
       build_ref:
-        description: 'Git ref to build. Leave empty to build the selected branch or tag.'
+        description: 'Git ref to build. Use Flutter for the Flutter migration branch.'
         required: false
+        default: 'Flutter'
+        type: string
+      draft:
+        description: 'Create the GitHub Release as a draft.'
+        required: false
+        default: false
+        type: boolean
+      prerelease:
+        description: 'Mark the GitHub Release as a prerelease.'
+        required: false
+        default: false
+        type: boolean
+  workflow_call:
+    inputs:
+      tag:
+        description: 'Release tag to publish, for example v1.0.0.'
+        required: true
+        type: string
+      build_ref:
+        description: 'Git ref to build.'
+        required: false
+        default: 'Flutter'
         type: string
       draft:
         description: 'Create the GitHub Release as a draft.'
@@ -29,14 +51,14 @@ permissions:
   contents: write
 
 concurrency:
-  group: flutter-release-${{ github.event.inputs.tag || github.ref_name }}
+  group: flutter-release-${{ inputs.tag || github.ref_name }}
   cancel-in-progress: false
 
 env:
   FLUTTER_CHANNEL: stable
   JAVA_VERSION: '17'
-  RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
-  RELEASE_REF: ${{ github.event.inputs.build_ref || github.ref }}
+  RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+  RELEASE_REF: ${{ inputs.build_ref || github.ref }}
 
 jobs:
   test:
@@ -206,9 +228,10 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ env.RELEASE_TAG }}
+          target_commitish: ${{ env.RELEASE_REF }}
           name: RipMe ${{ env.RELEASE_TAG }}
-          draft: ${{ github.event.inputs.draft == 'true' }}
-          prerelease: ${{ github.event.inputs.prerelease == 'true' }}
+          draft: ${{ inputs.draft || false }}
+          prerelease: ${{ inputs.prerelease || false }}
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: release-artifacts/*
