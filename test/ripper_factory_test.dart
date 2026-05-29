@@ -69,6 +69,7 @@ import 'package:ripme/ripper/rippers/nsfw_album_ripper.dart';
 import 'package:ripme/ripper/rippers/nsfw_xxx_ripper.dart';
 import 'package:ripme/ripper/rippers/nude_gals_ripper.dart';
 import 'package:ripme/ripper/rippers/nhentai_ripper.dart';
+import 'package:ripme/ripper/rippers/oglaf_ripper.dart';
 import 'package:ripme/ripper/rippers/reddit_ripper.dart';
 import 'package:ripme/ripper/rippers/redgifs_ripper.dart';
 import 'package:ripme/ripper/rippers/tumblr_ripper.dart';
@@ -289,6 +290,9 @@ void main() {
     final nhentai = RipperFactory.getRipper(
       Uri.parse('https://nhentai.net/g/123456/'),
     );
+    final oglaf = RipperFactory.getRipper(
+      Uri.parse('http://oglaf.com/plumes/'),
+    );
     final reddit = RipperFactory.getRipper(
       Uri.parse('https://www.reddit.com/r/pics'),
     );
@@ -368,6 +372,7 @@ void main() {
     expect(nsfwXxx, isA<NsfwXxxRipper>());
     expect(nudeGals, isA<NudeGalsRipper>());
     expect(nhentai, isA<NhentaiRipper>());
+    expect(oglaf, isA<OglafRipper>());
     expect(reddit, isA<RedditRipper>());
     expect(redgifs, isA<RedgifsRipper>());
     expect(tumblr, isA<TumblrRipper>());
@@ -378,20 +383,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('http://oglaf.com/example/'),
+        Uri.parse('http://rule34.paheal.net/post/list/example/1'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'OglafRipper',
+        'PahealRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 72);
-    expect(RipperMigrationCatalog.unportedRipperCount, 44);
+    expect(RipperMigrationCatalog.portedRipperCount, 73);
+    expect(RipperMigrationCatalog.unportedRipperCount, 43);
   });
 }
