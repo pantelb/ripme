@@ -99,6 +99,7 @@ import 'package:ripme/ripper/rippers/theyiffgallery_ripper.dart';
 import 'package:ripme/ripper/rippers/tsumino_ripper.dart';
 import 'package:ripme/ripper/rippers/tumblr_ripper.dart';
 import 'package:ripme/ripper/rippers/twitch_video_ripper.dart';
+import 'package:ripme/ripper/rippers/twodgalleries_ripper.dart';
 import 'package:ripme/ripper/rippers/twitter_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
 
@@ -420,6 +421,9 @@ void main() {
     final twitchHttp = RipperFactory.getRipper(
       Uri.parse('http://clips.twitch.tv/FaithfulIncredulousPotTBCheesePull'),
     );
+    final twodgalleries = RipperFactory.getRipper(
+      Uri.parse('http://www.2dgalleries.com/artist/regis-loisel-6477'),
+    );
     final twitter = RipperFactory.getRipper(Uri.parse('https://x.com/example'));
 
     expect(allporncomic, isA<AllporncomicRipper>());
@@ -521,6 +525,7 @@ void main() {
     expect(tumblr, isA<TumblrRipper>());
     expect(twitch, isA<TwitchVideoRipper>());
     expect(twitchHttp, isNull);
+    expect(twodgalleries, isA<TwodgalleriesRipper>());
     expect(twitter, isA<TwitterRipper>());
   });
 
@@ -541,7 +546,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 99);
-    expect(RipperMigrationCatalog.unportedRipperCount, 17);
+    expect(RipperMigrationCatalog.portedRipperCount, 100);
+    expect(RipperMigrationCatalog.unportedRipperCount, 16);
   });
 }

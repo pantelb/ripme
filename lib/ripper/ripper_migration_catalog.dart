@@ -224,6 +224,7 @@ class RipperMigrationCatalog {
     'TsuminoRipper',
     'TumblrRipper',
     'TwitchVideoRipper',
+    'TwodgalleriesRipper',
     'TwitterRipper',
   };
 
