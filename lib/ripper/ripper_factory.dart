@@ -78,6 +78,7 @@ import 'rippers/porncomix_ripper.dart';
 import 'rippers/porncomixinfo_ripper.dart';
 import 'rippers/pornhub_ripper.dart';
 import 'rippers/pornpics_ripper.dart';
+import 'rippers/readcomic_ripper.dart';
 import 'rippers/reddit_ripper.dart';
 import 'rippers/redgifs_ripper.dart';
 import 'rippers/tumblr_ripper.dart';
@@ -202,6 +203,8 @@ class RipperFactory {
     if (pornhubRipper.canRip(uri)) return pornhubRipper;
     final pornpicsRipper = PornpicsRipper(uri);
     if (pornpicsRipper.canRip(uri)) return pornpicsRipper;
+    final readcomicRipper = ReadcomicRipper(uri);
+    if (readcomicRipper.canRip(uri)) return readcomicRipper;
     if (host.contains('reddit.com')) return RedditRipper(uri);
     if (host.contains('redgifs.com') ||
         host.contains('gifdeliverynetwork.com')) {

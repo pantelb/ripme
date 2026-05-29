@@ -117,6 +117,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] PorncomixinfoRipper ported: Java-compatible `porncomixinfo.net/chapter/{comic}/{chapter}` URL matching and comic GIDs, `img.wp-manga-chapter-img` source extraction, `a.next_page` pagination with empty-href stop behavior, ordered filename prefixes, and factory/catalog coverage
 - [x] PornhubRipper ported: Java-compatible `pornhub.com/album` URL matching and album GIDs, query-stripping album sanitization, photo-page URL extraction from `.photoBlockBox`, direct image discovery through `#photoImageSection img`, Java-style next-page resolution, referrer page loads, ordered filename prefixes, and factory/catalog coverage
 - [x] PornpicsRipper ported: Java-compatible `www.pornpics.com/galleries/{id}` URL matching and GIDs, direct `a.rel-link` href extraction, ordered filename prefixes, and factory/catalog coverage
+- [x] ReadcomicRipper ported: Java-compatible `read-comic.com/{comic}` URL matching and GIDs, inherited Viewcomic title cleanup, `div.pinbin-copy > a > img` source extraction, ordered filename prefixes, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -126,7 +127,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- ReadcomicRipper
 - Rule34Ripper
 - RulePornRipper
 - SankakuComplexRipper
