@@ -20,6 +20,7 @@ import 'package:ripme/ripper/rippers/dynastyscans_ripper.dart';
 import 'package:ripme/ripper/rippers/e621_ripper.dart';
 import 'package:ripme/ripper/rippers/eightmuses_ripper.dart';
 import 'package:ripme/ripper/rippers/ehentai_ripper.dart';
+import 'package:ripme/ripper/rippers/erofus_ripper.dart';
 import 'package:ripme/ripper/rippers/erome_ripper.dart';
 import 'package:ripme/ripper/rippers/fapdungeon_ripper.dart';
 import 'package:ripme/ripper/rippers/fapwiz_ripper.dart';
@@ -116,7 +117,6 @@ import 'package:ripme/ripper/rippers/xvideos_ripper.dart';
 import 'package:ripme/ripper/rippers/youporn_ripper.dart';
 import 'package:ripme/ripper/rippers/yuvutu_ripper.dart';
 import 'package:ripme/ripper/rippers/zizki_ripper.dart';
-import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
 
 void main() {
   test('ported URLs still resolve to their Dart ripper', () {
@@ -174,6 +174,11 @@ void main() {
     );
     final ehentai = RipperFactory.getRipper(
       Uri.parse('https://e-hentai.org/g/1144492/e823bdf9a5/'),
+    );
+    final erofus = RipperFactory.getRipper(
+      Uri.parse(
+        'https://www.erofus.com/comics/be-story-club-comics/a-kiss/issue-1',
+      ),
     );
     final erome = RipperFactory.getRipper(
       Uri.parse('https://erome.com/a/albumid'),
@@ -507,6 +512,7 @@ void main() {
     expect(dynastyscans, isA<DynastyscansRipper>());
     expect(e621, isA<E621Ripper>());
     expect(ehentai, isA<EHentaiRipper>());
+    expect(erofus, isA<ErofusRipper>());
     expect(erome, isA<EromeRipper>());
     expect(fapDungeon, isA<FapDungeonRipper>());
     expect(fapwiz, isA<FapwizRipper>());
@@ -607,24 +613,16 @@ void main() {
     expect(zizki, isA<ZizkiRipper>());
   });
 
-  test(
-    'known Java-only URLs resolve to an explicit unsupported legacy ripper',
-    () {
-      final ripper = RipperFactory.getRipper(
-        Uri.parse('https://erofus.com/gallery/example'),
-      );
-
-      expect(ripper, isA<UnsupportedLegacyRipper>());
-      expect(
-        (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'ErofusRipper',
-      );
-    },
-  );
+  test('unknown URLs still return null', () {
+    expect(
+      RipperFactory.getRipper(Uri.parse('https://example.invalid/gallery')),
+      isNull,
+    );
+  });
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 115);
-    expect(RipperMigrationCatalog.unportedRipperCount, 1);
+    expect(RipperMigrationCatalog.portedRipperCount, 116);
+    expect(RipperMigrationCatalog.unportedRipperCount, 0);
   });
 }

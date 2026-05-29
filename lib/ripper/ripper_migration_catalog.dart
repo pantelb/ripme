@@ -144,6 +144,7 @@ class RipperMigrationCatalog {
     'DynastyscansRipper',
     'E621Ripper',
     'EHentaiRipper',
+    'ErofusRipper',
     'EromeRipper',
     'FapDungeonRipper',
     'FapwizRipper',

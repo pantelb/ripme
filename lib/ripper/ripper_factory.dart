@@ -19,6 +19,7 @@ import 'rippers/dynastyscans_ripper.dart';
 import 'rippers/e621_ripper.dart';
 import 'rippers/eightmuses_ripper.dart';
 import 'rippers/ehentai_ripper.dart';
+import 'rippers/erofus_ripper.dart';
 import 'rippers/erome_ripper.dart';
 import 'rippers/fapdungeon_ripper.dart';
 import 'rippers/fapwiz_ripper.dart';
@@ -145,6 +146,7 @@ class RipperFactory {
     if (host.endsWith('dynasty-scans.com')) return DynastyscansRipper(uri);
     if (host.endsWith('e621.net')) return E621Ripper(uri);
     if (host.endsWith('e-hentai.org')) return EHentaiRipper(uri);
+    if (host.endsWith('erofus.com')) return ErofusRipper(uri);
     if (host.endsWith('erome.com')) return EromeRipper(uri);
     if (host.endsWith('fapdungeon.com')) return FapDungeonRipper(uri);
     if (host.endsWith('fapwiz.com')) return FapwizRipper(uri);
