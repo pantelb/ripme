@@ -108,6 +108,7 @@ import 'package:ripme/ripper/rippers/viewcomic_ripper.dart';
 import 'package:ripme/ripper/rippers/vk_ripper.dart';
 import 'package:ripme/ripper/rippers/vsco_ripper.dart';
 import 'package:ripme/ripper/rippers/webtoons_ripper.dart';
+import 'package:ripme/ripper/rippers/wordpress_comic_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
 
 void main() {
@@ -454,6 +455,9 @@ void main() {
       Uri.parse(
           'https://www.webtoons.com/en/drama/lookism/ep-145/viewer?title_no=1049&episode_no=145'),
     );
+    final wordpressComic = RipperFactory.getRipper(
+      Uri.parse('http://prismblush.com/comic/hella-trap-pg-01/'),
+    );
 
     expect(allporncomic, isA<AllporncomicRipper>());
     expect(artstation, isA<ArtStationRipper>());
@@ -563,6 +567,7 @@ void main() {
     expect(vk, isA<VkRipper>());
     expect(vsco, isA<VscoRipper>());
     expect(webtoons, isA<WebtoonsRipper>());
+    expect(wordpressComic, isA<WordpressComicRipper>());
   });
 
   test(
@@ -582,7 +587,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 107);
-    expect(RipperMigrationCatalog.unportedRipperCount, 9);
+    expect(RipperMigrationCatalog.portedRipperCount, 108);
+    expect(RipperMigrationCatalog.unportedRipperCount, 8);
   });
 }

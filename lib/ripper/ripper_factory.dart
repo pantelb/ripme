@@ -107,6 +107,7 @@ import 'rippers/viewcomic_ripper.dart';
 import 'rippers/vsco_ripper.dart';
 import 'rippers/vk_ripper.dart';
 import 'rippers/webtoons_ripper.dart';
+import 'rippers/wordpress_comic_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
 
 class RipperFactory {
@@ -278,6 +279,10 @@ class RipperFactory {
     if (host == 'www.webtoons.com') {
       final webtoonsRipper = WebtoonsRipper(uri);
       if (webtoonsRipper.canRip(uri)) return webtoonsRipper;
+    }
+    if (WordpressComicRipper.explicitDomains.contains(host)) {
+      final wordpressComicRipper = WordpressComicRipper(uri);
+      if (wordpressComicRipper.canRip(uri)) return wordpressComicRipper;
     }
 
     final legacyMatch = RipperMigrationCatalog.findUnportedLegacyRipper(uri);
