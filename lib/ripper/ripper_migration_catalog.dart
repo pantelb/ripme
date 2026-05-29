@@ -218,6 +218,7 @@ class RipperMigrationCatalog {
     'SpankbangRipper',
     'StaRipper',
     'TapasticRipper',
+    'TeenplanetRipper',
     'TumblrRipper',
     'TwitterRipper',
   };
