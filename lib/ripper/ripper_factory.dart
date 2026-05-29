@@ -86,6 +86,7 @@ import 'rippers/ruleporn_ripper.dart';
 import 'rippers/sankaku_complex_ripper.dart';
 import 'rippers/scrolller_ripper.dart';
 import 'rippers/shesfreaky_ripper.dart';
+import 'rippers/sinfest_ripper.dart';
 import 'rippers/tumblr_ripper.dart';
 import 'rippers/twitter_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
@@ -225,6 +226,8 @@ class RipperFactory {
     if (scrolllerRipper.canRip(uri)) return scrolllerRipper;
     final shesFreakyRipper = ShesFreakyRipper(uri);
     if (shesFreakyRipper.canRip(uri)) return shesFreakyRipper;
+    final sinfestRipper = SinfestRipper(uri);
+    if (sinfestRipper.canRip(uri)) return sinfestRipper;
     if (host.contains('tumblr.com')) return TumblrRipper(uri);
     if (host.endsWith('twitter.com') ||
         host == 'x.com' ||
