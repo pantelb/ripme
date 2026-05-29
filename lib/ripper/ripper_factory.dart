@@ -65,6 +65,7 @@ import 'rippers/natalie_mu_ripper.dart';
 import 'rippers/newgrounds_ripper.dart';
 import 'rippers/nfsfw_ripper.dart';
 import 'rippers/nsfw_album_ripper.dart';
+import 'rippers/nsfw_xxx_ripper.dart';
 import 'rippers/nhentai_ripper.dart';
 import 'rippers/reddit_ripper.dart';
 import 'rippers/redgifs_ripper.dart';
@@ -170,6 +171,7 @@ class RipperFactory {
     if (host.endsWith('newgrounds.com')) return NewgroundsRipper(uri);
     if (host.endsWith('nfsfw.com')) return NfsfwRipper(uri);
     if (host.endsWith('nsfwalbum.com')) return NsfwAlbumRipper(uri);
+    if (host.endsWith('nsfw.xxx')) return NsfwXxxRipper(uri);
     if (host.contains('nhentai.net')) return NhentaiRipper(uri);
     if (host.contains('reddit.com')) return RedditRipper(uri);
     if (host.contains('redgifs.com') ||

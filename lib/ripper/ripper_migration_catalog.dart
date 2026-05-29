@@ -191,6 +191,7 @@ class RipperMigrationCatalog {
     'NewgroundsRipper',
     'NfsfwRipper',
     'NsfwAlbumRipper',
+    'NsfwXxxRipper',
     'NhentaiRipper',
     'RedditRipper',
     'RedgifsRipper',
