@@ -208,6 +208,7 @@ class RipperMigrationCatalog {
     'RedditRipper',
     'RedgifsRipper',
     'Rule34Ripper',
+    'RulePornRipper',
     'TumblrRipper',
     'TwitterRipper',
   };
