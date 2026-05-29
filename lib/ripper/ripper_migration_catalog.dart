@@ -200,6 +200,7 @@ class RipperMigrationCatalog {
     'PichunterRipper',
     'PicstatioRipper',
     'PorncomixRipper',
+    'PorncomixinfoRipper',
     'NhentaiRipper',
     'RedditRipper',
     'RedgifsRipper',
