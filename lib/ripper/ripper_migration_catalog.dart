@@ -219,6 +219,7 @@ class RipperMigrationCatalog {
     'StaRipper',
     'TapasticRipper',
     'TeenplanetRipper',
+    'ThechiveRipper',
     'TumblrRipper',
     'TwitterRipper',
   };
@@ -243,7 +244,6 @@ class RipperMigrationCatalog {
     'RulePornRipper': ['ruleporn'],
     'SankakuComplexRipper': ['sankakucomplex'],
     'ShesFreakyRipper': ['shesfreaky'],
-    'ThechiveRipper': ['thechive'],
     'TwitchVideoRipper': ['twitch'],
     'TwitterRipper': ['twitter', 'x'],
     'VkRipper': ['vk'],
