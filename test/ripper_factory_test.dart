@@ -90,6 +90,7 @@ import 'package:ripme/ripper/rippers/shesfreaky_ripper.dart';
 import 'package:ripme/ripper/rippers/sinfest_ripper.dart';
 import 'package:ripme/ripper/rippers/smutty_ripper.dart';
 import 'package:ripme/ripper/rippers/soundgasm_ripper.dart';
+import 'package:ripme/ripper/rippers/spankbang_ripper.dart';
 import 'package:ripme/ripper/rippers/tumblr_ripper.dart';
 import 'package:ripme/ripper/rippers/twitter_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
@@ -378,6 +379,9 @@ void main() {
         'https://soundgasm.net/u/HTMLExamples/Making-Text-into-a-Soundgasm-Audio-Link',
       ),
     );
+    final spankbang = RipperFactory.getRipper(
+      Uri.parse('https://spankbang.com/2a7fh/video/mdb901'),
+    );
     final tumblr = RipperFactory.getRipper(
       Uri.parse('https://example.tumblr.com/post/1'),
     );
@@ -472,6 +476,7 @@ void main() {
     expect(sinfest, isA<SinfestRipper>());
     expect(smutty, isA<SmuttyRipper>());
     expect(soundgasm, isA<SoundgasmRipper>());
+    expect(spankbang, isA<SpankbangRipper>());
     expect(tumblr, isA<TumblrRipper>());
     expect(twitter, isA<TwitterRipper>());
   });
@@ -480,20 +485,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://spankbang.com/12345/video/title'),
+        Uri.parse('https://stapico.ru/user/example'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'SpankbangRipper',
+        'StaRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 91);
-    expect(RipperMigrationCatalog.unportedRipperCount, 25);
+    expect(RipperMigrationCatalog.portedRipperCount, 92);
+    expect(RipperMigrationCatalog.unportedRipperCount, 24);
   });
 }

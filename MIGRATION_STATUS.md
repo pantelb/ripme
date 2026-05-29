@@ -126,6 +126,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] SinfestRipper ported: Java-compatible `sinfest.net/view.php?date={date}` URL/GID parsing, last comic image extraction, `td.style5` next-page handling, `http://sinfest.net/` URL construction, ordered filename prefixes, and factory/catalog coverage
 - [x] SmuttyRipper ported: Java-compatible broad `smutty.com` host support, `/h/{tag}`, `/search/?q=`, and `/user/{name}` GIDs, thumbnail `/m/` to `/b/` URL rewriting with Java `http:` prefixing, `a.next` pagination, ordered filename prefixes, and factory/catalog coverage
 - [x] SoundgasmRipper ported: Java-compatible `soundgasm.net/u/{user}/{id}` path GIDs, script `m4a` extraction with Java's greedy quoted URL regex, ordered filename prefixes, and factory/catalog coverage
+- [x] SpankbangRipper ported: Java-compatible `/video/` URL detection, video slug GIDs, `.video-js > source` src extraction including empty attr behavior, ordered filename prefixes, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -135,7 +136,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- SpankbangRipper
 - StaRipper
 - TapasticRipper
 - TeenplanetRipper

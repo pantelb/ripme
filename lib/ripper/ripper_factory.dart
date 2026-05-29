@@ -89,6 +89,7 @@ import 'rippers/shesfreaky_ripper.dart';
 import 'rippers/sinfest_ripper.dart';
 import 'rippers/smutty_ripper.dart';
 import 'rippers/soundgasm_ripper.dart';
+import 'rippers/spankbang_ripper.dart';
 import 'rippers/tumblr_ripper.dart';
 import 'rippers/twitter_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
@@ -232,6 +233,8 @@ class RipperFactory {
     if (sinfestRipper.canRip(uri)) return sinfestRipper;
     if (host.endsWith('smutty.com')) return SmuttyRipper(uri);
     if (host.endsWith('soundgasm.net')) return SoundgasmRipper(uri);
+    final spankbangRipper = SpankbangRipper(uri);
+    if (spankbangRipper.canRip(uri)) return spankbangRipper;
     if (host.contains('tumblr.com')) return TumblrRipper(uri);
     if (host.endsWith('twitter.com') ||
         host == 'x.com' ||
