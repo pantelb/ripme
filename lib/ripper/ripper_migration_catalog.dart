@@ -238,6 +238,7 @@ class RipperMigrationCatalog {
     'XhamsterRipper',
     'XlecxRipper',
     'XvideosRipper',
+    'YoupornRipper',
   };
 
   static const Map<String, List<String>> _hostAliases = {

@@ -112,6 +112,7 @@ import 'rippers/xcartx_ripper.dart';
 import 'rippers/xhamster_ripper.dart';
 import 'rippers/xlecx_ripper.dart';
 import 'rippers/xvideos_ripper.dart';
+import 'rippers/youporn_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
 
 class RipperFactory {
@@ -294,6 +295,8 @@ class RipperFactory {
     if (host.endsWith('xlecx.org')) return XlecxRipper(uri);
     final xvideosRipper = XvideosRipper(uri);
     if (xvideosRipper.canRip(uri)) return xvideosRipper;
+    final youpornRipper = YoupornRipper(uri);
+    if (youpornRipper.canRip(uri)) return youpornRipper;
 
     final legacyMatch = RipperMigrationCatalog.findUnportedLegacyRipper(uri);
     if (legacyMatch != null) return UnsupportedLegacyRipper(uri, legacyMatch);

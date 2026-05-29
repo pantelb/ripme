@@ -147,6 +147,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] XhamsterRipper ported: Java-compatible gallery/user/video URL support, non-video mobile URL sanitization, user queue extraction, old and new gallery image parsing, video link extraction, mobile next-page rewriting, album title fallback, ordered filenames, and factory/catalog coverage
 - [x] XlecxRipper ported: Java-compatible `xlecx.org` host/domain/GID behavior, inherited Xcartx `div.f-desc img` `data-src` extraction, forced ordered filename prefixes, and factory/catalog coverage
 - [x] XvideosRipper ported: Java-compatible `video.<id>` and profile/amateur album URL handling, video high-source script extraction, album thumb link extraction, album title/GID behavior, ordered filename prefixes, and factory/catalog coverage
+- [x] YoupornRipper ported: Java-compatible `/watch/<digits>` URL/GID handling, first `<video src>` extraction, missing-video error behavior, ordered filename prefixes, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -156,6 +157,5 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- YoupornRipper
 - YuvutuRipper
 - ZizkiRipper
