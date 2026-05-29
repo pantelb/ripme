@@ -102,6 +102,7 @@ import 'package:ripme/ripper/rippers/twitch_video_ripper.dart';
 import 'package:ripme/ripper/rippers/twodgalleries_ripper.dart';
 import 'package:ripme/ripper/rippers/twitter_ripper.dart';
 import 'package:ripme/ripper/rippers/vidble_ripper.dart';
+import 'package:ripme/ripper/rippers/viddme_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
 
 void main() {
@@ -429,6 +430,9 @@ void main() {
     final vidble = RipperFactory.getRipper(
       Uri.parse('https://vidble.com/album/cGEFr8zi'),
     );
+    final viddme = RipperFactory.getRipper(
+      Uri.parse('https://vid.me/abc123'),
+    );
 
     expect(allporncomic, isA<AllporncomicRipper>());
     expect(artstation, isA<ArtStationRipper>());
@@ -532,6 +536,7 @@ void main() {
     expect(twodgalleries, isA<TwodgalleriesRipper>());
     expect(twitter, isA<TwitterRipper>());
     expect(vidble, isA<VidbleRipper>());
+    expect(viddme, isA<ViddmeRipper>());
   });
 
   test(
@@ -551,7 +556,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 101);
-    expect(RipperMigrationCatalog.unportedRipperCount, 15);
+    expect(RipperMigrationCatalog.portedRipperCount, 102);
+    expect(RipperMigrationCatalog.unportedRipperCount, 14);
   });
 }

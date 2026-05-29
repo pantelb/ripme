@@ -227,6 +227,7 @@ class RipperMigrationCatalog {
     'TwodgalleriesRipper',
     'TwitterRipper',
     'VidbleRipper',
+    'ViddmeRipper',
   };
 
   static const Map<String, List<String>> _hostAliases = {

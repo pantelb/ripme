@@ -101,6 +101,7 @@ import 'rippers/twitch_video_ripper.dart';
 import 'rippers/twodgalleries_ripper.dart';
 import 'rippers/twitter_ripper.dart';
 import 'rippers/vidble_ripper.dart';
+import 'rippers/viddme_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
 
 class RipperFactory {
@@ -261,6 +262,8 @@ class RipperFactory {
       return TwitterRipper(uri);
     }
     if (host.endsWith('vidble.com')) return VidbleRipper(uri);
+    final viddmeRipper = ViddmeRipper(uri);
+    if (viddmeRipper.canRip(uri)) return viddmeRipper;
 
     final legacyMatch = RipperMigrationCatalog.findUnportedLegacyRipper(uri);
     if (legacyMatch != null) return UnsupportedLegacyRipper(uri, legacyMatch);
