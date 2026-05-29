@@ -81,6 +81,7 @@ import 'rippers/pornpics_ripper.dart';
 import 'rippers/readcomic_ripper.dart';
 import 'rippers/reddit_ripper.dart';
 import 'rippers/redgifs_ripper.dart';
+import 'rippers/rule34_ripper.dart';
 import 'rippers/tumblr_ripper.dart';
 import 'rippers/twitter_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
@@ -210,6 +211,8 @@ class RipperFactory {
         host.contains('gifdeliverynetwork.com')) {
       return RedgifsRipper(uri);
     }
+    final rule34Ripper = Rule34Ripper(uri);
+    if (rule34Ripper.canRip(uri)) return rule34Ripper;
     if (host.contains('tumblr.com')) return TumblrRipper(uri);
     if (host.endsWith('twitter.com') ||
         host == 'x.com' ||
