@@ -3,6 +3,7 @@ import 'package:html/parser.dart' as html;
 import 'package:ripme/ripper/rippers/baraag_ripper.dart';
 import 'package:ripme/ripper/rippers/mastodon_ripper.dart';
 import 'package:ripme/ripper/rippers/mastodon_xyz_ripper.dart';
+import 'package:ripme/ripper/rippers/pawoo_ripper.dart';
 
 void main() {
   test('Mastodon-family rippers match Java host/domain GID behavior', () async {
@@ -11,6 +12,7 @@ void main() {
     );
     final baraag = BaraagRipper(Uri.parse('https://baraag.net/@artist'));
     final xyz = MastodonXyzRipper(Uri.parse('https://mastodon.xyz/@bob/media'));
+    final pawoo = PawooRipper(Uri.parse('https://pawoo.net/@halki/media'));
 
     expect(mastodon.getHost(), 'mastodon');
     expect(
@@ -32,6 +34,12 @@ void main() {
     expect(
       await xyz.getGID(Uri.parse('https://mastodon.xyz/@bob/media')),
       'mastodon.xyz@bob',
+    );
+
+    expect(pawoo.getHost(), 'pawoo');
+    expect(
+      await pawoo.getGID(Uri.parse('https://pawoo.net/@halki/media')),
+      'pawoo.net@halki',
     );
   });
 

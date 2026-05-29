@@ -70,6 +70,7 @@ import 'rippers/nude_gals_ripper.dart';
 import 'rippers/nhentai_ripper.dart';
 import 'rippers/oglaf_ripper.dart';
 import 'rippers/paheal_ripper.dart';
+import 'rippers/pawoo_ripper.dart';
 import 'rippers/reddit_ripper.dart';
 import 'rippers/redgifs_ripper.dart';
 import 'rippers/tumblr_ripper.dart';
@@ -179,6 +180,7 @@ class RipperFactory {
     if (host.contains('nhentai.net')) return NhentaiRipper(uri);
     if (host.endsWith('oglaf.com')) return OglafRipper(uri);
     if (host.endsWith('rule34.paheal.net')) return PahealRipper(uri);
+    if (host.contains('pawoo.net')) return PawooRipper(uri);
     if (host.contains('reddit.com')) return RedditRipper(uri);
     if (host.contains('redgifs.com') ||
         host.contains('gifdeliverynetwork.com')) {
