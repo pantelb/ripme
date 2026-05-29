@@ -97,6 +97,7 @@ import 'rippers/thechive_ripper.dart';
 import 'rippers/theyiffgallery_ripper.dart';
 import 'rippers/tsumino_ripper.dart';
 import 'rippers/tumblr_ripper.dart';
+import 'rippers/twitch_video_ripper.dart';
 import 'rippers/twitter_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
 
@@ -249,6 +250,8 @@ class RipperFactory {
     if (host == 'theyiffgallery.com') return TheyiffgalleryRipper(uri);
     if (host == 'www.tsumino.com') return TsuminoRipper(uri);
     if (host.contains('tumblr.com')) return TumblrRipper(uri);
+    final twitchVideoRipper = TwitchVideoRipper(uri);
+    if (twitchVideoRipper.canRip(uri)) return twitchVideoRipper;
     if (host.endsWith('twitter.com') ||
         host == 'x.com' ||
         host.endsWith('.x.com')) {

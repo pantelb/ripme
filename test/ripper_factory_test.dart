@@ -98,6 +98,7 @@ import 'package:ripme/ripper/rippers/thechive_ripper.dart';
 import 'package:ripme/ripper/rippers/theyiffgallery_ripper.dart';
 import 'package:ripme/ripper/rippers/tsumino_ripper.dart';
 import 'package:ripme/ripper/rippers/tumblr_ripper.dart';
+import 'package:ripme/ripper/rippers/twitch_video_ripper.dart';
 import 'package:ripme/ripper/rippers/twitter_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
 
@@ -413,6 +414,12 @@ void main() {
     final tumblr = RipperFactory.getRipper(
       Uri.parse('https://example.tumblr.com/post/1'),
     );
+    final twitch = RipperFactory.getRipper(
+      Uri.parse('https://clips.twitch.tv/FaithfulIncredulousPotTBCheesePull'),
+    );
+    final twitchHttp = RipperFactory.getRipper(
+      Uri.parse('http://clips.twitch.tv/FaithfulIncredulousPotTBCheesePull'),
+    );
     final twitter = RipperFactory.getRipper(Uri.parse('https://x.com/example'));
 
     expect(allporncomic, isA<AllporncomicRipper>());
@@ -512,6 +519,8 @@ void main() {
     expect(theyiffgallery, isA<TheyiffgalleryRipper>());
     expect(tsumino, isA<TsuminoRipper>());
     expect(tumblr, isA<TumblrRipper>());
+    expect(twitch, isA<TwitchVideoRipper>());
+    expect(twitchHttp, isNull);
     expect(twitter, isA<TwitterRipper>());
   });
 
@@ -519,20 +528,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://www.twitch.tv/videos/123'),
+        Uri.parse('https://vidble.com/album/example'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'TwitchVideoRipper',
+        'VidbleRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 98);
-    expect(RipperMigrationCatalog.unportedRipperCount, 18);
+    expect(RipperMigrationCatalog.portedRipperCount, 99);
+    expect(RipperMigrationCatalog.unportedRipperCount, 17);
   });
 }
