@@ -107,6 +107,7 @@ import 'package:ripme/ripper/rippers/videarn_ripper.dart';
 import 'package:ripme/ripper/rippers/viewcomic_ripper.dart';
 import 'package:ripme/ripper/rippers/vk_ripper.dart';
 import 'package:ripme/ripper/rippers/vsco_ripper.dart';
+import 'package:ripme/ripper/rippers/webtoons_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
 
 void main() {
@@ -449,6 +450,10 @@ void main() {
     final vsco = RipperFactory.getRipper(
       Uri.parse('https://vsco.co/jolly-roger/gallery'),
     );
+    final webtoons = RipperFactory.getRipper(
+      Uri.parse(
+          'https://www.webtoons.com/en/drama/lookism/ep-145/viewer?title_no=1049&episode_no=145'),
+    );
 
     expect(allporncomic, isA<AllporncomicRipper>());
     expect(artstation, isA<ArtStationRipper>());
@@ -557,6 +562,7 @@ void main() {
     expect(viewcomic, isA<ViewcomicRipper>());
     expect(vk, isA<VkRipper>());
     expect(vsco, isA<VscoRipper>());
+    expect(webtoons, isA<WebtoonsRipper>());
   });
 
   test(
@@ -576,7 +582,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 106);
-    expect(RipperMigrationCatalog.unportedRipperCount, 10);
+    expect(RipperMigrationCatalog.portedRipperCount, 107);
+    expect(RipperMigrationCatalog.unportedRipperCount, 9);
   });
 }
