@@ -192,6 +192,7 @@ class RipperMigrationCatalog {
     'NfsfwRipper',
     'NsfwAlbumRipper',
     'NsfwXxxRipper',
+    'NudeGalsRipper',
     'NhentaiRipper',
     'RedditRipper',
     'RedgifsRipper',

@@ -106,6 +106,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] NfsfwRipper ported: Java-compatible query-stripping gallery URL sanitization, nested gallery GIDs, image-page and subalbum extraction, subalbum queue detection, next-page/subalbum traversal with pacing, `.gbBlock` image resolution with page referrers, subalbum index resets, ordered filename prefixes, and factory/catalog coverage
 - [x] NsfwAlbumRipper ported: Java-compatible nsfwalbum host/domain handling, digit-run GIDs, `.album img` `data-src` extraction, imgspice/imagetwist/pixhost/imx thumbnail rewrites, ordered filename prefixes, and factory/catalog coverage
 - [x] NsfwXxxRipper ported: Java-compatible nsfw.xxx user URL sanitization, strict user GIDs, slide-page API URL construction, image/video JSON item extraction with HTML-unescaped video sources, title-based ordered filename prefixes, and factory/catalog coverage
+- [x] NudeGalsRipper ported: Java-compatible nude-gals album/video URL detection, host/domain/GID parsing, thumbnail and video source extraction, hardcoded http URL prefixing with space encoding, download referrers, ordered filename prefixes, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -115,7 +116,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- NudeGalsRipper
 - OglafRipper
 - PahealRipper
 - PawooRipper
