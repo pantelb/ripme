@@ -74,6 +74,7 @@ import 'rippers/pawoo_ripper.dart';
 import 'rippers/photobucket_ripper.dart';
 import 'rippers/pichunter_ripper.dart';
 import 'rippers/picstatio_ripper.dart';
+import 'rippers/porncomix_ripper.dart';
 import 'rippers/reddit_ripper.dart';
 import 'rippers/redgifs_ripper.dart';
 import 'rippers/tumblr_ripper.dart';
@@ -190,6 +191,8 @@ class RipperFactory {
     if (pichunterRipper.canRip(uri)) return pichunterRipper;
     final picstatioRipper = PicstatioRipper(uri);
     if (picstatioRipper.canRip(uri)) return picstatioRipper;
+    final porncomixRipper = PorncomixRipper(uri);
+    if (porncomixRipper.canRip(uri)) return porncomixRipper;
     if (host.contains('reddit.com')) return RedditRipper(uri);
     if (host.contains('redgifs.com') ||
         host.contains('gifdeliverynetwork.com')) {
