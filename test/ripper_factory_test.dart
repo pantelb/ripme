@@ -115,6 +115,7 @@ import 'package:ripme/ripper/rippers/xlecx_ripper.dart';
 import 'package:ripme/ripper/rippers/xvideos_ripper.dart';
 import 'package:ripme/ripper/rippers/youporn_ripper.dart';
 import 'package:ripme/ripper/rippers/yuvutu_ripper.dart';
+import 'package:ripme/ripper/rippers/zizki_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
 
 void main() {
@@ -484,6 +485,9 @@ void main() {
         'http://www.yuvutu.com/modules.php?name=YuGallery&action=view&set_id=420333',
       ),
     );
+    final zizki = RipperFactory.getRipper(
+      Uri.parse('http://zizki.com/dee-chorde/we-got-spirit'),
+    );
 
     expect(allporncomic, isA<AllporncomicRipper>());
     expect(artstation, isA<ArtStationRipper>());
@@ -600,26 +604,27 @@ void main() {
     expect(xvideos, isA<XvideosRipper>());
     expect(youporn, isA<YoupornRipper>());
     expect(yuvutu, isA<YuvutuRipper>());
+    expect(zizki, isA<ZizkiRipper>());
   });
 
   test(
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://zizki.com/photo/123/example'),
+        Uri.parse('https://erofus.com/gallery/example'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'ZizkiRipper',
+        'ErofusRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 114);
-    expect(RipperMigrationCatalog.unportedRipperCount, 2);
+    expect(RipperMigrationCatalog.portedRipperCount, 115);
+    expect(RipperMigrationCatalog.unportedRipperCount, 1);
   });
 }
