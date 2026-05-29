@@ -210,6 +210,7 @@ class RipperMigrationCatalog {
     'Rule34Ripper',
     'RulePornRipper',
     'SankakuComplexRipper',
+    'ScrolllerRipper',
     'TumblrRipper',
     'TwitterRipper',
   };
