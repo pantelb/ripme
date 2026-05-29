@@ -194,6 +194,7 @@ class RipperMigrationCatalog {
     'NsfwXxxRipper',
     'NudeGalsRipper',
     'OglafRipper',
+    'PahealRipper',
     'NhentaiRipper',
     'RedditRipper',
     'RedgifsRipper',

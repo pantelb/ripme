@@ -70,6 +70,7 @@ import 'package:ripme/ripper/rippers/nsfw_xxx_ripper.dart';
 import 'package:ripme/ripper/rippers/nude_gals_ripper.dart';
 import 'package:ripme/ripper/rippers/nhentai_ripper.dart';
 import 'package:ripme/ripper/rippers/oglaf_ripper.dart';
+import 'package:ripme/ripper/rippers/paheal_ripper.dart';
 import 'package:ripme/ripper/rippers/reddit_ripper.dart';
 import 'package:ripme/ripper/rippers/redgifs_ripper.dart';
 import 'package:ripme/ripper/rippers/tumblr_ripper.dart';
@@ -293,6 +294,9 @@ void main() {
     final oglaf = RipperFactory.getRipper(
       Uri.parse('http://oglaf.com/plumes/'),
     );
+    final paheal = RipperFactory.getRipper(
+      Uri.parse('http://rule34.paheal.net/post/list/bimbo/1'),
+    );
     final reddit = RipperFactory.getRipper(
       Uri.parse('https://www.reddit.com/r/pics'),
     );
@@ -373,6 +377,7 @@ void main() {
     expect(nudeGals, isA<NudeGalsRipper>());
     expect(nhentai, isA<NhentaiRipper>());
     expect(oglaf, isA<OglafRipper>());
+    expect(paheal, isA<PahealRipper>());
     expect(reddit, isA<RedditRipper>());
     expect(redgifs, isA<RedgifsRipper>());
     expect(tumblr, isA<TumblrRipper>());
@@ -383,20 +388,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('http://rule34.paheal.net/post/list/example/1'),
+        Uri.parse('https://pawoo.net/@artist'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'PahealRipper',
+        'PawooRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 73);
-    expect(RipperMigrationCatalog.unportedRipperCount, 43);
+    expect(RipperMigrationCatalog.portedRipperCount, 74);
+    expect(RipperMigrationCatalog.unportedRipperCount, 42);
   });
 }
