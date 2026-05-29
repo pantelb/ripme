@@ -92,6 +92,7 @@ import 'package:ripme/ripper/rippers/smutty_ripper.dart';
 import 'package:ripme/ripper/rippers/soundgasm_ripper.dart';
 import 'package:ripme/ripper/rippers/spankbang_ripper.dart';
 import 'package:ripme/ripper/rippers/sta_ripper.dart';
+import 'package:ripme/ripper/rippers/tapastic_ripper.dart';
 import 'package:ripme/ripper/rippers/tumblr_ripper.dart';
 import 'package:ripme/ripper/rippers/twitter_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
@@ -386,6 +387,9 @@ void main() {
     final sta = RipperFactory.getRipper(
       Uri.parse('https://sta.sh/01umpyuxi4js'),
     );
+    final tapastic = RipperFactory.getRipper(
+      Uri.parse('https://tapas.io/series/TPIAG'),
+    );
     final tumblr = RipperFactory.getRipper(
       Uri.parse('https://example.tumblr.com/post/1'),
     );
@@ -482,6 +486,7 @@ void main() {
     expect(soundgasm, isA<SoundgasmRipper>());
     expect(spankbang, isA<SpankbangRipper>());
     expect(sta, isA<StaRipper>());
+    expect(tapastic, isA<TapasticRipper>());
     expect(tumblr, isA<TumblrRipper>());
     expect(twitter, isA<TwitterRipper>());
   });
@@ -490,20 +495,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://tapas.io/episode/123'),
+        Uri.parse('https://teenplanet.org/gallery/example'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'TapasticRipper',
+        'TeenplanetRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 93);
-    expect(RipperMigrationCatalog.unportedRipperCount, 23);
+    expect(RipperMigrationCatalog.portedRipperCount, 94);
+    expect(RipperMigrationCatalog.unportedRipperCount, 22);
   });
 }

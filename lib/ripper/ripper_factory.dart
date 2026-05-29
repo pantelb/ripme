@@ -91,6 +91,7 @@ import 'rippers/smutty_ripper.dart';
 import 'rippers/soundgasm_ripper.dart';
 import 'rippers/spankbang_ripper.dart';
 import 'rippers/sta_ripper.dart';
+import 'rippers/tapastic_ripper.dart';
 import 'rippers/tumblr_ripper.dart';
 import 'rippers/twitter_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
@@ -237,6 +238,7 @@ class RipperFactory {
     final spankbangRipper = SpankbangRipper(uri);
     if (spankbangRipper.canRip(uri)) return spankbangRipper;
     if (host == 'sta.sh') return StaRipper(uri);
+    if (host == 'tapas.io') return TapasticRipper(uri);
     if (host.contains('tumblr.com')) return TumblrRipper(uri);
     if (host.endsWith('twitter.com') ||
         host == 'x.com' ||
