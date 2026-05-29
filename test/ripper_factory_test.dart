@@ -109,6 +109,7 @@ import 'package:ripme/ripper/rippers/vk_ripper.dart';
 import 'package:ripme/ripper/rippers/vsco_ripper.dart';
 import 'package:ripme/ripper/rippers/webtoons_ripper.dart';
 import 'package:ripme/ripper/rippers/wordpress_comic_ripper.dart';
+import 'package:ripme/ripper/rippers/xcartx_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
 
 void main() {
@@ -458,6 +459,9 @@ void main() {
     final wordpressComic = RipperFactory.getRipper(
       Uri.parse('http://prismblush.com/comic/hella-trap-pg-01/'),
     );
+    final xcartx = RipperFactory.getRipper(
+      Uri.parse('http://xcartx.com/4937-tokimeki-nioi.html'),
+    );
 
     expect(allporncomic, isA<AllporncomicRipper>());
     expect(artstation, isA<ArtStationRipper>());
@@ -568,6 +572,7 @@ void main() {
     expect(vsco, isA<VscoRipper>());
     expect(webtoons, isA<WebtoonsRipper>());
     expect(wordpressComic, isA<WordpressComicRipper>());
+    expect(xcartx, isA<XcartxRipper>());
   });
 
   test(
@@ -587,7 +592,7 @@ void main() {
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 108);
-    expect(RipperMigrationCatalog.unportedRipperCount, 8);
+    expect(RipperMigrationCatalog.portedRipperCount, 109);
+    expect(RipperMigrationCatalog.unportedRipperCount, 7);
   });
 }

@@ -143,6 +143,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] VscoRipper ported: Java-compatible `vsco.co` URL/GID handling, single media `og:image` extraction, `vs` token/site lookup, 1000-item profile media paging, responsive URL expansion, ordered filename prefixes, and factory/catalog coverage
 - [x] WebtoonsRipper ported: Java-compatible episode URL matching, album title/GID regex behavior, first-page consent cookies, viewer image extraction with `?type` stripping, next-episode pagination, referrer/cookie download metadata, and factory/catalog coverage
 - [x] WordpressComicRipper ported: Java-compatible explicit-domain URL matching, queue pages, theme-specific navigation and image selectors, special album titles, page-title filename prefixes, host-specific gallery extraction, and factory/catalog coverage
+- [x] XcartxRipper ported: Java-compatible `xcartx.com` host/GID behavior, `div.f-desc img` `data-src` extraction, forced ordered filename prefixes, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -152,7 +153,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- XcartxRipper
 - XhamsterRipper
 - XlecxRipper
 - XvideosRipper

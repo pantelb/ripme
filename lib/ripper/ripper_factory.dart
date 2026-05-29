@@ -108,6 +108,7 @@ import 'rippers/vsco_ripper.dart';
 import 'rippers/vk_ripper.dart';
 import 'rippers/webtoons_ripper.dart';
 import 'rippers/wordpress_comic_ripper.dart';
+import 'rippers/xcartx_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
 
 class RipperFactory {
@@ -284,6 +285,7 @@ class RipperFactory {
       final wordpressComicRipper = WordpressComicRipper(uri);
       if (wordpressComicRipper.canRip(uri)) return wordpressComicRipper;
     }
+    if (host.endsWith('xcartx.com')) return XcartxRipper(uri);
 
     final legacyMatch = RipperMigrationCatalog.findUnportedLegacyRipper(uri);
     if (legacyMatch != null) return UnsupportedLegacyRipper(uri, legacyMatch);

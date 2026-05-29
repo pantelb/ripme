@@ -234,6 +234,7 @@ class RipperMigrationCatalog {
     'VscoRipper',
     'WebtoonsRipper',
     'WordpressComicRipper',
+    'XcartxRipper',
   };
 
   static const Map<String, List<String>> _hostAliases = {
