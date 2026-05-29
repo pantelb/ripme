@@ -74,6 +74,7 @@ import 'package:ripme/ripper/rippers/paheal_ripper.dart';
 import 'package:ripme/ripper/rippers/pawoo_ripper.dart';
 import 'package:ripme/ripper/rippers/photobucket_ripper.dart';
 import 'package:ripme/ripper/rippers/pichunter_ripper.dart';
+import 'package:ripme/ripper/rippers/picstatio_ripper.dart';
 import 'package:ripme/ripper/rippers/reddit_ripper.dart';
 import 'package:ripme/ripper/rippers/redgifs_ripper.dart';
 import 'package:ripme/ripper/rippers/tumblr_ripper.dart';
@@ -311,6 +312,9 @@ void main() {
     final pichunter = RipperFactory.getRipper(
       Uri.parse('https://www.pichunter.com/models/Madison_Ivy'),
     );
+    final picstatio = RipperFactory.getRipper(
+      Uri.parse('https://www.picstatio.com/aerial-view-wallpapers'),
+    );
     final reddit = RipperFactory.getRipper(
       Uri.parse('https://www.reddit.com/r/pics'),
     );
@@ -395,6 +399,7 @@ void main() {
     expect(pawoo, isA<PawooRipper>());
     expect(photobucket, isA<PhotobucketRipper>());
     expect(pichunter, isA<PichunterRipper>());
+    expect(picstatio, isA<PicstatioRipper>());
     expect(reddit, isA<RedditRipper>());
     expect(redgifs, isA<RedgifsRipper>());
     expect(tumblr, isA<TumblrRipper>());
@@ -405,20 +410,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://picstatio.com/gallery/123/example'),
+        Uri.parse('https://porncomix.com/gallery/123/example'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'PicstatioRipper',
+        'PorncomixRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 77);
-    expect(RipperMigrationCatalog.unportedRipperCount, 39);
+    expect(RipperMigrationCatalog.portedRipperCount, 78);
+    expect(RipperMigrationCatalog.unportedRipperCount, 38);
   });
 }

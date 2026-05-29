@@ -112,6 +112,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] PawooRipper ported: Java-compatible pawoo.net Mastodon-family host/domain overrides, `@user` and `/media` GIDs, inherited media pagination/extraction, and factory/catalog coverage
 - [x] PhotobucketRipper ported: Java-compatible Photobucket gallery URL sanitization and username GIDs, metadata API URL construction, subalbum metadata expansion, `collectionData` JavaScript parsing, 24-item page counting, per-album ordered filenames, album-location subdirectories, page referrer/cookie download metadata, and factory/catalog coverage
 - [x] PichunterRipper ported: Java-compatible `www.pichunter.com` tags/models/sites/gallery GIDs, listing versus photo-set image selectors, `_i` to `_o` thumbnail rewriting, arrow pagination including empty-href behavior, ordered filename prefixes, and factory/catalog coverage
+- [x] PicstatioRipper ported: Java-compatible `www.picstatio.com` category URL matching and GIDs, `img.img` parent wallpaper slug extraction, per-wallpaper `/download` page lookup, full-size `p.text-center > span > a` href extraction, Java-style next-page URL construction, ordered filename prefixes, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -121,7 +122,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- PicstatioRipper
 - PorncomixRipper
 - PorncomixinfoRipper
 - PornhubRipper
