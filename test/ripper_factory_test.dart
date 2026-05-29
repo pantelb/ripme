@@ -88,6 +88,7 @@ import 'package:ripme/ripper/rippers/sankaku_complex_ripper.dart';
 import 'package:ripme/ripper/rippers/scrolller_ripper.dart';
 import 'package:ripme/ripper/rippers/shesfreaky_ripper.dart';
 import 'package:ripme/ripper/rippers/sinfest_ripper.dart';
+import 'package:ripme/ripper/rippers/smutty_ripper.dart';
 import 'package:ripme/ripper/rippers/tumblr_ripper.dart';
 import 'package:ripme/ripper/rippers/twitter_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
@@ -368,6 +369,9 @@ void main() {
     final sinfest = RipperFactory.getRipper(
       Uri.parse('http://sinfest.net/view.php?date=2000-01-17'),
     );
+    final smutty = RipperFactory.getRipper(
+      Uri.parse('https://smutty.com/user/QUIGON/'),
+    );
     final tumblr = RipperFactory.getRipper(
       Uri.parse('https://example.tumblr.com/post/1'),
     );
@@ -460,6 +464,7 @@ void main() {
     expect(scrolller, isA<ScrolllerRipper>());
     expect(shesFreaky, isA<ShesFreakyRipper>());
     expect(sinfest, isA<SinfestRipper>());
+    expect(smutty, isA<SmuttyRipper>());
     expect(tumblr, isA<TumblrRipper>());
     expect(twitter, isA<TwitterRipper>());
   });
@@ -468,20 +473,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://smutty.com/comic/example-comic/'),
+        Uri.parse('https://soundgasm.net/u/example/example-title'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'SmuttyRipper',
+        'SoundgasmRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 89);
-    expect(RipperMigrationCatalog.unportedRipperCount, 27);
+    expect(RipperMigrationCatalog.portedRipperCount, 90);
+    expect(RipperMigrationCatalog.unportedRipperCount, 26);
   });
 }

@@ -213,6 +213,7 @@ class RipperMigrationCatalog {
     'ScrolllerRipper',
     'ShesFreakyRipper',
     'SinfestRipper',
+    'SmuttyRipper',
     'TumblrRipper',
     'TwitterRipper',
   };
