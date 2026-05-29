@@ -110,6 +110,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] OglafRipper ported: Java-compatible oglaf host/domain handling, strict http comic GIDs, domain-only album titles, `b > img#strip` image extraction, next-page nav resolution with Java delay, and factory/catalog coverage
 - [x] PahealRipper ported: Java-compatible rule34.paheal.net term parsing and GIDs, first-page URL construction, listing opt-in cookie, thumbnail/link extraction, `next` paginator handling, extension/default `.png` filenames without ordered prefixes, and factory/catalog coverage
 - [x] PawooRipper ported: Java-compatible pawoo.net Mastodon-family host/domain overrides, `@user` and `/media` GIDs, inherited media pagination/extraction, and factory/catalog coverage
+- [x] PhotobucketRipper ported: Java-compatible Photobucket gallery URL sanitization and username GIDs, metadata API URL construction, subalbum metadata expansion, `collectionData` JavaScript parsing, 24-item page counting, per-album ordered filenames, album-location subdirectories, page referrer/cookie download metadata, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -119,7 +120,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- PhotobucketRipper
 - PichunterRipper
 - PicstatioRipper
 - PorncomixRipper

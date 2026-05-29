@@ -196,6 +196,7 @@ class RipperMigrationCatalog {
     'OglafRipper',
     'PahealRipper',
     'PawooRipper',
+    'PhotobucketRipper',
     'NhentaiRipper',
     'RedditRipper',
     'RedgifsRipper',
