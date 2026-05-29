@@ -84,6 +84,7 @@ import 'package:ripme/ripper/rippers/reddit_ripper.dart';
 import 'package:ripme/ripper/rippers/redgifs_ripper.dart';
 import 'package:ripme/ripper/rippers/rule34_ripper.dart';
 import 'package:ripme/ripper/rippers/ruleporn_ripper.dart';
+import 'package:ripme/ripper/rippers/sankaku_complex_ripper.dart';
 import 'package:ripme/ripper/rippers/tumblr_ripper.dart';
 import 'package:ripme/ripper/rippers/twitter_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
@@ -351,6 +352,9 @@ void main() {
     final ruleporn = RipperFactory.getRipper(
       Uri.parse('https://ruleporn.com/tosh/'),
     );
+    final sankakuComplex = RipperFactory.getRipper(
+      Uri.parse('https://chan.sankakucomplex.com/?tags=abc'),
+    );
     final tumblr = RipperFactory.getRipper(
       Uri.parse('https://example.tumblr.com/post/1'),
     );
@@ -439,6 +443,7 @@ void main() {
     expect(redgifs, isA<RedgifsRipper>());
     expect(rule34, isA<Rule34Ripper>());
     expect(ruleporn, isA<RulePornRipper>());
+    expect(sankakuComplex, isA<SankakuComplexRipper>());
     expect(tumblr, isA<TumblrRipper>());
     expect(twitter, isA<TwitterRipper>());
   });
@@ -447,20 +452,20 @@ void main() {
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://chan.sankakucomplex.com/?tags=abc'),
+        Uri.parse('https://scrolller.com/r/subreddit'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'SankakuComplexRipper',
+        'ScrolllerRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 85);
-    expect(RipperMigrationCatalog.unportedRipperCount, 31);
+    expect(RipperMigrationCatalog.portedRipperCount, 86);
+    expect(RipperMigrationCatalog.unportedRipperCount, 30);
   });
 }

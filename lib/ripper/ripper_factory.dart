@@ -83,6 +83,7 @@ import 'rippers/reddit_ripper.dart';
 import 'rippers/redgifs_ripper.dart';
 import 'rippers/rule34_ripper.dart';
 import 'rippers/ruleporn_ripper.dart';
+import 'rippers/sankaku_complex_ripper.dart';
 import 'rippers/tumblr_ripper.dart';
 import 'rippers/twitter_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
@@ -216,6 +217,8 @@ class RipperFactory {
     if (rule34Ripper.canRip(uri)) return rule34Ripper;
     final rulepornRipper = RulePornRipper(uri);
     if (rulepornRipper.canRip(uri)) return rulepornRipper;
+    final sankakuComplexRipper = SankakuComplexRipper(uri);
+    if (sankakuComplexRipper.canRip(uri)) return sankakuComplexRipper;
     if (host.contains('tumblr.com')) return TumblrRipper(uri);
     if (host.endsWith('twitter.com') ||
         host == 'x.com' ||
