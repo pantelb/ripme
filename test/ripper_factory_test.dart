@@ -101,6 +101,7 @@ import 'package:ripme/ripper/rippers/tumblr_ripper.dart';
 import 'package:ripme/ripper/rippers/twitch_video_ripper.dart';
 import 'package:ripme/ripper/rippers/twodgalleries_ripper.dart';
 import 'package:ripme/ripper/rippers/twitter_ripper.dart';
+import 'package:ripme/ripper/rippers/vidble_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
 
 void main() {
@@ -425,6 +426,9 @@ void main() {
       Uri.parse('http://www.2dgalleries.com/artist/regis-loisel-6477'),
     );
     final twitter = RipperFactory.getRipper(Uri.parse('https://x.com/example'));
+    final vidble = RipperFactory.getRipper(
+      Uri.parse('https://vidble.com/album/cGEFr8zi'),
+    );
 
     expect(allporncomic, isA<AllporncomicRipper>());
     expect(artstation, isA<ArtStationRipper>());
@@ -527,26 +531,27 @@ void main() {
     expect(twitchHttp, isNull);
     expect(twodgalleries, isA<TwodgalleriesRipper>());
     expect(twitter, isA<TwitterRipper>());
+    expect(vidble, isA<VidbleRipper>());
   });
 
   test(
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://vidble.com/album/example'),
+        Uri.parse('https://xhamster.com/photos/gallery/example-1'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'VidbleRipper',
+        'XhamsterRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 100);
-    expect(RipperMigrationCatalog.unportedRipperCount, 16);
+    expect(RipperMigrationCatalog.portedRipperCount, 101);
+    expect(RipperMigrationCatalog.unportedRipperCount, 15);
   });
 }

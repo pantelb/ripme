@@ -100,6 +100,7 @@ import 'rippers/tumblr_ripper.dart';
 import 'rippers/twitch_video_ripper.dart';
 import 'rippers/twodgalleries_ripper.dart';
 import 'rippers/twitter_ripper.dart';
+import 'rippers/vidble_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
 
 class RipperFactory {
@@ -259,6 +260,7 @@ class RipperFactory {
         host.endsWith('.x.com')) {
       return TwitterRipper(uri);
     }
+    if (host.endsWith('vidble.com')) return VidbleRipper(uri);
 
     final legacyMatch = RipperMigrationCatalog.findUnportedLegacyRipper(uri);
     if (legacyMatch != null) return UnsupportedLegacyRipper(uri, legacyMatch);

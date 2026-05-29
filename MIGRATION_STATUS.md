@@ -135,6 +135,7 @@ This branch is migrating the Java desktop RipMe application to a unified Flutter
 - [x] TsuminoRipper ported: Java-compatible book URL/GID parsing, tag blacklist checks, `Read/Load` reader JSON parsing with captcha warning fallback, encoded `Image/Object` URLs, duplicate-tolerant ordered filenames, and factory/catalog coverage
 - [x] TwitchVideoRipper ported: Java-compatible strict `clips.twitch.tv` URL/GID parsing, script `"source"` extraction, no-script error handling, video working directory behavior, Java-style `twitch_{title}` filename prefixes, and factory/catalog coverage
 - [x] TwodgalleriesRipper ported: Java-compatible `2dgalleries.com/artist/{id}` GIDs, login token/cookie POST flow, AJAX gallery page URLs with 24-item offsets, `/200H/` thumbnail rewriting, pagination stop handling, ordered filename prefixes, and factory/catalog coverage
+- [x] VidbleRipper ported: Java-compatible host-wide support with strict album GIDs, `#ContentPlaceHolder1_divContent img` extraction, absolute URL resolution, thumbnail marker stripping, ordered filename prefixes, and factory/catalog coverage
 
 ## Incomplete Scaffolds (NOT Integrated Into Factory)
 
@@ -144,7 +145,6 @@ No partial Dart ripper scaffolds remain. New runtime work should move to the unp
 
 These Java rippers still need Dart implementations after the currently completed ports:
 
-- VidbleRipper
 - ViddmeRipper
 - VidearnRipper
 - ViewcomicRipper
