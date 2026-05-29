@@ -112,6 +112,7 @@ import 'package:ripme/ripper/rippers/wordpress_comic_ripper.dart';
 import 'package:ripme/ripper/rippers/xcartx_ripper.dart';
 import 'package:ripme/ripper/rippers/xhamster_ripper.dart';
 import 'package:ripme/ripper/rippers/xlecx_ripper.dart';
+import 'package:ripme/ripper/rippers/xvideos_ripper.dart';
 import 'package:ripme/ripper/unsupported_legacy_ripper.dart';
 
 void main() {
@@ -470,6 +471,9 @@ void main() {
     final xlecx = RipperFactory.getRipper(
       Uri.parse('http://xlecx.org/4274-black-canary-ravished-prey.html'),
     );
+    final xvideos = RipperFactory.getRipper(
+      Uri.parse('https://www.xvideos.com/video.ufkmptkc4ae/example'),
+    );
 
     expect(allporncomic, isA<AllporncomicRipper>());
     expect(artstation, isA<ArtStationRipper>());
@@ -583,26 +587,27 @@ void main() {
     expect(xcartx, isA<XcartxRipper>());
     expect(xhamster, isA<XhamsterRipper>());
     expect(xlecx, isA<XlecxRipper>());
+    expect(xvideos, isA<XvideosRipper>());
   });
 
   test(
     'known Java-only URLs resolve to an explicit unsupported legacy ripper',
     () {
       final ripper = RipperFactory.getRipper(
-        Uri.parse('https://www.xvideos.com/video123/example'),
+        Uri.parse('https://www.youporn.com/watch/123/example/'),
       );
 
       expect(ripper, isA<UnsupportedLegacyRipper>());
       expect(
         (ripper as UnsupportedLegacyRipper).match.javaClass,
-        'XvideosRipper',
+        'YoupornRipper',
       );
     },
   );
 
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
-    expect(RipperMigrationCatalog.portedRipperCount, 111);
-    expect(RipperMigrationCatalog.unportedRipperCount, 5);
+    expect(RipperMigrationCatalog.portedRipperCount, 112);
+    expect(RipperMigrationCatalog.unportedRipperCount, 4);
   });
 }
