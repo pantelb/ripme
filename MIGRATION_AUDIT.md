@@ -1032,13 +1032,11 @@ Findings:
 
 - [ ] Java resource bundles are UTF-8 through `UTF8Control`. Flutter
       localization loading needs an equivalent UTF-8/key coverage test.
-- [ ] Java uses `PropertyResourceBundle`, so `.properties` escape semantics
-      apply in addition to UTF-8 loading. A bundle syntax scan found `\uXXXX`
-      escapes in Arabic and Korean bundles; Flutter's `_parseProperties`
-      currently only splits on `=` and replaces literal `\n`, so Unicode
-      escapes, continuation lines, alternate separators, and other Java
-      property escapes need compatibility tests or a documented parser
-      replacement.
+- [~] Java uses `PropertyResourceBundle`, so `.properties` escape semantics
+      apply in addition to UTF-8 loading. Flutter now decodes Java `\uXXXX`
+      escapes from the Arabic and Korean bundles with focused Dart coverage,
+      but continuation lines, alternate separators, and other Java property
+      escapes still need compatibility tests or a documented parser replacement.
 - [ ] Java supported languages are discovered by scanning available
       `LabelsBundle*.properties`; Flutter locale list needs comparison with:
       `ar_AR`, `de_DE`, `el_GR`, `en_US`, `es_ES`, `fi_FI`,

@@ -214,17 +214,127 @@ class _AppLocalizationsDelegate
 
   Map<String, String> _parseProperties(String contents) {
     final result = <String, String>{};
-    for (final rawLine in contents.split('\n')) {
-      final line = rawLine.trim();
+    for (final rawLine in _logicalLines(contents)) {
+      final line = rawLine.trimLeft();
       if (line.isEmpty || line.startsWith('#') || line.startsWith('!')) {
         continue;
       }
-      final separator = line.indexOf('=');
+      final separator = _propertySeparatorIndex(line);
       if (separator < 0) continue;
       final key = line.substring(0, separator).trim();
-      final value = line.substring(separator + 1).trim();
-      result[key] = value.replaceAll(r'\n', '\n');
+      var valueStart = separator + 1;
+      if (line[separator] != '=' && line[separator] != ':') {
+        while (valueStart < line.length &&
+            (line[valueStart] == ' ' || line[valueStart] == '\t')) {
+          valueStart++;
+        }
+        if (valueStart < line.length &&
+            (line[valueStart] == '=' || line[valueStart] == ':')) {
+          valueStart++;
+        }
+      }
+      while (valueStart < line.length &&
+          (line[valueStart] == ' ' || line[valueStart] == '\t')) {
+        valueStart++;
+      }
+      final value = line.substring(valueStart);
+      result[_decodePropertyEscapes(key)] = _decodePropertyEscapes(value);
     }
     return result;
+  }
+
+  List<String> _logicalLines(String contents) {
+    final lines =
+        contents.replaceAll('\r\n', '\n').replaceAll('\r', '\n').split('\n');
+    final result = <String>[];
+    final buffer = StringBuffer();
+    for (final line in lines) {
+      if (buffer.isNotEmpty) {
+        buffer.write(line.trimLeft());
+      } else {
+        buffer.write(line);
+      }
+      if (_continuesPropertyLine(buffer.toString())) {
+        final current = buffer.toString();
+        buffer
+          ..clear()
+          ..write(current.substring(0, current.length - 1));
+      } else {
+        result.add(buffer.toString());
+        buffer.clear();
+      }
+    }
+    if (buffer.isNotEmpty) {
+      result.add(buffer.toString());
+    }
+    return result;
+  }
+
+  bool _continuesPropertyLine(String line) {
+    var slashCount = 0;
+    for (var i = line.length - 1; i >= 0 && line[i] == r'\'; i--) {
+      slashCount++;
+    }
+    return slashCount.isOdd;
+  }
+
+  int _propertySeparatorIndex(String line) {
+    var escaped = false;
+    for (var i = 0; i < line.length; i++) {
+      final char = line[i];
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      if (char == r'\') {
+        escaped = true;
+        continue;
+      }
+      if (char == '=' || char == ':' || char == ' ' || char == '\t') {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  String _decodePropertyEscapes(String value) {
+    final buffer = StringBuffer();
+    for (var i = 0; i < value.length; i++) {
+      final char = value[i];
+      if (char != r'\' || i == value.length - 1) {
+        buffer.write(char);
+        continue;
+      }
+      final next = value[++i];
+      switch (next) {
+        case 't':
+          buffer.write('\t');
+          break;
+        case 'n':
+          buffer.write('\n');
+          break;
+        case 'r':
+          buffer.write('\r');
+          break;
+        case 'f':
+          buffer.write('\f');
+          break;
+        case 'u':
+          if (i + 4 < value.length) {
+            final hex = value.substring(i + 1, i + 5);
+            final codeUnit = int.tryParse(hex, radix: 16);
+            if (codeUnit != null) {
+              buffer.writeCharCode(codeUnit);
+              i += 4;
+              break;
+            }
+          }
+          buffer.write(r'\u');
+          break;
+        default:
+          buffer.write(next);
+      }
+    }
+    return buffer.toString();
   }
 }

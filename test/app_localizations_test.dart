@@ -31,4 +31,14 @@ void main() {
     expect(strings.queue, 'Ουρά');
     expect(strings.config, 'Ρυθμίσεις');
   });
+
+  test('decodes Java unicode escapes in migrated label bundles', () async {
+    final arabic = await AppLocalizations.delegate.load(const Locale('ar'));
+    final korean = await AppLocalizations.delegate.load(const Locale('ko'));
+
+    expect(arabic.log, 'ملف التتبع');
+    expect(arabic.history, 'ذاكرة الاستخدام');
+    expect(korean.log, '로그');
+    expect(korean.history, '히스토리');
+  });
 }
