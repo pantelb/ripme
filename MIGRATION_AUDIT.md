@@ -1359,6 +1359,12 @@ Findings:
       the new jar, and installs by platform script. Flutter update checker must
       either reproduce the user-visible check/changelog/hash behavior for
       Flutter artifacts or explicitly retire self-update behavior.
+- [ ] Java `UpdateUtils.isNewerVersion` has a string-inequality fallback after
+      the first four numeric components compare equal: if `latestVersion` and
+      `getThisJarVersion()` are not exactly equal, Java treats the latest string
+      as newer. Flutter `UpdateChecker.isNewerVersion` returns false once the
+      numeric components compare equal, so suffix-only release changes such as
+      commit-count/hash text are not Java-compatible.
 - [ ] Java updater installation uses runtime process behavior:
       `Runtime.getRuntime().exec`, `ProcessBuilder`, a shutdown hook, a Windows
       batch file, `Files.move`, and optional `java -jar` restart. Flutter must
@@ -1644,6 +1650,20 @@ they are not yet a substitute for committed Dart tests.
       behavior, and status messages. New exact findings were recorded where
       missing; the remaining surfaces were already represented in sections A,
       E, I, J, and the pass ledgers.
+- [x] Re-read Java `UpdateUtils.isNewerVersion` and Flutter
+      `UpdateChecker.isNewerVersion`. Java's exact-string fallback after equal
+      numeric components is missing from Flutter; the finding is recorded in
+      section J.
+- [x] Re-read Java `Http`, `DownloadFileThread`, and `DownloadVideoThread`
+      against Flutter `http_utils.dart` and `AbstractRipper`. The concrete
+      differences found in this pass were already represented in section D:
+      chainable request APIs, exact retry counts, resume/range behavior,
+      MIME/magic extension detection, status-code handling, Imgur byte-length
+      404 behavior, video HEAD/progress semantics, and URL-history timing.
+- [x] Re-ran the Java config-key census from `Utils.getConfig*` call sites and
+      `rip.properties` against Flutter defaults and call sites. No new config
+      key names were found beyond the already recorded missing/renamed keys in
+      sections B, C, F, G, J, and I.
 - [ ] Convert the mechanical scans above into checked-in tests/scripts before
       claiming final parity.
 
