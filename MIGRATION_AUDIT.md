@@ -930,6 +930,12 @@ Findings:
 - [ ] Java text-field context menu includes Undo, Cut, Copy, Paste, Select All,
       tracks the last cut/paste for undo, and replaces the whole text field on
       paste. Flutter default text-field menus need an intentional parity call.
+- [ ] Java context actions have dynamic enabled/disabled rules and keyboard
+      protections: Undo is enabled only after Cut/Paste, Cut requires editable
+      selected text, Copy requires selected text, Paste requires string
+      clipboard content, Select All requires non-empty text, and Ctrl+V pastes
+      the entire clipboard string. Flutter text actions and shortcuts need
+      exact tests or a documented native replacement.
 - [ ] Java clipboard autorip polls every second, accepts
       `http`, `https`, `ftp`, and `file` URL schemes, deduplicates URLs only
       within the autorip thread, and starts ripping immediately rather than
@@ -937,9 +943,26 @@ Findings:
 - [ ] Java history context menu selected-state actions need Flutter equivalents.
 - [ ] Java queue clear action asks for confirmation; Flutter queue clear/remove
       needs confirmation parity.
+- [ ] Java queue/history/context popups position themselves around the pointer,
+      shifting left when `x > 500`; Flutter popup positioning should either
+      match where practical or be documented as a platform-native difference.
 - [ ] Java tray icon, popup notifications, and open-folder button are desktop
       behaviors that need per-platform Flutter verification or documented
-      replacements.
+      replacements. The Java implementation uses `SystemTray`, `TrayIcon`,
+      `TrayIcon.displayMessage`, tray About/Hide/Show/Exit/Autorip menu items,
+      and `Desktop.getDesktop().open(...)` / `.browse(...)`.
+- [ ] Java main window lifecycle uses `JFrame.EXIT_ON_CLOSE`, a `WindowListener`
+      to toggle tray labels and icon visibility on activate/deactivate,
+      `setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)`, and explicit
+      `System.exit(0)` from the tray Exit item. A scan found no
+      `WindowStateListener`, `mnemonic`, or `accelerator` registrations in the
+      Java UI; Flutter desktop and Android close/minimize/background behavior
+      still needs an intentional replacement decision.
+- [ ] Java user-facing modal flows use `JOptionPane.showMessageDialog`,
+      `JOptionPane.showConfirmDialog`, and a custom YES/NO `JFrame` for history
+      deletion warning. Flutter dialogs/snackbars need exact workflow coverage,
+      especially for no-history, no-checked-history, queue clear, update/about,
+      and history-load-failure cases.
 - [ ] Java live URL validation updates status on every text-field document
       change, showing `<host> album detected` in green or `Can't rip this URL:
       <message>` in red. Flutter command bar needs exact behavior coverage.
@@ -956,6 +979,10 @@ Findings:
 - [ ] Java save-directory label opens the working directory on click; the save
       directory chooser uses directory-only mode and stores `rips.directory`.
       Flutter save-directory interactions need parity tests.
+- [ ] Java tray About dialog lists album and video ripper names from
+      `Utils.getListOfAlbumRippers()` / `getListOfVideoRippers()` and can open
+      the GitHub project page. Flutter About/update UI needs equivalent
+      supported-site visibility or a documented replacement.
 
 ### G. Resources, Localization, Logging, And Updates
 
@@ -1202,6 +1229,10 @@ Findings:
       scoped storage, directory picking, background downloads, and notification
       behavior need explicit parity/replacement notes for every desktop-only
       Java behavior.
+- [ ] Flutter Android release configuration currently uses the debug signing
+      config for release builds. Final Android artifact evidence must distinguish
+      CI-build availability from production-signing/readiness and either add a
+      real signing flow or document the migration limitation.
 - [ ] macOS sandbox entitlements, Linux metadata, Windows resource versioning,
       and app icons must be verified as first-class release artifacts rather
       than assumed from Flutter defaults.
