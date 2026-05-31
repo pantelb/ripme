@@ -1143,31 +1143,41 @@ Findings:
       `tsumino.blacklist.tags`.
 - [ ] Java per-ripper auth/config keys must be verified with Dart tests or
       documented replacements:
-      `chans.chan_sites`, `derpi.key`, `DeviantartCustomLoginUsername`,
-      `DeviantartCustomLoginPassword`, `DeviantartLogin.cookies`,
-      `e621.cookies`, `e621.useragent`, `erome.laravel_session`,
-      `furaffinity.login`, `furaffinity.cookies`,
+      `album_titles.save`, `chans.chan_sites`, `derpi.key`,
+      `DeviantartCustomLoginUsername`, `DeviantartCustomLoginPassword`,
+      `DeviantartLogin.cookies`, `download.save_order`, `e621.cookies`,
+      `e621.useragent`, `erome.laravel_session`, `furaffinity.login`,
+      `furaffinity.cookies`,
       `hentai-foundry.filter_order`, `hentai-foundry.use_prefix`,
-      `imgur.client_id`, `instagram.session_id`,
-      `instagram.download_images_only`, `tumblr.auth`, `twitter.auth`,
-      `twitter.max_requests`, `twitter.max_items_request`,
-      `twitter.rip_retweets`, and `twitter.exclude_replies`.
+      `history.end_rip_after_already_seen`, `imgur.client_id`,
+      `instagram.session_id`, `instagram.download_images_only`, `prefer.mp4`,
+      Reddit upvote/subdirectory keys (`reddit.rip_by_upvote`,
+      `reddit.min_upvotes`, `reddit.max_upvotes`, `reddit.use_sub_dirs`),
+      `tumblr.auth`, `twitter.auth`, `twitter.max_requests`,
+      `twitter.max_items_request`, `twitter.rip_retweets`, and
+      `twitter.exclude_replies`.
 - [ ] Java hardcoded/response cookie flows must be rechecked for request
-      propagation, not just URL extraction: Chevereto consent, E-Hentai
-      `nw/tip`, Eightmuses response cookies, Fuskator auth cookies,
-      HentaiFoundry filter/session cookies, Imagebam NSFW cookie, ModelMayhem
+      propagation, not just URL extraction: Chevereto consent, DeviantArt
+      agegate/auth cookies, E621 configured cookies, E-Hentai `nw/tip`,
+      Eightmuses response cookies, Erome `laravel_session`, Furaffinity shared
+      login cookies, Fuskator auth cookies, HentaiFoundry filter/session
+      cookies, Imagebam NSFW cookie, Instagram `sessionid`, ModelMayhem
       `worksafe=0`, Paheal `ui-tnc-agreed`, Photobucket page cookies,
-      Sankaku/Sta/Thechive/Twodgalleries/Vsco/Webtoons/Xcartx/Zizki cookies.
+      `SankakuComplexRipper` cookies,
+      Sta/Thechive/Tsumino/Twodgalleries/Vsco/Webtoons/Xcartx/Zizki cookies.
 - [ ] Java `RipUtils.getFilesFromURL` helper coverage must be verified for
       Reddit/Chan-style direct links and embedded media expansion:
       Imgur album/gifv/single pages, Redgifs/gifdeliverynetwork, Vidble
       album/show, `v.redd.it`, Erome, Soundgasm, `i.reddituploads.com`, direct
       image/video regex, and Imgur meta fallback.
 - [ ] Java per-ripper warning/error status messages must be checked where they
-      feed UI parity, especially DeviantArt max-resolution/search failures,
-      E621 blacklist warnings, E-Hentai/Nhentai/Tsumino blacklist skips,
-      Imagefap throttling warnings, Tumblr `NO_ALBUM_OR_USER` and rate-limit
-      handling, and Reddit upvote-filter/download-history completion messages.
+      feed UI parity, especially `DOWNLOAD_WARN`, `DOWNLOAD_ERRORED`,
+      `RIP_ERRORED`, `NO_ALBUM_OR_USER`, and `DOWNLOAD_COMPLETE_HISTORY`
+      sends from DeviantArt max-resolution/search failures, E621 cookie and
+      blacklist warnings, E-Hentai/Nhentai/Tsumino blacklist skips, Flickr API
+      key fallback warnings, Furaffinity shared-account errors, Imagefap
+      throttling warnings, Tumblr `NO_ALBUM_OR_USER` and rate-limit handling,
+      and Reddit upvote-filter/download-history completion messages.
 
 ### J. Build, Release, Versioning, And Platform Packaging
 
