@@ -682,8 +682,10 @@ Findings:
       `%LOCALAPPDATA%/ripme` on Windows, `~/Library/Application Support/ripme`
       on macOS, `~/.config/ripme` on Unix. Flutter currently uses
       SharedPreferences and app documents for the default rips folder.
-- [ ] Java default working directory is the jar directory plus `rips/`; Flutter
-      currently defaults to app documents/external storage plus `rips`.
+- [ ] Java default working directory is the jar directory plus `rips/`, with the
+      jar directory derived from `java.class.path` or `user.dir` and fallback to
+      `user.home` when creation fails. Flutter currently defaults to app
+      documents/external storage plus `rips`.
 - [ ] Java deletes and reloads old configs missing required keys such as
       `twitter.auth`, `tumblr.auth`, or `download.max_size`. Flutter needs a
       compatibility or migration story.
@@ -796,6 +798,12 @@ Findings:
       `proxy.password`; `proxy.http` and `proxy.socks` compatibility is missing.
 - [ ] Java SOCKS proxy support sets `socksProxyHost`, `socksProxyPort`, and
       optional credentials globally. Flutter has no verified SOCKS equivalent.
+- [ ] Java proxy support mutates process-wide networking through
+      `Authenticator.setDefault`, `http.proxyHost`, `http.proxyPort`,
+      `http.proxyUser`, `http.proxyPassword`, `https.proxyHost`, and HTTPS
+      equivalents. Flutter proxy support must either match the global effect for
+      all page, download, and ripper-specific HTTP clients or document a scoped
+      replacement.
 - [ ] Java 401/403 page requests throw a cookie-oriented error message; 404 page
       requests throw file-not-found style messaging. Flutter currently raises
       generic `HttpException` text in several paths.
@@ -898,6 +906,10 @@ Findings:
       `clearURLHistory`, `getSupportedLanguages`, `getSelectedLanguage`,
       `setLanguage`, `configureLogger`, `playSound`,
       `getListOfAlbumRippers`, and `getListOfVideoRippers`.
+- [ ] Java query parsing uses `URLDecoder` with UTF-8, preserves empty values for
+      keys without `=`, and decodes each key/value independently. Flutter URL
+      query helpers need tests for those exact edge cases, not only happy-path
+      `Uri.queryParameters`.
 
 ### F. UI, Clipboard, Status, And Desktop Integration
 
@@ -1264,6 +1276,11 @@ Findings:
       the new jar, and installs by platform script. Flutter update checker must
       either reproduce the user-visible check/changelog/hash behavior for
       Flutter artifacts or explicitly retire self-update behavior.
+- [ ] Java updater installation uses runtime process behavior:
+      `Runtime.getRuntime().exec`, `ProcessBuilder`, a shutdown hook, a Windows
+      batch file, `Files.move`, and optional `java -jar` restart. Flutter must
+      decide whether each desktop/Android platform has a native self-update
+      equivalent, an external release flow, or a documented retirement.
 - [ ] Java `ripme.json` is a bundled/public changelog source. Flutter has no
       verified equivalent changelog feed, release notes parser, or
       app-visible recent changes text.
@@ -1460,6 +1477,11 @@ they are not yet a substitute for committed Dart tests.
       sections I-J, including Java-WebSocket, GraalVM JavaScript parsing, OkHttp,
       j2html, Apache HttpComponents, Commons libraries, `org.json`, jsoup,
       Disruptor, and log4j.
+- [x] Scanned Java platform/runtime API usage for system properties, environment
+      variables, process execution, shutdown hooks, proxy authenticators,
+      clipboard/tray/desktop calls, file/path helpers, URL decoding, and timing
+      calls; new exact-semantics findings are recorded in sections B, D, E, and
+      J.
 - [ ] Convert the mechanical scans above into checked-in tests/scripts before
       claiming final parity.
 
