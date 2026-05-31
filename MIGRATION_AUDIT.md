@@ -894,6 +894,21 @@ Findings:
 - [ ] Java `descriptions.save` can save per-item description `.txt` files through
       `getDescriptionsFromPage`, `getDescription`, `saveText`, and
       `descSleepTime`. Flutter has no shared verified equivalent.
+- [ ] Java `AbstractSingleFileRipper` provides byte-progress status text and
+      byte-progress percentage behavior for its subclasses: `RulePornRipper`,
+      `SpankbangRipper`, `XvideosRipper`, and `YoupornRipper`. The Flutter
+      ports for these classes currently extend `AbstractHTMLRipper`; their
+      tests cover extraction/filenames, but not Java single-file byte-progress
+      inheritance semantics.
+- [ ] Java has package-distinct album and video rippers with duplicate simple
+      class names: `rippers/PornhubRipper.java` and
+      `rippers/video/PornhubRipper.java`, `rippers/VkRipper.java` and
+      `rippers/video/VkRipper.java`, plus `rippers/YuvutuRipper.java` and
+      `rippers/video/YuvutuRipper.java`. Flutter's migration catalog tracks
+      only simple class names, so simple-name set equality can hide a collapsed
+      album/video implementation. Factory routing and tests must prove both
+      Java behaviors are represented separately or document an intentional
+      merge.
 - [ ] Java `download.ignore_extensions` suppresses extension-matched URLs with
       `DOWNLOAD_SKIP`; Flutter has a similar check but needs exact tests.
 - [ ] Java `sleep(milliseconds)` applies gaussian jitter with a minimum of 47%
@@ -1586,8 +1601,18 @@ they are not yet a substitute for committed Dart tests.
       recorded in section G.
 - [x] Scanned Java label bundles for `.properties` syntax beyond simple
       `key=value` loading. Arabic and Korean bundles contain Java `\uXXXX`
-      escapes, while Flutter currently decodes only literal `\n`; parser
-      compatibility findings are recorded in section G.
+      escapes; Flutter now has focused coverage for those escapes, while
+      remaining parser compatibility findings are recorded in section G.
+- [x] Scanned Java ripper inheritance against Flutter ripper inheritance. The
+      Java `AbstractSingleFileRipper` subclasses `RulePornRipper`,
+      `SpankbangRipper`, `XvideosRipper`, and `YoupornRipper` are implemented
+      as Flutter `AbstractHTMLRipper` subclasses, so byte-progress inheritance
+      parity needs explicit verification; the finding is recorded in section E.
+- [x] Rechecked Java package-distinct rippers with duplicate simple class names
+      against Flutter factory/catalog routing. Java has separate album and
+      video implementations for Pornhub, Vk, and Yuvutu, while Flutter catalog
+      equality is simple-name based; the collapsed-catalog risk is recorded in
+      section E.
 - [ ] Convert the mechanical scans above into checked-in tests/scripts before
       claiming final parity.
 
