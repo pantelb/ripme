@@ -1063,6 +1063,13 @@ Findings:
       Also, `isSupported` checks only `languageCode`, so country/variant
       distinctions such as `fr_CH`, `pt_BR`/`pt_PT`, and Java's nonstandard
       `in_ID`/`kr_KR` bundle names need exact fallback tests.
+- [ ] Java language selection is a persisted runtime setting: `MainWindow`
+      populates the combo box from `Utils.getSupportedLanguages()`, saves the
+      selected tag to config key `lang`, calls `Utils.saveConfig()`, then
+      invokes `Utils.setLanguage(...)` and `changeLocale()` to reload visible
+      labels. Flutter exposes static `supportedLocales` through `MaterialApp`
+      only; no `lang` config binding, language picker, or runtime label reload
+      parity is proven.
 - [ ] Java label-bundle tests assert every non-default key also exists in the
       default bundle. Flutter needs this coverage or an equivalent generated
       localization check.
@@ -1244,6 +1251,14 @@ Findings:
 - [ ] Java byte-progress/resume overrides must be verified:
       `HqpornerRipper.tryResumeDownload` and
       `HqpornerRipper.useByteProgessBar`.
+- [ ] Java ASAP-ripping overrides must be verified for exact shared-runtime
+      bypass semantics. `EightmusesRipper`, `ErofusRipper`, `FlickrRipper`,
+      `TwitterRipper`, and `XhamsterRipper` return `hasASAPRipping() == true`,
+      which makes the Java abstract runtime skip normal queued download
+      scheduling and lets the ripper perform downloads itself. Flutter ports
+      have custom `downloadFiles` paths for several of these, but no shared
+      `hasASAPRipping` contract or generated audit guard proves all five match
+      Java behavior.
 - [ ] Java blacklist config arrays must be verified for exact tag matching and
       warning text: `ehentai.blacklist.tags`, `nhentai.blacklist.tags`, and
       `tsumino.blacklist.tags`.
@@ -1613,6 +1628,22 @@ they are not yet a substitute for committed Dart tests.
       video implementations for Pornhub, Vk, and Yuvutu, while Flutter catalog
       equality is simple-name based; the collapsed-catalog risk is recorded in
       section E.
+- [x] Scanned Java `hasASAPRipping()` overrides and compared them with Flutter
+      custom download paths. The exact Java ASAP-ripper class list and missing
+      shared-contract guard are recorded in section I.
+- [x] Rechecked Java language selection/config persistence against Flutter
+      localization startup. Java's persisted `lang` key, generated language
+      combo list, `Utils.setLanguage(...)`, and `MainWindow.changeLocale()`
+      runtime reload behavior are recorded in section G.
+- [x] Re-ran the Java-vs-Flutter ripper filename inventory with normalized
+      class/file names. No missing Java ripper simple names were found in the
+      Flutter ripper file inventory; behavior parity still depends on the
+      per-ripper hook and test-mapping findings above.
+- [x] Re-ran Java hook/status/CLI scans for queue support, URL normalization,
+      duplicate allowances, byte progress, ASAP ripping, command-line/update
+      behavior, and status messages. New exact findings were recorded where
+      missing; the remaining surfaces were already represented in sections A,
+      E, I, J, and the pass ledgers.
 - [ ] Convert the mechanical scans above into checked-in tests/scripts before
       claiming final parity.
 
