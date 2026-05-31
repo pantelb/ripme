@@ -588,7 +588,7 @@ Parity checklist:
 
 - [x] Generate/verify list of Java rippers from source tree.
 - [x] Compare generated list to `legacyRipperClasses`.
-- [ ] Compare `legacyRipperClasses` to `portedRipperClasses`.
+- [x] Compare `legacyRipperClasses` to `portedRipperClasses`.
 - [ ] Verify each port has focused Dart tests.
 - [ ] Verify factory can resolve every supported Java URL shape used in tests.
 - [ ] Verify no placeholder/scaffold-only rippers remain.
@@ -1040,6 +1040,222 @@ Findings:
       `mrcong_ripper_test.dart`, and `ShesFreakyRipperTest` ->
       `shesfreaky_ripper_test.dart`.
 
+### I. Per-Ripper Behavioral Hooks To Recheck
+
+This pass found no missing Java ripper classes in the catalog, but it did find
+Java runtime hooks and per-ripper config paths that must be individually proven
+in Dart. A class being ported is not enough.
+
+Java sources scanned:
+
+- `src/main/java/com/rarchives/ripme/ripper/rippers/*.java`
+- `src/main/java/com/rarchives/ripme/ripper/rippers/video/*.java`
+
+Findings:
+
+- [ ] Queue-only album discovery must be verified for every Java override of
+      `hasQueueSupport`, `pageContainsAlbums`, and `getAlbumsToQueue`:
+      `AllporncomicRipper`, `BatoRipper`, `EromeRipper`,
+      `Hentai2readRipper`, `MyhentaicomicsRipper`, `NfsfwRipper`,
+      `NhentaiRipper`, `WordpressComicRipper`, and `XhamsterRipper`.
+- [ ] Java URL-history normalization overrides must be verified:
+      `ArtStationRipper.normalizeUrl` and `DeviantartRipper.normalizeUrl`.
+      These affect already-downloaded detection and are separate from URL
+      factory matching.
+- [ ] Java duplicate-download override must be verified:
+      `ImgurRipper.allowDuplicates` permits duplicate media URLs for user rips.
+- [ ] Java byte-progress/resume overrides must be verified:
+      `HqpornerRipper.tryResumeDownload` and
+      `HqpornerRipper.useByteProgessBar`.
+- [ ] Java blacklist config arrays must be verified for exact tag matching and
+      warning text: `ehentai.blacklist.tags`, `nhentai.blacklist.tags`, and
+      `tsumino.blacklist.tags`.
+- [ ] Java per-ripper auth/config keys must be verified with Dart tests or
+      documented replacements:
+      `chans.chan_sites`, `derpi.key`, `DeviantartCustomLoginUsername`,
+      `DeviantartCustomLoginPassword`, `DeviantartLogin.cookies`,
+      `e621.cookies`, `e621.useragent`, `erome.laravel_session`,
+      `furaffinity.login`, `furaffinity.cookies`,
+      `hentai-foundry.filter_order`, `hentai-foundry.use_prefix`,
+      `imgur.client_id`, `instagram.session_id`,
+      `instagram.download_images_only`, `tumblr.auth`, `twitter.auth`,
+      `twitter.max_requests`, `twitter.max_items_request`,
+      `twitter.rip_retweets`, and `twitter.exclude_replies`.
+- [ ] Java hardcoded/response cookie flows must be rechecked for request
+      propagation, not just URL extraction: Chevereto consent, E-Hentai
+      `nw/tip`, Eightmuses response cookies, Fuskator auth cookies,
+      HentaiFoundry filter/session cookies, Imagebam NSFW cookie, ModelMayhem
+      `worksafe=0`, Paheal `ui-tnc-agreed`, Photobucket page cookies,
+      Sankaku/Sta/Thechive/Twodgalleries/Vsco/Webtoons/Xcartx/Zizki cookies.
+- [ ] Java `RipUtils.getFilesFromURL` helper coverage must be verified for
+      Reddit/Chan-style direct links and embedded media expansion:
+      Imgur album/gifv/single pages, Redgifs/gifdeliverynetwork, Vidble
+      album/show, `v.redd.it`, Erome, Soundgasm, `i.reddituploads.com`, direct
+      image/video regex, and Imgur meta fallback.
+- [ ] Java per-ripper warning/error status messages must be checked where they
+      feed UI parity, especially DeviantArt max-resolution/search failures,
+      E621 blacklist warnings, E-Hentai/Nhentai/Tsumino blacklist skips,
+      Imagefap throttling warnings, Tumblr `NO_ALBUM_OR_USER` and rate-limit
+      handling, and Reddit upvote-filter/download-history completion messages.
+
+### J. Build, Release, Versioning, And Platform Packaging
+
+Java build/release sources read:
+
+- `build.gradle.kts`
+- `.github/workflows/gradle.yml`
+- `ripme.json`
+- `README.md`
+- `src/main/java/com/rarchives/ripme/ui/UpdateUtils.java`
+
+Flutter files checked:
+
+- `pubspec.yaml`
+- `.github/workflows/release.yml`
+- Android, Linux, macOS, and Windows platform metadata files
+- `README.md`
+
+Findings:
+
+- [ ] Java derives build versions with `jgitver` from tag/base version/commit
+      metadata and embeds `Implementation-Version` in the jar manifest. Flutter
+      currently declares `version: 1.0.0+1`; version display, release artifact
+      naming, update comparison, and reproducible commit identity need a
+      Flutter-native equivalent.
+- [ ] Java README documents semantic version strings with commit count, short
+      SHA, and branch suffix. Flutter README currently claims complete feature
+      parity without linking to this audit or describing remaining gaps; that
+      is misleading until this file is fully closed.
+- [ ] Java CI builds a fat jar on Linux, Windows, and macOS and uploads the Java
+      17 Ubuntu jar artifact. Flutter release CI builds Android APK/AAB,
+      Windows, macOS, and Linux artifacts. The migration must document that this
+      is a platform expansion, not direct artifact-name parity.
+- [ ] Java release automation creates/updates prereleases named
+      `latest-<branch-slug>` with jar artifacts. Flutter release automation
+      publishes tag-driven releases through `softprops/action-gh-release`; the
+      branch-latest release behavior needs a replacement decision.
+- [ ] Java build excludes `flaky` and `slow` JUnit tags by default and exposes
+      `testAll`, `testFlaky`, `testSlow`, and `testTagged` Gradle tasks.
+      Flutter currently runs one `flutter test` suite. Dart test metadata needs
+      an equivalent policy for network/slow/flaky parity tests.
+- [ ] Java docs require contributors to run source-compatible targeted tests
+      such as `testAll --tests XhamsterRipperTest.testXhamster2Album`.
+      Flutter README needs migration-specific test instructions that include
+      `flutter analyze --no-pub`, targeted tests, and expanded reporter full
+      suite.
+- [ ] Java updater reads `ripme.json`, compares versions component-by-component,
+      verifies SHA-256 by default through `security.check_update_hash`, downloads
+      the new jar, and installs by platform script. Flutter update checker must
+      either reproduce the user-visible check/changelog/hash behavior for
+      Flutter artifacts or explicitly retire self-update behavior.
+- [ ] Java `ripme.json` is a bundled/public changelog source. Flutter has no
+      verified equivalent changelog feed, release notes parser, or
+      app-visible recent changes text.
+- [ ] Java uses `LICENSE.txt` and README links to MIT licensing. Flutter Linux
+      metadata and package resources must be checked against the inherited
+      license text and platform metadata requirements.
+- [ ] Android support is new relative to Java desktop. Android permissions,
+      scoped storage, directory picking, background downloads, and notification
+      behavior need explicit parity/replacement notes for every desktop-only
+      Java behavior.
+- [ ] macOS sandbox entitlements, Linux metadata, Windows resource versioning,
+      and app icons must be verified as first-class release artifacts rather
+      than assumed from Flutter defaults.
+
+### K. README, Wiki-Promised Features, And User-Facing Contract
+
+Java user-facing source read:
+
+- `README.md`
+
+Flutter files checked:
+
+- `README.md`
+- `MIGRATION_AUDIT.md`
+
+Findings:
+
+- [ ] Java README promises quick album downloads, easy re-rips, a built-in
+      updater, default already-downloaded skipping, e-hentai/nhentai blacklist
+      support, and URL range downloads. Each promise now has a corresponding
+      audit item, but Flutter README should not claim complete parity until
+      those items are implemented and tested.
+- [ ] Java README points users to wiki pages for supported sites, config
+      options, running the jar, URL ranges, and creating rippers. Flutter needs
+      replacement documentation for desktop/mobile installation, config import,
+      supported sites, CLI/headless usage, Android storage, and new ripper
+      development.
+- [ ] Java supported platform claim is Windows, Linux, and macOS. Flutter adds
+      Android, so parity is not just preservation: the final migration must
+      prove platform behavior and document Android-specific limitations where
+      Java desktop concepts do not apply.
+- [ ] Java README lists known broken/flaky sites in prose, such as Twitter/X and
+      DeviantArt. Flutter catalog/docs must keep those caveats instead of
+      presenting every port as fully operational without current evidence.
+
+### L. Java Test Metadata And Disabled/Flaky Coverage
+
+Java test sources scanned:
+
+- `src/test/java/com/rarchives/ripme/tst/**/*.java`
+
+Findings:
+
+- [ ] Many Java ripper tests are annotated `@Tag("flaky")` or `@Tag("slow")`,
+      and several are `@Disabled` with site-specific reasons. Dart tests must
+      preserve that knowledge through tags, skips, fake fixtures, or documented
+      live-network test policy instead of silently omitting risky cases.
+- [ ] Java UI tests include flaky coverage for the rip button and context menu
+      behavior. Flutter needs widget/integration coverage for those UI workflows
+      before UI parity can be marked complete.
+- [ ] Java video tests include disabled cases for known site issues. Flutter
+      video ripper tests must record whether each disabled Java behavior is
+      still broken upstream, fixed by the port, or intentionally not supported.
+- [ ] Java tests include config-driven opt-in live checks such as
+      `test.run_flaky_tests` in Hqporner/Pornhub tests. Flutter needs an
+      equivalent opt-in mechanism before live flaky parity tests are added to
+      CI.
+
+### M. Java Known Limitations That Must Not Become Silent Flutter Claims
+
+Java sources scanned:
+
+- `README.md`
+- `src/main/java/com/rarchives/ripme/**/*.java`
+- `src/test/java/com/rarchives/ripme/tst/**/*.java`
+
+Findings:
+
+- [ ] Java README explicitly marks Twitter/X and DeviantArt as currently
+      broken. Flutter must either prove those ports work now with current
+      source-backed tests/live opt-in checks or preserve the caveat in docs/UI.
+- [ ] Java `ArtStationRipper` has a TODO for external content. Flutter must not
+      claim ArtStation external content support unless it intentionally exceeds
+      Java and tests that behavior.
+- [ ] Java `FlickrRipper` notes that users cannot provide their own API key.
+      Flutter must either keep the built-in-key behavior or add and document a
+      compatible user-key preference.
+- [ ] Java `PhotobucketRipper` notes possible queue support that is not
+      implemented. Flutter must verify whether its Photobucket behavior follows
+      Java or intentionally adds queue discovery.
+- [ ] Java `RedditRipper` has TODOs for self-text parsing and gallery captions.
+      Flutter Reddit parity must distinguish Java-compatible media extraction
+      from any deliberate improvements.
+- [ ] Java `RedgifsRipper` notes unresolved image-gallery handling. Flutter must
+      verify Redgifs gallery behavior rather than assuming video-only tests are
+      enough.
+- [ ] Java `VscoRipper` notes missing journals and collections support.
+      Flutter must preserve/document that limit or add tested support.
+- [ ] Java clipboard autorip has a TODO to queue instead of immediately starting
+      a rip. Flutter currently queues clipboard URLs; this may be an intentional
+      UX improvement, but it must be documented as a Java behavior difference.
+- [ ] Java completion handling has a TODO to update history `modifiedDate`.
+      Flutter history updates must be checked against Java's actual behavior,
+      not the intended TODO.
+- [ ] Java `AbstractRipper` URL-list opening has a TODO noting the desktop open
+      call does not work reliably. Flutter URL-only output behavior should be
+      tested on all target platforms instead of copying that failure blindly.
+
 ## Audit Coverage Evidence
 
 The current audit file was expanded using both manual source reading and
@@ -1063,12 +1279,17 @@ they are not yet a substitute for committed Dart tests.
 - [x] Generated Java ripper source list and compared it to
       `RipperMigrationCatalog.legacyRipperClasses`; no missing or extra class
       names were found.
+- [x] Compared `legacyRipperClasses` to `portedRipperClasses`; both currently
+      contain 116 class names and there are no set differences.
 - [x] Generated Java-used config keys and compared them to Flutter defaults;
       missing/replacement keys are recorded in section B.
 - [x] Generated Java localized keys and compared them to Flutter localization
       lookups; missing keys are recorded in section G.
 - [x] Generated Java test class names and compared them to Dart test files;
       missing/non-direct mappings are recorded in section H.
+- [x] Scanned Java build/release files, README, updater metadata, test tags,
+      resource usage, desktop integration calls, and source TODOs for
+      user-visible parity risks; findings are recorded in sections J-M.
 - [ ] Convert the mechanical scans above into checked-in tests/scripts before
       claiming final parity.
 
