@@ -887,6 +887,17 @@ Findings:
 - [ ] Java `RipperInterface` contract includes `rip`, `canRip`, `sanitizeURL`,
       `setWorkingDir`, `getHost`, and `getGID`; Flutter abstract classes should
       keep all equivalent hooks covered by tests.
+- [ ] Mechanical public-method scan found additional Java runtime hooks that
+      need explicit parity coverage or documented retirement:
+      `AbstractRipper.setup`, `hasASAPRipping`, `getRipperConstructors`,
+      `sendUpdate`, `setBytesTotal`, and `setBytesCompleted`.
+- [ ] Mechanical public-method scan found additional Java utility APIs that
+      need explicit parity coverage or documented retirement:
+      `Utils.parseUrlQuery`, `fuzzyExists`, `getPath`, `removeCWD`,
+      `getWorkingDirectory`, `getConfigDir`, `getURLHistoryFile`,
+      `clearURLHistory`, `getSupportedLanguages`, `getSelectedLanguage`,
+      `setLanguage`, `configureLogger`, `playSound`,
+      `getListOfAlbumRippers`, and `getListOfVideoRippers`.
 
 ### F. UI, Clipboard, Status, And Desktop Integration
 
@@ -993,7 +1004,7 @@ Findings:
       Flutter uses GitHub Releases and needs a documented replacement test plan.
 - [ ] Mechanical localized-key scan found Java UI/log labels not directly
       represented by Flutter `_label(...)` calls: `auto.update`,
-      `autorip.from.clipboard`, `deleting.existing.file`,
+      `autorip.from.clipboard`, `created`, `deleting.existing.file`,
       `download.interrupted`, `download.url.list`,
       `exceeded.maximum.retries`, `exception.while.downloading.file`,
       `failed.to.download`, `file.already.exists`, `history.check.all`,
@@ -1004,9 +1015,9 @@ Findings:
       `interrupted.while.waiting.to.rip.next.album`,
       `loading.history.from`, `loading.history.from.configuration`,
       `magic.number.was`, `nonretriable.status.code`,
-      `notification.when.rip.starts`, `open`, `prefer.mp4.over.gif`,
-      `queue.remove.selected`, `queue.validation`, `re-rip.checked`,
-      `remember.url.history`, `request.properties`,
+      `modified`, `notification.when.rip.starts`, `open`,
+      `prefer.mp4.over.gif`, `queue.remove.selected`, `queue.validation`,
+      `re-rip.checked`, `remember.url.history`, `request.properties`,
       `restore.window.position`, `retriable.status.code`,
       `save.descriptions`, `save.logs`,
       `server.doesnt.support.resuming.downloads`, `skipping`,
@@ -1044,13 +1055,22 @@ Findings:
       tests have direct or naming-alias coverage; direct missing/non-direct
       Java utility/UI tests are `Base64Test`, `proxyTest`,
       `RipStatusMessageTest`, `RipButtonHandlerTest`, `UIContextMenuTests`,
-      and `UpdateUtilsTest`.
+      `UpdateUtilsTest`, aggregate suite tests `RippersTest` and
+      `VideoRippersTest`, and inherited/alias ripper tests that must be mapped:
+      `AbstractRipperTest`, `ArtStationRipperTest`, `BaraagRipperTest`,
+      `FapDungeonRipperTest`, `HentainexusRipperTest`,
+      `JabArchivesRipperTest`, `LabelsBundlesTest`, `MastodonXyzRipperTest`,
+      `MrCongRipperTest`, `PawooRipperTest`, `RulePornRipperTest`,
+      `ShesFreakyRipperTest`, and `SpankBangRipperTest`.
 - [ ] Mechanical test-name aliases must be documented so naming differences do
       not look like missing tests: `ArtStationRipperTest` ->
       `artstation_ripper_test.dart`, `FapDungeonRipperTest` ->
       `fapdungeon_ripper_test.dart`, `JabArchivesRipperTest` ->
       `jabarchives_ripper_test.dart`, `MrCongRipperTest` ->
-      `mrcong_ripper_test.dart`, and `ShesFreakyRipperTest` ->
+      `mrcong_ripper_test.dart`, `HentainexusRipperTest` ->
+      `hentai_nexus_ripper_test.dart`, `RulePornRipperTest` ->
+      `ruleporn_ripper_test.dart`, `SpankBangRipperTest` ->
+      `spankbang_ripper_test.dart`, and `ShesFreakyRipperTest` ->
       `shesfreaky_ripper_test.dart`.
 - [ ] A generated ported-ripper-to-Dart-test scan found remaining non-direct
       mappings that must be documented or split into focused tests:
@@ -1337,9 +1357,14 @@ they are not yet a substitute for committed Dart tests.
       missing, replacement, and implemented-but-still-unverified keys are
       recorded in section B.
 - [x] Generated Java localized keys and compared them to Flutter localization
-      lookups; missing keys are recorded in section G.
+      lookups; missing keys are recorded in section G. The 2026-05-31 rerun
+      confirmed all missing localized keys from the scan are named there.
 - [x] Generated Java test class names and compared them to Dart test files;
-      missing/non-direct mappings are recorded in section H.
+      missing/non-direct mappings are recorded in section H. The 2026-05-31
+      rerun covered all 118 Java test classes under
+      `src/test/java/com/rarchives/ripme`.
+- [x] Generated Java public utility/runtime methods and recorded previously
+      implicit helper/runtime parity checks in section E.
 - [x] Scanned Java build/release files, README, updater metadata, test tags,
       resource usage, desktop integration calls, and source TODOs for
       user-visible parity risks; findings are recorded in sections J-M.
