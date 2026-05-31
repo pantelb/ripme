@@ -199,6 +199,12 @@ Flutter targets:
 Parity checklist:
 
 - [ ] Detect CLI/headless invocation before launching `MaterialApp`.
+- [ ] Verify desktop runner argument plumbing on every platform before CLI
+      parity is claimed. Windows `main.cpp` and Linux `my_application.cc` pass
+      command-line arguments into Dart, but macOS `MainFlutterWindow.swift`
+      creates a default `FlutterViewController` with no Dart entrypoint
+      arguments, and `lib/main.dart` currently accepts no `List<String> args`
+      and always launches `MaterialApp`.
 - [ ] Print Java-compatible help text for `-h` / `--help`.
 - [ ] Print Flutter app version for `-v` / `--version`.
 - [ ] Support single URL ripping through `-u` / `--url`.
@@ -952,7 +958,11 @@ Findings:
 - [ ] Java clipboard autorip polls every second, accepts
       `http`, `https`, `ftp`, and `file` URL schemes, deduplicates URLs only
       within the autorip thread, and starts ripping immediately rather than
-      queueing. Flutter autorip needs tests for these details.
+      queueing. Flutter currently polls every 2 seconds, trims and parses the
+      entire clipboard as one URI, requires `uri.host.isNotEmpty` (which blocks
+      Java-style `file:` URLs), remembers only the last clipboard URL, and
+      queues instead of immediately starting. Flutter autorip needs tests or
+      documented intentional-difference notes for these details.
 - [ ] Java history context menu selected-state actions need Flutter equivalents.
 - [ ] Java queue clear action asks for confirmation; Flutter queue clear/remove
       needs confirmation parity.
@@ -1022,22 +1032,51 @@ Findings:
 
 - [ ] Java resource bundles are UTF-8 through `UTF8Control`. Flutter
       localization loading needs an equivalent UTF-8/key coverage test.
+- [ ] Java uses `PropertyResourceBundle`, so `.properties` escape semantics
+      apply in addition to UTF-8 loading. A bundle syntax scan found `\uXXXX`
+      escapes in Arabic and Korean bundles; Flutter's `_parseProperties`
+      currently only splits on `=` and replaces literal `\n`, so Unicode
+      escapes, continuation lines, alternate separators, and other Java
+      property escapes need compatibility tests or a documented parser
+      replacement.
 - [ ] Java supported languages are discovered by scanning available
       `LabelsBundle*.properties`; Flutter locale list needs comparison with:
       `ar_AR`, `de_DE`, `el_GR`, `en_US`, `es_ES`, `fi_FI`,
       `fi_FI_porrisavo`, `fr_CH`, `in_ID`, `it_IT`, `kr_KR`, `nl_NL`,
       `pl_PL`, `pt_BR`, `pt_PT`, `ru_RU`, and `zh_CN`.
+- [ ] Flutter carries the Java `LabelsBundle_fi_FI_porrisavo.properties` file
+      but `AppLocalizations.supportedLocales` has no locale/variant entry for
+      it and `_bundleFor` maps all Finnish locales to `LabelsBundle_fi_FI`.
+      Also, `isSupported` checks only `languageCode`, so country/variant
+      distinctions such as `fr_CH`, `pt_BR`/`pt_PT`, and Java's nonstandard
+      `in_ID`/`kr_KR` bundle names need exact fallback tests.
 - [ ] Java label-bundle tests assert every non-default key also exists in the
       default bundle. Flutter needs this coverage or an equivalent generated
       localization check.
-- [ ] Java completion sound is `camera.wav`; Flutter currently uses platform
-      alert sound. This is an intentional-difference candidate but not parity.
+- [ ] Java completion sound is `camera.wav`; the Java blob
+      `src/main/resources/camera.wav` is carried forward byte-identically as
+      `assets/sounds/camera.wav`, but Flutter currently uses platform alert
+      sound. This is an intentional-difference candidate but not parity.
 - [ ] Java logging file output is `ripme.log`, with rolling `ripme.%i.log.gz`
       output and a 20 MB size policy in log4j2. Flutter file logging is not
       verified.
 - [ ] Java icon assets include `icon.ico`, `icon.png`, and toolbar PNGs
       (`comment`, `folder`, `gear`, `list`, `stop`, `time`, `wrench`).
-      Flutter/platform resource parity needs explicit asset checks.
+      The toolbar PNGs and `icon.png` are carried forward byte-identically
+      under `assets/`, but Java `icon.ico` is not present there; Windows uses
+      `windows/runner/resources/app_icon.ico`, while Android and macOS use
+      generated launcher/AppIcon sets. Platform icon provenance and visual
+      parity still need explicit checks.
+- [ ] `pubspec.yaml` includes `src/main/resources/`, but the local Flutter
+      resource folder currently contains only `LabelsBundle*.properties`.
+      Java binary resources from `origin/main:src/main/resources` are relocated
+      to `assets/`, `assets/sounds/`, or platform launcher-resource folders, so
+      resource parity must verify both relocated asset paths and actual runtime
+      usage.
+- [ ] Java `log4j.file.properties` and `log4j2-example.xml` remain Java-only
+      logging resources; local Flutter `src/main/resources` does not carry
+      them forward. The migration needs an explicit retirement/replacement note
+      tied to Flutter file logging behavior.
 - [ ] Java updater fetches `https://raw.githubusercontent.com/ripmeapp/ripme/main/ripme.json`,
       compares versions by numeric components, displays changelog entries, checks
       SHA-256 unless disabled, writes `ripme.jar.new`, and replaces the jar.
@@ -1314,6 +1353,21 @@ Findings:
 - [ ] macOS sandbox entitlements, Linux metadata, Windows resource versioning,
       and app icons must be verified as first-class release artifacts rather
       than assumed from Flutter defaults.
+- [ ] Linux packaging metadata currently declares `ripme.desktop`,
+      `Icon=ripme`, app id `com.rarchives.ripme`, and summary
+      `Cross-platform media album ripper`; the audit still needs to verify that
+      the packaged Linux artifact actually installs an icon named `ripme` and
+      that the metadata/license text matches the Java project contract.
+- [ ] macOS `Info.plist` leaves `CFBundleIconFile` empty and relies on the
+      generated AppIcon asset catalog. This must be verified against Java
+      `icon.png`/`icon.ico` branding instead of assumed from Flutter defaults.
+- [ ] Windows `Runner.rc` embeds `windows/runner/resources/app_icon.ico`, but
+      its Git blob differs from Java `src/main/resources/icon.ico`; Windows
+      executable icon parity requires a visual/provenance decision.
+- [ ] Android launcher icons are new platform resources under
+      `android/app/src/main/res/mipmap-*`; Android icon branding parity cannot
+      be inferred from Java desktop resources and needs explicit visual/source
+      verification.
 - [ ] Java dependency removal/replacement needs a checked migration decision for
       non-feature infrastructure as well as app behavior: `commons-cli` command
       parsing, `commons-configuration` property loading/persistence,
@@ -1364,10 +1418,14 @@ Java test sources scanned:
 
 Findings:
 
-- [ ] Many Java ripper tests are annotated `@Tag("flaky")` or `@Tag("slow")`,
-      and several are `@Disabled` with site-specific reasons. Dart tests must
-      preserve that knowledge through tags, skips, fake fixtures, or documented
-      live-network test policy instead of silently omitting risky cases.
+- [ ] Mechanical test metadata scan found 119 Java `@Tag("flaky")`
+      annotations, 7 Java `@Tag("slow")` annotations, and 44 Java
+      `@Disabled` annotations under `src/test/java`. Dart currently has only
+      two environment-gated live smoke tests in `test/live_ripper_smoke_test.dart`
+      (`RIPME_LIVE_REDDIT_URL` and `RIPME_LIVE_REDGIFS_URL`). Dart tests must
+      preserve the broader Java risk taxonomy through tags, skips, fake
+      fixtures, or documented live-network test policy instead of silently
+      omitting risky cases.
 - [ ] Java UI tests include flaky coverage for the rip button and context menu
       behavior. Flutter needs widget/integration coverage for those UI workflows
       before UI parity can be marked complete.
@@ -1502,6 +1560,36 @@ they are not yet a substitute for committed Dart tests.
       hardcoded Swing text, updater labels, tray notifications, thrown
       exceptions, status updates, and logged errors. Non-bundle string parity is
       recorded in section G.
+- [x] Scanned Java binary resources from
+      `origin/main:src/main/resources` against Flutter assets/platform
+      resources using Git blob IDs. Java toolbar PNGs, `icon.png`, and
+      `camera.wav` are carried forward byte-identically under `assets/` or
+      `assets/sounds/`; Java `icon.ico` differs from the Windows embedded
+      `app_icon.ico`, and Android/macOS launcher icons are generated platform
+      resources requiring visual/provenance verification. Resource-path and
+      packaging findings are recorded in sections G and J.
+- [x] Re-scanned Java TODO/disabled/test-tag surfaces and Flutter skipped/live
+      tests. The Java suite has 119 flaky tags, 7 slow tags, and 44 disabled
+      annotations, while Flutter currently exposes only two environment-gated
+      live smoke tests; the test-policy parity gap is recorded in section L.
+- [x] Inspected desktop runner argument plumbing for Windows, Linux, and macOS.
+      Windows and Linux forward launch arguments into Dart, but macOS currently
+      uses the default `FlutterViewController` with no entrypoint arguments and
+      `lib/main.dart` ignores arguments entirely; the cross-platform CLI launch
+      gap is recorded in Workstream 1.
+- [x] Re-read Java `ClipboardUtils` and Flutter clipboard autorip code.
+      Exact differences in polling interval, accepted schemes, duplicate
+      memory scope, whole-clipboard matching, and queue-vs-start behavior are
+      recorded in section F.
+- [x] Re-read Flutter localization locale mapping against the Java
+      `LabelsBundle*.properties` inventory. The `fi_FI_porrisavo` bundle is
+      present but unreachable from Flutter's supported locale list/mapping, and
+      language-only support checks require exact fallback tests; findings are
+      recorded in section G.
+- [x] Scanned Java label bundles for `.properties` syntax beyond simple
+      `key=value` loading. Arabic and Korean bundles contain Java `\uXXXX`
+      escapes, while Flutter currently decodes only literal `\n`; parser
+      compatibility findings are recorded in section G.
 - [ ] Convert the mechanical scans above into checked-in tests/scripts before
       claiming final parity.
 
