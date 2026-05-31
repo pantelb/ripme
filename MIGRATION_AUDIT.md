@@ -1092,8 +1092,13 @@ Java test sources read/listed:
 Findings:
 
 - [ ] Add Dart tests for Java `AbstractRipper.getFileName` edge cases.
-- [ ] Add Dart tests for Java Base64 decode/encode compatibility or document use
-      of Dart `base64` as the replacement.
+- [x] Add Dart tests for Java Base64 decode compatibility and document use of
+      Dart `base64` as the replacement. Java production only calls
+      `Base64.decode` from Twodgalleries and Cliphunter; direct coverage is in
+      `test/base64_compat_test.dart`. Java's custom `Base64.encode` is unused in
+      production and has non-standard one-byte padding, so Flutter intentionally
+      uses Dart's standard encoder where encoding is needed for test fixtures or
+      non-Java replacement code.
 - [ ] Add Dart tests for `Utils.getEXTFromMagic`, `stripURLParameter`,
       `shortenPath`, `bytesToHumanReadable`, `getByteStatusText`, `between`,
       `shortenSaveAsWindows`, and `sanitizeSaveAs`.
@@ -1108,9 +1113,9 @@ Findings:
       slow/flaky methods. Dart parity must be mapped at method/behavior level,
       not only file-name level.
 - [ ] Non-ripper Java test methods requiring direct Dart coverage are:
-      `AbstractRipperTest.testGetFileName`, `Base64Test.testDecode`,
-      `UtilsTest.testConfigureLogger`, `UtilsTest.testShortenFileNameWindows`,
-      `proxyTest.testSocksProxy`, `proxyTest.testHTTPProxy`,
+      `AbstractRipperTest.testGetFileName`, `UtilsTest.testConfigureLogger`,
+      `UtilsTest.testShortenFileNameWindows`, `proxyTest.testSocksProxy`,
+      `proxyTest.testHTTPProxy`,
       `LabelsBundlesTest.testKeyCount`, `LabelsBundlesTest.testKeyName`,
       `RipStatusMessageTest.testConstructor`,
       `RipButtonHandlerTest.duplicateUrlTestCase`,
@@ -1129,9 +1134,9 @@ Findings:
 - [ ] Mechanical test-name scan found 118 Java test classes under
       `src/test/java/com/rarchives/ripme` and 128 Dart test files. Most ripper
       tests have direct or naming-alias coverage; direct missing/non-direct
-      Java utility/UI tests are `Base64Test`, `proxyTest`,
-      `RipStatusMessageTest`, `RipButtonHandlerTest`, `UIContextMenuTests`,
-      `UpdateUtilsTest`, aggregate suite tests `RippersTest` and
+      Java utility/UI tests are `proxyTest`, `RipStatusMessageTest`,
+      `RipButtonHandlerTest`, `UIContextMenuTests`, `UpdateUtilsTest`,
+      aggregate suite tests `RippersTest` and
       `VideoRippersTest`, and inherited/alias ripper tests that must be mapped:
       `AbstractRipperTest`, `ArtStationRipperTest`, `BaraagRipperTest`,
       `FapDungeonRipperTest`, `HentainexusRipperTest`,
