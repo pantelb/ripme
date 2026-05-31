@@ -1062,6 +1062,16 @@ Findings:
       `server.doesnt.support.resuming.downloads`, `skipping`,
       `ssl.verify.off`, `tray.autorip`, `tray.exit`, `tray.hide`,
       `tray.show`, and `was.unable.to.get.content.type.using.magic.number`.
+- [ ] Java user-visible text is not limited to `LabelsBundle` keys. A hardcoded
+      string scan found UI/updater/status/error text such as `Rip`, `Stop`,
+      `URL:`, `YES`, `NO`, `Download albums and videos from various websites`,
+      `Do you want to visit the project homepage on GitHub?`, updater progress
+      text (`Checking for update...`, `Downloading new version...`),
+      `Started ripping <url>`, and
+      many thrown/logged ripper messages like `No images found at <url>`.
+      Flutter parity needs tests or documented replacement text for these
+      strings wherever they are user-visible through status, logs, dialogs, tray
+      notifications, or CLI output.
 
 ### H. Java Tests Still To Reconcile
 
@@ -1482,6 +1492,10 @@ they are not yet a substitute for committed Dart tests.
       clipboard/tray/desktop calls, file/path helpers, URL decoding, and timing
       calls; new exact-semantics findings are recorded in sections B, D, E, and
       J.
+- [x] Scanned Java user-visible string surfaces beyond localization bundles:
+      hardcoded Swing text, updater labels, tray notifications, thrown
+      exceptions, status updates, and logged errors. Non-bundle string parity is
+      recorded in section G.
 - [ ] Convert the mechanical scans above into checked-in tests/scripts before
       claiming final parity.
 
