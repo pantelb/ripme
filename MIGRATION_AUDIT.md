@@ -901,15 +901,16 @@ Findings:
       `sendUpdate`, `setBytesTotal`, and `setBytesCompleted`.
 - [ ] Mechanical public-method scan found additional Java utility APIs that
       need explicit parity coverage or documented retirement:
-      `Utils.parseUrlQuery`, `fuzzyExists`, `getPath`, `removeCWD`,
-      `getWorkingDirectory`, `getConfigDir`, `getURLHistoryFile`,
-      `clearURLHistory`, `getSupportedLanguages`, `getSelectedLanguage`,
-      `setLanguage`, `configureLogger`, `playSound`,
-      `getListOfAlbumRippers`, and `getListOfVideoRippers`.
-- [ ] Java query parsing uses `URLDecoder` with UTF-8, preserves empty values for
+      `fuzzyExists`, `getPath`, `removeCWD`, `getWorkingDirectory`,
+      `getConfigDir`, `getURLHistoryFile`, `clearURLHistory`,
+      `getSupportedLanguages`, `getSelectedLanguage`, `setLanguage`,
+      `configureLogger`, `playSound`, `getListOfAlbumRippers`, and
+      `getListOfVideoRippers`.
+- [x] Java query parsing uses `URLDecoder` with UTF-8, preserves empty values for
       keys without `=`, and decodes each key/value independently. Flutter URL
-      query helpers need tests for those exact edge cases, not only happy-path
-      `Uri.queryParameters`.
+      query helpers now cover those exact edge cases, duplicate handling, extra
+      `=` characters in values, and Java trailing-empty split behavior in
+      `test/utils_query_test.dart`.
 
 ### F. UI, Clipboard, Status, And Desktop Integration
 

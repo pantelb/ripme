@@ -5,6 +5,7 @@ import 'package:ripme/download_history_provider.dart';
 import 'package:ripme/ripper/abstract_ripper.dart';
 import 'package:ripme/ui/rip_status_message.dart';
 import 'package:ripme/utils/utils.dart';
+import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TestRipper extends AbstractRipper {
@@ -476,7 +477,7 @@ void main() {
     );
     await Future<void>.delayed(Duration.zero);
 
-    final savedFile = File('${directory.path}/bad_name_.jpg');
+    final savedFile = File(p.join(directory.path, 'bad_name_.jpg'));
     expect(await savedFile.readAsString(), 'ok');
     expect(statuses.last.status, RipStatus.downloadComplete);
     expect(statuses.last.object, savedFile.path);

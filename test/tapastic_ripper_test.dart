@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart' as html;
+import 'package:path/path.dart' as p;
 import 'package:ripme/ripper/rippers/tapastic_ripper.dart';
 
 void main() {
@@ -79,7 +80,7 @@ void main() {
       'https://cdn.example.com/one.jpg',
       'https://cdn.example.com/two.png?ignored=1',
     ]);
-    expect(downloads.map((download) => download.saveAs.path.split('/').last), [
+    expect(downloads.map((download) => p.basename(download.saveAs.path)), [
       'ep03-1of3-One-Bad-Title-one.jpg',
       'ep03-2of3-One-Bad-Title-two.png',
     ]);

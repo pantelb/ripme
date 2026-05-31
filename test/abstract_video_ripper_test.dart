@@ -5,6 +5,7 @@ import 'package:html/parser.dart' show parse;
 import 'package:ripme/ripper/abstract_video_ripper.dart';
 import 'package:ripme/ui/rip_status_message.dart';
 import 'package:ripme/utils/utils.dart';
+import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TestVideoRipper extends AbstractVideoRipper {
@@ -127,7 +128,8 @@ void main() {
         'https://cdn.example.com/video-source');
     expect(
         ripper.receivedHeaders, {'Referer': 'https://example.com/video-page'});
-    expect(ripper.receivedSaveAs?.path, '${directory.path}/video-source.mp4');
+    expect(ripper.receivedSaveAs?.path,
+        p.join(directory.path, 'video-source.mp4'));
   });
 
   test('honors explicit video filenames, referers, and cookies', () async {
@@ -159,7 +161,8 @@ void main() {
         ripper.receivedDownloadUrl.toString(), 'https://cdn.example.com/best');
     expect(ripper.receivedHeaders, {'Referer': 'https://example.com/embed'});
     expect(ripper.receivedCookies, {'session': 'abc'});
-    expect(ripper.receivedSaveAs?.path, '${directory.path}/unsafe_name.mp4');
+    expect(
+        ripper.receivedSaveAs?.path, p.join(directory.path, 'unsafe_name.mp4'));
   });
 
   test('selects highest DASH representation from manifest', () {

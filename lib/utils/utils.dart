@@ -101,4 +101,44 @@ class Utils {
   static String sanitizeSaveAs(String fileName) {
     return fileName.replaceAll(RegExp(r'[\\:*?"<>|]'), '_');
   }
+
+  static Map<String, String> parseUrlQuery(String query) {
+    final result = <String, String>{};
+    if (query.isEmpty) return result;
+
+    for (final part in _javaQueryParts(query)) {
+      final equals = part.indexOf('=');
+      if (equals >= 0) {
+        result[Uri.decodeQueryComponent(part.substring(0, equals))] =
+            Uri.decodeQueryComponent(part.substring(equals + 1));
+      } else {
+        result[Uri.decodeQueryComponent(part)] = '';
+      }
+    }
+    return result;
+  }
+
+  static String? parseUrlQueryValue(String query, String key) {
+    if (query.isEmpty) return null;
+
+    for (final part in _javaQueryParts(query)) {
+      final equals = part.indexOf('=');
+      if (equals >= 0) {
+        if (Uri.decodeQueryComponent(part.substring(0, equals)) == key) {
+          return Uri.decodeQueryComponent(part.substring(equals + 1));
+        }
+      } else if (Uri.decodeQueryComponent(part) == key) {
+        return '';
+      }
+    }
+    return null;
+  }
+
+  static List<String> _javaQueryParts(String query) {
+    final parts = query.split('&');
+    while (parts.isNotEmpty && parts.last.isEmpty) {
+      parts.removeLast();
+    }
+    return parts;
+  }
 }
