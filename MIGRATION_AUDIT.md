@@ -1204,6 +1204,15 @@ Findings:
       key fallback warnings, Furaffinity shared-account errors, Imagefap
       throttling warnings, Tumblr `NO_ALBUM_OR_USER` and rate-limit handling,
       and Reddit upvote-filter/download-history completion messages.
+- [ ] Java dependency-backed ripper behavior must be audited at feature level,
+      not just by class names: `ScrolllerRipper` uses Java-WebSocket for a
+      GraphQL websocket flow, `InstagramRipper` uses the GraalVM
+      `com.oracle.js.parser` JavaScript parser to extract query/hash metadata,
+      `RedditRipper` uses j2html for self-post/comment HTML export,
+      `DanbooruRipper` uses OkHttp with mobile API headers, and Redgifs/
+      Scrolller use Apache HttpComponents `URIBuilder`/`URLEncodedUtils` query
+      encoding. Flutter currently needs explicit equivalent behavior and tests
+      for each of these surfaces.
 
 ### J. Build, Release, Versioning, And Platform Packaging
 
@@ -1272,6 +1281,16 @@ Findings:
 - [ ] macOS sandbox entitlements, Linux metadata, Windows resource versioning,
       and app icons must be verified as first-class release artifacts rather
       than assumed from Flutter defaults.
+- [ ] Java dependency removal/replacement needs a checked migration decision for
+      non-feature infrastructure as well as app behavior: `commons-cli` command
+      parsing, `commons-configuration` property loading/persistence,
+      `commons-io` file/path helpers, `org.json` parsing/exception semantics,
+      jsoup HTML parsing tolerance, Disruptor/log4j logging infrastructure,
+      Apache HttpComponents request/query helpers, OkHttp request behavior,
+      Java-WebSocket websocket transport, GraalVM JavaScript parsing, and j2html
+      HTML generation. Some are intentionally retired infrastructure, but none
+      should vanish from the audit without a Dart equivalent, retirement note,
+      or source-compatible test.
 
 ### K. README, Wiki-Promised Features, And User-Facing Contract
 
@@ -1435,6 +1454,12 @@ they are not yet a substitute for committed Dart tests.
 - [x] Scanned Java build/release files, README, updater metadata, test tags,
       resource usage, desktop integration calls, and source TODOs for
       user-visible parity risks; findings are recorded in sections J-M.
+- [x] Generated Java dependency and import capability lists from
+      `origin/main:build.gradle.kts` and production imports, compared them with
+      Flutter `pubspec.yaml`, and recorded missing/replacement surfaces in
+      sections I-J, including Java-WebSocket, GraalVM JavaScript parsing, OkHttp,
+      j2html, Apache HttpComponents, Commons libraries, `org.json`, jsoup,
+      Disruptor, and log4j.
 - [ ] Convert the mechanical scans above into checked-in tests/scripts before
       claiming final parity.
 
