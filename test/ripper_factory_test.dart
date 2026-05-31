@@ -624,5 +624,14 @@ void main() {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
     expect(RipperMigrationCatalog.portedRipperCount, 116);
     expect(RipperMigrationCatalog.unportedRipperCount, 0);
+    expect(
+      RipperMigrationCatalog.legacyRipperClasses.toSet(),
+      RipperMigrationCatalog.portedRipperClasses,
+    );
+    expect(
+      RipperMigrationCatalog.legacyRipperClasses.length,
+      RipperMigrationCatalog.legacyRipperClasses.toSet().length,
+      reason: 'legacy catalog should not contain duplicate Java classes',
+    );
   });
 }

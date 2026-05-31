@@ -597,7 +597,7 @@ Parity checklist:
 
 Required tests:
 
-- [ ] Catalog reconciliation test.
+- [~] Catalog reconciliation test.
 - [ ] Factory coverage test.
 - [ ] Any missing helper behavior tests.
 
@@ -1292,6 +1292,10 @@ they are not yet a substitute for committed Dart tests.
       names were found.
 - [x] Compared `legacyRipperClasses` to `portedRipperClasses`; both currently
       contain 116 class names and there are no set differences.
+- [x] Added a Dart catalog guard in `test/ripper_factory_test.dart` so the
+      tracked legacy/ported ripper class sets must remain equal and duplicate
+      free. This still needs a source-tree-backed generator before Workstream 0
+      can be marked complete.
 - [x] Generated Java-used config keys and compared them to Flutter defaults;
       missing/replacement keys are recorded in section B.
 - [x] Generated Java localized keys and compared them to Flutter localization
