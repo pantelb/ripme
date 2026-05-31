@@ -1062,6 +1062,9 @@ Java test sources read/listed:
 - `src/test/java/com/rarchives/ripme/tst/ui/LabelsBundlesTest.java`
 - `src/test/java/com/rarchives/ripme/tst/ui/RipStatusMessageTest.java`
 - `src/test/java/com/rarchives/ripme/tst/ripper/rippers/*Test.java`
+- `src/test/java/com/rarchives/ripme/ui/RipButtonHandlerTest.java`
+- `src/test/java/com/rarchives/ripme/ui/UIContextMenuTests.java`
+- `src/test/java/com/rarchives/ripme/ui/UpdateUtilsTest.java`
 
 Findings:
 
@@ -1077,6 +1080,29 @@ Findings:
       formatting.
 - [ ] Keep the existing ripper test reconciliation, but do a final generated
       source-tree check in CI so new Java rippers cannot be missed.
+- [ ] Mechanical test-method scan found 287 Java `@Test` methods across 111
+      Java test classes, including 44 disabled methods and 125 tagged
+      slow/flaky methods. Dart parity must be mapped at method/behavior level,
+      not only file-name level.
+- [ ] Non-ripper Java test methods requiring direct Dart coverage are:
+      `AbstractRipperTest.testGetFileName`, `Base64Test.testDecode`,
+      `UtilsTest.testConfigureLogger`, `UtilsTest.testShortenFileNameWindows`,
+      `proxyTest.testSocksProxy`, `proxyTest.testHTTPProxy`,
+      `LabelsBundlesTest.testKeyCount`, `LabelsBundlesTest.testKeyName`,
+      `RipStatusMessageTest.testConstructor`,
+      `RipButtonHandlerTest.duplicateUrlTestCase`,
+      `UIContextMenuTests.testCut`, `testCopy`, `testPaste`, `testSelectAll`,
+      `testUndo`, and `UpdateUtilsTest.testIsNewerVersion`.
+- [ ] High-density Java ripper test classes need method-by-method mapping before
+      being counted as covered: `WordpressComicRipperTest` (14 methods),
+      `FapwizRipperTest` (13), `EromeRipperTest` (11),
+      `RedditRipperTest` (9), `XhamsterRipperTest` (8),
+      `ImgurRipperTest` (7), `DeviantartRipperTest` and
+      `RedgifsRipperTest` (6 each), plus `E621RipperTest`,
+      `HqpornerRipperTest`, `ThechiveRipperTest`, `TumblrRipperTest`,
+      `UIContextMenuTests`, `BooruRipperTest`, `FuraffinityRipperTest`,
+      `NudeGalsRipperTest`, `SankakuComplexRipperTest`, `VkRipperTest`, and
+      `XvideosRipperTest`.
 - [ ] Mechanical test-name scan found 118 Java test classes under
       `src/test/java/com/rarchives/ripme` and 128 Dart test files. Most ripper
       tests have direct or naming-alias coverage; direct missing/non-direct
