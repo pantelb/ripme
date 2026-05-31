@@ -41,7 +41,7 @@ The migration is complete only when all of these are true:
 - [ ] Every Java resource under `src/main/resources` is either carried forward,
       replaced by a documented Flutter-native equivalent, or explicitly marked
       not applicable.
-- [ ] Every Java test behavior under `src/test/java/com/rarchives/ripme/tst`
+- [ ] Every Java test behavior under `src/test/java/com/rarchives/ripme`
       has a focused Dart test, a broader integration/widget test, or a written
       reason why it no longer applies.
 - [ ] All tracked Java rippers remain represented in
@@ -151,10 +151,15 @@ done.
 - [~] `src/test/java/com/rarchives/ripme/tst/Base64Test.java`
 - [~] `src/test/java/com/rarchives/ripme/tst/UtilsTest.java`
 - [~] `src/test/java/com/rarchives/ripme/tst/proxyTest.java`
+- [~] `src/test/java/com/rarchives/ripme/tst/ui/LabelsBundlesTest.java`
+- [~] `src/test/java/com/rarchives/ripme/tst/ui/RipStatusMessageTest.java`
 - [~] `src/test/java/com/rarchives/ripme/tst/ripper/rippers/*Test.java`
+- [~] `src/test/java/com/rarchives/ripme/ui/RipButtonHandlerTest.java`
+- [~] `src/test/java/com/rarchives/ripme/ui/UIContextMenuTests.java`
+- [~] `src/test/java/com/rarchives/ripme/ui/UpdateUtilsTest.java`
   - Current finding: the ripper tests have broad Dart equivalents; the
-    non-ripper Java tests need reconciliation against Flutter utility/config
-    tests.
+    non-ripper and UI Java tests need reconciliation against Flutter utility,
+    localization, status-message, update-checker, and widget tests.
 
 ## Workstream Plan
 
@@ -709,6 +714,12 @@ Findings:
       `security.check_update_hash`, `ssl.verify.off`,
       `testing.always_try_to_update`, `twitter.max_items_request`,
       `window.h`, `window.position`, `window.w`, `window.x`, and `window.y`.
+- [ ] Mechanical source scan also found Java-used config keys that do exist in
+      Flutter defaults but still require explicit Java-behavior verification:
+      `clipboard.autorip`, `download.retries`, `download.timeout`,
+      `page.timeout`, `play.sound`, Reddit upvote/subdirectory keys
+      (`reddit.rip_by_upvote`, `reddit.min_upvotes`, `reddit.max_upvotes`,
+      `reddit.use_sub_dirs`), and `remember.url_history`.
 - [ ] Mechanical source scan also found Flutter-only replacement keys requiring
       mapping notes: `error.skip404` versus Java `errors.skip404`,
       `history.skip_downloaded_urls`, `proxy.enabled`, `proxy.host`,
@@ -1028,10 +1039,12 @@ Findings:
       formatting.
 - [ ] Keep the existing ripper test reconciliation, but do a final generated
       source-tree check in CI so new Java rippers cannot be missed.
-- [ ] Mechanical test-name scan found 115 Java test classes and 128 Dart test
-      files. Most ripper tests have direct or naming-alias coverage; direct
-      missing/non-direct Java utility/UI tests are `Base64Test`, `proxyTest`,
-      and `RipStatusMessageTest`.
+- [ ] Mechanical test-name scan found 118 Java test classes under
+      `src/test/java/com/rarchives/ripme` and 128 Dart test files. Most ripper
+      tests have direct or naming-alias coverage; direct missing/non-direct
+      Java utility/UI tests are `Base64Test`, `proxyTest`,
+      `RipStatusMessageTest`, `RipButtonHandlerTest`, `UIContextMenuTests`,
+      and `UpdateUtilsTest`.
 - [ ] Mechanical test-name aliases must be documented so naming differences do
       not look like missing tests: `ArtStationRipperTest` ->
       `artstation_ripper_test.dart`, `FapDungeonRipperTest` ->
@@ -1233,7 +1246,7 @@ Java sources scanned:
 
 - `README.md`
 - `src/main/java/com/rarchives/ripme/**/*.java`
-- `src/test/java/com/rarchives/ripme/tst/**/*.java`
+- `src/test/java/com/rarchives/ripme/**/*.java`
 
 Findings:
 
@@ -1266,6 +1279,24 @@ Findings:
 - [ ] Java `AbstractRipper` URL-list opening has a TODO noting the desktop open
       call does not work reliably. Flutter URL-only output behavior should be
       tested on all target platforms instead of copying that failure blindly.
+- [ ] Java `FuraffinityRipper` has an unresolved story-cleanup TODO. Flutter
+      Furaffinity story output must be compared against Java's current cleaned
+      text behavior before claiming parity or improvement.
+- [ ] Java `ImgurRipper` has TODOs for optional username-in-album-title
+      behavior and cached-image fallback for empty albums. Flutter Imgur parity
+      must either preserve Java's current omission or intentionally add tested
+      support.
+- [ ] Java `WordpressComicRipper` carries a stale refactor TODO around
+      theme-specific navigation behavior. Flutter Wordpress domain handling
+      must be checked against the actual Java branch logic, not the stale
+      comment.
+- [ ] Java `DownloadFileThread` has a resume-support TODO for servers that do
+      not honor range requests. Flutter resume/partial-file behavior must be
+      verified rather than inferred from generic HTTP retry tests.
+- [ ] Java build metadata includes a Compose plugin-management TODO in
+      `settings.gradle.kts`. Flutter does not need Compose parity, but the
+      migration audit must record this as retired Java build infrastructure,
+      not an application feature gap.
 
 ## Audit Coverage Evidence
 
@@ -1286,7 +1317,13 @@ they are not yet a substitute for committed Dart tests.
       `DownloadVideoThread.java`, `DownloadThreadPool.java`, and
       `RipperInterface.java`.
 - [x] Listed all Java resource files and label bundles.
-- [x] Listed all Java test files and inspected non-ripper Java tests.
+- [x] Listed all Java test files under `src/test/java/com/rarchives/ripme`,
+      including the UI tests outside `tst`, and inspected non-ripper Java
+      tests.
+- [x] Re-ran the audit path-coverage check after the 2026-05-31 gap sweep:
+      every Java production source, Java resource, and Java test path from
+      `origin/main` is now represented directly in this file or covered by an
+      explicit glob entry.
 - [x] Generated Java ripper source list and compared it to
       `RipperMigrationCatalog.legacyRipperClasses`; no missing or extra class
       names were found.
@@ -1297,7 +1334,8 @@ they are not yet a substitute for committed Dart tests.
       free. This still needs a source-tree-backed generator before Workstream 0
       can be marked complete.
 - [x] Generated Java-used config keys and compared them to Flutter defaults;
-      missing/replacement keys are recorded in section B.
+      missing, replacement, and implemented-but-still-unverified keys are
+      recorded in section B.
 - [x] Generated Java localized keys and compared them to Flutter localization
       lookups; missing keys are recorded in section G.
 - [x] Generated Java test class names and compared them to Dart test files;
