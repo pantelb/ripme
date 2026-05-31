@@ -1039,6 +1039,17 @@ Findings:
       `jabarchives_ripper_test.dart`, `MrCongRipperTest` ->
       `mrcong_ripper_test.dart`, and `ShesFreakyRipperTest` ->
       `shesfreaky_ripper_test.dart`.
+- [ ] A generated ported-ripper-to-Dart-test scan found remaining non-direct
+      mappings that must be documented or split into focused tests:
+      `BaraagRipper`, `MastodonXyzRipper`, and `PawooRipper` inherit Mastodon
+      behavior and appear to be covered through `mastodon_ripper_test.dart`;
+      `EHentaiRipper` maps to `ehentai_ripper_test.dart`; `RulePornRipper`
+      maps to `ruleporn_ripper_test.dart`.
+- [ ] `test/ported_ripper_parser_test.dart` still labels several cases as
+      "unfinished ... scaffolds". Even where the underlying rippers have since
+      been completed, this stale terminology must be cleaned up and any cases
+      that only assert host/GID behavior must not be counted as full Java
+      parity coverage.
 
 ### I. Per-Ripper Behavioral Hooks To Recheck
 
