@@ -1841,6 +1841,55 @@ Findings:
       hardcoded Latin replacement table plus an ASCII regex, so decomposable
       characters outside that table can be dropped instead of normalized to the
       Java-compatible base character.
+- [ ] Java `FreeComicOnlineRipper` inherits
+      `AbstractHTMLRipper.canRip(...)`, so any host ending in
+      `freecomiconline.me` is accepted before `getGID(...)` applies the strict
+      `https://freecomiconline.me/comic/...` regexes. Flutter
+      `FreeComicOnlineRipper.canRip(...)` directly uses those strict regexes
+      and its Dart test rejects an `http://freecomiconline.me/comic/title/`
+      URL, narrowing Java's domain-level support.
+- [ ] Java `FreeComicOnlineRipper.getNextPage(...)` directly reads
+      `doc.select("div.select-pagination a").get(1)`, so a missing or
+      one-link paginator fails through jsoup's index access before the
+      Java no-more-pages `IOException` path. Flutter checks `links.length <= 1`
+      and returns `null`, and it also returns `null` when the second link does
+      not match the chapter regex instead of throwing `IOException("No more
+      pages")`.
+- [ ] Java `CfakeRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any host
+      ending in `cfake.com` is accepted before `getGID(...)` enforces
+      `/images/celebrity/MODEL/ID`. Flutter `CfakeRipper.canRip(...)` directly
+      uses the strict GID regex and its Dart test rejects `www.cfake.com`,
+      narrowing Java's accepted URL surface.
+- [ ] Java `CfakeRipper.getNextPage(...)` throws distinct `IOException`
+      messages when the pagination nav, anchor, or next-page span is absent,
+      returns `null` only for an empty `href`, and fetches the next document
+      itself. Flutter collapses all absent/empty/last-page cases to `null` and
+      only returns the next URI; `rip()` later catches next-fetch failures as a
+      quiet stop.
+- [ ] Java `CfakeRipper.getURLsFromPage(...)` adds
+      `https://cfake.com` plus the transformed `src` for every matching image,
+      even when `src` is missing or empty. Flutter
+      `CfakeRipper.imageUrlsFromDocument(...)` skips missing/empty `src`
+      values, so malformed image nodes no longer follow Java's malformed-URL
+      download path.
+- [ ] Java `CheveretoRipper.getAlbumTitle(...)` catches only `IOException`
+      around the cached first-page title lookup; missing
+      `meta[property=og:title]` or malformed title content can throw before the
+      fallback to `super.getAlbumTitle(...)`. Flutter
+      `CheveretoRipper.getAlbumTitle(...)` catches all failures and
+      `albumTitleFromDocument(...)` returns `null` for missing/empty content,
+      so those malformed album-title states quietly fall back.
+- [ ] Java `CheveretoRipper.getNextPage(...)` throws
+      `IOException("No more pages")` when `li.pagination-next > a` is absent,
+      uses the Java reference comparison `nextPage == ""` for empty hrefs, and
+      fetches the next page with the consent cookie before returning. Flutter
+      returns `null` for absent/empty hrefs and only returns the URI; `rip()`
+      later catches next-fetch failures as normal completion.
+- [ ] Java `CheveretoRipper.getURLsFromPage(...)` adds each
+      `a.image-container > img` `src` after removing `.md`, including missing
+      or empty `src` values. Flutter skips missing/empty `src`, so malformed
+      Chevereto image nodes are silently ignored instead of becoming Java-style
+      empty/malformed download candidates.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
