@@ -1391,6 +1391,14 @@ Findings:
       `worksafe=0`, Paheal `ui-tnc-agreed`, Photobucket page cookies,
       `SankakuComplexRipper` cookies,
       Sta/Thechive/Tsumino/Twodgalleries/Vsco/Webtoons/Xcartx/Zizki cookies.
+- [ ] Java `DeviantartRipper.login()` loads serialized
+      `DeviantartLogin.cookies`, merges response cookies, forces
+      `agegate_state=1`, validates cookies by requesting
+      `https://www.deviantart.com/users/login`, and falls back to logging in
+      with `DeviantartCustomLoginUsername`/`DeviantartCustomLoginPassword`
+      before persisting the merged cookie map. Flutter `DeviantartRipper`
+      currently sends only the hardcoded `agegate_state=1` cookie and has no
+      persisted-cookie deserialize/validate/login flow.
 - [ ] Java `RipUtils.getFilesFromURL` helper coverage must be verified for
       Reddit/Chan-style direct links and embedded media expansion:
       Imgur album/gifv/single pages, Redgifs/gifdeliverynetwork, Vidble
@@ -1878,6 +1886,11 @@ they are not yet a substitute for committed Dart tests.
       Flutter `BatoRipper.getAlbumTitle` and `bato_ripper_test.dart`. A new
       section I finding records the cached-first-page title behavior and the
       missing Dart proof for the disabled Java title expectation.
+- [x] Re-read Java `DeviantartRipper.login`, cookie serialization/validation,
+      and DeviantArt image download flow against Flutter
+      `deviantart_ripper.dart` and `deviantart_ripper_test.dart`. A new exact
+      section I finding records Java's persisted cookie/login flow versus
+      Flutter's hardcoded agegate cookie.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
