@@ -1396,6 +1396,12 @@ Findings:
       key fallback warnings, Furaffinity shared-account errors, Imagefap
       throttling warnings, Tumblr `NO_ALBUM_OR_USER` and rate-limit handling,
       and Reddit upvote-filter/download-history completion messages.
+- [ ] Java `E621Ripper.getNextPage(...)` throws `IOException("No more pages.")`
+      when `a#paginator-next` is absent, and `E621RipperTest` asserts that
+      exact message for both current and legacy URL styles. Flutter
+      `E621Ripper.getNextPage(...)` currently returns `null` for the same case,
+      and its Dart test asserts `null`, so the no-next-page contract is not
+      Java-compatible.
 - [ ] Java dependency-backed ripper behavior must be audited at feature level,
       not just by class names: `ScrolllerRipper` uses Java-WebSocket for a
       GraphQL websocket flow, `InstagramRipper` uses the GraalVM
@@ -1825,6 +1831,10 @@ they are not yet a substitute for committed Dart tests.
       Workstream 6 and section E: Java allows comma, underscore, and space,
       trims, and truncates overlong strings to 99 characters; Flutter only
       lacks the truncation.
+- [x] Re-read Java `E621Ripper.getNextPage` and `E621RipperTest` against
+      Flutter `E621Ripper.getNextPage` and `e621_ripper_test.dart`. A new exact
+      finding was recorded in section I for Java's asserted
+      `IOException("No more pages.")` behavior versus Flutter's `null`.
 - [x] Re-read Java `App.handleArguments`/`ripURL` against Flutter startup. A
       new exact CLI finding was recorded in sections A/Workstream 1: Java
       accepts `-n` / `--no-prop-file`, but the `saveConfig` argument is unused,
