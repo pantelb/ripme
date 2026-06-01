@@ -1462,6 +1462,17 @@ Findings:
       and `_largestImageUrl(...)` return `null` for missing/empty size data and
       `rip()` silently continues, so Flickr size-lookup failure semantics are
       not Java-compatible.
+- [ ] Java `FuraffinityRipper.getNextPage(...)` throws
+      `IOException("No more pages")` when no `a.right` next-page link exists.
+      Flutter `FuraffinityRipper.getNextPage(...)` returns `null`, so
+      Furaffinity pagination end-state behavior follows Flutter's nullable
+      helper convention instead of Java's exception contract.
+- [ ] Java `FuraffinityRipper.getURLsFromPage(...)` calls
+      `getImageFromPost(...)`, but then checks the ripper field `url != null`
+      before calling `urlToAdd.startsWith("http")`; if an image post has no
+      Download link or fetch fails, `urlToAdd` can be `null` and Java can throw.
+      Flutter checks `imageUrl != null` and skips the post, changing missing
+      image-link failure behavior.
 - [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
       all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
@@ -1946,6 +1957,10 @@ they are not yet a substitute for committed Dart tests.
       `flickr_ripper_test.dart`. A new section I finding records Java's
       empty-size-map failure path in `getLargestImageURL` versus Flutter's
       nullable skip behavior.
+- [x] Re-read Java `FuraffinityRipper` against Flutter
+      `furaffinity_ripper.dart` and `furaffinity_ripper_test.dart`. New section
+      I findings record Java's next-page exception contract and missing
+      Download-link null-deref behavior versus Flutter's nullable/skip paths.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
