@@ -1532,6 +1532,15 @@ Findings:
       response failures propagate. Gallery handling already has a Java TODO,
       so parity work must cover both successful gallery expansion and this
       partial-failure behavior instead of relying on singleton video tests.
+- [ ] Java `ScrolllerRipper.getPosts(...)` catches transport/parsing failures
+      and returns `new JSONObject("{}")`, after which
+      `getURLsFromJSON(...)` strictly dereferences
+      `data.getSubreddit.children.items` and fails on malformed or empty GraphQL
+      structure. Flutter `ScrolllerRipper.urlsFromJson(...)` returns an empty
+      list when the same structure is missing, and `rip()` can then send
+      `ripComplete` without reporting the Java-style no-images/malformed-page
+      failure. This is separate from the already-tested query shape and
+      Java-compatible best-area bug.
 - [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
       all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
@@ -2043,6 +2052,10 @@ they are not yet a substitute for committed Dart tests.
       `/gifs/detail` sanitization outcome and gallery-fetch `IOException`
       handling versus Flutter's broader detail rewrite and propagated gallery
       failures.
+- [x] Re-read Java `ScrolllerRipper` against Flutter `scrolller_ripper.dart`
+      and `scrolller_ripper_test.dart`. A new section I finding records Java's
+      strict malformed GraphQL response failure path versus Flutter's empty-list
+      completion behavior.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
