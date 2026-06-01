@@ -1739,6 +1739,19 @@ Findings:
       Flutter returns `null` for an absent arrow list, so pagination end-state
       behavior diverges even though empty `href` handling is currently tested
       as Java-compatible.
+- [ ] Java `PicstatioRipper` inherits `AbstractHTMLRipper.canRip(...)`, so
+      domain-level `picstatio.com` URLs are accepted before
+      `getGID(...)` applies the stricter `https?://www.picstatio.com/...`
+      regex. Flutter `PicstatioRipper.canRip(...)` directly uses the strict GID
+      regex and its Dart test rejects `https://picstatio.com/...`, narrowing
+      Java's accepted URL surface.
+- [ ] Java `PicstatioRipper.getURLsFromPage(...)` assumes every `img.img`
+      parent href splits into at least three slash-separated segments and adds
+      the result of `getFullSizedImageFromURL(...)` even when that helper
+      returns an empty `href`. Flutter filters malformed parent hrefs out of
+      `wallpaperSlugsFromDocument(...)` and later skips empty `imageUrl` values
+      during `rip()`, so malformed/empty media candidates no longer follow
+      Java's failure path.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
