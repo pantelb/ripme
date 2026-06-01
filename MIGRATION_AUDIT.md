@@ -718,6 +718,11 @@ Findings:
       blank values. Callers that distinguish `null` from empty lists, including
       Java `RipUtils.checkTags(...)` and ignored-extension plumbing, need exact
       compatibility tests or a deliberate replacement decision.
+- [ ] Java `TwitterRipper` defaults `twitter.rip_retweets` to `true` through
+      `Utils.getConfigBoolean("twitter.rip_retweets", true)`. Flutter's
+      `config_defaults.dart` sets `twitter.rip_retweets` to `false`, so the
+      default Twitter media set is narrower than Java unless the user changes
+      the setting.
 - [ ] Java `history.location` controls downloaded-URL history
       (`url_history.txt`), not the album history JSON. Flutter currently stores
       downloaded URLs in SharedPreferences unless explicitly imported/exported.
@@ -1438,6 +1443,11 @@ Findings:
       next-page anchor is missing. Flutter `HentaifoundryRipper.getNextPage(...)`
       returns `null` for both end states, and its Dart tests do not prove the
       Java exception contract.
+- [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
+      all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
+      ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
+      `TwitterRipper.parseJSON(...)` builds each page's download list with
+      `i + 1`, so ordered filenames can restart at `001_` on each API page.
 - [ ] Java `BatoRipper.getAlbumTitle(...)` builds
       `bato_<gid>_<cached-first-page-title-with-spaces-as-underscores>` by
       calling `getCachedFirstPage()`, with a disabled Java test documenting the
@@ -1901,6 +1911,10 @@ they are not yet a substitute for committed Dart tests.
       and `hentaifoundry_ripper_test.dart`. A new section I finding records
       Java's `IOException("No more pages")` pagination contract versus
       Flutter's nullable end-state helper.
+- [x] Re-read Java `TwitterRipper`, `AbstractJSONRipper`, and Flutter
+      `twitter_ripper.dart`/`twitter_ripper_test.dart`. New source-backed
+      findings were recorded for the retweet default mismatch and Twitter's
+      per-page ordered-filename index reset.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
