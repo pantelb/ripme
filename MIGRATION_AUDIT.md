@@ -945,9 +945,14 @@ Findings:
       `hasQueueSupport`, `pageContainsAlbums`, and `getAlbumsToQueue`, adding
       discovered album URLs to `MainWindow` queue. Flutter needs verification
       for rippers that depend on this pattern.
-- [ ] Java `descriptions.save` can save per-item description `.txt` files through
+- [ ] Java exposes dormant `descriptions.save` machinery in
+      `AbstractHTMLRipper` through `hasDescriptionSupport`,
       `getDescriptionsFromPage`, `getDescription`, `saveText`, and
-      `descSleepTime`. Flutter has no shared verified equivalent.
+      `descSleepTime`, but the source scan found no current concrete ripper
+      returning `hasDescriptionSupport() == true`. `FuraffinityRipper`
+      implements description helpers and an overridden `saveText`, yet returns
+      false, so current-source parity must preserve or intentionally retire this
+      disabled feature path rather than assuming active description downloads.
 - [ ] Java `-a` / `--append-to-folder` stores
       `App.stringToAppendToFoldername`, and `AbstractRipper.getFilePath`
       applies it by resolving the working directory to a sibling named
@@ -1780,6 +1785,11 @@ they are not yet a substitute for committed Dart tests.
       `restoreWindowPosition` against Flutter desktop code. A new exact finding
       was recorded in section F for Java `window.position` plus
       `window.x`/`window.y`/`window.w`/`window.h` bounds persistence.
+- [x] Re-scanned Java `descriptions.save` and description helper overrides.
+      Section E was corrected: Java has shared description-save machinery, but
+      no current concrete ripper returns `hasDescriptionSupport() == true`;
+      `FuraffinityRipper` implements helpers while explicitly disabling the
+      feature.
 - [x] Re-read Java `App.handleArguments`/`ripURL` against Flutter startup. A
       new exact CLI finding was recorded in sections A/Workstream 1: Java
       accepts `-n` / `--no-prop-file`, but the `saveConfig` argument is unused,
