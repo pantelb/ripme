@@ -1374,6 +1374,13 @@ Findings:
       Imgur album/gifv/single pages, Redgifs/gifdeliverynetwork, Vidble
       album/show, `v.redd.it`, Erome, Soundgasm, `i.reddituploads.com`, direct
       image/video regex, and Imgur meta fallback.
+- [ ] Java `RedditRipper.handleBody` extracts URLs from self text and comments
+      with `RipUtils.getURLRegex()`, whose pattern only accepts `http(s)` URLs
+      with `[a-zA-Z]{2,3}` TLDs and a slash path, then strips only trailing
+      right parentheses. Flutter `_mediaFromBody` currently uses a broader
+      `https?://[^\s<>()"]+` pattern and strips trailing `)`, `.`, and `,`, so
+      Reddit body-link extraction can accept or normalize URLs that Java would
+      leave untouched.
 - [ ] Java per-ripper warning/error status messages must be checked where they
       feed UI parity, especially `DOWNLOAD_WARN`, `DOWNLOAD_ERRORED`,
       `RIP_ERRORED`, `NO_ALBUM_OR_USER`, and `DOWNLOAD_COMPLETE_HISTORY`
@@ -1798,6 +1805,10 @@ they are not yet a substitute for committed Dart tests.
       no current concrete ripper returns `hasDescriptionSupport() == true`;
       `FuraffinityRipper` implements helpers while explicitly disabling the
       feature.
+- [x] Re-read Java `RipUtils.getURLRegex` and `RedditRipper.handleBody`
+      against Flutter `RedditRipper._mediaFromBody`. A new exact finding was
+      recorded in section I for the narrower Java Reddit body-link regex and
+      trailing-parenthesis-only cleanup.
 - [x] Re-read Java `App.handleArguments`/`ripURL` against Flutter startup. A
       new exact CLI finding was recorded in sections A/Workstream 1: Java
       accepts `-n` / `--no-prop-file`, but the `saveConfig` argument is unused,
