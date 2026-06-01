@@ -876,12 +876,21 @@ Findings:
 - [ ] Java writes downloaded URLs to URL history before handing a download to
       the thread pool. Flutter marks downloads after `Http.downloadFile`
       succeeds; this changes retry/interruption semantics.
+- [ ] Java shared `AbstractRipper.addURLToDownload` rejects bare `http:` and
+      `https:` download URLs and rewrites spaces in `url.toExternalForm()` to
+      `%20` before save-path creation, history checks/writes, and queueing.
+      Flutter shared download scheduling does not have an equivalent
+      Java-compatible preflight guard.
 - [ ] Java `urls_only.save=true` writes `urls.txt`, counts it as completed, and
       opens `urls.txt` after rip completion. Flutter writes `urls.txt` but open
       behavior and completion details need verification.
 - [ ] Java duplicate suppression is per ripper pending/completed/errored maps
       unless `allowDuplicates()` is overridden. Flutter has a per-ripper
       attempted URL set; override coverage needs verification.
+- [ ] Java `DownloadThreadPool.waitForThreads()` shuts down the fixed thread
+      pool and waits at most 3600 seconds for termination. Flutter
+      `AbstractRipper.downloadFiles` waits on all worker futures with no
+      Java-compatible timeout or interrupted-wait status behavior.
 - [ ] Java stops an HTML rip after `history.end_rip_after_already_seen` already
       downloaded URLs and sends `DOWNLOAD_COMPLETE_HISTORY`. Flutter sends a
       download-skip message and stops; status parity is missing.
@@ -1682,6 +1691,14 @@ they are not yet a substitute for committed Dart tests.
       the observed URL-only, album-title, duplicate-suppression,
       byte-progress/status-text, video HEAD/progress, and shared download-path
       differences are already represented in section E.
+- [x] Re-read Java `AbstractRipper` and `RipperInterface` against Flutter
+      `AbstractRipper`. A new exact shared preflight gap was recorded in
+      section E for bare-scheme rejection and `%20` rewriting of spaces in
+      download URLs before history/save-path/queue behavior.
+- [x] Re-read Java `DownloadThreadPool` against Flutter
+      `AbstractRipper.downloadFiles`. The Java 3600-second termination wait
+      cap/interruption behavior is not represented in Flutter and is recorded
+      in section E.
 - [ ] Convert the mechanical scans above into checked-in tests/scripts before
       claiming final parity.
 
