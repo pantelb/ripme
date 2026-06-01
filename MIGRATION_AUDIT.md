@@ -217,7 +217,10 @@ Parity checklist:
 - [ ] Reject simultaneous `-d` and `-D`.
 - [ ] Apply `-4` / `--skip404` to the same config key used by Flutter HTTP.
 - [ ] Apply `-l` / `--ripsdirectory` to `rips.directory`.
-- [ ] Define and test `-n` / `--no-prop-file` semantics for Flutter.
+- [ ] Define and test `-n` / `--no-prop-file` semantics for Flutter. Java
+      accepts the option and passes `!cl.hasOption("n")` into `ripURL`, but
+      `ripURL(String targetURL, boolean saveConfig)` never reads `saveConfig`;
+      the current Java behavior is effectively a no-op despite the help text.
 - [ ] Support `-p` / `--proxy-server` for HTTP proxy strings.
 - [ ] Support or explicitly reject `-s` / `--socks-server` with a documented
       platform reason.
@@ -643,6 +646,13 @@ Findings:
       and updater mode.
 - [ ] Java URL-file ripping skips lines beginning with `//` and `#`; Flutter
       needs parser tests for that exact behavior.
+- [ ] Java CLI URL-file mode does not skip blank or whitespace-only lines:
+      only raw lines starting with `//` or `#` are treated as comments, and
+      every other line is trimmed and passed to `ripURL`.
+- [ ] Java `-n` / `--no-prop-file` behavior must be treated as source-backed
+      current behavior, not just help-text intent: `App.ripURL` receives but
+      ignores its `saveConfig` argument, so history/config writes still follow
+      the normal Java code paths.
 - [ ] Java manual URL input rejects duplicate queue entries and expands
       `{start-end}` numeric ranges before enqueueing. Flutter currently queues
       the submitted URL string through `RipManager` and needs parity tests.
@@ -767,6 +777,13 @@ Findings:
       entries. Flutter needs equivalent behavior or a documented replacement.
 - [ ] Java can reconstruct history candidates from existing rip directories via
       `RipUtils.urlFromDirectoryName`; Flutter has no verified equivalent.
+- [ ] Java fallback history guessing is narrower than its intent: `App.loadHistory`
+      only scans the working directory when both `history.json` and legacy
+      `download.history` are empty, and it passes each `Path.toString()` into
+      `RipUtils.urlFromDirectoryName`, whose helpers mostly check for bare
+      directory-name prefixes such as `imgur_`, `imagefap_`, and `deviantart_`.
+      Flutter must preserve, intentionally fix, or document this current-source
+      behavior.
 - [ ] Java history clear deletes both album history and downloaded-URL history
       through `Utils.clearURLHistory()`, optionally after
       `history.warn_before_delete` confirmation. Flutter clear behavior needs to
@@ -1699,6 +1716,13 @@ they are not yet a substitute for committed Dart tests.
       `AbstractRipper.downloadFiles`. The Java 3600-second termination wait
       cap/interruption behavior is not represented in Flutter and is recorded
       in section E.
+- [x] Re-read Java `App.handleArguments`/`ripURL` against Flutter startup. A
+      new exact CLI finding was recorded in sections A/Workstream 1: Java
+      accepts `-n` / `--no-prop-file`, but the `saveConfig` argument is unused,
+      making the option a current-source no-op despite the help text.
+- [x] Re-read Java CLI URL-file and history fallback paths. New exact findings
+      were recorded for blank URL-file line handling and for the current
+      `App.loadHistory`/`RipUtils.urlFromDirectoryName` directory-path behavior.
 - [ ] Convert the mechanical scans above into checked-in tests/scripts before
       claiming final parity.
 
