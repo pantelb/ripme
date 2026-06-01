@@ -1506,6 +1506,16 @@ Findings:
       `parseUrlFromHtml(...)` also treats empty artwork HTML as a single
       project. That widens Java's Cloudflare-only fallback and can rip URLs
       Java would reject with the expected ArtStation URL-format error.
+- [ ] Java `LusciousRipper` is still an `AbstractHTMLRipper`: `rip()` first
+      fetches the sanitized album page through `getCachedFirstPage()`, then
+      `getURLsFromPage(...)` ignores the HTML body but strictly walks
+      `data.picture.list.items` and `info.total_pages` in the GraphQL response.
+      Missing JSON structure propagates as a JSON exception or an empty list
+      that `AbstractHTMLRipper.rip()` turns into `IOException("No images found
+      at ...")`. Flutter `LusciousRipper.rip()` bypasses the album HTML fetch,
+      `totalPagesFromJson({})` returns `1`, `urlsFromJson({})` returns an empty
+      list, and the rip can send `ripComplete` with no downloads. That changes
+      both source-page validation and malformed/empty API failure behavior.
 - [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
       all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
@@ -2008,6 +2018,10 @@ they are not yet a substitute for committed Dart tests.
       `ArtStationRipper.parseUrl(...)` / `parseUrlFromHtml(...)`. A new section
       I finding records Java's status-403-only artwork JSON fallback versus
       Flutter's broader any-error/empty-HTML artwork fallback.
+- [x] Re-read Java `LusciousRipper` against Flutter `luscious_ripper.dart` and
+      `luscious_ripper_test.dart`. A new section I finding records Java's
+      album-page fetch and strict GraphQL structure handling versus Flutter's
+      API-only empty-list completion path.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
