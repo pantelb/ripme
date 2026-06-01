@@ -844,6 +844,13 @@ Findings:
 - [ ] Java `DownloadVideoThread` first issues a HEAD request for total bytes,
       then downloads with no connect timeout and byte-progress events. Flutter
       video helpers need exact progress comparison.
+- [ ] Java `VideoRipper.addURLToDownload` has a test-only contract: when
+      `markAsTest()` / `isThisATest()` is active and `urls_only.save` is false,
+      it does not enqueue or download the video; it mutates `this.url` to the
+      resolved video download URL and returns true. Java `VideoRippersTest`
+      asserts that the ripper URL changes from the original page URL. Flutter
+      video tests capture requested downloads, but no shared equivalent
+      Java-compatible test-mode URL mutation is represented.
 - [ ] Java SSL verification toggle globally disables/enables certificate and
       hostname checks for Jsoup. Flutter has no verified equivalent.
 - [ ] Java has two cookie parsers with different delimiters:
@@ -1752,10 +1759,11 @@ they are not yet a substitute for committed Dart tests.
       behavior gaps were recorded in section E for repeated-page guards and
       empty-media failure semantics.
 - [x] Re-read Java `AlbumRipper` and `VideoRipper` against Flutter
-      `AbstractRipper`/`AbstractVideoRipper`. No new unrecorded gap was found;
-      the observed URL-only, album-title, duplicate-suppression,
-      byte-progress/status-text, video HEAD/progress, and shared download-path
-      differences are already represented in section E.
+      `AbstractRipper`/`AbstractVideoRipper`. A new exact finding was recorded
+      in section D for Java `VideoRipper` test-mode URL mutation. The observed
+      URL-only, album-title, duplicate-suppression, byte-progress/status-text,
+      video HEAD/progress, and shared download-path differences are also
+      represented in section E.
 - [x] Re-read Java `AbstractRipper` and `RipperInterface` against Flutter
       `AbstractRipper`. A new exact shared preflight gap was recorded in
       section E for bare-scheme rejection and `%20` rewriting of spaces in
