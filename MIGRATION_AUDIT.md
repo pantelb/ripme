@@ -1705,6 +1705,23 @@ Findings:
       unreachable in the shipped Java flow. Flutter bypasses that abstract
       call and implements nullable Listal pagination directly, so next-page
       behavior is not Java-identical.
+- [ ] Java `MotherlessRipper.getFirstPage(...)` reads
+      `path.charAt(2)` for every URL that reaches the ripper, so malformed or
+      short paths can throw before the homepage-to-`/GM...` rewrite completes.
+      Flutter `MotherlessRipper.firstPageUrl(...)` guards `path.length > 2` and
+      returns the original URL for short paths, smoothing over Java's failure
+      mode.
+- [ ] Java `MotherlessRipper.getNextPage(...)` throws
+      `IOException("Last page reached")` when `link[rel=next]` is absent, and
+      separately dereferences `link[rel=canonical]` when a next link exists.
+      Flutter returns `null` for a missing/empty next link and falls back to the
+      original URL as referrer when canonical is absent, changing both end-state
+      and malformed-page behavior.
+- [ ] Java `MotherlessRipper.getURLsFromPage(...)` adds a URL for every
+      `div.thumb-container a.img-container` whose `href` does not contain
+      `pornmd.com`; a missing/empty `href` becomes `https://motherless.com`.
+      Flutter filters empty hrefs, so malformed thumbnail anchors are silently
+      skipped instead of matching Java.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
