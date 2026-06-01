@@ -2009,6 +2009,13 @@ Findings:
       of the actual downloaded deviation URL. Flutter records the media URL
       after global fragment removal, so Java's DeviantArt already-downloaded
       skip semantics are not reproduced.
+- [ ] Java `GirlsOfDesireRipper` inherits the broad
+      `AbstractHTMLRipper.canRip(...)` host check for `girlsofdesire.org`, but
+      `getGID(...)` then matches `^www\\.girlsofdesire\\.org/...` against
+      `url.toExternalForm()`, which includes the scheme and therefore rejects
+      normal `http://www.girlsofdesire.org/galleries/.../` URLs. Flutter
+      `GirlsOfDesireRipper` corrected the regex to allow an optional scheme, so
+      accepted URL/GID behavior no longer matches Java's shipped implementation.
 - [ ] Java dependency-backed ripper behavior must be audited at feature level,
       not just by class names: `ScrolllerRipper` uses Java-WebSocket for a
       GraphQL websocket flow, `InstagramRipper` uses the GraalVM
