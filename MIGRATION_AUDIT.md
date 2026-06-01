@@ -1473,6 +1473,11 @@ Findings:
       Download link or fetch fails, `urlToAdd` can be `null` and Java can throw.
       Flutter checks `imageUrl != null` and skips the post, changing missing
       image-link failure behavior.
+- [ ] Java `ImagefapRipper.getNextPage(...)` throws
+      `IOException("No next page found")` when no `a.link3` text contains
+      `next`. Flutter `ImagefapRipper.getNextPage(...)` returns `null` for the
+      same end state, and its Dart test currently asserts only the positive
+      next-link construction path.
 - [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
       all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
@@ -1961,6 +1966,10 @@ they are not yet a substitute for committed Dart tests.
       `furaffinity_ripper.dart` and `furaffinity_ripper_test.dart`. New section
       I findings record Java's next-page exception contract and missing
       Download-link null-deref behavior versus Flutter's nullable/skip paths.
+- [x] Re-read Java `ImagefapRipper` against Flutter `imagefap_ripper.dart` and
+      `imagefap_ripper_test.dart`. A new section I finding records Java's
+      `IOException("No next page found")` pagination contract versus Flutter's
+      nullable end-state helper.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
