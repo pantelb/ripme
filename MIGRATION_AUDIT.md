@@ -1573,6 +1573,30 @@ Findings:
       per source-backed case, whether Java's thrown parse failure, Java's
       `No images found at ...`, or a deliberate Flutter replacement is the
       compatible behavior.
+- [ ] Java `MastodonRipper.getNextPage(...)` throws
+      `IOException("No more pages")` when the `.load-more.load-gap` selector is
+      absent, and it lets a failed `Http.url(nextUrl).get()` escape to
+      `AbstractHTMLRipper`'s pagination handling. Flutter
+      `MastodonRipper.nextPageUrl(...)` returns `null` for a missing selector,
+      missing `href`, or empty `href`, and `rip()` catches next-page fetch
+      failures and breaks before sending `ripComplete`. The Mastodon-family
+      ports (`BaraagRipper`, `MastodonXyzRipper`, `PawooRipper`) inherit this
+      nullable/quiet-stop behavior instead of Java's exception contract.
+- [ ] Java `MastodonRipper.getURLsFromPage(...)` strictly parses each
+      `data-props` value as JSON, requires `media`, and requires each media
+      item's `url` and `id`. Flutter `MastodonRipper.mediaFromDocument(...)`
+      skips empty `data-props`, non-map decoded JSON, missing/non-list `media`,
+      non-map media entries, and entries missing `url`/`id`. Malformed Mastodon
+      gallery markup can therefore become a successful empty page in Flutter
+      where Java would throw before completing.
+- [ ] Java `DanbooruRipper.getURLsFromJSON(...)` strictly requires
+      `resources` to exist and every iterated entry to be a JSON object, while
+      only the optional `file_url` key is guarded with `has("file_url")`.
+      Flutter `DanbooruRipper.urlsFromJson(...)` returns an empty list when
+      `resources` is absent/non-list and skips non-map resources. Under
+      `AbstractJSONRipper`, Java malformed `resources` fails at parser time,
+      while Flutter can convert it into a `No images found at ...` rip error or
+      silently skip malformed entries.
 - [ ] Java `TapasticRipper.getURLsFromPage(...)` returns an empty list only when
       the page lacks the literal `episodeList : ` marker; once the marker is
       present it assumes `Utils.between(...).get(0)`, `new JSONArray(...)`,
