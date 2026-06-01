@@ -1663,6 +1663,18 @@ Findings:
       `postLink` with `siteUrl.resolve(...)`, and its Dart test explicitly
       accepts an absolute thumbnail href, so post-link handling has drifted
       from Java.
+- [ ] Java `BooruRipper.getNextPage(...)` dereferences the first `<posts>`
+      element and parses `offset` / `count` with strict
+      `Integer.parseInt(...)`; missing or malformed attributes fail before a
+      clean end-of-pagination result. Flutter `BooruRipper.getNextPage(...)`
+      returns `null` when `<posts>` is absent and defaults malformed numeric
+      attributes to zero, turning Java parse failures into a normal stop.
+- [ ] Java `BooruRipper.getURLsFromPage(...)` adds
+      `e.absUrl("file_url") + "#" + e.attr("id")` for every `<post>`, even when
+      `file_url` is missing or empty, producing `#<id>` entries. Flutter skips
+      posts whose `file_url` is missing/empty and resolves relative file URLs
+      explicitly against the DAPI page URL, so malformed/relative post handling
+      is not Java-identical.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
