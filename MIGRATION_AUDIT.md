@@ -1497,6 +1497,15 @@ Findings:
       rippers already expose nullable `getNextPage` helpers, so later fix work
       must decide whether to restore Java's exact exceptions/messages or
       document a deliberate cross-platform replacement.
+- [ ] Java `ArtStationRipper.parseURL(...)` only falls back from an artwork
+      HTML page to `https://www.artstation.com/projects/<id>.json` when the
+      HTML request returns status `403` and the URL contains `artwork/`; other
+      IO failures are caught into an empty HTML string and resolve to
+      `URL_TYPE.UNKNOWN`. Flutter `ArtStationRipper.parseUrl(...)` catches any
+      `Http.getText` failure for an artwork URL, and
+      `parseUrlFromHtml(...)` also treats empty artwork HTML as a single
+      project. That widens Java's Cloudflare-only fallback and can rip URLs
+      Java would reject with the expected ArtStation URL-format error.
 - [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
       all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
@@ -1995,6 +2004,10 @@ they are not yet a substitute for committed Dart tests.
       against Flutter nullable `getNextPage` helpers. A new section I finding
       records the remaining class/message inventory so later parity work does
       not discover these piecemeal.
+- [x] Re-read Java `ArtStationRipper.parseURL(...)` and Flutter
+      `ArtStationRipper.parseUrl(...)` / `parseUrlFromHtml(...)`. A new section
+      I finding records Java's status-403-only artwork JSON fallback versus
+      Flutter's broader any-error/empty-HTML artwork fallback.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
