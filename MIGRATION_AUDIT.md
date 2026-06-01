@@ -1698,6 +1698,13 @@ Findings:
       an empty URL candidate. Flutter `ImgboxRipper.imageUrlsFromDocument(...)`
       filters missing/empty `src` values before rewriting, so malformed
       thumbnail entries are silently skipped instead of matching Java.
+- [ ] Java `ListalRipper.getNextPage(...)` starts by calling
+      `super.getNextPage(page)` before switching on `urlType`; because
+      `AbstractHTMLRipper.getNextPage(...)` throws `IOException("getNextPage not implemented")`,
+      Listal-specific `.loadmoreitems` and folder `.pages a` pagination may be
+      unreachable in the shipped Java flow. Flutter bypasses that abstract
+      call and implements nullable Listal pagination directly, so next-page
+      behavior is not Java-identical.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
