@@ -439,7 +439,8 @@ Parity checklist:
 
 - [ ] Verify working directory naming and sanitization.
 - [ ] Verify Java `Utils.filesystemSafe`: remove characters outside
-      `[a-zA-Z0-9.-]` and truncate names longer than 100 characters to 99.
+      `[a-zA-Z0-9-.,_ ]`, trim, and truncate names longer than 100 characters
+      to 99.
 - [ ] Verify Java `Utils.filesystemSanitized`: replace characters outside
       `[a-zA-Z0-9.-]` with `_`.
 - [ ] Verify Java `Utils.sanitizeSaveAs`: replace `\\:*?"<>|` with `_` and
@@ -881,9 +882,10 @@ Flutter files checked:
 
 Findings:
 
-- [ ] Java `filesystemSafe` removes every character outside `[a-zA-Z0-9.-]`
-      and truncates names longer than 100 characters to 99. Flutter currently
-      preserves spaces, commas, and underscores and does not truncate.
+- [ ] Java `filesystemSafe` removes every character outside
+      `[a-zA-Z0-9-.,_ ]`, trims, and truncates names longer than 100 characters
+      to 99. Flutter currently matches the character-removal/trim behavior, but
+      does not truncate long strings.
 - [ ] Java `filesystemSanitized` replaces disallowed characters with `_`.
       Flutter has only `filesystemSafe` and `sanitizeSaveAs`.
 - [ ] Java `sanitizeSaveAs` replaces `\\:*?"<>|` and has test-backed filename
@@ -1818,6 +1820,11 @@ they are not yet a substitute for committed Dart tests.
       `HqpornerRipper.bestQualityLink`. A new exact finding was recorded in
       section I for the empty candidate-list result (`null` in Java, empty
       string in Flutter).
+- [x] Re-read Java `Utils.filesystemSafe` against Flutter
+      `Utils.filesystemSafe`. The existing audit wording was corrected in
+      Workstream 6 and section E: Java allows comma, underscore, and space,
+      trims, and truncates overlong strings to 99 characters; Flutter only
+      lacks the truncation.
 - [x] Re-read Java `App.handleArguments`/`ripURL` against Flutter startup. A
       new exact CLI finding was recorded in sections A/Workstream 1: Java
       accepts `-n` / `--no-prop-file`, but the `saveConfig` argument is unused,
