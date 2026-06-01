@@ -893,6 +893,12 @@ Findings:
 - [ ] Java writes downloaded URLs to URL history before handing a download to
       the thread pool. Flutter marks downloads after `Http.downloadFile`
       succeeds; this changes retry/interruption semantics.
+- [ ] Java normalizes URL-history keys through overridable
+      `AbstractRipper.normalizeUrl` before both history lookup and history
+      write. Current Java overrides are `ArtStationRipper` (strips a terminal
+      query word) and `DeviantartRipper` (uses the current offset URL).
+      Flutter download history marks/checks raw download URIs with no verified
+      equivalent per-ripper normalization.
 - [ ] Java shared `AbstractRipper.addURLToDownload` rejects bare `http:` and
       `https:` download URLs and rewrites spaces in `url.toExternalForm()` to
       `%20` before save-path creation, history checks/writes, and queueing.
@@ -908,6 +914,15 @@ Findings:
       pool and waits at most 3600 seconds for termination. Flutter
       `AbstractRipper.downloadFiles` waits on all worker futures with no
       Java-compatible timeout or interrupted-wait status behavior.
+- [ ] Java `AbstractHTMLRipper`/`AbstractJSONRipper` wait on overridable
+      `getThreadPool()` hooks, and concrete rippers can replace the default
+      pool with per-ripper pools. Current Java overrides are
+      `DeviantartRipper`, `E621Ripper`, `EHentaiRipper`, `FlickrRipper`,
+      `FuraffinityRipper`, `HqpornerRipper`, `ImagebamRipper`,
+      `ImagevenueRipper`, `ListalRipper`, `MotherlessRipper`, `NfsfwRipper`,
+      `NhentaiRipper`, and `PornhubRipper`. Flutter uses the shared
+      `AbstractRipper.downloadFiles` worker queue and has no verified
+      per-ripper pool hook/coverage for these classes.
 - [ ] Java stops an HTML rip after `history.end_rip_after_already_seen` already
       downloaded URLs and sends `DOWNLOAD_COMPLETE_HISTORY`. Flutter sends a
       download-skip message and stops; status parity is missing.
@@ -951,6 +966,13 @@ Findings:
 - [ ] Java `RipperInterface` contract includes `rip`, `canRip`, `sanitizeURL`,
       `setWorkingDir`, `getHost`, and `getGID`; Flutter abstract classes should
       keep all equivalent hooks covered by tests.
+- [ ] Java `AbstractRipper` calls each concrete `sanitizeURL(url)` during
+      construction and stores the sanitized result in `this.url`. Several
+      Flutter ports with Java `sanitizeURL` behavior still do not store a
+      sanitized constructor URL through `super(...)`, including at least
+      `FlickrRipper`, `ImagefapRipper`, `ImgurRipper`, `NfsfwRipper`,
+      `TumblrRipper`, and `TwitterRipper`; some sanitize selected call sites,
+      but setup/working-directory/rip flows are not proven Java-equivalent.
 - [ ] Mechanical public-method scan found additional Java runtime hooks that
       need explicit parity coverage or documented retirement:
       `AbstractRipper.setup`, `hasASAPRipping`, `getRipperConstructors`,
@@ -1685,6 +1707,13 @@ they are not yet a substitute for committed Dart tests.
       behavior, and status messages. New exact findings were recorded where
       missing; the remaining surfaces were already represented in sections A,
       E, I, J, and the pass ledgers.
+- [x] Re-ran Java `sanitizeURL` override discovery against Flutter constructor
+      wiring. A new exact finding was recorded in section E for Java
+      constructor-time URL sanitization that is not uniformly stored in
+      Flutter `AbstractRipper.url`.
+- [x] Re-ran Java `normalizeUrl` override discovery. A new exact finding was
+      recorded in section E for the `ArtStationRipper` and `DeviantartRipper`
+      URL-history normalization hooks.
 - [x] Re-read Java `UpdateUtils.isNewerVersion` and Flutter
       `UpdateChecker.isNewerVersion`. Java's exact-string fallback after equal
       numeric components is missing from Flutter; the finding is recorded in
@@ -1716,6 +1745,11 @@ they are not yet a substitute for committed Dart tests.
       `AbstractRipper.downloadFiles`. The Java 3600-second termination wait
       cap/interruption behavior is not represented in Flutter and is recorded
       in section E.
+- [x] Re-ran the Java per-ripper `getThreadPool()` override scan against
+      Flutter `AbstractRipper.downloadFiles`. A new exact finding was recorded
+      in section E for the Java rippers that replace or name their own
+      `DownloadThreadPool` through `AbstractHTMLRipper`/`AbstractJSONRipper`
+      waiting hooks.
 - [x] Re-read Java `App.handleArguments`/`ripURL` against Flutter startup. A
       new exact CLI finding was recorded in sections A/Workstream 1: Java
       accepts `-n` / `--no-prop-file`, but the `saveConfig` argument is unused,
