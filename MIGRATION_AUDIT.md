@@ -1904,6 +1904,13 @@ Findings:
       and JSON shape failures, and `getNextPage(...)` is a stub that always
       returns `null` even for `i.thechive.com` URLs. That changes both failure
       reporting and the Java look-ahead pagination contract.
+- [ ] Java `ThechiveRipper.getUrlsFromThechive(...)` strips query parameters
+      with `s.substring(0, s.indexOf("?"))` for every extracted gallery URL,
+      so an image or GIF URL with no `?` throws before returning results.
+      Flutter `ThechiveRipper.stripAfterQuestionMark(...)` returns queryless
+      URLs unchanged, and the Dart tests only cover URLs that contain query
+      strings, so post-gallery parsing is not Java-compatible for queryless
+      media.
 - [ ] Java `TumblrRipper.rip(...)` handles Tumblr API `404` and `429`
       `HttpStatusException`s specially: `404` sends `NO_ALBUM_OR_USER` with
       `Album or user doesn't exist!`, `429` sends `DOWNLOAD_ERRORED` with
