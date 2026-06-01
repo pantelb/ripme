@@ -2091,6 +2091,17 @@ Findings:
       `rip()`, so the public queue-support contract exposed by
       `AbstractHTMLRipper` is not equivalent even though the main rip path has
       similar behavior.
+- [ ] Java `NfsfwRipper.getNextPage(...)` sleeps and then throws
+      `IOException("No more pages")` when neither `a.next` nor queued
+      subalbums provide a valid next URL. Flutter `NfsfwRipper.getNextPage(...)`
+      returns `null` for the same end state, and its Dart test asserts `null`,
+      so pagination completion behavior is not Java-compatible.
+- [ ] Java `NfsfwRipper.getNextPage(...)` removes one queued subalbum URL and,
+      if it does not match the subalbum pattern, logs `Invalid sub-album URL`
+      and throws `IOException("No more pages")` instead of considering later
+      queued subalbums. Flutter loops over `_subalbumURLs` until it finds a
+      matching subalbum or exhausts the queue, skipping invalid entries and
+      potentially continuing where Java would stop.
 - [ ] Java `NhentaiRipper.getAlbumsToQueue(...)` and
       `getURLsFromPage(...)` add raw/transformed jsoup attributes directly:
       missing `href` queues `https://nhentai.net`, and missing `data-src`
