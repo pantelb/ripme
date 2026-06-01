@@ -1516,6 +1516,22 @@ Findings:
       `totalPagesFromJson({})` returns `1`, `urlsFromJson({})` returns an empty
       list, and the rip can send `ripComplete` with no downloads. That changes
       both source-page validation and malformed/empty API failure behavior.
+- [ ] Java `RedgifsRipper.sanitizeURL(...)` removes `/gifs/detail` rather
+      than rewriting it to `/watch`; for
+      `https://www.redgifs.com/gifs/detail/exampleid`, Java sanitizes to
+      `https://www.redgifs.com/exampleid`, which does not match the singleton
+      pattern and later fails `getGID(...)`. Flutter
+      `RedgifsRipper.sanitizeUrl(...)` rewrites `/gifs/detail/` to `/watch/`,
+      and the Dart test currently asserts the broader accepted URL form. This
+      is an intentional-or-not behavior expansion that must be decided and
+      tested against Java compatibility.
+- [ ] Java `RedgifsRipper.getURLsForGallery(...)` catches `IOException` from
+      the gallery API, logs `Error fetching gallery <galleryID> for gif
+      <gifID>`, and returns only the URLs accumulated so far, while Flutter
+      `_getUrlsForGallery(...)` lets `Http.getJSON(...)` and malformed gallery
+      response failures propagate. Gallery handling already has a Java TODO,
+      so parity work must cover both successful gallery expansion and this
+      partial-failure behavior instead of relying on singleton video tests.
 - [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
       all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
@@ -2022,6 +2038,11 @@ they are not yet a substitute for committed Dart tests.
       `luscious_ripper_test.dart`. A new section I finding records Java's
       album-page fetch and strict GraphQL structure handling versus Flutter's
       API-only empty-list completion path.
+- [x] Re-read Java `RedgifsRipper` against Flutter `redgifs_ripper.dart` and
+      `redgifs_ripper_test.dart`. New section I findings record the Java
+      `/gifs/detail` sanitization outcome and gallery-fetch `IOException`
+      handling versus Flutter's broader detail rewrite and propagated gallery
+      failures.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
