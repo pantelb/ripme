@@ -1558,6 +1558,21 @@ Findings:
       absent/empty, and `entriesFromJson(...)` returns an empty list when the
       first page has no `items`. This changes malformed JSON and no-next-page
       behavior into nullable completion instead of Java's exception contracts.
+- [ ] Mechanical Java strict-JSON access scan found additional rippers whose
+      Java source uses `JSONObject.get*` / `JSONArray.get*` contracts that
+      throw on missing or malformed API data, while the current Flutter tree has
+      many nullable casts, `??`, and empty-list returns in corresponding parser
+      code. Exact parity checks are still required for at least:
+      `ArtStationRipper`, `BatoRipper`, `CoomerPartyRipper`,
+      `DanbooruRipper`, `DerpiRipper`, `DynastyscansRipper`,
+      `FivehundredpxRipper`, `FuskatorRipper`, `HentaiNexusRipper`,
+      `HitomiRipper`, `ImgurRipper`, `InstagramRipper`, `MangadexRipper`,
+      `MastodonRipper`, `PhotobucketRipper`, `RedditRipper`, `TapasticRipper`,
+      `ThechiveRipper`, `TsuminoRipper`, and `TumblrRipper`. This is not a
+      request to make Dart brittle everywhere; it is a requirement to decide,
+      per source-backed case, whether Java's thrown parse failure, Java's
+      `No images found at ...`, or a deliberate Flutter replacement is the
+      compatible behavior.
 - [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
       all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
@@ -2082,6 +2097,11 @@ they are not yet a substitute for committed Dart tests.
       its tests. A new section I finding records Java's strict `page`/`items`
       JSON reads and `IOException("No more pages")` contract versus Flutter's
       nullable/empty-list completion paths.
+- [x] Ran a mechanical Java strict-JSON access scan for `getJSONArray`,
+      `getJSONObject`, and `getString` across concrete rippers, then compared
+      the result to Flutter parser sites using nullable casts, `??`, and empty
+      lists. A new section I inventory records remaining rippers that require
+      exact parse-failure parity decisions.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
