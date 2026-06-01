@@ -1443,6 +1443,12 @@ Findings:
       next-page anchor is missing. Flutter `HentaifoundryRipper.getNextPage(...)`
       returns `null` for both end states, and its Dart tests do not prove the
       Java exception contract.
+- [ ] Java `DerpiRipper.getNextPage(...)` throws
+      `IOException("No more images")` when the next JSON response has neither
+      `images` nor `search`, or when the selected array is empty. Flutter
+      `DerpiRipper.getNextPage()` returns `null` for the same no-more-images
+      states, and the Dart tests cover URL/media parsing but not the Java
+      exception contract.
 - [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
       all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
@@ -1915,6 +1921,10 @@ they are not yet a substitute for committed Dart tests.
       `twitter_ripper.dart`/`twitter_ripper_test.dart`. New source-backed
       findings were recorded for the retweet default mismatch and Twitter's
       per-page ordered-filename index reset.
+- [x] Re-read Java `DerpiRipper.getNextPage` against Flutter
+      `derpi_ripper.dart` and `derpi_ripper_test.dart`. A new section I finding
+      records Java's `IOException("No more images")` pagination contract versus
+      Flutter's nullable end-state helper.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
