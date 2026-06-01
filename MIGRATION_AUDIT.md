@@ -712,6 +712,12 @@ Findings:
 - [ ] Java uses both `error.skip404` in defaults and some code paths checking
       `errors.skip404`; Flutter uses `error.skip404`. The typo/alias behavior
       must be reconciled for CLI and download paths.
+- [ ] Java `Utils.getConfigStringArray(key)` returns `null` when
+      `PropertiesConfiguration.getStringArray(key)` has length zero. Flutter
+      `Utils.getConfigStringList(key)` returns an empty list for missing or
+      blank values. Callers that distinguish `null` from empty lists, including
+      Java `RipUtils.checkTags(...)` and ignored-extension plumbing, need exact
+      compatibility tests or a deliberate replacement decision.
 - [ ] Java `history.location` controls downloaded-URL history
       (`url_history.txt`), not the album history JSON. Flutter currently stores
       downloaded URLs in SharedPreferences unless explicitly imported/exported.
@@ -1872,6 +1878,10 @@ they are not yet a substitute for committed Dart tests.
       Flutter `BatoRipper.getAlbumTitle` and `bato_ripper_test.dart`. A new
       section I finding records the cached-first-page title behavior and the
       missing Dart proof for the disabled Java title expectation.
+- [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
+      `Utils.getConfigStringList`. A new section B finding records Java's
+      zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
+      for list-style config keys.
 - [x] Re-read Java `App.handleArguments`/`ripURL` against Flutter startup. A
       new exact CLI finding was recorded in sections A/Workstream 1: Java
       accepts `-n` / `--no-prop-file`, but the `saveConfig` argument is unused,
