@@ -1820,6 +1820,27 @@ Findings:
       cases. Flutter substitutes empty strings when those elements are absent,
       producing sanitized empty-prefix filenames instead of Java's immediate
       null-dereference failure.
+- [ ] Java `NewgroundsRipper.getNextPage(...)` throws
+      `IOException("No more pages")` when fewer than 60 art links were seen,
+      resets `count` when pagination continues, fetches the next AJAX document
+      immediately, and lets that fetch failure escape to the HTML pagination
+      loop. Flutter `NewgroundsRipper.getNextPage(...)` returns `null` when
+      `count < 60` and otherwise only returns the next URI without resetting
+      `count` or fetching/checking the document; `rip()` separately catches
+      next-page fetch failures and breaks as successful completion.
+- [ ] Java `JabArchivesRipper.getNextPage(...)` throws
+      `IOException("No more pages")` when `a[title="Next page"]` is absent,
+      sleeps, then fetches the hardcoded `https://jabarchives.com...` URL.
+      Flutter `JabArchivesRipper.getNextPage(...)` returns `null` for the
+      absent selector and only returns the URL; `rip()` performs the sleep/fetch
+      later and catches fetch failures as quiet completion.
+- [ ] Java `JabArchivesRipper.getSlug(...)` uses `Normalizer.normalize(...,
+      Form.NFD)` before stripping non-word characters, so every Unicode code
+      point with a Java NFD decomposition participates in title-prefix
+      normalization. Flutter `JabArchivesRipper.getSlug(...)` uses a
+      hardcoded Latin replacement table plus an ASCII regex, so decomposable
+      characters outside that table can be dropped instead of normalized to the
+      Java-compatible base character.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
