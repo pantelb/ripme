@@ -1433,6 +1433,11 @@ Findings:
       assert nullable no-next-page helpers, and Photobucket has no equivalent
       no-next-page assertion, so pagination end-state behavior needs a shared
       Java-compatible decision.
+- [ ] Java `HentaifoundryRipper.getNextPage(...)` also throws
+      `IOException("No more pages")` when `li.next.hidden` is present or the
+      next-page anchor is missing. Flutter `HentaifoundryRipper.getNextPage(...)`
+      returns `null` for both end states, and its Dart tests do not prove the
+      Java exception contract.
 - [ ] Java `BatoRipper.getAlbumTitle(...)` builds
       `bato_<gid>_<cached-first-page-title-with-spaces-as-underscores>` by
       calling `getCachedFirstPage()`, with a disabled Java test documenting the
@@ -1891,6 +1896,11 @@ they are not yet a substitute for committed Dart tests.
       `deviantart_ripper.dart` and `deviantart_ripper_test.dart`. A new exact
       section I finding records Java's persisted cookie/login flow versus
       Flutter's hardcoded agegate cookie.
+- [x] Re-read Java `HentaifoundryRipper.getNextPage` and flaky
+      `HentaifoundryRipperTest` against Flutter `hentaifoundry_ripper.dart`
+      and `hentaifoundry_ripper_test.dart`. A new section I finding records
+      Java's `IOException("No more pages")` pagination contract versus
+      Flutter's nullable end-state helper.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
