@@ -1675,6 +1675,17 @@ Findings:
       posts whose `file_url` is missing/empty and resolves relative file URLs
       explicitly against the DAPI page URL, so malformed/relative post handling
       is not Java-identical.
+- [ ] Java `ImagebamRipper.getURLsFromPage(...)` selects
+      `div > a[class=thumbnail]:not(.footera)`, which requires the `class`
+      attribute to be exactly `thumbnail` before the `:not(.footera)` filter.
+      Flutter uses `div > a.thumbnail:not(.footera)`, so links with additional
+      non-`footera` classes are included by Flutter but skipped by Java.
+- [ ] Java `ImagebamRipper.ImagebamImageThread.fetchImage(...)` passes the raw
+      `img[class*=main-image]` `src` through `new URI(imgsrc).toURL()`;
+      protocol-relative values such as `//images.example/full.jpg` fail that
+      conversion instead of downloading. Flutter normalizes protocol-relative
+      image sources to `https:` and its Dart test asserts that behavior, so
+      direct image extraction is not Java-identical.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
