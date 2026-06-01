@@ -1945,6 +1945,52 @@ Findings:
       interpolates `item['name']`, which can emit
       `https://ba.hitomi.la/galleries/<category>/null` for a missing `name`
       field instead of matching Java's strict missing-key failure.
+- [ ] Java `AllporncomicRipper.getURLsFromPage(...)` and
+      `getAlbumsToQueue(...)` add jsoup `attr(...)` values directly, including
+      empty strings when `data-src` or `href` is absent. Flutter
+      `AllporncomicRipper` filters empty image and queue URLs, so malformed
+      chapter pages can silently drop entries that Java would pass into the
+      shared download/queue path.
+- [ ] Java `Hentai2readRipper.getFirstPage(...)` first tries the reader
+      controls thumbnail link, then falls back to
+      `tempDoc.select("a[data-original-title=Thumbnails").attr("href")` with
+      the Java selector typo preserved. Flutter
+      `thumbnailPageUrlFromReader(...)` uses the corrected
+      `a[data-original-title="Thumbnails"]` selector and throws a controlled
+      `Unable to get first page` when no link exists, so fallback selection and
+      malformed-selector failure behavior are not Java-compatible.
+- [ ] Java `Hentai2readRipper.getAlbumsToQueue(...)` and
+      `chapterUrlsFromPage` parity is only partial: Java queues raw jsoup
+      `href` values from `.nav-chapters > li > div.media > a`, including empty
+      strings. Flutter mirrors the selector but also needs tests proving empty
+      `href` handling remains intentionally Java-compatible because the current
+      list helper returns `''` while other queue rippers filter empties.
+- [ ] Java `MyhentaicomicsRipper.getNextPage(...)` dereferences
+      `doc.select("a.ui-icon-right").first().attr("href")` before checking
+      whether a next page exists, so a missing next link can throw a null
+      dereference instead of the later `IOException("No more pages")`. Flutter
+      `nextPageUrlFromDocument(...)` returns `null` for a missing link and ends
+      pagination cleanly.
+- [ ] Java `NfsfwRipper.pageContainsAlbums(...)` is a real queue-discovery hook:
+      it loads the cached first page and returns true when there are no image
+      pages but subalbum links exist. Flutter `NfsfwRipper.pageContainsAlbums`
+      always returns false and performs the subalbum-only check inside
+      `rip()`, so the public queue-support contract exposed by
+      `AbstractHTMLRipper` is not equivalent even though the main rip path has
+      similar behavior.
+- [ ] Java `NhentaiRipper.getAlbumsToQueue(...)` and
+      `getURLsFromPage(...)` add raw/transformed jsoup attributes directly:
+      missing `href` queues `https://nhentai.net`, and missing `data-src`
+      becomes an empty image URL after the thumbnail replacements. Flutter
+      filters empty `href` and `data-src` values, changing malformed tag/gallery
+      page behavior.
+- [ ] Java `XhamsterRipper` declares `hasASAPRipping() == true` and performs
+      downloads inside `getURLsFromPage(...)` through `downloadFile(...)`, where
+      filenames use Java `getPrefix(index)` and therefore honor
+      `download.save_order`. Flutter schedules returned URLs through its normal
+      async path and `XhamsterRipper.prefix(...)` always emits a padded prefix,
+      so both ASAP side effects and save-order configuration parity need exact
+      tests.
 - [ ] Java dependency-backed ripper behavior must be audited at feature level,
       not just by class names: `ScrolllerRipper` uses Java-WebSocket for a
       GraphQL websocket flow, `InstagramRipper` uses the GraalVM
