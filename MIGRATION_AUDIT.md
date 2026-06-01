@@ -1991,6 +1991,24 @@ Findings:
       async path and `XhamsterRipper.prefix(...)` always emits a padded prefix,
       so both ASAP side effects and save-order configuration parity need exact
       tests.
+- [ ] Java downloaded-URL history normalization is per-ripper:
+      `AbstractRipper.normalizeUrl(...)` returns the original URL unchanged,
+      while `ArtStationRipper` strips only a terminal `?\w+` suffix and
+      `DeviantartRipper` replaces the URL with `urlWithParams(offset)`.
+      Flutter `DownloadHistoryProvider._normalize(...)` removes fragments for
+      every URL and has no per-ripper normalization hook, so duplicate/skip
+      behavior differs both globally and for ArtStation/DeviantArt.
+- [ ] Java `ArtStationRipper.normalizeUrl(...)` uses the narrow regex
+      `url.replaceAll("\\?\\w+$", "")`, so query strings containing `=`, `&`,
+      or non-word characters are preserved in downloaded-URL history. Flutter's
+      global history normalizer preserves all query strings but strips fragments
+      and does not exercise the ArtStation-specific terminal-query behavior.
+- [ ] Java `DeviantartRipper.normalizeUrl(...)` records
+      `urlWithParams(this.offset).toExternalForm()` for every downloaded URL,
+      tying history entries to the ripper's current pagination offset instead
+      of the actual downloaded deviation URL. Flutter records the media URL
+      after global fragment removal, so Java's DeviantArt already-downloaded
+      skip semantics are not reproduced.
 - [ ] Java dependency-backed ripper behavior must be audited at feature level,
       not just by class names: `ScrolllerRipper` uses Java-WebSocket for a
       GraphQL websocket flow, `InstagramRipper` uses the GraalVM
