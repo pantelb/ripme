@@ -1598,6 +1598,39 @@ Findings:
       malformed chapter entries, and propagates failed chapter fetches through
       `getJson(...)`. Both parser leniency and chapter-fetch failure behavior
       differ from Java.
+- [ ] Java `PhotobucketRipper.getFirstPage(...)` requires
+      `getCollectionData(currAlbum.currPage).getInt("total")`; if the script
+      JSON is missing, malformed, or lacks `total`, Java throws before ripping.
+      Flutter `PhotobucketRipper.getFirstPage(...)` sets `numPages = 0` when
+      collection data is missing or `total` is not an int, then later completes
+      cleanly with no downloads. Java `getImageURLs(...)` also strictly
+      dereferences `items.objects[*].fullsizeUrl`, while Flutter returns empty
+      lists/skips malformed objects. Pagination differs too: Java
+      `getNextPage(...)` throws `IOException("No more pages")` after the final
+      album/page, while Flutter returns `null` from `getNextDocument(...)` and
+      `getNextPage(...)`.
+- [ ] Java `PhotobucketRipper.AlbumMetadata` strictly reads metadata keys
+      `url`, `location`, and `sortOrder`, keeps the raw `location` path except
+      replacing spaces with underscores, and stores jsoup response cookies for
+      each album page. Flutter uses `.toString()` defaults for `url` and
+      `location`, casts only `sortOrder`, splits `location` into platform path
+      segments when saving, and reconstructs cookies from the raw `set-cookie`
+      header via the Fuskator helper. These path/cookie differences need
+      source-backed tests before claiming Photobucket parity.
+- [ ] Java `ThechiveRipper.downloadURL(...)` calls `getPrefix(index)`, so
+      `download.save_order=false` disables ordered filename prefixes for both
+      `thechive.com` posts and `i.thechive.com` user rips. Flutter
+      `ThechiveRipper.prefix(...)` always returns a zero-padded prefix and does
+      not read `download.save_order`, making TheChive ignore the global
+      save-order setting.
+- [ ] Java `ThechiveRipper.getUrlsFromIDotThechive(...)` catches
+      `IOException` and `JSONException`, logs the failure, and returns an empty
+      list; `getNextPage(...)` separately throws `IOException("Error fetching
+      next page.", e)` when its look-ahead JSON request fails. Flutter
+      `fetchIDotThechivePage(...)` / `urlsFromIDotJson(...)` propagates network
+      and JSON shape failures, and `getNextPage(...)` is a stub that always
+      returns `null` even for `i.thechive.com` URLs. That changes both failure
+      reporting and the Java look-ahead pagination contract.
 - [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
       all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
@@ -2132,6 +2165,11 @@ they are not yet a substitute for committed Dart tests.
       section I findings record Java strict JSON parser behavior and Mangadex
       per-chapter fetch failure behavior versus Flutter's nullable/empty-list
       or propagated-error paths.
+- [x] Re-read Java `PhotobucketRipper` and `ThechiveRipper` against their
+      Flutter ports. New section I findings record Photobucket strict
+      collection/metadata parsing, page-end exception, path/cookie behavior,
+      and TheChive save-order plus `i.thechive.com` JSON failure/look-ahead
+      pagination differences.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
