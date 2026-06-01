@@ -1597,6 +1597,32 @@ Findings:
       `AbstractJSONRipper`, Java malformed `resources` fails at parser time,
       while Flutter can convert it into a `No images found at ...` rip error or
       silently skip malformed entries.
+- [ ] Java `FivehundredpxRipper.getFirstPage(...)` strictly aggregates root
+      `/galleries` and `/stories` responses: it requires `galleries` /
+      `blog_posts`, each gallery/story object, `id`, `user_id`, nested
+      `user.username`, and each fetched child response's `photos`. Flutter
+      `FivehundredpxRipper.getFirstPage(...)` skips non-list or malformed
+      gallery/blog containers, uses nullable IDs/usernames in child API URLs,
+      and ignores child responses whose `photos` value is absent/non-list. Root
+      gallery/story malformed data can therefore become an empty or partial
+      result in Flutter where Java would fail while building the first page.
+- [ ] Java `FivehundredpxRipper.getURLsFromJSON(...)` strictly requires
+      top-level `photos`, each photo object, `url`, and fallback `image_url`;
+      `AbstractJSONRipper.rip()` then throws `IOException("No images found at
+      ...")` when the resulting URL list is empty. Flutter
+      `FivehundredpxRipper.getURLsFromJSON(...)` returns an empty list when
+      `photos` is absent/non-list, skips non-map photo entries, builds
+      `https://500px.comnull` when `url` is absent, and falls back to an empty
+      string when `image_url` is absent. Its `parseJSON(...)` has no Java-style
+      empty-list error, so malformed or empty 500px pages can complete cleanly
+      or queue an empty URL instead of failing like Java.
+- [ ] Java `FivehundredpxRipper.getNextPage(...)` treats missing
+      `current_page` or `total_pages` as `IOException("No more pages")`, and a
+      last page as `IOException("No more results")`; `AbstractJSONRipper` logs
+      and stops pagination through its catch path. Flutter
+      `FivehundredpxRipper.getNextPage(...)` returns `null` for missing or
+      non-integer page fields and for the last page, so these Java end-state
+      exception contracts are collapsed into the same nullable stop.
 - [ ] Java `TapasticRipper.getURLsFromPage(...)` returns an empty list only when
       the page lacks the literal `episodeList : ` marker; once the marker is
       present it assumes `Utils.between(...).get(0)`, `new JSONArray(...)`,
@@ -1625,6 +1651,24 @@ Findings:
       not equivalent for comma-bearing cookie attributes such as `Expires`.
       This repeats the cookie-parsing class of gap seen in other rippers but is
       a separate source-backed Tsumino request-state difference.
+- [ ] Java `DynastyscansRipper.getNextPage(...)` throws
+      `IOException("No more pages")` when `a#next_link` is absent or has
+      `href="#"`, and lets a failed fetch of the next chapter page escape to
+      `AbstractHTMLRipper`'s pagination handling. Flutter
+      `DynastyscansRipper.getNextPage(...)` returns `null` for the absent/`#`
+      cases, and `rip()` catches next-page fetch failures and breaks before
+      sending `ripComplete`. This changes both no-next-page and next-fetch
+      failure behavior into quiet completion.
+- [ ] Java `DynastyscansRipper.getURLsFromPage(...)` passes the discovered
+      `var pages` payload directly into `new JSONArray(jsonText)` and strictly
+      reads each entry with `getJSONObject(i).getString("image")`; a missing
+      script, non-array JSON, non-object item, or missing `image` throws.
+      Flutter `DynastyscansRipper.pagesJsonText(...)` throws a different
+      `FormatException` for a missing script, while `urlsFromPage(...)` returns
+      an empty list for non-list decoded JSON and skips non-map or missing-image
+      entries. Several malformed page-data states therefore become Flutter's
+      later `No images found at ...` status or partial output instead of Java's
+      immediate parser failure.
 - [ ] Java `FuskatorRipper.getURLsFromPage(...)` catches only the auth/fetch
       `IOException` block and returns an empty list for missing cookies,
       missing `X-Auth`, or JSON request failures, but once JSON is fetched it
