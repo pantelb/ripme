@@ -1692,6 +1692,12 @@ Findings:
       candidates. Flutter `ImagevenueRipper.imagePageUrlsFromDocument(...)`
       filters missing/empty `href` values, silently dropping candidates Java
       would attempt.
+- [ ] Java `ImgboxRipper.getURLsFromPage(...)` rewrites and adds
+      `thumb.attr("src")` for every `div.boxed-content > a > img`, even when
+      `src` is missing or empty; jsoup returns `""`, which Java then keeps as
+      an empty URL candidate. Flutter `ImgboxRipper.imageUrlsFromDocument(...)`
+      filters missing/empty `src` values before rewriting, so malformed
+      thumbnail entries are silently skipped instead of matching Java.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
