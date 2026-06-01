@@ -885,6 +885,10 @@ Findings:
       and `file.` stays `file.`.
 - [ ] Java working directory creation preserves an existing directory's
       original case on Unix/macOS through `getOriginalDirectory`.
+- [ ] Java `Utils.getWorkingDirectory()` creates the configured
+      `rips.directory` when it does not exist. Flutter `Utils.getWorkingDirectory`
+      returns a configured custom path directly without creating it, so custom
+      rip-root creation behavior is not Java-compatible.
 - [ ] Java shortens Windows paths above 260 characters and long filenames above
       filesystem limits; Flutter has no verified equivalent.
 - [ ] Java `getFileName` strips query, fragment, ampersand, and colon segments,
@@ -944,6 +948,11 @@ Findings:
 - [ ] Java `descriptions.save` can save per-item description `.txt` files through
       `getDescriptionsFromPage`, `getDescription`, `saveText`, and
       `descSleepTime`. Flutter has no shared verified equivalent.
+- [ ] Java `-a` / `--append-to-folder` stores
+      `App.stringToAppendToFoldername`, and `AbstractRipper.getFilePath`
+      applies it by resolving the working directory to a sibling named
+      `<workingDirName><appendString>` before adding subdirectories and file
+      names. Flutter has no verified equivalent for this path-shaping behavior.
 - [ ] Java `AbstractSingleFileRipper` provides byte-progress status text and
       byte-progress percentage behavior for its subclasses: `RulePornRipper`,
       `SpankbangRipper`, `XvideosRipper`, and `YoupornRipper`. The Flutter
@@ -1053,6 +1062,11 @@ Findings:
       `WindowStateListener`, `mnemonic`, or `accelerator` registrations in the
       Java UI; Flutter desktop and Android close/minimize/background behavior
       still needs an intentional replacement decision.
+- [ ] Java persists and restores desktop window bounds when `window.position`
+      is true and the platform is not affected by Java's Windows positioning
+      bug: shutdown saves `window.x`, `window.y`, `window.w`, and `window.h`,
+      startup restores those bounds, otherwise the frame is centered. Flutter
+      has no verified equivalent window-bounds persistence.
 - [ ] Java user-facing modal flows use `JOptionPane.showMessageDialog`,
       `JOptionPane.showConfirmDialog`, and a custom YES/NO `JFrame` for history
       deletion warning. Flutter dialogs/snackbars need exact workflow coverage,
@@ -1750,6 +1764,22 @@ they are not yet a substitute for committed Dart tests.
       in section E for the Java rippers that replace or name their own
       `DownloadThreadPool` through `AbstractHTMLRipper`/`AbstractJSONRipper`
       waiting hooks.
+- [x] Re-read Java `Utils.getWorkingDirectory()` against Flutter
+      `Utils.getWorkingDirectory`. A new exact finding was recorded in section E
+      for Java creating a configured `rips.directory` path before returning it.
+- [x] Re-read Java `App` option parsing and `AbstractRipper.getFilePath`
+      around `-a` / `--append-to-folder`. A new exact finding was recorded in
+      section E for Java resolving the working directory to a sibling named
+      `<workingDirName><appendString>` before subdirectories and filenames are
+      added.
+- [x] Re-ran source-tree reconciliation from Java `*Ripper.java` files against
+      Flutter `RipperMigrationCatalog.legacyRipperClasses` and local Dart ripper
+      files. No missing Java ripper simple names were found in the catalog in
+      this pass.
+- [x] Re-read Java `MainWindow.saveWindowPosition` /
+      `restoreWindowPosition` against Flutter desktop code. A new exact finding
+      was recorded in section F for Java `window.position` plus
+      `window.x`/`window.y`/`window.w`/`window.h` bounds persistence.
 - [x] Re-read Java `App.handleArguments`/`ripURL` against Flutter startup. A
       new exact CLI finding was recorded in sections A/Workstream 1: Java
       accepts `-n` / `--no-prop-file`, but the `saveConfig` argument is unused,
@@ -1793,7 +1823,8 @@ Initial status:
 - [x] GUI launch exists in Flutter with localized title, main command bar, status/progress, log, history, queue, and configuration tabs.
 - [x] Flutter initializes persisted configuration before app launch through `Utils.init()`.
 - [x] Flutter has update checking through GitHub Releases instead of Java self-update.
-- [~] Java GUI behavior is represented, but a detailed MainWindow-by-MainWindow interaction audit is still required.
+- [~] Java GUI behavior is partly represented; source-audited MainWindow gaps
+      are tracked in sections F, G, and the workflow notes below.
 - [ ] Java CLI/headless mode from `App.java` is not yet verified as ported.
 - [ ] Java command-line options are not yet fully mapped to Flutter behavior.
 
@@ -1822,8 +1853,12 @@ First findings:
 
 - Java chooses CLI/headless mode when either the environment is headless or any CLI args are present. Flutter currently starts the GUI from `main()` and does not branch on process arguments.
 - Java supports persisted queue restoration through the `queue` config key in `MainWindow`; Flutter keeps an in-memory queue in `RipManager`, and queue persistence/restoration still needs a focused parity check.
-- Java rejects duplicate manual queue entries and expands numeric URL ranges using `{start-end}` syntax in `RipButtonHandler`; Flutter currently enqueues the submitted text directly. This is a likely parity gap.
-- Java validates the current URL while typing and shows detected ripper host; Flutter command bar parity for live validation still needs inspection.
+- Java rejects duplicate manual queue entries and expands numeric URL ranges
+  using `{start-end}` syntax in `RipButtonHandler`; Flutter currently enqueues
+  the submitted text directly, so queue-entry parity is missing.
+- Java validates the current URL while typing and shows detected ripper host;
+  Flutter command bar parity for live validation is tracked as a source-backed
+  UI gap in section F.
 
 ### 2. Main Window And User Workflows
 
@@ -1889,9 +1924,12 @@ Initial status:
 - [x] Download history skip behavior exists.
 - [x] Download headers and cookies can flow through scheduled downloads.
 - [x] Video helper behavior has shared manifest selection coverage.
-- [ ] Java `append-to-folder` behavior still needs audit/porting.
-- [ ] Java description saving behavior needs audit against Flutter.
-- [ ] Java popup/tray notification behavior needs audit against Flutter.
+- [ ] Java `append-to-folder` behavior is source-audited and still needs
+      porting/tests.
+- [ ] Java description saving behavior is source-audited and still needs a
+      Flutter shared equivalent or documented retirement.
+- [ ] Java popup/tray notification behavior is source-audited and still needs
+      per-platform Flutter replacement decisions.
 
 ### 4. Configuration, History, And Utilities
 
@@ -1920,8 +1958,10 @@ Initial status:
 - [x] Album history and downloaded URL history have Flutter providers.
 - [~] History JSON imports can read Java date fields, but Java selected flags and file-location behavior need audit.
 - [~] HTTP proxy support exists; SOCKS proxy parity is not yet verified.
-- [ ] Java `history.location` / `-H` behavior needs audit/porting.
-- [ ] Java fallback history guessing from existing rip folders needs audit/porting.
+- [ ] Java `history.location` / `-H` behavior is source-audited and still needs
+      porting/tests.
+- [ ] Java fallback history guessing from existing rip folders is source-audited
+      and still needs porting/tests.
 
 ### 5. Resources, Localization, And Platform Integration
 
@@ -1948,9 +1988,12 @@ Initial status:
 - [x] Java label bundles are available to Flutter localization with English fallback.
 - [x] Platform build artifacts are produced by GitHub Actions for Android, Windows, macOS, and Linux.
 - [x] Completion sound behavior exists through platform alert sound.
-- [ ] Exact Java `camera.wav` sound-resource parity needs audit.
-- [ ] Java icon/resource parity needs a platform-by-platform audit.
-- [ ] Logging file output parity needs audit.
+- [ ] Exact Java `camera.wav` sound-resource parity is source-audited and still
+      needs runtime replacement/intentional-difference tests.
+- [ ] Java icon/resource parity is source-audited and still needs
+      platform-by-platform visual/provenance verification.
+- [ ] Logging file output parity is source-audited and still needs Flutter file
+      logging implementation or documented retirement.
 
 ### 6. Ripper Catalog
 
@@ -1970,7 +2013,9 @@ Initial status:
 - [x] All tracked Java rippers are ported in the current catalog.
 - [x] No unsupported legacy catalog entries remain.
 - [x] Factory/catalog tests verify the current tracked count.
-- [ ] A final source-tree reconciliation should confirm no Java rippers are missing from `RipperMigrationCatalog.legacyRipperClasses`.
+- [x] Source-tree reconciliation currently confirms no Java rippers are missing
+      from `RipperMigrationCatalog.legacyRipperClasses`; keep this generated
+      check in CI before claiming durable parity.
 
 ## Active Pass
 
@@ -1992,6 +2037,9 @@ Open work:
 
 - [ ] Port or explicitly replace Java CLI/headless mode.
 - [ ] Add Dart tests for CLI parsing/config side effects.
-- [ ] Audit queue persistence, duplicate enqueue behavior, and `{start-end}` URL range expansion.
-- [ ] Audit selected-history re-rip behavior.
-- [ ] Audit open-folder and tray/popup behavior.
+- [ ] Queue persistence, duplicate enqueue behavior, and `{start-end}` URL range
+      expansion are source-audited and still need implementation/tests.
+- [ ] Selected-history re-rip behavior is source-audited and still needs a
+      Flutter selected-history model or documented replacement.
+- [ ] Open-folder and tray/popup behavior is source-audited and still needs
+      platform-specific Flutter replacement decisions.
