@@ -1649,6 +1649,20 @@ Findings:
       stores jsoup `Response.cookies()` from the first page, while Flutter
       reconstructs cookies by splitting the raw `set-cookie` header on commas,
       which is not equivalent for cookie attributes such as `Expires`.
+- [ ] Java `SankakuComplexRipper.getSubDomain(...)` calls
+      `URLDecoder.decode(m.group(1), "UTF-8")` even when the optional
+      subdomain group is absent. A bare `https://sankakucomplex.com/?tags=abc`
+      URL can match `getGID(...)` as `null_abc`, but `getURLsFromPage(...)`
+      then dereferences the null subdomain path. Flutter returns an empty
+      subdomain string for the same URL and its Dart test currently treats bare
+      `sankakucomplex.com` tag URLs as supported.
+- [ ] Java `SankakuComplexRipper.getURLsFromPage(...)` builds post-page URLs
+      by concatenating `siteURL + postLink`; if a thumbnail href is already
+      absolute, Java attempts a malformed URL such as
+      `https://idol.sankakucomplex.comhttps://...`. Flutter resolves each
+      `postLink` with `siteUrl.resolve(...)`, and its Dart test explicitly
+      accepts an absolute thumbnail href, so post-link handling has drifted
+      from Java.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
