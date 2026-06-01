@@ -1416,6 +1416,48 @@ Findings:
       `https?://[^\s<>()"]+` pattern and strips trailing `)`, `.`, and `,`, so
       Reddit body-link extraction can accept or normalize URLs that Java would
       leave untouched.
+- [ ] Java `RedditRipper.getJsonArrayFromURL(...)` attempts to throttle Reddit
+      requests with `if (timeDiff < SLEEP_TIME) Thread.sleep(timeDiff)`, so the
+      second request after 500 ms sleeps 500 ms, not the remaining 1500 ms.
+      Flutter `_getRedditJson(...)` sleeps `2 seconds - elapsed`, which is the
+      intuitive throttle but not Java-compatible timing. The user agent also
+      differs: Java includes `RipMe:github.com/RipMeApp/ripme:<jar version>
+      (by /u/metaprime and /u/ineedmorealts)`, while Flutter sends a
+      `flutter-port` marker.
+- [ ] Java Reddit upvote filtering defaults to
+      `reddit.min_upvotes = Integer.MIN_VALUE` and
+      `reddit.max_upvotes = Integer.MAX_VALUE`, and when filtering skips a post
+      it sends `DOWNLOAD_WARN` with `Skipping post with score outside specified
+      range of ...`. Flutter `_shouldSkipByUpvotes(...)` defaults to `0` and
+      `10000`, ignores filtering when `score` is not an int, and returns an
+      empty media list without emitting the Java warning. Enabling
+      `reddit.rip_by_upvote` therefore changes default filtering and status
+      output.
+- [ ] Java `RedditRipper.parseJsonChild(...)` handles self posts by extracting
+      body links and then fetching the post's own `.json` URL to call
+      `saveText(...)`, which renders and writes the self-post HTML plus comments
+      when `selftext` is non-empty. Flutter `extractSelfPostHtmlFromJson(...)`
+      only exports HTML when the current JSON already contains a post listing
+      followed by a comments listing; listing-only self posts explicitly
+      produce no HTML in the Dart test suite. Java would make a second request
+      and try to save the HTML for those listing self posts.
+- [ ] Java `RedditRipper.saveText(...)` and nested comment rendering use strict
+      JSON fields (`title`, `id`, `author`, integer `created`, `subreddit`,
+      `selftext_html`, `url`, `body_html`, `name`) and catch/render nested
+      comment failures per comment. Flutter `_selfPostHtmlFromData(...)` and
+      `_renderComment(...)` default missing fields to empty strings, choose
+      `permalink` as a fallback URL, and use local timezone string formatting
+      instead of Java `new Date(...).toString()`. The generated HTML and
+      malformed-comment behavior are not yet proven Java-compatible.
+- [ ] Java `RedditRipper.handleGallery(...)` strictly dereferences
+      `gallery_data.items[*].media_id`, matching `media_metadata[media_id].s`,
+      and then `gif`/`u`, catching malformed gallery entries only after logging
+      the full `gallery_data` and `media_metadata`. Flutter
+      `_mediaFromGallery(...)` returns an empty list for missing/non-list
+      gallery items or non-map metadata, and silently skips entries with missing
+      metadata, `s`, `gif`, or `u`. Malformed Reddit galleries can therefore
+      disappear quietly instead of following Java's logged per-item failure
+      path.
 - [ ] Java per-ripper warning/error status messages must be checked where they
       feed UI parity, especially `DOWNLOAD_WARN`, `DOWNLOAD_ERRORED`,
       `RIP_ERRORED`, `NO_ALBUM_OR_USER`, and `DOWNLOAD_COMPLETE_HISTORY`
@@ -1455,6 +1497,16 @@ Findings:
       `AbstractJSONRipper`'s `No images found at ...` failure path. Flutter
       `CoomerPartyRipper.parseJSON(...)` stops cleanly when `posts.length < 50`
       and only throws on an empty first page, changing end-of-rip semantics.
+- [ ] Java `CoomerPartyRipper.pullFileUrl(...)` and
+      `pullAttachmentUrls(...)` catch `JSONException`, log
+      `Unable to Parse FileURL ...` / `Unable to Parse AttachmentURL ...`, and
+      log `Unknown extension for coomer.su path: ...` when a parsed path is not
+      an image or video. Flutter `_pullFileUrl(...)` /
+      `_pullAttachmentUrls(...)` silently return for missing/non-map `file`,
+      missing/non-string `path`, missing/non-list attachments, non-map
+      attachments, and unknown extensions. The resulting URL list can match,
+      but the Java diagnostic/error surface for malformed Coomer posts is
+      absent.
 - [ ] Java `FlickrRipper.getLargestImageURL(...)` logs JSON/malformed/IO
       failures while reading `flickr.photos.getSizes`, then still returns
       `imageURLMap.lastEntry().getValue()`; if no sizes were recorded this can
