@@ -1727,6 +1727,18 @@ Findings:
       `href` is empty. Flutter `OglafRipper.getNextPage(...)` returns `null`
       for both states, and its Dart test asserts that nullable completion
       behavior.
+- [ ] Java `PichunterRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+      host ending in `pichunter.com` is accepted before `getGID(...)` later
+      validates the URL shape. Flutter `PichunterRipper.canRip(...)` requires
+      one of the explicit listing/photos/tag/gallery regexes, and its Dart test
+      rejects `https://pichunter.com/models/Madison_Ivy`, narrowing Java's
+      domain-level support.
+- [ ] Java `PichunterRipper.getNextPage(...)` dereferences the last
+      `div.paperSpacings > ul > li.arrow` link when present and throws
+      `IOException("No more pages")` only when the arrow list is absent.
+      Flutter returns `null` for an absent arrow list, so pagination end-state
+      behavior diverges even though empty `href` handling is currently tested
+      as Java-compatible.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
