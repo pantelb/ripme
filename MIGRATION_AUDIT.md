@@ -1925,6 +1925,26 @@ Findings:
       Flutter `BatoRipper.getAlbumTitle(...)` fetches the URL again with
       `Http.get(url)` instead of using the cached first page, and the Dart test
       suite does not prove the Java title contract or cache behavior.
+- [ ] Java `BatoRipper.getAlbumTitle(...)` catches only `IOException`; after a
+      successful fetch with a missing `<title>`, `select("title").first().text()`
+      can null-dereference. Flutter `BatoRipper.getAlbumTitle(...)` uses a
+      nullable title lookup and falls back to the superclass title for missing
+      or empty title text, so malformed-but-successful Bato pages do not follow
+      Java's failure behavior.
+- [ ] Java `BatoRipper.getURLsFromPage(...)` extracts the `imgHttps = [...]`
+      script payload with `scanForImageList(...)`, then strictly calls
+      `JSONArray.getString(i)` for every entry. Flutter
+      `BatoRipper.imageUrlsFromDocument(...)` ignores decoded non-list payloads
+      and stringifies every list entry with `value.toString()`. Non-string
+      entries or non-array `imgHttps` JSON can therefore become partial/coerced
+      Dart URLs instead of Java parser failures.
+- [ ] Java `HitomiRipper.getURLsFromPage(...)` parses gallery info with
+      `new JSONArray(json)` and strictly calls
+      `json_data.getJSONObject(i).getString("name")`. Flutter
+      `HitomiRipper.imageUrlsFromGalleryInfo(...)` casts entries to maps but
+      interpolates `item['name']`, which can emit
+      `https://ba.hitomi.la/galleries/<category>/null` for a missing `name`
+      field instead of matching Java's strict missing-key failure.
 - [ ] Java dependency-backed ripper behavior must be audited at feature level,
       not just by class names: `ScrolllerRipper` uses Java-WebSocket for a
       GraphQL websocket flow, `InstagramRipper` uses the GraalVM
