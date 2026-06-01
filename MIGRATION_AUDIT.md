@@ -1402,6 +1402,14 @@ Findings:
       `E621Ripper.getNextPage(...)` currently returns `null` for the same case,
       and its Dart test asserts `null`, so the no-next-page contract is not
       Java-compatible.
+- [ ] Java test-backed pagination exception contracts extend beyond E621:
+      `HqpornerRipperTest` asserts `IOException("No next page found.")`,
+      `PornhubRipperTest` asserts `IOException("No more pages")`, and
+      `PhotobucketRipperTest` has a disabled-but-source-present assertion for
+      `IOException("No more pages")`. Flutter Hqporner/Pornhub tests currently
+      assert nullable no-next-page helpers, and Photobucket has no equivalent
+      no-next-page assertion, so pagination end-state behavior needs a shared
+      Java-compatible decision.
 - [ ] Java dependency-backed ripper behavior must be audited at feature level,
       not just by class names: `ScrolllerRipper` uses Java-WebSocket for a
       GraphQL websocket flow, `InstagramRipper` uses the GraalVM
@@ -1835,6 +1843,10 @@ they are not yet a substitute for committed Dart tests.
       Flutter `E621Ripper.getNextPage` and `e621_ripper_test.dart`. A new exact
       finding was recorded in section I for Java's asserted
       `IOException("No more pages.")` behavior versus Flutter's `null`.
+- [x] Re-scanned Java tests that assert exact no-next-page exception messages.
+      A new section I finding records the matching Hqporner/Pornhub assertions
+      plus the disabled Photobucket source assertion against Flutter's nullable
+      next-page helpers/tests.
 - [x] Re-read Java `App.handleArguments`/`ripURL` against Flutter startup. A
       new exact CLI finding was recorded in sections A/Workstream 1: Java
       accepts `-n` / `--no-prop-file`, but the `saveConfig` argument is unused,
