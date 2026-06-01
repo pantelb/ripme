@@ -2016,6 +2016,18 @@ Findings:
       normal `http://www.girlsofdesire.org/galleries/.../` URLs. Flutter
       `GirlsOfDesireRipper` corrected the regex to allow an optional scheme, so
       accepted URL/GID behavior no longer matches Java's shipped implementation.
+- [ ] Java `FapwizRipper.getGID(...)` matches the original
+      `url.toExternalForm()` against `[a-zA-Z0-9_%-]+` and returns the captured
+      post slug verbatim, including the original case of percent-encoded bytes.
+      Flutter `FapwizRipper.getGID(...)` first lowercases every `%XX` escape via
+      `_lowercasePercentEscapes(...)`, so uppercase-encoded emoji or other
+      escaped bytes produce different GIDs and filesystem-safe album names than
+      Java.
+- [ ] Java `FapwizRipper.getNextPage(...)` throws `IOException("No more pages.")`
+      when `a.next` is absent, and `FapwizRipperTest.testGetNextPage_NoNextPage`
+      documents that exception contract. Flutter `FapwizRipper.getNextPage(...)`
+      returns `null` for a missing/empty `a.next` href, so pagination completion
+      and test expectations differ.
 - [ ] Java dependency-backed ripper behavior must be audited at feature level,
       not just by class names: `ScrolllerRipper` uses Java-WebSocket for a
       GraphQL websocket flow, `InstagramRipper` uses the GraalVM
