@@ -1334,6 +1334,11 @@ Findings:
 - [ ] Java byte-progress/resume overrides must be verified:
       `HqpornerRipper.tryResumeDownload` and
       `HqpornerRipper.useByteProgessBar`.
+- [ ] Java `HqpornerRipper.getBestQualityLink(...)` returns `null` for an
+      empty candidate list before checking quality substrings. Flutter
+      `HqpornerRipper.bestQualityLink(...)` currently returns an empty string
+      for the same empty list, so helper-level behavior and tests do not yet
+      match Java exactly.
 - [ ] Java ASAP-ripping overrides must be verified for exact shared-runtime
       bypass semantics. `EightmusesRipper`, `ErofusRipper`, `FlickrRipper`,
       `TwitterRipper`, and `XhamsterRipper` return `hasASAPRipping() == true`,
@@ -1809,6 +1814,10 @@ they are not yet a substitute for committed Dart tests.
       against Flutter `RedditRipper._mediaFromBody`. A new exact finding was
       recorded in section I for the narrower Java Reddit body-link regex and
       trailing-parenthesis-only cleanup.
+- [x] Re-read Java `HqpornerRipper.getBestQualityLink` against Flutter
+      `HqpornerRipper.bestQualityLink`. A new exact finding was recorded in
+      section I for the empty candidate-list result (`null` in Java, empty
+      string in Flutter).
 - [x] Re-read Java `App.handleArguments`/`ripURL` against Flutter startup. A
       new exact CLI finding was recorded in sections A/Workstream 1: Java
       accepts `-n` / `--no-prop-file`, but the `saveConfig` argument is unused,
