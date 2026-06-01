@@ -1478,6 +1478,25 @@ Findings:
       `next`. Flutter `ImagefapRipper.getNextPage(...)` returns `null` for the
       same end state, and its Dart test currently asserts only the positive
       next-link construction path.
+- [ ] Mechanical Java `getNextPage`/pagination exception scan found additional
+      source-backed no-next-page/no-more-results contracts that need exact
+      Flutter parity checks instead of assuming nullable helpers are equivalent:
+      `ArtStationRipper` (`No more projects`), `CfakeRipper` (`No more pages
+      (cannot find nav/anchor/last page)`), `CheveretoRipper`,
+      `DeviantartRipper`, `DribbbleRipper`, `DynastyscansRipper`,
+      `FapwizRipper` (`No more pages.`), `FivehundredpxRipper`
+      (`No more pages` / `No more results`), `FreeComicOnlineRipper`,
+      `Hentai2readRipper`, `HentaiimageRipper`, `ImagebamRipper`,
+      `JabArchivesRipper`, `MastodonRipper`, `MyhentaicomicsRipper`,
+      `NewgroundsRipper`, `NfsfwRipper`, `NsfwXxxRipper`, `OglafRipper`,
+      `PichunterRipper`, `PicstatioRipper`, `PorncomixinfoRipper`,
+      `Rule34Ripper`, `SankakuComplexRipper`, `SinfestRipper`, `SmuttyRipper`,
+      `ThechiveRipper` (`No more pages.`), `TheyiffgalleryRipper`,
+      `TwodgalleriesRipper` (`No more images to retrieve`), `WebtoonsRipper`,
+      `WordpressComicRipper`, and `XhamsterRipper`. Several of these Flutter
+      rippers already expose nullable `getNextPage` helpers, so later fix work
+      must decide whether to restore Java's exact exceptions/messages or
+      document a deliberate cross-platform replacement.
 - [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
       all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
@@ -1970,6 +1989,12 @@ they are not yet a substitute for committed Dart tests.
       `imagefap_ripper_test.dart`. A new section I finding records Java's
       `IOException("No next page found")` pagination contract versus Flutter's
       nullable end-state helper.
+- [x] Ran a mechanical Java source scan for `throw new IOException(...)`
+      no-next-page/no-more-results contracts across `AbstractHTMLRipper`,
+      `AbstractJSONRipper`, and concrete Java rippers, then compared the result
+      against Flutter nullable `getNextPage` helpers. A new section I finding
+      records the remaining class/message inventory so later parity work does
+      not discover these piecemeal.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
