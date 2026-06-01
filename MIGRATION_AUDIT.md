@@ -1352,6 +1352,15 @@ Findings:
 - [ ] Java blacklist config arrays must be verified for exact tag matching and
       warning text: `ehentai.blacklist.tags`, `nhentai.blacklist.tags`, and
       `tsumino.blacklist.tags`.
+- [ ] Java E-Hentai/NHentai/Tsumino blacklist matching all goes through shared
+      `RipUtils.checkTags(String[], List<String>)`: a missing config array
+      returns `null`, blacklist entries are trimmed/lowercased for comparison
+      against lowercased page tags, the first matching blacklist entry wins
+      (not the first page tag), and the returned value is the lowercased
+      blacklist entry. Flutter currently has per-ripper implementations:
+      E-Hentai returns the original blacklist string, NHentai checks exact
+      membership while iterating page tags first, and Tsumino is closer but
+      still needs a shared Java-compatible proof.
 - [ ] Java per-ripper auth/config keys must be verified with Dart tests or
       documented replacements:
       `album_titles.save`, `chans.chan_sites`, `derpi.key`,
@@ -1847,6 +1856,10 @@ they are not yet a substitute for committed Dart tests.
       A new section I finding records the matching Hqporner/Pornhub assertions
       plus the disabled Photobucket source assertion against Flutter's nullable
       next-page helpers/tests.
+- [x] Re-read Java `RipUtils.checkTags` and the E-Hentai/NHentai/Tsumino
+      blacklist tests against Flutter per-ripper blacklist helpers. A new
+      section I finding records the shared Java ordering/case/return semantics
+      and the divergent Flutter implementations.
 - [x] Re-read Java `App.handleArguments`/`ripURL` against Flutter startup. A
       new exact CLI finding was recorded in sections A/Workstream 1: Java
       accepts `-n` / `--no-prop-file`, but the `saveConfig` argument is unused,
