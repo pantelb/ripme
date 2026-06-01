@@ -1419,6 +1419,14 @@ Findings:
       assert nullable no-next-page helpers, and Photobucket has no equivalent
       no-next-page assertion, so pagination end-state behavior needs a shared
       Java-compatible decision.
+- [ ] Java `BatoRipper.getAlbumTitle(...)` builds
+      `bato_<gid>_<cached-first-page-title-with-spaces-as-underscores>` by
+      calling `getCachedFirstPage()`, with a disabled Java test documenting the
+      expected title
+      `bato_1207152_I_Messed_Up_by_Teaching_at_a_Black_Gyaru_School!_Ch.2`.
+      Flutter `BatoRipper.getAlbumTitle(...)` fetches the URL again with
+      `Http.get(url)` instead of using the cached first page, and the Dart test
+      suite does not prove the Java title contract or cache behavior.
 - [ ] Java dependency-backed ripper behavior must be audited at feature level,
       not just by class names: `ScrolllerRipper` uses Java-WebSocket for a
       GraphQL websocket flow, `InstagramRipper` uses the GraalVM
@@ -1860,6 +1868,10 @@ they are not yet a substitute for committed Dart tests.
       blacklist tests against Flutter per-ripper blacklist helpers. A new
       section I finding records the shared Java ordering/case/return semantics
       and the divergent Flutter implementations.
+- [x] Re-read Java `BatoRipper.getAlbumTitle` and `BatoRipperTest` against
+      Flutter `BatoRipper.getAlbumTitle` and `bato_ripper_test.dart`. A new
+      section I finding records the cached-first-page title behavior and the
+      missing Dart proof for the disabled Java title expectation.
 - [x] Re-read Java `App.handleArguments`/`ripURL` against Flutter startup. A
       new exact CLI finding was recorded in sections A/Workstream 1: Java
       accepts `-n` / `--no-prop-file`, but the `saveConfig` argument is unused,
