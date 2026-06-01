@@ -1455,6 +1455,13 @@ Findings:
       `AbstractJSONRipper`'s `No images found at ...` failure path. Flutter
       `CoomerPartyRipper.parseJSON(...)` stops cleanly when `posts.length < 50`
       and only throws on an empty first page, changing end-of-rip semantics.
+- [ ] Java `FlickrRipper.getLargestImageURL(...)` logs JSON/malformed/IO
+      failures while reading `flickr.photos.getSizes`, then still returns
+      `imageURLMap.lastEntry().getValue()`; if no sizes were recorded this can
+      fail instead of skipping the photo. Flutter `largestImageUrlFromSizesJson`
+      and `_largestImageUrl(...)` return `null` for missing/empty size data and
+      `rip()` silently continues, so Flickr size-lookup failure semantics are
+      not Java-compatible.
 - [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
       all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
@@ -1935,6 +1942,10 @@ they are not yet a substitute for committed Dart tests.
       Flutter `coomer_party_ripper.dart` and `coomer_party_ripper_test.dart`.
       A new section I finding records Java's no-short-page-stop pagination
       behavior versus Flutter's `posts.length < 50` clean stop.
+- [x] Re-read Java `FlickrRipper` against Flutter `flickr_ripper.dart` and
+      `flickr_ripper_test.dart`. A new section I finding records Java's
+      empty-size-map failure path in `getLargestImageURL` versus Flutter's
+      nullable skip behavior.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
