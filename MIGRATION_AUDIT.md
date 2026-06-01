@@ -1790,6 +1790,36 @@ Findings:
       headers with `FuskatorRipper.cookiesFromSetCookieHeader(...)`, which is
       not equivalent for comma-bearing cookie attributes such as `Expires` and
       can alter the authenticated gallery request state.
+- [ ] Java `WebtoonsRipper.getFirstPage()` stores jsoup
+      `Connection.Response.cookies()` before adding `needCOPPA`, `needCCPA`,
+      and `needGDPR`. Flutter `WebtoonsRipper.cookiesFromResponse(...)`
+      reconstructs cookies by splitting the raw `set-cookie` header on commas,
+      which is not equivalent for comma-bearing cookie attributes such as
+      `Expires` and can alter the referer/cookie state used for protected image
+      downloads.
+- [ ] Java `WebtoonsRipper.getNextPage(...)` dereferences
+      `doc.select("a.pg_next").first()` and throws
+      `IOException("No more pages")` only when the link exists but its `href` is
+      empty or `#`; a missing link instead fails through the null dereference.
+      Flutter `WebtoonsRipper.getNextPage(...)` returns `null` for missing,
+      empty, and `#` links, and its Dart test asserts nullable completion for
+      the missing-link case.
+- [ ] Java `WordpressComicRipper.getNextPage(...)` throws
+      `IOException("No more pages")` when the theme-specific next link is
+      absent or has an empty `href`. Flutter `WordpressComicRipper.getNextPage`
+      returns `null` for the same absent/empty cases, changing the
+      Java-compatible pagination end-state into normal completion.
+- [ ] Java `WordpressComicRipper.getURLsFromPage(...)` dereferences the
+      theme1 comic image after trying the linked-image and direct-image
+      selectors; if both are absent, `elem.attr("src")` throws. Flutter adds an
+      empty string for the missing image and `rip()` skips empty image URLs, so
+      malformed theme1 comic pages can complete without Java's failure.
+- [ ] Java `WordpressComicRipper.getURLsFromPage(...)` also dereferences
+      `span.post-date`, `h2.post-title`, and `title` for the
+      `www.totempole666.com` and `themonsterunderthebed.net` title-prefix
+      cases. Flutter substitutes empty strings when those elements are absent,
+      producing sanitized empty-prefix filenames instead of Java's immediate
+      null-dereference failure.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
