@@ -1911,6 +1911,24 @@ Findings:
       URLs unchanged, and the Dart tests only cover URLs that contain query
       strings, so post-gallery parsing is not Java-compatible for queryless
       media.
+- [ ] Java ships both `rippers/VkRipper.java` for photos/albums/videos lists
+      and `rippers/video/VkRipper.java` for individual `/video...` pages. The
+      video ripper accepts `^https?://[wm.]*vk\\.com/video[0-9]+.*$`, extracts
+      the numeric video GID, and saves the download with prefix `vk_` plus that
+      GID. Flutter only has `lib/ripper/rippers/vk_ripper.dart`, where
+      `canRip(...)` deliberately rejects individual `/video123_456` URLs and
+      no equivalent `vk_<gid>` save-name path exists.
+- [ ] Java `VkRipper.getPage(...)` collects photo IDs in a `HashSet`, then
+      iterates that set when fetching each photo JSON object, so album image
+      request/download order is hash-set dependent rather than document order.
+      Flutter `VkRipper.photoIdsFromAnchors(...)` uses Dart's insertion-ordered
+      set and returns IDs in page order, changing Java's ordering behavior.
+- [ ] Java `VkRipper.getPhotoIDsToURLs(...)` only lets checked `IOException`s
+      be caught by the caller's per-photo skip path; JSON parsing failures from
+      `new JSONObject(response.body())` or strict object traversal escape the
+      loop. Flutter catches every exception from `getPhotoIDsToURLs(...)` in
+      `getImagePage(...)`, so malformed per-photo JSON is silently skipped
+      instead of aborting like Java.
 - [ ] Java `TumblrRipper.rip(...)` handles Tumblr API `404` and `429`
       `HttpStatusException`s specially: `404` sends `NO_ALBUM_OR_USER` with
       `Album or user doesn't exist!`, `429` sends `DOWNLOAD_ERRORED` with
