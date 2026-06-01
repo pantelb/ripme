@@ -1514,6 +1514,22 @@ Findings:
       and `_largestImageUrl(...)` return `null` for missing/empty size data and
       `rip()` silently continues, so Flickr size-lookup failure semantics are
       not Java-compatible.
+- [ ] Java `FlickrRipper.getJSON(...)` catches only `IOException` from a Flickr
+      API page fetch and returns `null`, after which `getURLsFromPage(...)`
+      immediately calls `jsonData.has("stat")`; malformed/non-object JSON
+      returned with HTTP 200 also throws from `new JSONObject(...)`. Flutter
+      `_fetchListing(...)` catches all fetch/decode failures, sends a generic
+      `DOWNLOAD_WARN`, returns `null`, and `rip()` breaks cleanly. Flickr API
+      transport and malformed-response failures therefore become quiet
+      completion in Flutter instead of Java's null dereference or parser
+      failure.
+- [ ] Java `FlickrRipper.getURLsFromPage(...)` strictly reads listing root
+      `pages`, `photo`, and each photo `id`; missing `photoset` falls back to
+      `photos`, but missing both only logs and breaks. Flutter
+      `photoIdsFromListJson(...)` returns `null` for missing roots or non-list
+      `photo`, parses non-integer `pages` as `0`, and skips photo entries
+      missing `id`. This can shorten a Flickr rip or produce partial output
+      where Java would throw or log a root-level failure.
 - [ ] Java `FuraffinityRipper.getNextPage(...)` throws
       `IOException("No more pages")` when no `a.right` next-page link exists.
       Flutter `FuraffinityRipper.getNextPage(...)` returns `null`, so
@@ -1525,6 +1541,21 @@ Findings:
       Download link or fetch fails, `urlToAdd` can be `null` and Java can throw.
       Flutter checks `imageUrl != null` and skips the post, changing missing
       image-link failure behavior.
+- [ ] Java `FuraffinityRipper.setCookies(...)` parses
+      `furaffinity.cookies` through shared `RipUtils.getCookiesFromString(...)`
+      and sends `DOWNLOAD_ERRORED` when the configured value equals the bundled
+      shared account cookie string. Flutter reimplements cookie parsing locally
+      in `FuraffinityRipper.parseCookies(...)`, so it needs proof that malformed
+      cookie strings, repeated keys, whitespace, and empty values match the
+      Java helper exactly before login/cookie parity can be claimed.
+- [ ] Java `FuraffinityRipper` overrides `hasDescriptionSupport()` to `false`
+      but still implements `getDescriptionsFromPage(...)`, `getDescription(...)`,
+      `descSleepTime()`, and `saveText(...)` with FurAffinity-specific title
+      rewriting and text cleanup. Flutter has no corresponding description/text
+      pipeline in `furaffinity_ripper.dart`. Because the Java support flag is
+      false, this may be intentionally dormant, but the migration audit needs a
+      decision and test evidence before treating FurAffinity description parity
+      as closed.
 - [ ] Java `ImagefapRipper.getNextPage(...)` throws
       `IOException("No next page found")` when no `a.link3` text contains
       `next`. Flutter `ImagefapRipper.getNextPage(...)` returns `null` for the
@@ -1736,6 +1767,20 @@ Findings:
       missing `b`/`r`/`i` to empty strings and returns an empty list when `f` is
       absent or malformed. That can produce malformed URLs or clean completion
       where Java would throw.
+- [ ] Java `HentaifoundryRipper.getFirstPage(...)` stores jsoup
+      `Response.cookies()` from both the age-gate request and the filter POST,
+      and directly dereferences `doc.select("input[name=YII_CSRF_TOKEN]").first()`
+      before checking whether `csrf_token != null`. Flutter reconstructs
+      cookies from raw `set-cookie` headers via `FuskatorRipper` helpers and
+      uses a nullable CSRF selector. Missing CSRF markup or comma-bearing cookie
+      attributes therefore follow different request-state and failure behavior.
+- [ ] Java `HentaifoundryRipper.getURLsFromPage(...)` catches image-page fetch
+      `IOException`, sets `imagePage = null`, then immediately dereferences
+      `imagePage.select(...)`; a failed image page can throw before the rip
+      continues. Flutter catches each image-page fetch failure and simply skips
+      that thumbnail. Java also emits `https:` plus an empty `src` if the image
+      page lacks `div.boxbody > img.center`, while Flutter returns `null` and
+      skips it. These image-page failure paths are not Java-equivalent.
 - [ ] Java `ImgurRipper.getImgurAlbum(...)` tries API JSON first and, if
       `data.images[*].link` parsing throws `JSONException` or
       `URISyntaxException`, falls back to the `/noscript` HTML parser for the
