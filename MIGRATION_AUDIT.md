@@ -1541,6 +1541,23 @@ Findings:
       `ripComplete` without reporting the Java-style no-images/malformed-page
       failure. This is separate from the already-tested query shape and
       Java-compatible best-area bug.
+- [ ] Java `SankakuComplexRipper.getNextPage(...)` calls
+      `doc.select("div.pagination").first()` and immediately dereferences the
+      result; a missing pagination block can throw before Java reaches its
+      `IOException("No more pages")` path. Flutter
+      `SankakuComplexRipper.getNextPage(...)` returns `null` for missing
+      pagination, missing `next-page-url`, empty next URL, and page 26, so it
+      turns multiple Java failure/end-state paths into a clean stop. Java also
+      stores jsoup `Response.cookies()` from the first page, while Flutter
+      reconstructs cookies by splitting the raw `set-cookie` header on commas,
+      which is not equivalent for cookie attributes such as `Expires`.
+- [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
+      `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
+      throws `IOException("No more pages")` when that array is empty. Flutter
+      returns `null` when `page` is absent/non-integer or when `items` is
+      absent/empty, and `entriesFromJson(...)` returns an empty list when the
+      first page has no `items`. This changes malformed JSON and no-next-page
+      behavior into nullable completion instead of Java's exception contracts.
 - [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
       all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
@@ -2056,6 +2073,15 @@ they are not yet a substitute for committed Dart tests.
       and `scrolller_ripper_test.dart`. A new section I finding records Java's
       strict malformed GraphQL response failure path versus Flutter's empty-list
       completion behavior.
+- [x] Re-read Java `SankakuComplexRipper` against Flutter
+      `sankaku_complex_ripper.dart` and its tests. A new section I finding
+      records Java's missing-pagination dereference/no-more-pages behavior and
+      jsoup cookie parsing versus Flutter's nullable next-page helper and
+      comma-split cookie parsing.
+- [x] Re-read Java `NsfwXxxRipper` against Flutter `nsfw_xxx_ripper.dart` and
+      its tests. A new section I finding records Java's strict `page`/`items`
+      JSON reads and `IOException("No more pages")` contract versus Flutter's
+      nullable/empty-list completion paths.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
