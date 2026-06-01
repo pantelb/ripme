@@ -1352,6 +1352,21 @@ Findings:
       `HqpornerRipper.bestQualityLink(...)` currently returns an empty string
       for the same empty list, so helper-level behavior and tests do not yet
       match Java exactly.
+- [ ] Java `HqpornerRipper.getAllVideoUrls(...)` selects
+      `div.6u h3  a.click-trigger`, which matches any `div` containing class
+      `6u`. Flutter uses `div[class="6u"] h3 a.click-trigger`, so listing
+      cards with additional classes are accepted by Java but skipped by
+      Flutter.
+- [ ] Java `HqpornerRipper.getVideoFromFlyFlv(...)` builds the jsoup selector
+      string `video > source[label=` plus the quality token, with no closing
+      bracket. Flutter uses a valid quoted selector
+      `video > source[label="$quality"]`, so FlyFlv extraction behavior no
+      longer mirrors Java's shipped selector contract.
+- [ ] Java `HqpornerRipper.getVideoFromUnknown(...)` returns the raw best
+      `[src$=.mp4]` attribute value before `fetchVideo(...)` tries to convert
+      it to a download URL. Flutter normalizes the same raw source through
+      `normalizeProtocolRelative(...)`, so protocol-relative direct MP4 sources
+      become `https:` URLs in Flutter but remain raw in Java.
 - [ ] Java ASAP-ripping overrides must be verified for exact shared-runtime
       bypass semantics. `EightmusesRipper`, `ErofusRipper`, `FlickrRipper`,
       `TwitterRipper`, and `XhamsterRipper` return `hasASAPRipping() == true`,
