@@ -1684,6 +1684,71 @@ Findings:
       missing `b`/`r`/`i` to empty strings and returns an empty list when `f` is
       absent or malformed. That can produce malformed URLs or clean completion
       where Java would throw.
+- [ ] Java `ImgurRipper.getImgurAlbum(...)` tries API JSON first and, if
+      `data.images[*].link` parsing throws `JSONException` or
+      `URISyntaxException`, falls back to the `/noscript` HTML parser for the
+      whole album. Flutter `ImgurRipper.albumImagesFromApiJson(...)` returns an
+      empty list for missing/non-list `data.images`, skips non-map entries, and
+      drops images missing `link`; if any valid link remains, it accepts that
+      partial API result and never falls back to `/noscript`. Malformed Imgur
+      album API data can therefore produce partial Flutter output where Java
+      would discard the API parse and use the fallback path.
+- [ ] Java `ImgurRipper.ripUserAccount(...)` strictly requires account
+      submission JSON `success`, `status == 200`, array `data`, and per-item
+      `link`, `is_album`, `id`, optional `mp4`; unexpected status throws
+      `IOException("Unexpected status code ...")`, and malformed item fields
+      throw out of the user rip. Flutter `_ripUserAccount(...)` accepts only a
+      broad map/status check, skips non-map items and missing/empty links, uses
+      an empty album ID when `id` is missing, and has a different unexpected
+      response error message. User-account malformed data and error reporting
+      are not Java-equivalent.
+- [ ] Java `ImgurRipper.ripUserImages(...)` wraps each AJAX page in a broad
+      `catch (Exception)` and breaks the user-images loop on any parse/fetch
+      failure after strictly reading `data.images[*].hash` and `ext`. Flutter
+      `ImgurRipper.userImagesFromAjaxJson(...)` converts missing/non-map `data`
+      or missing/non-list `images` into an empty page, skips images missing
+      `hash`/`ext`, and then breaks as if the account had no more images. That
+      turns malformed user-image pages into clean pagination end states instead
+      of Java's logged error path.
+- [ ] Java `ImgurRipper.ripSubreddit(...)` processes every `.post img` and
+      immediately builds a URL from `src`, after `//` and thumbnail `b.`
+      normalization; an empty or malformed `src` can throw and abort the
+      subreddit rip through `rip()`. Flutter `_ripSubreddit(...)` skips empty
+      `src` attributes and continues, so malformed subreddit image elements can
+      disappear silently instead of following Java's failure path.
+- [ ] Java `InstagramRipper.getFirstPage(...)` requires shared-data JSON to be
+      found and then strictly resolves the ID path with `getJsonStringByPath`;
+      if the document lacks usable `window._sharedData` /
+      `window.__additionalDataLoaded`, Java reaches strict JSON path access on
+      `null` or missing objects. Flutter `jsonObjectFromDocument(...)` returns
+      `null`, `rip()` substitutes `{}`, and `idStringFromJson(...)` returns an
+      empty string. Missing or malformed Instagram shared-data can therefore
+      continue into GraphQL calls with an empty ID instead of failing like Java.
+- [ ] Java `InstagramRipper.getQhash(...)` always builds a JS URL from the
+      selected preload `href` (empty string if none is found), fetches that body,
+      and extracts query hashes by parsing JavaScript with GraalVM AST offsets.
+      Flutter `_queryHash(...)` returns `null` when no matching preload is
+      found and `queryHashFromJavaScript(...)` uses a local regex window around
+      keywords. The Dart ripper can send GraphQL requests with
+      `query_hash=null`, and even when JS is present it is not exercising
+      Java's AST/offset extraction semantics.
+- [ ] Java `InstagramRipper.getNextPage(...)` strictly reads
+      `getMediaRoot(source).getJSONObject("page_info")`,
+      `has_next_page`, and `end_cursor`; missing pagination structure throws
+      and stops through `AbstractJSONRipper`'s catch path. Flutter
+      `_nextPage(...)` returns `null` when the media root or `page_info` is
+      missing, and uses a nullable `end_cursor` value in variables. Malformed
+      Instagram pagination can become a clean stop or null-cursor request rather
+      than Java's parser failure.
+- [ ] Java `InstagramRipper.getURLsFromJSON(...)`, `parseStoryItemForUrls(...)`,
+      `addPrefixInfo(...)`, and `parseRootForUrls(...)` use strict
+      `getJSONArray` / `getJSONObject` / `getString` / `getBoolean` /
+      `getLong` contracts for reels, posts, sidecars, timestamps, and media
+      URLs. Flutter's `storyMediaFromJson(...)`, `prefixInfoForItem(...)`,
+      `parseRootForUrls(...)`, and JSON path helpers return empty lists,
+      `null`, or timestamp `0` for missing/malformed fields. This changes many
+      malformed Instagram API/media-item states into skipped media or
+      `1970-01-01_00-00-00_` prefixes instead of Java-compatible failures.
 - [ ] Java `MangadexRipper.getURLsFromJSON(...)` strictly reads chapter JSON
       keys `hash`, `server`, and `page_array`, and manga JSON key `chapter` plus
       `lang_name` / numeric `chapter`; missing or malformed fields throw. During
