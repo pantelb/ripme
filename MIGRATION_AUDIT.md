@@ -1573,6 +1573,34 @@ Findings:
       per source-backed case, whether Java's thrown parse failure, Java's
       `No images found at ...`, or a deliberate Flutter replacement is the
       compatible behavior.
+- [ ] Java `TapasticRipper.getURLsFromPage(...)` returns an empty list only when
+      the page lacks the literal `episodeList : ` marker; once the marker is
+      present it assumes `Utils.between(...).get(0)`, `new JSONArray(...)`,
+      `getJSONObject(i)`, `getInt("id")`, and `getString("title")` all succeed.
+      Flutter `TapasticRipper.episodesFromDocument(...)` returns an empty list
+      when the marker has no trailing `,\n` delimiter, when decoded JSON is not
+      a list, and skips non-map episode entries. Java `downloadURL(...)` also
+      aborts the whole episode image loop on the first invalid/empty image
+      `src` because the broad try/catch wraps every image, while Flutter skips
+      empty `src` images and continues later images. These parser and per-image
+      failure paths are not Java-equivalent.
+- [ ] Java `TsuminoRipper.getPageUrls(...)` catches only the page-load
+      `IOException` path, sends the captcha warning, returns `null`, and then
+      `getURLsFromPage(...)` immediately dereferences `imageIds.length()`.
+      Successful but malformed load responses still throw from
+      `new JSONObject(...)` / `getJSONArray("reader_page_urls")` /
+      `getString(i)`. Flutter `getPageUrls(...)` catches all failures,
+      including JSON shape failures, sends the captcha warning, returns `null`,
+      and `getURLsFromPage(...)` converts that into an empty list. That changes
+      both Java's malformed JSON failure and Java's post-warning null
+      dereference into clean completion.
+- [ ] Java `TsuminoRipper.getFirstPage(...)` stores jsoup
+      `Connection.Response.cookies()` from the album page before loading reader
+      URLs. Flutter reconstructs cookies by splitting the raw `set-cookie`
+      header with `ThechiveRipper.cookiesFromSetCookieHeader(...)`, which is
+      not equivalent for comma-bearing cookie attributes such as `Expires`.
+      This repeats the cookie-parsing class of gap seen in other rippers but is
+      a separate source-backed Tsumino request-state difference.
 - [ ] Java `FuskatorRipper.getURLsFromPage(...)` catches only the auth/fetch
       `IOException` block and returns an empty list for missing cookies,
       missing `X-Auth`, or JSON request failures, but once JSON is fetched it
@@ -1631,6 +1659,29 @@ Findings:
       and JSON shape failures, and `getNextPage(...)` is a stub that always
       returns `null` even for `i.thechive.com` URLs. That changes both failure
       reporting and the Java look-ahead pagination contract.
+- [ ] Java `TumblrRipper.rip(...)` handles Tumblr API `404` and `429`
+      `HttpStatusException`s specially: `404` sends `NO_ALBUM_OR_USER` with
+      `Album or user doesn't exist!`, `429` sends `DOWNLOAD_ERRORED` with
+      `Tumblr rate limit has been exceeded`, and both stop the rip loop without
+      retrying other media types. Flutter `TumblrRipper.parseJSON(...)` only
+      retries `401` based on `e.toString().contains("401")`; other API failures
+      are rethrown through `AbstractJSONRipper`, so the Java status messages and
+      stop semantics are missing.
+- [ ] Java `TumblrRipper.handleJSON(...)` strictly dereferences
+      `response.posts` / `response.liked_posts` and each post `date`; missing or
+      malformed top-level API structure throws. Flutter
+      `TumblrRipper.mediaFromJson(...)` returns an empty list when `response` or
+      the post arrays are missing/non-list, and defaults missing `date` to an
+      empty string. That can turn malformed Tumblr API data into normal
+      pagination completion and empty filename prefixes where Java would fail.
+- [ ] Java `TumblrRipper.handleJSON(...)` catches malformed photo, video, audio,
+      album-art, and embedded-body media differently: photo failures are logged
+      and the same post/page continues, while video/audio/album-art/body image
+      failures return `true` and continue the outer pagination. Flutter
+      `TumblrRipper.mediaFromJson(...)` constructs `Uri.parse(...)` values
+      directly and skips missing photo URLs, so invalid media URLs can abort
+      parsing or disappear instead of following Java's per-media catch/continue
+      contracts.
 - [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
       all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
