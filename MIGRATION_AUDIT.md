@@ -885,6 +885,15 @@ Findings:
 - [ ] Java stops an HTML rip after `history.end_rip_after_already_seen` already
       downloaded URLs and sends `DOWNLOAD_COMPLETE_HISTORY`. Flutter sends a
       download-skip message and stops; status parity is missing.
+- [ ] Java `AbstractHTMLRipper` remembers each processed `doc.location()` and
+      breaks when a next page resolves to a previously processed location.
+      Flutter `AbstractHTMLRipper` has no visited-location guard, so bad or
+      cyclic pagination can loop until stopped or until a fetch fails.
+- [ ] Java shared HTML/JSON ripper layers throw `IOException("No images found
+      at ...")` when URL extraction returns no media and the ripper is not
+      doing ASAP/custom downloading. Flutter `AbstractHTMLRipper` currently
+      treats an empty download list as a normal completed rip, and
+      `AbstractJSONRipper` leaves this guard to each concrete parser.
 - [ ] Java deletes an empty working directory during cleanup. Flutter does not
       yet verify this cleanup behavior.
 - [ ] Java `AbstractHTMLRipper` supports queue-only pages through
@@ -1664,6 +1673,15 @@ they are not yet a substitute for committed Dart tests.
       `rip.properties` against Flutter defaults and call sites. No new config
       key names were found beyond the already recorded missing/renamed keys in
       sections B, C, F, G, J, and I.
+- [x] Re-read Java `AbstractHTMLRipper` and `AbstractJSONRipper` against
+      Flutter `AbstractHTMLRipper` and `AbstractJSONRipper`. New exact shared
+      behavior gaps were recorded in section E for repeated-page guards and
+      empty-media failure semantics.
+- [x] Re-read Java `AlbumRipper` and `VideoRipper` against Flutter
+      `AbstractRipper`/`AbstractVideoRipper`. No new unrecorded gap was found;
+      the observed URL-only, album-title, duplicate-suppression,
+      byte-progress/status-text, video HEAD/progress, and shared download-path
+      differences are already represented in section E.
 - [ ] Convert the mechanical scans above into checked-in tests/scripts before
       claiming final parity.
 
