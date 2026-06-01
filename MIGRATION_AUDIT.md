@@ -1722,6 +1722,11 @@ Findings:
       `pornmd.com`; a missing/empty `href` becomes `https://motherless.com`.
       Flutter filters empty hrefs, so malformed thumbnail anchors are silently
       skipped instead of matching Java.
+- [ ] Java `OglafRipper.getNextPage(...)` throws `IOException("No more pages")`
+      both when `div#nav > a > div#nx` is missing and when the parent link's
+      `href` is empty. Flutter `OglafRipper.getNextPage(...)` returns `null`
+      for both states, and its Dart test asserts that nullable completion
+      behavior.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
