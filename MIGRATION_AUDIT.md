@@ -1449,6 +1449,12 @@ Findings:
       `DerpiRipper.getNextPage()` returns `null` for the same no-more-images
       states, and the Dart tests cover URL/media parsing but not the Java
       exception contract.
+- [ ] Java `CoomerPartyRipper.getNextPage(...)` always advances to the next
+      50-post offset and returns a wrapped JSON array; it does not stop when a
+      page has fewer than 50 posts, so an empty later page reaches
+      `AbstractJSONRipper`'s `No images found at ...` failure path. Flutter
+      `CoomerPartyRipper.parseJSON(...)` stops cleanly when `posts.length < 50`
+      and only throws on an empty first page, changing end-of-rip semantics.
 - [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
       all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
@@ -1925,6 +1931,10 @@ they are not yet a substitute for committed Dart tests.
       `derpi_ripper.dart` and `derpi_ripper_test.dart`. A new section I finding
       records Java's `IOException("No more images")` pagination contract versus
       Flutter's nullable end-state helper.
+- [x] Re-read Java `CoomerPartyRipper` and `CoomerPartyRipperTest` against
+      Flutter `coomer_party_ripper.dart` and `coomer_party_ripper_test.dart`.
+      A new section I finding records Java's no-short-page-stop pagination
+      behavior versus Flutter's `posts.length < 50` clean stop.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
