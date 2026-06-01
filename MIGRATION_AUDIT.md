@@ -1573,6 +1573,31 @@ Findings:
       per source-backed case, whether Java's thrown parse failure, Java's
       `No images found at ...`, or a deliberate Flutter replacement is the
       compatible behavior.
+- [ ] Java `FuskatorRipper.getURLsFromPage(...)` catches only the auth/fetch
+      `IOException` block and returns an empty list for missing cookies,
+      missing `X-Auth`, or JSON request failures, but once JSON is fetched it
+      strictly calls `json.getJSONArray("images")`,
+      `image.getString("imageUrl")`. Flutter `FuskatorRipper.imageUrlsFromJson`
+      returns an empty list for non-map JSON, missing/non-list `images`, and
+      per-image missing `imageUrl`, so malformed successful API responses are
+      silently treated like no images instead of Java's parser failure.
+- [ ] Java `HentaiNexusRipper.getURLsFromJSON(...)` strictly requires JSON keys
+      `f`, `b`, `r`, `i`, and each image's `h`/`p`, and a missing
+      `initReader(...)` payload returns `""` which then reaches Java Base64
+      decode / JSON construction failure. Flutter `urlsFromJson(...)` defaults
+      missing `b`/`r`/`i` to empty strings and returns an empty list when `f` is
+      absent or malformed. That can produce malformed URLs or clean completion
+      where Java would throw.
+- [ ] Java `MangadexRipper.getURLsFromJSON(...)` strictly reads chapter JSON
+      keys `hash`, `server`, and `page_array`, and manga JSON key `chapter` plus
+      `lang_name` / numeric `chapter`; missing or malformed fields throw. During
+      manga rips, Java catches `IOException | URISyntaxException` from an
+      individual chapter fetch, prints the stack trace, and then still
+      dereferences `chapterJSON`, which can fail immediately. Flutter returns
+      empty lists/maps for missing chapter fields or manga chapter maps, skips
+      malformed chapter entries, and propagates failed chapter fetches through
+      `getJson(...)`. Both parser leniency and chapter-fetch failure behavior
+      differ from Java.
 - [ ] Java `AbstractJSONRipper.rip()` keeps one global download index across
       all Twitter pages before calling `TwitterRipper.downloadURL(...)`, so
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
@@ -2102,6 +2127,11 @@ they are not yet a substitute for committed Dart tests.
       the result to Flutter parser sites using nullable casts, `??`, and empty
       lists. A new section I inventory records remaining rippers that require
       exact parse-failure parity decisions.
+- [x] Re-read Java `FuskatorRipper`, `HentaiNexusRipper`, and
+      `MangadexRipper` against their Flutter ports and focused Dart tests. New
+      section I findings record Java strict JSON parser behavior and Mangadex
+      per-chapter fetch failure behavior versus Flutter's nullable/empty-list
+      or propagated-error paths.
 - [x] Re-read Java `Utils.getConfigStringArray` usages against Flutter
       `Utils.getConfigStringList`. A new section B finding records Java's
       zero-length-array-to-`null` behavior versus Flutter's empty-list behavior
