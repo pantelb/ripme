@@ -1752,6 +1752,44 @@ Findings:
       `wallpaperSlugsFromDocument(...)` and later skips empty `imageUrl` values
       during `rip()`, so malformed/empty media candidates no longer follow
       Java's failure path.
+- [ ] Java `PorncomixinfoRipper` inherits
+      `AbstractHTMLRipper.canRip(...)`, so any host ending in
+      `porncomixinfo.net` is accepted before `getGID(...)` applies the stricter
+      `/chapter/CHAP/ID` regex. Flutter `PorncomixinfoRipper.canRip(...)`
+      directly uses that strict regex and its Dart test rejects `http://...`,
+      `www...`, and `comic0` URL variants, narrowing Java's accepted
+      domain-level surface.
+- [ ] Java `PorncomixinfoRipper.getNextPage(...)` throws
+      `IOException("No more pages")` when `a.next_page` is absent, but returns
+      `null` only for a present next link with an empty `href`. Flutter
+      `PorncomixinfoRipper.nextPageUrl(...)` returns `null` for both absent and
+      empty next links, and the Dart test asserts nullable completion for the
+      absent-link case instead of Java's exception contract.
+- [ ] Java `TheyiffgalleryRipper` inherits
+      `AbstractHTMLRipper.canRip(...)`, so any host ending in
+      `theyiffgallery.com` is accepted before `getGID(...)` validates
+      `index?/category/####`. Flutter `TheyiffgalleryRipper.canRip(...)`
+      directly uses the strict category regex and its Dart test rejects
+      `www.theyiffgallery.com`, narrowing Java's domain-level support.
+- [ ] Java `TheyiffgalleryRipper.getNextPage(...)` throws
+      `IOException("No more pages")` when the nav link is absent, empty, or
+      lacks `start-`. Flutter `TheyiffgalleryRipper.nextPageFromDocument(...)`
+      returns `null` for those same states, and its Dart test asserts nullable
+      completion for the missing/non-start cases.
+- [ ] Java `TwodgalleriesRipper.getNextPage(...)` increments the offset, loads
+      the next AJAX document with cookies, and throws
+      `IOException("No more images to retrieve")` when that fetched document has
+      no `div.hcaption > img`. Flutter's framework-facing
+      `getNextPage(...)` only returns the next AJAX URI without fetching or
+      checking the image list; its separate `getNextDocument(...)` keeps the
+      Java stop check for `rip()`, but callers using the inherited pagination
+      contract see different behavior.
+- [ ] Java `TwodgalleriesRipper.login()` stores jsoup
+      `Connection.Response.cookies()` from both the initial page and login
+      response. Flutter reconstructs `_cookies` by splitting raw `set-cookie`
+      headers with `FuskatorRipper.cookiesFromSetCookieHeader(...)`, which is
+      not equivalent for comma-bearing cookie attributes such as `Expires` and
+      can alter the authenticated gallery request state.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
