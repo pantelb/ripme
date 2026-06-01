@@ -1686,6 +1686,12 @@ Findings:
       conversion instead of downloading. Flutter normalizes protocol-relative
       image sources to `https:` and its Dart test asserts that behavior, so
       direct image extraction is not Java-identical.
+- [ ] Java `ImagevenueRipper.getURLsFromPage(...)` adds `thumb.attr("href")`
+      for every `a[target=_blank]`, including anchors with a missing or empty
+      `href`, so the later image-thread URL conversion sees those empty
+      candidates. Flutter `ImagevenueRipper.imagePageUrlsFromDocument(...)`
+      filters missing/empty `href` values, silently dropping candidates Java
+      would attempt.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
