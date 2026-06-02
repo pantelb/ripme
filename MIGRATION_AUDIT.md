@@ -723,6 +723,13 @@ Findings:
       blank values. Callers that distinguish `null` from empty lists, including
       Java `RipUtils.checkTags(...)` and ignored-extension plumbing, need exact
       compatibility tests or a deliberate replacement decision.
+- [ ] Java `album_titles.save=false` only changes `AbstractJSONRipper`
+      directory naming: `AbstractJSONRipper.setWorkingDir(...)` falls back to
+      `super.getAlbumTitle(this.url)`, while `AbstractHTMLRipper.setWorkingDir(...)`
+      always calls the concrete `getAlbumTitle(...)`. Flutter
+      `AbstractRipper.setup()` always calls each Dart ripper's
+      `getAlbumTitle(...)`, so JSON rippers do not honor Java's no-album-title
+      fallback and HTML rippers are not distinguished from JSON rippers.
 - [ ] Java `TwitterRipper` defaults `twitter.rip_retweets` to `true` through
       `Utils.getConfigBoolean("twitter.rip_retweets", true)`. Flutter's
       `config_defaults.dart` sets `twitter.rip_retweets` to `false`, so the
