@@ -1427,6 +1427,12 @@ Findings:
       factory matching.
 - [ ] Java duplicate-download override must be verified:
       `ImgurRipper.allowDuplicates` permits duplicate media URLs for user rips.
+- [ ] Java duplicate suppression is not disabled for `EightmusesRipper` or
+      `TsuminoRipper`: neither class overrides `allowDuplicates()`, so their
+      `addURLToDownload(...)` calls still use the shared pending/completed/
+      errored URL maps. Flutter marks Eightmuses ASAP downloads and Tsumino
+      image-object downloads with `allowDuplicate: true`, permitting duplicate
+      URLs that Java would skip.
 - [ ] Java byte-progress/resume overrides must be verified:
       `HqpornerRipper.tryResumeDownload` and
       `HqpornerRipper.useByteProgessBar`.
