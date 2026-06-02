@@ -2055,6 +2055,44 @@ Findings:
       and runs `rip()` immediately. Flutter tag-page `rip()` only emits
       `RipStatus.queueAdd` messages for the collected child URLs and completes,
       so tag pages no longer execute the same recursive child-gallery rip flow.
+- [ ] Java `HentaifoxRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+      host ending in `hentaifox.com` is accepted before `getGID(...)` checks the
+      strict `https://hentaifox.com/gallery/ID` shape. Flutter
+      `HentaifoxRipper.canRip(...)` directly uses the strict gallery regex,
+      narrowing Java's domain-level support.
+- [ ] Java `HypnohubRipper.ripPost(...)` uses
+      `doc.selectFirst("a:matchesOwn(^Original image$")`, a malformed jsoup
+      selector, for the Original-image fallback in both string and document
+      variants. Flutter `HypnohubRipper.imageUrlFromPostDocument(...)` instead
+      scans `a[href]` text and successfully supports the Original-image fallback,
+      so post pages without `img#image` no longer follow Java's selector-failure
+      behavior.
+- [ ] Java `MultpornRipper.getGID(...)` may rewrite the instance `url` to the
+      canonical `/node/ID/...` simple-mode URL, and `downloadURL(...)` passes
+      that `this.url.toExternalForm()` as the download referrer via
+      `addURLToDownload(...)`. Flutter uses the canonical URL for loading the
+      page, but its `RipperDownload` path does not carry Java's canonical
+      Multporn referrer into each image download.
+- [ ] Java `PorncomixRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+      host ending in `porncomix.info` is accepted before `getGID(...)` checks
+      the strict `www.porncomix.info/SLUG` pattern. Flutter
+      `PorncomixRipper.canRip(...)` directly uses the strict GID regex,
+      narrowing Java's domain-level support.
+- [ ] Java `ReadcomicRipper` and `ViewcomicRipper` inherit
+      `AbstractHTMLRipper.canRip(...)`, so any host ending in `read-comic.com`
+      or `view-comic.com` is accepted before their strict slug-only
+      `getGID(...)` regexes run. Flutter `ReadcomicRipper.canRip(...)` and
+      `ViewcomicRipper.canRip(...)` use those strict regexes directly.
+- [ ] Java `ReadcomicRipper.getURLsFromPage(...)` and
+      `ViewcomicRipper.getURLsFromPage(...)` add each selected image `src`,
+      including the empty string when `src` is absent. Flutter helpers return
+      the same empty strings, but both `rip()` implementations skip empty image
+      URLs before scheduling downloads, removing Java's empty-URL download path.
+- [ ] Java `ViewcomicRipper.getAlbumTitle(...)`, inherited by
+      `ReadcomicRipper`, only catches `IOException`; a cached page with no
+      `<title>` element can null-dereference at `.first().text()`. Flutter
+      title extraction treats a missing `<title>` as an empty string and returns
+      `view-comic_`/`read-comic_` rather than surfacing Java's failure.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
