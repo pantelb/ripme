@@ -709,6 +709,11 @@ Findings:
 - [ ] Java default `download.retry.sleep` is absent from `rip.properties` and
       call sites commonly default to `0`; Flutter default is `5000`. This is a
       concrete behavior difference.
+- [ ] Java parallel download defaults use `Utils.getConfigInteger("threads.size",
+      10)` in `DownloadThreadPool`, so a missing config runs up to ten download
+      workers. Flutter `config_defaults.dart` sets `threads.size` to `5`, and
+      `AbstractRipper.downloadFiles(...)` also falls back to `5`, cutting the
+      default concurrency in half.
 - [ ] Java uses both `error.skip404` in defaults and some code paths checking
       `errors.skip404`; Flutter uses `error.skip404`. The typo/alias behavior
       must be reconciled for CLI and download paths.
