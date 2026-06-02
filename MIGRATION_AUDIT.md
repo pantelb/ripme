@@ -1007,6 +1007,13 @@ Findings:
       ports for these classes currently extend `AbstractHTMLRipper`; their
       tests cover extraction/filenames, but not Java single-file byte-progress
       inheritance semantics.
+- [ ] Java single-file-style rippers still use `AbstractHTMLRipper.getPrefix(...)`
+      when their concrete `downloadURL(...)` calls `addURLToDownload(url,
+      getPrefix(index))`, so `download.save_order=false` disables ordered
+      prefixes. Flutter `XvideosRipper.prefix(...)`,
+      `YoupornRipper.prefix(...)`, and album `YuvutuRipper.prefix(...)`
+      unconditionally return `NNN_`; their tests cover only the enabled prefix
+      path, so these ports ignore Java's global no-save-order setting.
 - [ ] Java has package-distinct album and video rippers with duplicate simple
       class names: `rippers/PornhubRipper.java` and
       `rippers/video/PornhubRipper.java`, `rippers/VkRipper.java` and
