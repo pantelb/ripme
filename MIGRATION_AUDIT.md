@@ -3388,6 +3388,18 @@ they are not yet a substitute for committed Dart tests.
 - [x] Re-read Java CLI URL-file and history fallback paths. New exact findings
       were recorded for blank URL-file line handling and for the current
       `App.loadHistory`/`RipUtils.urlFromDirectoryName` directory-path behavior.
+- [x] Re-ran a low-audit-mention ripper sweep against Java source from
+      `origin/main` and the corresponding Dart ports/tests. `KingcomixRipper`,
+      `ModelmayhemRipper`, `MyreadingmangaRipper`, `NatalieMuRipper`,
+      `NsfwAlbumRipper`, `NudeGalsRipper`, `SmuttyRipper`, `SoundgasmRipper`,
+      `TeenplanetRipper`, and `VidbleRipper` were rechecked without finding a
+      new source-backed gap beyond already recorded shared/runtime risks.
+      `MyhentaigalleryRipper`, `HypnohubRipper`, `MultpornRipper`, `OglafRipper`,
+      `ReadcomicRipper`, and `ArtStationRipper` were also re-read; their
+      observed source-backed differences are already represented in sections
+      D, E, and I. A local jsoup 1.11.3 check confirmed that
+      `OglafRipper`'s `el.select("img").attr("src")` includes the selected
+      image element itself, so that suspected extraction drift was rejected.
 - [ ] Convert the mechanical scans above into checked-in tests/scripts before
       claiming final parity.
 
