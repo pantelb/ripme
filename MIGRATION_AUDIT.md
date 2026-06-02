@@ -1975,6 +1975,36 @@ Findings:
       `href` does not match `/index.php/<slug>?page=<digit>`. Flutter
       `nextPageUrlFromDocument(...)` returns `null` for the same non-matching
       href and ends pagination cleanly.
+- [ ] Java `StaRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any host
+      ending in `sta.sh` is accepted before `getGID(...)` enforces the strict
+      `https://sta.sh/ALBUMID` pattern. Flutter `StaRipper.canRip(...)` only
+      accepts exactly `sta.sh`, and its Dart test rejects `https://www.sta.sh`,
+      narrowing Java's domain-level support.
+- [ ] Java `StaRipper.getURLsFromPage(...)` catches malformed/IO failures while
+      loading each thumb page but then unconditionally dereferences
+      `thumbPage.select("a.dev-page-download")`; failed thumb-page loads can
+      therefore null-dereference. Flutter wraps each thumb-page flow in a broad
+      catch and simply continues to the next thumb, turning those Java failures
+      into skipped entries.
+- [ ] Java `StaRipper.getImageLinkFromDLLink(...)` returns `null` when the
+      non-followed download request fails, and the caller adds that return value
+      to the result list when the download link itself was non-empty. Flutter
+      `imageLinkFromDownloadLink(...)` also returns `null`, but
+      `getURLsFromPage(...)` skips null/empty image links, so failed Sta.sh
+      download redirects no longer produce Java's null download candidate.
+- [ ] Java `StaRipper` stores jsoup `Connection.Response.cookies()` from each
+      thumb page and sends that cookie map to the non-followed download request.
+      Flutter reconstructs cookies from raw `set-cookie` headers with
+      `cookiesFromSetCookieHeader(...)`, which is not equivalent to jsoup cookie
+      extraction for all valid Set-Cookie headers and can alter Sta.sh download
+      redirect requests.
+- [ ] Java `PahealRipper.getURLsFromPage(...)` adds `e.absUrl("href")` for
+      every `.shm-thumb.thumb > a` that is not `.shm-thumb-link`, including an
+      empty string when `href` is absent, and resolves relative links against
+      jsoup's document base URI. Flutter `PahealRipper.urlsFromPage(...)` skips
+      missing/empty hrefs and, when no explicit `baseUri` is supplied, resolves
+      against `http://rule34.paheal.net` rather than the document location used
+      by Java.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
