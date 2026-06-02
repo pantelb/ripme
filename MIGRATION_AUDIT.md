@@ -1437,6 +1437,13 @@ Findings:
       have custom `downloadFiles` paths for several of these, but no shared
       `hasASAPRipping` contract or generated audit guard proves all five match
       Java behavior.
+- [ ] Java `ErofusRipper.getURLsFromPage(...)` is an ASAP side-effect parser:
+      album pages call `ripAlbum(page)`, which schedules each download with
+      subdirectory/prefix options, and the method still returns an empty
+      `imageURLs` list. Flutter `ErofusRipper.getURLsFromPage(...)` returns
+      image URL strings for album pages, while `downloadsFromPage(...)` builds
+      the subdirectory download requests separately, so callers that rely on the
+      shared `getURLsFromPage` contract observe behavior Java never exposed.
 - [ ] Java blacklist config arrays must be verified for exact tag matching and
       warning text: `ehentai.blacklist.tags`, `nhentai.blacklist.tags`, and
       `tsumino.blacklist.tags`.
