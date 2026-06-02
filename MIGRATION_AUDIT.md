@@ -2268,6 +2268,13 @@ Findings:
       `FivehundredpxRipper.getNextPage(...)` returns `null` for missing or
       non-integer page fields and for the last page, so these Java end-state
       exception contracts are collapsed into the same nullable stop.
+- [ ] Java `FivehundredpxRipper.keepSortOrder()` returns `false`, but its
+      concrete `downloadURL(...)` bypasses the abstract save-order gate and
+      writes an explicit `saveAs` path of `getPrefix(index) + photoId + ".jpg"`.
+      Flutter `FivehundredpxRipper.downloadFileName(...)` extracts the same
+      photo ID but drops the Java `getPrefix(index)` portion, so 500px
+      filenames lose Java's ordered `NNN_` prefix even though the source test
+      labels them "Java-style".
 - [ ] Java `TapasticRipper.getURLsFromPage(...)` returns an empty list only when
       the page lacks the literal `episodeList : ` marker; once the marker is
       present it assumes `Utils.between(...).get(0)`, `new JSONArray(...)`,
