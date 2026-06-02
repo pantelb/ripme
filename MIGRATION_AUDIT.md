@@ -993,6 +993,18 @@ Findings:
       album/video implementation. Factory routing and tests must prove both
       Java behaviors are represented separately or document an intentional
       merge.
+- [ ] Java `rippers/video/PornhubRipper.canRip(...)` accepts
+      `https?://[wm.]*pornhub.com/view_video.php?viewkey=...` after the album
+      package scan fails to match non-album URLs. Flutter only imports the album
+      `PornhubRipper`, whose `canRip(...)` requires `url.path.startsWith('/album')`;
+      `RipperFactory` has no separate Pornhub video route, so Java-supported
+      Pornhub video URLs currently resolve to no Dart ripper.
+- [ ] Java `rippers/video/YuvutuRipper.canRip(...)` accepts
+      `http://www.yuvutu.com/video/ID/SLUG` after the album package scan fails.
+      Flutter `YuvutuRipper` implements only the Java gallery URL pattern
+      `modules.php?name=YuGallery&action=view&set_id=...`, and `RipperFactory`
+      has no separate Yuvutu video route, so Java-supported Yuvutu video URLs
+      currently resolve to no Dart ripper.
 - [ ] Java `download.ignore_extensions` suppresses extension-matched URLs with
       `DOWNLOAD_SKIP`; Flutter has a similar check but needs exact tests.
 - [ ] Java `sleep(milliseconds)` applies gaussian jitter with a minimum of 47%
