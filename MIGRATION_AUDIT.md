@@ -1729,6 +1729,18 @@ Findings:
       posts whose `file_url` is missing/empty and resolves relative file URLs
       explicitly against the DAPI page URL, so malformed/relative post handling
       is not Java-identical.
+- [ ] Java `EHentaiRipper.getNextPage(...)` throws
+      `IOException("No navigation links found")` when `.ptt a` links are
+      missing and `IOException("Reached last page of results")` when the last
+      link equals `lastURL`; `AbstractHTMLRipper` logs those exceptions as the
+      pagination stop path. Flutter `EHentaiRipper.getNextPage(...)` returns
+      `null` for missing/empty navigation links and repeated URLs, collapsing
+      Java's explicit end/failure exceptions into a clean nullable stop.
+- [ ] Java `EHentaiRipper.getURLsFromPage(...)` adds every `#gdt > a`
+      `href`, including the empty string when `href` is missing. Flutter
+      `EHentaiRipper.imagePageUrlsFromGallery(...)` filters out empty hrefs, so
+      malformed gallery entries no longer schedule the Java empty-URL image-page
+      load/failure path.
 - [ ] Java `ImagebamRipper.getURLsFromPage(...)` selects
       `div > a[class=thumbnail]:not(.footera)`, which requires the `class`
       attribute to be exactly `thumbnail` before the `:not(.footera)` filter.
