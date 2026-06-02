@@ -2016,6 +2016,45 @@ Findings:
       `PornpicsRipper.imageUrlsFromDocument(...)` returns the same list helper
       values, but `rip()` explicitly skips empty `imageUrl` values, so malformed
       rel-link anchors no longer follow Java's empty-URL download path.
+- [ ] Java `JagodibujaRipper.getURLsFromPage(...)` only catches
+      `IOException` around each child comic page. If the child page loads but
+      lacks `span.full-size-link > a`, Java dereferences `elem.attr("href")`
+      and fails; Flutter `JagodibujaRipper.getURLsFromPage(...)` catches all
+      errors from the child-page flow and silently skips that entry.
+- [ ] Java `JagodibujaRipper.getURLsFromPage(...)` schedules downloads
+      immediately with `addURLToDownload(new URI(elem.attr("href")).toURL(), "")`
+      and leaves `downloadURL(...)` empty, while also adding the href to its
+      returned list. Flutter defers scheduling until `rip()` converts returned
+      strings into `RipperDownload`s with generated filenames, so malformed
+      full-size hrefs and download naming/order do not follow Java's in-method
+      scheduling path.
+- [ ] Java `Jpg3Ripper.getNextPage(...)` fetches the next page document with
+      `Http.url(href).get()` before returning it, so next-page request failures
+      escape through the HTML pagination loop. Flutter `Jpg3Ripper.getNextPage`
+      returns only the next URI and `rip()` catches next-page fetch failures as
+      gallery errors, changing where and how Java's pagination look-ahead
+      failure is surfaced.
+- [ ] Java `MrCongRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+      host ending in `misskon.com` is accepted before `getGID(...)` checks the
+      gallery/tag regexes. Flutter `MrCongRipper.canRip(...)` requires the URL
+      to match those strict regexes up front, narrowing Java's domain-level
+      acceptance behavior.
+- [ ] Java non-tag `MrCongRipper.getNextPage(...)` throws
+      `IOException("Error: Page number provided goes past last valid page number\n")`
+      after the final gallery page. Flutter `MrCongRipper.getNextPage(...)`
+      returns `null` when `currPageNum >= lastPageNum`, turning Java's final-page
+      exception path into normal pagination completion.
+- [ ] Java `MrCongRipper.getNextPage(...)` mutates `url`, fetches the next
+      document immediately into `currDoc`, increments `currPageNum`, and returns
+      the fetched document. Flutter returns only the computed `Uri`, increments
+      state before the caller fetches it, and lets `rip()` perform the request,
+      so failed next-page loads can leave different current-page state and error
+      reporting than Java.
+- [ ] Java tag-page `MrCongRipper.downloadURL(...)` recursively constructs a
+      new `MrCongRipper` for each collected child gallery URL, calls `setup()`,
+      and runs `rip()` immediately. Flutter tag-page `rip()` only emits
+      `RipStatus.queueAdd` messages for the collected child URLs and completes,
+      so tag pages no longer execute the same recursive child-gallery rip flow.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
