@@ -2404,6 +2404,18 @@ Findings:
       missing `b`/`r`/`i` to empty strings and returns an empty list when `f` is
       absent or malformed. That can produce malformed URLs or clean completion
       where Java would throw.
+- [ ] Java `EightmusesRipper.getURLsFromPage(...)` recurses into subalbums but
+      only logs `subalbumImages.size()` and ignores the returned list. Images
+      in a subalbum that use `data-cfsrc` are added only to that returned list
+      and are therefore not scheduled by Java's parent call, while Flutter
+      `_downloadsFromPage(...)` recursively collects and downloads them.
+- [ ] Java `EightmusesRipper.getURLsFromPage(...)` directly dereferences
+      `thumb.select("img").first().attr("data-src")` for picture tiles without
+      `data-cfsrc`; missing `img` or `data-src` markup can throw or build the
+      Java empty `https://comics.8muses.com`-style candidate. Flutter
+      `imageUrlFromTile(...)` returns `null` for missing/empty `data-src` and
+      skips the tile, so malformed 8muses picture tiles no longer follow
+      Java's failure/empty-candidate behavior.
 - [ ] Java `HentaifoundryRipper.getFirstPage(...)` stores jsoup
       `Response.cookies()` from both the age-gate request and the filter POST,
       and directly dereferences `doc.select("input[name=YII_CSRF_TOKEN]").first()`
