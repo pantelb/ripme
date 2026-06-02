@@ -1030,6 +1030,13 @@ Findings:
       ports for these classes currently extend `AbstractHTMLRipper`; their
       tests cover extraction/filenames, but not Java single-file byte-progress
       inheritance semantics.
+- [ ] Java `SpankbangRipper.getURLsFromPage(...)` returns `null` when
+      `.video-js > source` is absent, after logging that the embed code could
+      not be found. Flutter `SpankbangRipper.videoUrlsFromDocument(...)`
+      preserves that helper-level `null`, but the framework-facing
+      `getURLsFromPage(...)` converts it to `const []`, so a missing video
+      source becomes an empty successful extraction instead of Java's null
+      result path.
 - [ ] Java single-file-style rippers still use `AbstractHTMLRipper.getPrefix(...)`
       when their concrete `downloadURL(...)` calls `addURLToDownload(url,
       getPrefix(index))`, so `download.save_order=false` disables ordered
@@ -1601,6 +1608,12 @@ Findings:
       `E621Ripper.getNextPage(...)` currently returns `null` for the same case,
       and its Dart test asserts `null`, so the no-next-page contract is not
       Java-compatible.
+- [ ] Java `E621Ripper.getNextPage(...)` also treats a present
+      `a#paginator-next` with an empty `href` as a page to fetch, because it
+      checks only whether the selector is empty before passing
+      `attr("abs:href")` to `getDocument(...)`. Flutter reads the raw `href`
+      and returns `null` when it is absent or empty, so malformed next anchors
+      are silent completion in Flutter instead of Java's fetch/failure path.
 - [ ] Java test-backed pagination exception contracts extend beyond E621:
       `HqpornerRipperTest` asserts `IOException("No next page found.")`,
       `PornhubRipperTest` asserts `IOException("No more pages")`, and
@@ -1960,6 +1973,13 @@ Findings:
       headers with `FuskatorRipper.cookiesFromSetCookieHeader(...)`, which is
       not equivalent for comma-bearing cookie attributes such as `Expires` and
       can alter the authenticated gallery request state.
+- [ ] Java `TwodgalleriesRipper.login()` dereferences
+      `resp.parse().select("form > input[name=ctoken]").first().attr("value")`,
+      so a login page without that token fails through the Java null path and is
+      not caught by `getFirstPage()`'s `catch (IOException)`. Flutter
+      `loginTokenFromPage(...)` returns `null` and `login()` throws an explicit
+      `FormatException("Could not find 2dgalleries login token")`, changing the
+      malformed-login-page exception contract.
 - [ ] Java `WebtoonsRipper.getFirstPage()` stores jsoup
       `Connection.Response.cookies()` before adding `needCOPPA`, `needCCPA`,
       and `needGDPR`. Flutter `WebtoonsRipper.cookiesFromResponse(...)`
