@@ -1463,6 +1463,13 @@ Findings:
       differs: Java includes `RipMe:github.com/RipMeApp/ripme:<jar version>
       (by /u/metaprime and /u/ineedmorealts)`, while Flutter sends a
       `flutter-port` marker.
+- [ ] Java `RedditRipper.canRip(...)` accepts any host ending in `reddit.com`,
+      but Java `getGID(...)` and gallery `getJsonURL(...)` regexes only allow
+      `[a-zA-Z0-9.]{0,4}` before `reddit.com`; longer accepted subdomains can
+      pass construction and then fail during GID/JSON routing. Flutter
+      `RedditRipper.getGID(...)` uses `[a-zA-Z0-9.]*reddit.com`, so the same
+      longer subdomain URLs can succeed instead of matching Java's later
+      rejection.
 - [ ] Java Reddit upvote filtering defaults to
       `reddit.min_upvotes = Integer.MIN_VALUE` and
       `reddit.max_upvotes = Integer.MAX_VALUE`, and when filtering skips a post
