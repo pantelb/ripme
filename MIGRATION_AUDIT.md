@@ -1055,6 +1055,15 @@ Findings:
       `NewgroundsRipper`, `NfsfwRipper`, `TheyiffgalleryRipper`, and
       `ViewcomicRipper`. These must be fixed as one dispatch contract, not only
       for the first examples above.
+- [ ] Flutter `RipperFactory.getRipper(...)` also expands several direct host
+      routes by using `host.contains(...)` instead of Java's inherited
+      `AbstractHTMLRipper.canRip(...)` `url.getHost().endsWith(getDomain())`
+      guard. For routes such as `AllporncomicRipper`, `ArtStationRipper`,
+      `BatoRipper`, `FlickrRipper`, `ImagefapRipper`, `ImgurRipper`,
+      `InstagramRipper`, `MastodonRipper`, `NhentaiRipper`, `PawooRipper`,
+      `RedditRipper`, and `TumblrRipper`, hosts like `imgur.com.evil` or
+      `evilreddit.com.invalid` can dispatch in Flutter where Java would reject
+      the constructor and keep scanning/fail.
 - [ ] Java `download.ignore_extensions` suppresses extension-matched URLs with
       `DOWNLOAD_SKIP`; Flutter has a similar check but needs exact tests.
 - [ ] Java `sleep(milliseconds)` applies gaussian jitter with a minimum of 47%
