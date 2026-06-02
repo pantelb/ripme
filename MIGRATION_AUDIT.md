@@ -100,9 +100,10 @@ done.
 
 ### Java UI Utilities
 
-- [ ] `src/main/java/com/rarchives/ripme/uiUtils/ContextActionProtections.java`
-  - Must audit copy/paste/context action behavior against Flutter text fields,
-    log rows, queue rows, and history rows.
+- [~] `src/main/java/com/rarchives/ripme/uiUtils/ContextActionProtections.java`
+  - Current finding: Java replaces the entire text component from the system
+    clipboard for protected paste/Ctrl+V paths; Flutter text-field behavior
+    needs an intentional native-replacement decision and exact widget tests.
 
 ### Java Utility Layer
 
@@ -1005,6 +1006,16 @@ Findings:
       rippers catch an error with `sendUpdate(RipStatus.ripErrored, ...)` and
       then still fall through to `sendUpdate(RipStatus.ripComplete, ...)`,
       making failed rips look completed in the event stream.
+- [ ] Java video rippers that perform their own `rip()` logic throw out on
+      missing extraction markers and do not emit successful completion from the
+      concrete method: `TwitchVideoRipper` throws when no `<script>` exists,
+      `ViddmeRipper` throws when `meta[name=twitter:player:stream]` is absent,
+      `VidearnRipper` throws when no `file:"..."` token exists, and
+      `MotherlessVideoRipper` throws when no `__fileurl = '...'` token exists.
+      Flutter helper tests cover these thrown helper errors, but
+      `AbstractVideoRipper` and custom Dart `rip()` overrides still catch and
+      then send `ripComplete`, so UI/runtime status parity remains unproven
+      for these source-backed failure paths.
 - [ ] Java deletes an empty working directory during cleanup. Flutter does not
       yet verify this cleanup behavior.
 - [ ] Java `AbstractHTMLRipper` supports queue-only pages through
