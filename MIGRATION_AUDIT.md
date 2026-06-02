@@ -1005,6 +1005,18 @@ Findings:
       `modules.php?name=YuGallery&action=view&set_id=...`, and `RipperFactory`
       has no separate Yuvutu video route, so Java-supported Yuvutu video URLs
       currently resolve to no Dart ripper.
+- [ ] Java `AbstractRipper(URL)` rejects a candidate constructor whenever that
+      class's `canRip(url)` is false before `AbstractRipper.getRipper(...)`
+      tries the next album/video class. Flutter `RipperFactory.getRipper(...)`
+      bypasses that constructor guard for direct host routes, returning rippers
+      without calling their stricter `canRip(...)`; for example
+      `cliphunter.com` accepts any path before `CliphunterRipper.canRip(...)`
+      can require `/w/ID`, `hentaifox.com` accepts any path before
+      `HentaifoxRipper.canRip(...)` can require `/gallery/ID`,
+      `fitnakedgirls.com` accepts any path before `FitnakedgirlsRipper.canRip(...)`
+      can require `/photos/gallery/...`, and `hentainexus.com` accepts any path
+      before `HentaiNexusRipper.canRip(...)` can require `/view/ID` or
+      `/read/ID`.
 - [ ] Java `download.ignore_extensions` suppresses extension-matched URLs with
       `DOWNLOAD_SKIP`; Flutter has a similar check but needs exact tests.
 - [ ] Java `sleep(milliseconds)` applies gaussian jitter with a minimum of 47%
