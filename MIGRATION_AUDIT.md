@@ -1707,6 +1707,13 @@ Findings:
       response failures propagate. Gallery handling already has a Java TODO,
       so parity work must cover both successful gallery expansion and this
       partial-failure behavior instead of relying on singleton video tests.
+- [ ] Java `RedgifsRipper.getURLsFromJSON(...)`, `getURLsForGallery(...)`, and
+      static `getVideoURL(...)` strictly read `gif.urls.hd` with
+      `getString("hd")`; a response that only contains `sd` throws through JSON
+      parsing instead of downloading a lower-quality fallback. Flutter
+      `_getUrlsFromJson(...)`, `_getUrlsForGallery(...)`, and `getVideoUrl(...)`
+      all fall back from `hd` to `sd`, changing both malformed API failure
+      semantics and selected media quality.
 - [ ] Java `ScrolllerRipper.getPosts(...)` catches transport/parsing failures
       and returns `new JSONObject("{}")`, after which
       `getURLsFromJSON(...)` strictly dereferences
