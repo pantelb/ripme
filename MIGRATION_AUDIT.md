@@ -2481,6 +2481,12 @@ Findings:
       `imageUrlFromTile(...)` returns `null` for missing/empty `data-src` and
       skips the tile, so malformed 8muses picture tiles no longer follow
       Java's failure/empty-candidate behavior.
+- [ ] Java `EightmusesRipper.getAlbumTitle(...)` catches only `IOException`;
+      a successful page missing `meta[name=description]` can null-dereference
+      before falling back to `super.getAlbumTitle(...)`. Flutter
+      `albumTitleFromDocument(...)` returns `null` for missing/empty
+      descriptions and `getAlbumTitle(...)` falls back to `8muses_GID`, masking
+      Java's malformed-title failure path.
 - [ ] Java `HentaifoundryRipper.getFirstPage(...)` stores jsoup
       `Response.cookies()` from both the age-gate request and the filter POST,
       and directly dereferences `doc.select("input[name=YII_CSRF_TOKEN]").first()`
@@ -2745,6 +2751,12 @@ Findings:
       becomes an empty image URL after the thumbnail replacements. Flutter
       filters empty `href` and `data-src` values, changing malformed tag/gallery
       page behavior.
+- [ ] Java `NhentaiRipper.getAlbumTitle(...)` returns `"nhentai" + title` even
+      when `#info > h1` exists but has empty text, and if the first page fetch
+      fails it can still dereference `firstPage` afterward. Flutter
+      `albumTitleFromDocument(...)` treats missing/empty title text as `null`
+      and falls back to `nhentai_GID`, so empty-title and failed-first-page
+      states no longer match Java.
 - [ ] Java `XhamsterRipper` declares `hasASAPRipping() == true` and performs
       downloads inside `getURLsFromPage(...)` through `downloadFile(...)`, where
       filenames use Java `getPrefix(index)` and therefore honor
