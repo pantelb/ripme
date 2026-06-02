@@ -1890,6 +1890,38 @@ Findings:
       or empty `src` values. Flutter skips missing/empty `src`, so malformed
       Chevereto image nodes are silently ignored instead of becoming Java-style
       empty/malformed download candidates.
+- [ ] Java `DribbbleRipper.getNextPage(...)` throws
+      `IOException("No more pages")` when `a.next_page` is absent, constructs
+      `https://www.dribbble.com` plus jsoup's `attr("href")` when the link is
+      present, sleeps, and fetches the next document before returning. Flutter
+      returns `null` for an absent link, returns a URI without fetching it, and
+      string-interpolates a missing `href` attribute as `null`
+      (`https://www.dribbble.comnull`) instead of Java's empty-attribute base
+      URL.
+- [ ] Java `SinfestRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+      host ending in `sinfest.net` is accepted before `getGID(...)` checks the
+      strict `view.php?date=...` shape. Flutter `SinfestRipper.canRip(...)`
+      directly uses the strict GID regex, narrowing Java's domain-level support.
+- [ ] Java `SinfestRipper.getNextPage(...)` logs
+      `elem.parent().attr("href")` before checking `elem == null`, throws
+      `IOException("No more pages")` for the sentinel `view.php?date=`, returns
+      `null` only for an empty `href`, and fetches the next page before
+      returning. Flutter's helper uses `.last` on the selector result, returns a
+      URI without fetching it, and `rip()` catches both helper and fetch
+      failures as a quiet stop.
+- [ ] Java `Rule34Ripper.getNextPage(...)` only stops when the API document
+      contains `Search error: API limited due to abuse`; otherwise it increments
+      `pageNumber` and fetches the next API page regardless of whether the
+      current page produced any image URLs. Flutter `Rule34Ripper.rip()` emits
+      `No images found at ...` and stops whenever a page yields no downloads,
+      so empty API result pages end the rip earlier than Java's pagination
+      contract.
+- [ ] Java `Rule34Ripper.getURLsFromPage(...)` adds the selected `file_url`
+      value for every `posts > post`, including empty/missing attributes, and
+      `downloadURL(...)` receives those candidates through the HTML rip loop.
+      Flutter `Rule34Ripper.fileUrlsFromDocument(...)` also returns empty
+      strings, but `rip()` explicitly skips `imageUrl.isEmpty`, so malformed
+      post entries no longer follow Java's empty-URL download path.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
