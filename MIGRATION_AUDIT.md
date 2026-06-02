@@ -1017,6 +1017,14 @@ Findings:
       can require `/photos/gallery/...`, and `hentainexus.com` accepts any path
       before `HentaiNexusRipper.canRip(...)` can require `/view/ID` or
       `/read/ID`.
+- [ ] The same Flutter factory constructor-guard bypass affects additional
+      direct routes whose own Dart `canRip(...)` is stricter than the factory
+      host predicate, including `AllporncomicRipper`, `BatoRipper`,
+      `FapDungeonRipper`, `FemjoyhunterRipper`, `FuskatorRipper`,
+      `GirlsOfDesireRipper`, `HentaifoundryRipper`, `EightmusesRipper`,
+      `NewgroundsRipper`, `NfsfwRipper`, `TheyiffgalleryRipper`, and
+      `ViewcomicRipper`. These must be fixed as one dispatch contract, not only
+      for the first examples above.
 - [ ] Java `download.ignore_extensions` suppresses extension-matched URLs with
       `DOWNLOAD_SKIP`; Flutter has a similar check but needs exact tests.
 - [ ] Java `sleep(milliseconds)` applies gaussian jitter with a minimum of 47%
