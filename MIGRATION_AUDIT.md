@@ -2093,6 +2093,40 @@ Findings:
       `<title>` element can null-dereference at `.first().text()`. Flutter
       title extraction treats a missing `<title>` as an empty string and returns
       `view-comic_`/`read-comic_` rather than surfacing Java's failure.
+- [ ] Java `ArtstnRipper.getFinalUrl(...)` follows `location` redirects by
+      constructing `new URI(response.header("location")).toURL()`, so relative
+      redirect locations fail URL conversion instead of being resolved against
+      the short URL. Flutter `ArtstnRipper.redirectTarget(...)` uses
+      `source.resolve(location)`, so relative ArtStation short-link redirects
+      are accepted rather than following Java's failure path.
+- [ ] Java `ArtstnRipper.getGID(...)` logs redirect-resolution failures and then
+      calls `super.getGID(artStationUrl)` even if `artStationUrl` is still
+      `null`, allowing the Java failure to surface through the superclass/null
+      path. Flutter throws `FormatException('Could not resolve ArtStation short URL...')`
+      as soon as the final URL is unresolved, changing the observable error.
+- [ ] Java `FemjoyhunterRipper` inherits `AbstractHTMLRipper.canRip(...)`, so
+      any host ending in `femjoyhunter.com` is accepted before `getGID(...)`.
+      Flutter `FemjoyhunterRipper.canRip(...)` requires a `www.femjoyhunter.com`
+      URL that matches the GID regex, narrowing Java's domain-level acceptance.
+- [ ] Java `FemjoyhunterRipper.getGID(...)` uses `Matcher.matches()` with
+      `https?://www.femjoyhunter.com/SLUG/?`, so the whole URL must match.
+      Flutter uses `RegExp.hasMatch`/`firstMatch` with the same unanchored
+      pattern, accepting longer URLs whose prefix matches where Java would throw.
+- [ ] Java `FitnakedgirlsRipper` inherits `AbstractHTMLRipper.canRip(...)`, so
+      any host ending in `fitnakedgirls.com` is accepted before its gallery
+      regex runs. Flutter `FitnakedgirlsRipper.canRip(...)` requires the strict
+      `/photos/gallery/...` pattern up front, narrowing Java's URL acceptance.
+- [ ] Java `XcartxRipper` and `XlecxRipper` inherit domain-level
+      `AbstractHTMLRipper.canRip(...)`, then rely on `getGID(...)` to reject
+      non-matching `.html` pages. Flutter also uses domain-level `canRip(...)`,
+      but Dart `XcartxRipper.getGID(...)` anchors and escapes `.html` more
+      strictly than Java's `^https?://xcartx.com/SLUG.html` `matches()` pattern,
+      changing which xcartx URLs are rejected at GID time.
+- [ ] Java `XlecxRipper` inherits `XcartxRipper.getURLsFromPage(...)`, whose
+      image URL construction calls virtual `getDomain()`, so Xlecx image URLs
+      are prefixed with `https://xlecx.org`. Flutter `XlecxRipper` inherits
+      Dart `XcartxRipper.imageUrlsFromDocument(...)`, which hard-codes
+      `https://xcartx.com`, so Xlecx downloads are pointed at the wrong host.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
