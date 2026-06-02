@@ -2005,6 +2005,17 @@ Findings:
       missing/empty hrefs and, when no explicit `baseUri` is supplied, resolves
       against `http://rule34.paheal.net` rather than the document location used
       by Java.
+- [ ] Java `PornpicsRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+      host ending in `pornpics.com` is accepted before `getGID(...)` checks the
+      strict `www.pornpics.com/galleries/ID` shape. Flutter
+      `PornpicsRipper.canRip(...)` directly uses the strict GID regex and its
+      Dart test rejects `https://pornpics.com/galleries/...`, narrowing Java's
+      domain-level URL support.
+- [ ] Java `PornpicsRipper.getURLsFromPage(...)` adds every `a.rel-link`
+      `href`, including an empty string when the attribute is absent. Flutter
+      `PornpicsRipper.imageUrlsFromDocument(...)` returns the same list helper
+      values, but `rip()` explicitly skips empty `imageUrl` values, so malformed
+      rel-link anchors no longer follow Java's empty-URL download path.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
