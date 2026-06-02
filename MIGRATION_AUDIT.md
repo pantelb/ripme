@@ -1790,6 +1790,13 @@ Findings:
       returns `null` for missing/empty `src`, so failed and malformed
       Imagevenue image pages no longer follow Java's per-page continue and
       empty-host download behavior.
+- [ ] Java `ListalRipper.getURLsForFolderType(...)` appends `h` to
+      `e.attr("abs:href")` for every `#browseimagescontainer .imagewrap-outer a`;
+      a folder anchor with no `href` becomes the literal image-page candidate
+      `h`. Flutter `ListalRipper.urlsForFolderType(...)` resolves a missing
+      `href` against `https://www.listal.com/` first and returns
+      `https://www.listal.com/h`, changing malformed folder-page URL
+      extraction before the image-page download thread/fetch step.
 - [ ] Java `ImgboxRipper.getURLsFromPage(...)` rewrites and adds
       `thumb.attr("src")` for every `div.boxed-content > a > img`, even when
       `src` is missing or empty; jsoup returns `""`, which Java then keeps as
