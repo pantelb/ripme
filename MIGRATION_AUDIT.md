@@ -2411,6 +2411,17 @@ Findings:
       that thumbnail. Java also emits `https:` plus an empty `src` if the image
       page lacks `div.boxbody > img.center`, while Flutter returns `null` and
       skips it. These image-page failure paths are not Java-equivalent.
+- [ ] Java `EromeRipper.getAlbumsToQueue(...)` adds `elem.attr("href")` for
+      every `div#albums > div.album > a`, including missing or empty `href`
+      attributes. Flutter `EromeRipper.getAlbumsToQueue(...)` filters
+      missing/empty `href` values, so malformed profile album links are no
+      longer queued the way Java would queue them.
+- [ ] Java `EromeRipper.setAuthCookie()` calls
+      `Utils.getConfigString("erome.laravel_session", null)` and adds the
+      `laravel_session` cookie whenever the result is non-null, including an
+      explicitly configured empty string. Flutter `setAuthCookie()` requires
+      the value to be non-null and non-empty, so empty configured session
+      cookies are dropped instead of being sent as Java would.
 - [ ] Java `ImgurRipper.getImgurAlbum(...)` tries API JSON first and, if
       `data.images[*].link` parsing throws `JSONException` or
       `URISyntaxException`, falls back to the `/noscript` HTML parser for the
