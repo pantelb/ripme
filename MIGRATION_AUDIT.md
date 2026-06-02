@@ -1723,6 +1723,12 @@ Findings:
       `ripComplete` without reporting the Java-style no-images/malformed-page
       failure. This is separate from the already-tested query shape and
       Java-compatible best-area bug.
+- [ ] Java `TwitterRipper.sanitizeURL(...)` only recognizes
+      `twitter.com` and `m.twitter.com` account/search URLs. Flutter
+      `TwitterRipper.classifyUrl(...)` also accepts `x.com`, and
+      `twitter_ripper_test.dart` asserts `https://x.com/...` account and search
+      support, so Twitter/X URL acceptance is broader than Java's shipped
+      implementation.
 - [ ] Java `SankakuComplexRipper.getNextPage(...)` calls
       `doc.select("div.pagination").first()` and immediately dereferences the
       result; a missing pagination block can throw before Java reaches its
