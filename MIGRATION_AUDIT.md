@@ -863,6 +863,14 @@ Findings:
 - [ ] Java `DownloadVideoThread` first issues a HEAD request for total bytes,
       then downloads with no connect timeout and byte-progress events. Flutter
       video helpers need exact progress comparison.
+- [ ] Java `CliphunterRipper.rip()` schedules the decrypted video with
+      `addURLToDownload(url, HOST + "_" + getGID(...))`; Java
+      `VideoRipper.addURLToDownload(..., referrer, cookies, ...)` ignores
+      referrers and cookies entirely. Flutter
+      `CliphunterRipper.getVideoDownloadForRip(...)` attaches a `Referer`
+      header equal to the decrypted video URL, and its test labels that
+      behavior "Java-style", but Java downloads the Cliphunter video without
+      that header.
 - [ ] Java `VideoRipper.addURLToDownload` has a test-only contract: when
       `markAsTest()` / `isThisATest()` is active and `urls_only.save` is false,
       it does not enqueue or download the video; it mutates `this.url` to the
