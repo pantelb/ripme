@@ -864,6 +864,12 @@ Findings:
 - [ ] Java `Http` retry loop attempts exactly the configured count. Flutter's
       `_getResponse` currently loops `attempt <= retries`, which is one extra
       attempt for the same setting.
+- [ ] Java `Http.response()` does not inspect `Retry-After` on 429 or 503; it
+      applies the configured `download.retry.sleep` delay between retries or
+      retries immediately when that value is zero. Flutter `_getResponse(...)`
+      parses `Retry-After` for 429/503 and waits for that header-specific delay,
+      so rate-limited pages can pause differently from Java even with the same
+      retry config.
 - [ ] Java file download retry loop increments `tries` and fails when
       `tries > retries`; redirect handling can avoid counting the first redirect.
       Flutter's bulk-response download path needs retry-count parity tests.
@@ -872,6 +878,11 @@ Findings:
       non-retriable 4xx handling, retriable 5xx handling, and an Imgur
       503-byte-as-404 special case. Flutter needs shared tests or documented
       replacement behavior.
+- [ ] Java `download.max_size` is only used by config validation/update
+      plumbing; `DownloadFileThread` does not compare response size against that
+      key before saving. Flutter `Http.downloadFile(...)` rejects any response
+      whose `bodyBytes.length` exceeds `download.max_size`, adding a global
+      download limit Java did not enforce.
 - [ ] Java `DownloadVideoThread` first issues a HEAD request for total bytes,
       then downloads with no connect timeout and byte-progress events. Flutter
       video helpers need exact progress comparison.
