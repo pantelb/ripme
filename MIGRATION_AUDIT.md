@@ -1996,6 +1996,16 @@ Findings:
       string-interpolates a missing `href` attribute as `null`
       (`https://www.dribbble.comnull`) instead of Java's empty-attribute base
       URL.
+- [ ] Java `FapDungeonRipper.getURLsFromPage(...)` calls
+      `doc.select("div.entry-content").get(0)`, so a malformed page without
+      that container throws before any media list is returned. Its
+      `returnLargestImgUrlFromSrcAndSrcset(...)` also uses
+      `Integer.parseInt(...)` without catching `NumberFormatException`, so a
+      malformed width descriptor aborts extraction instead of falling back to
+      `src`. Flutter `FapDungeonRipper.mediaFromPage(...)` returns an empty
+      list when the content container is absent and uses `int.tryParse(...)` to
+      ignore malformed srcset widths, converting Java parser failures into
+      successful empty/fallback media results.
 - [ ] Java `SinfestRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
       host ending in `sinfest.net` is accepted before `getGID(...)` checks the
       strict `view.php?date=...` shape. Flutter `SinfestRipper.canRip(...)`
