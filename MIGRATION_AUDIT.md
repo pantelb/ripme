@@ -2132,6 +2132,14 @@ Findings:
       the strict `www.porncomix.info/SLUG` pattern. Flutter
       `PorncomixRipper.canRip(...)` directly uses the strict GID regex,
       narrowing Java's domain-level support.
+- [ ] Java `ShesFreakyRipper` and `TsuminoRipper` inherit
+      `AbstractHTMLRipper.canRip(...)`, so any host ending in
+      `shesfreaky.com` or `tsumino.com` is accepted before their strict
+      `getGID(...)` regexes run. Flutter `ShesFreakyRipper.canRip(...)` and
+      `TsuminoRipper.canRip(...)` use those strict regexes directly; additionally,
+      `RipperFactory` only routes exact `www.tsumino.com` hosts and constructs
+      `TsuminoRipper` without calling its `canRip(...)`, so Tsumino dispatch does
+      not match Java's domain-level constructor guard.
 - [ ] Java `ReadcomicRipper` and `ViewcomicRipper` inherit
       `AbstractHTMLRipper.canRip(...)`, so any host ending in `read-comic.com`
       or `view-comic.com` is accepted before their strict slug-only
