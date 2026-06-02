@@ -842,6 +842,13 @@ Findings:
 - [ ] Java 401/403 page requests throw a cookie-oriented error message; 404 page
       requests throw file-not-found style messaging. Flutter currently raises
       generic `HttpException` text in several paths.
+- [ ] Per-ripper malformed URL/GID exception messages are not fully
+      Java-compatible or test-locked. Java rippers throw exact
+      `MalformedURLException` strings, including source typos such as
+      `MyhentaigalleryRipper` saying `Expected myhentaicomics.com URL format`
+      and `PorncomixRipper` saying `Expected proncomix URL format`; several
+      Dart ports normalize or rewrite those messages with `FormatException`
+      text, and the suite does not mechanically prove exact message parity.
 - [ ] Java `Http` retry loop attempts exactly the configured count. Flutter's
       `_getResponse` currently loops `attempt <= retries`, which is one extra
       attempt for the same setting.
