@@ -959,6 +959,14 @@ Findings:
       doing ASAP/custom downloading. Flutter `AbstractHTMLRipper` currently
       treats an empty download list as a normal completed rip, and
       `AbstractJSONRipper` leaves this guard to each concrete parser.
+- [ ] Java error/completion status ordering is not equivalent. Java
+      `AbstractRipper.run()` catches failed `rip()` calls, waits for threads,
+      and sends `RIP_ERRORED`, while `RIP_COMPLETE` is emitted separately from
+      `checkIfComplete()` after successful scheduled-download completion.
+      Flutter `AbstractJSONRipper`, `AbstractVideoRipper`, and many concrete
+      rippers catch an error with `sendUpdate(RipStatus.ripErrored, ...)` and
+      then still fall through to `sendUpdate(RipStatus.ripComplete, ...)`,
+      making failed rips look completed in the event stream.
 - [ ] Java deletes an empty working directory during cleanup. Flutter does not
       yet verify this cleanup behavior.
 - [ ] Java `AbstractHTMLRipper` supports queue-only pages through
