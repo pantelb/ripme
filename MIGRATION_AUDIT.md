@@ -2296,6 +2296,13 @@ Findings:
       and `getURLsFromPage(...)` converts that into an empty list. That changes
       both Java's malformed JSON failure and Java's post-warning null
       dereference into clean completion.
+- [ ] Java `TsuminoRipper.downloadURL(...)` sleeps, then schedules each
+      `Image/Object?name=...` URL with `getPrefix(index)` and
+      `getFileExtFromMIME=true`, explicitly relying on the downloader to choose
+      the saved extension because Tsumino object URLs do not contain one.
+      Flutter `TsuminoRipper.fileNameForUrl(...)` names the same URL
+      `NNN_Object` / `Object` from the path segment and has no MIME-derived
+      extension path, so the saved filename contract is not Java-compatible.
 - [ ] Java `TsuminoRipper.getFirstPage(...)` stores jsoup
       `Connection.Response.cookies()` from the album page before loading reader
       URLs. Flutter reconstructs cookies by splitting the raw `set-cookie`
