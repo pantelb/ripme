@@ -3413,6 +3413,15 @@ they are not yet a substitute for committed Dart tests.
       the existing section I rows for title fallback scope, next-page exception
       contracts, strict parser failures, domain-level `canRip(...)`, and
       empty-attribute download scheduling.
+- [x] Re-read Java reflective `AbstractRipper.getRipper(...)` behavior against
+      Flutter `RipperFactory` and `RipperMigrationCatalog`. The source-backed
+      dispatch differences found in this pass were already represented in
+      section E: duplicate simple-name album/video rippers, constructor-guard
+      bypass for direct factory routes, and `host.contains(...)` expansion for
+      several Flutter routes. Since `portedRipperClasses` currently equals
+      `legacyRipperClasses`, `findUnportedLegacyRipper(...)` is inert today;
+      it still needs generated source-tree backing before final parity can be
+      claimed.
 - [ ] Convert the mechanical scans above into checked-in tests/scripts before
       claiming final parity.
 
