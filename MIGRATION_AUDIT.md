@@ -3400,6 +3400,19 @@ they are not yet a substitute for committed Dart tests.
       D, E, and I. A local jsoup 1.11.3 check confirmed that
       `OglafRipper`'s `el.select("img").attr("src")` includes the selected
       image element itself, so that suspected extraction drift was rejected.
+- [x] Re-ran Java concrete-ripper sleep/throttle scans against Dart delay sites.
+      The only Java sleep class without a same-file Dart delay was
+      `TsuminoRipper`, whose missing download sleep/object-file behavior is
+      already recorded in section I; all other concrete sleep classes have an
+      explicit Dart delay site, with the remaining gaussian-jitter mismatch
+      tracked as a shared runtime gap in section E.
+- [x] Re-ran Java strict DOM dereference scans for `.get(0)`, `.first()`, and
+      `selectFirst(...)` against nullable Dart selector helpers. The follow-up
+      reads of `CheveretoRipper`, `WebtoonsRipper`, `FapDungeonRipper`,
+      `FapwizRipper`, and `CfakeRipper` found no new source-backed gaps beyond
+      the existing section I rows for title fallback scope, next-page exception
+      contracts, strict parser failures, domain-level `canRip(...)`, and
+      empty-attribute download scheduling.
 - [ ] Convert the mechanical scans above into checked-in tests/scripts before
       claiming final parity.
 
