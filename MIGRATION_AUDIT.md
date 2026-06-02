@@ -1575,6 +1575,13 @@ Findings:
       `DerpiRipper.getNextPage()` returns `null` for the same no-more-images
       states, and the Dart tests cover URL/media parsing but not the Java
       exception contract.
+- [ ] Java `DerpiRipper.getURLsFromJSON(...)` strictly iterates `images` or
+      legacy `search` arrays with `arr.getJSONObject(i)` before requiring
+      `representations.full`; any non-object array entry aborts the parse.
+      Flutter `DerpiRipper.urlsFromJson(...)` skips non-map entries before
+      calling `getImageUrlFromJson(...)`, so malformed mixed arrays can
+      silently lose entries or become a later `No images found at ...` error
+      instead of Java's parser failure.
 - [ ] Java `CoomerPartyRipper.getNextPage(...)` always advances to the next
       50-post offset and returns a wrapped JSON array; it does not stop when a
       page has fewer than 50 posts, so an empty later page reaches
