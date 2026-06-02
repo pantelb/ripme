@@ -1464,6 +1464,12 @@ Findings:
       `6u`. Flutter uses `div[class="6u"] h3 a.click-trigger`, so listing
       cards with additional classes are accepted by Java but skipped by
       Flutter.
+- [ ] Java `HqpornerRipper.getAllVideoUrls(...)` also adds
+      `VIDEO_URL_PREFIX + e.attr("href")` whenever the anchor merely has an
+      `href` attribute, even if that attribute is empty. Flutter checks
+      `(href ?? '').isNotEmpty` before adding a listing URL, so empty `href`
+      anchors are skipped instead of becoming Java-style prefix-only video page
+      candidates.
 - [ ] Java `HqpornerRipper.getVideoFromFlyFlv(...)` builds the jsoup selector
       string `video > source[label=` plus the quality token, with no closing
       bracket. Flutter uses a valid quoted selector
@@ -1533,6 +1539,13 @@ Findings:
       before persisting the merged cookie map. Flutter `DeviantartRipper`
       currently sends only the hardcoded `agegate_state=1` cookie and has no
       persisted-cookie deserialize/validate/login flow.
+- [ ] Java `DeviantartRipper.getURLsFromPage(...)` dereferences the selected
+      gallery container before selecting `a.torpedo-thumb-link`, and adds every
+      matching anchor `href` including empty attributes. Flutter
+      `DeviantartRipper.urlsFromPage(...)` returns an empty list when the
+      container is missing and filters empty `href` values, so malformed
+      gallery pages stop/skip cleanly instead of following Java's
+      null-dereference or empty-download-candidate paths.
 - [ ] Java `RipUtils.getFilesFromURL` helper coverage must be verified for
       Reddit/Chan-style direct links and embedded media expansion:
       Imgur album/gifv/single pages, Redgifs/gifdeliverynetwork, Vidble
@@ -1710,6 +1723,12 @@ Findings:
       `next`. Flutter `ImagefapRipper.getNextPage(...)` returns `null` for the
       same end state, and its Dart test currently asserts only the positive
       next-link construction path.
+- [ ] Java `ImagefapRipper.getURLsFromPage(...)` skips thumbnails only when the
+      thumbnail itself lacks `src` or `width`; it then calls
+      `getFullSizedImage("https://www.imagefap.com" + thumb.parent().attr("href"))`
+      even when the parent `href` is empty, retrying the site root before
+      failing. Flutter reads the parent `href` as nullable and `continue`s when
+      it is missing or empty, silently dropping malformed thumbnail entries.
 - [ ] Mechanical Java `getNextPage`/pagination exception scan found additional
       source-backed no-next-page/no-more-results contracts that need exact
       Flutter parity checks instead of assuming nullable helpers are equivalent:
