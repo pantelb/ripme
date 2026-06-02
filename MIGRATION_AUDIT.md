@@ -1781,6 +1781,15 @@ Findings:
       candidates. Flutter `ImagevenueRipper.imagePageUrlsFromDocument(...)`
       filters missing/empty `href` values, silently dropping candidates Java
       would attempt.
+- [ ] Java `ImagevenueRipper.ImagevenueImageThread.fetchImage(...)` isolates
+      each image-page fetch in its own `try/catch`, logs and continues after
+      `IOException`/`URISyntaxException`, and when an `a > img` exists with an
+      empty `src` it still builds `http://<image-page-host>/` and queues that
+      download. Flutter `directImageUrlFromPageUrl(...)` lets image-page fetch
+      failures escape through `rip()`, while `directImageUrlFromDocument(...)`
+      returns `null` for missing/empty `src`, so failed and malformed
+      Imagevenue image pages no longer follow Java's per-page continue and
+      empty-host download behavior.
 - [ ] Java `ImgboxRipper.getURLsFromPage(...)` rewrites and adds
       `thumb.attr("src")` for every `div.boxed-content > a > img`, even when
       `src` is missing or empty; jsoup returns `""`, which Java then keeps as
