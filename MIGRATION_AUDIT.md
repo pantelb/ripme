@@ -1673,6 +1673,14 @@ Findings:
       `parseUrlFromHtml(...)` also treats empty artwork HTML as a single
       project. That widens Java's Cloudflare-only fallback and can rip URLs
       Java would reject with the expected ArtStation URL-format error.
+- [ ] Java `ArtStationRipper.getURLsFromJSON(...)` strictly reads
+      `json.getString("title")`, `json.getJSONArray("assets")`, each asset as a
+      `JSONObject`, and each `image_url` string before filtering only the empty
+      `image_url` case. Flutter `ArtStationRipper.urlsFromProjectJson(...)`
+      returns an empty list for non-map/non-list JSON, skips non-map asset
+      entries, treats missing `title` as nullable, and drops missing/empty
+      `image_url` values. Malformed project JSON can therefore become a clean
+      empty or partial rip in Flutter where Java would throw.
 - [ ] Java `LusciousRipper` is still an `AbstractHTMLRipper`: `rip()` first
       fetches the sanitized album page through `getCachedFirstPage()`, then
       `getURLsFromPage(...)` ignores the HTML body but strictly walks
