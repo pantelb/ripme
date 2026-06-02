@@ -1922,6 +1922,43 @@ Findings:
       Flutter `Rule34Ripper.fileUrlsFromDocument(...)` also returns empty
       strings, but `rip()` explicitly skips `imageUrl.isEmpty`, so malformed
       post entries no longer follow Java's empty-URL download path.
+- [ ] Java `VscoRipper.getUserTkn(...)` stores jsoup
+      `Connection.Response.cookies()` from `https://vsco.co/content/Static`
+      and returns the `vs` cookie value. Flutter `VscoRipper.getUserToken()`
+      reconstructs cookies by splitting the raw `set-cookie` header on commas,
+      which is not equivalent for comma-bearing cookie attributes such as
+      `Expires` and can alter the VSCO AJAX token used for profile requests.
+- [ ] Java `VscoRipper.getURLsFromPage(...)` lets profile parsing fail through
+      strict `JSONObject` access after helper methods return `null` on fetch
+      failures: `getSiteID(...)` requires `sites[0].id`, profile pages require
+      `media`, each media object, `responsive_url`, and `total`. Flutter throws
+      explicit `HttpException`s for missing token/site JSON but then treats
+      absent/non-list `media`, non-map media items, missing `responsive_url`,
+      and missing/non-numeric `total` as empty lists or zero totals, changing
+      malformed VSCO profile responses into partial or clean completion.
+- [ ] Java `VscoRipper.vscoImageToURL(...)` returns an empty string when a
+      single-media page lacks `meta[property=og:image]`; the caller adds that
+      empty string to the URL list. Flutter `imageUrlFromMediaPage(...)`
+      returns `null` for a missing `og:image`, and `getURLsFromPage(...)`
+      converts it into an empty list, so malformed single-media pages skip
+      Java's empty-URL candidate.
+- [ ] Java `ZizkiRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any host
+      ending in `zizki.com` is accepted before `getGID(...)` validates the root
+      or `www` URL shape. Flutter `ZizkiRipper.canRip(...)` only accepts
+      exactly `zizki.com` or `www.zizki.com`, and its Dart test rejects
+      `https://cdn.zizki.com/...`, narrowing Java's domain-level support.
+- [ ] Java `ZizkiRipper.getAlbumTitle(...)` catches only `IOException`; missing
+      `h1.title`, missing `span.creator`, or a creator span without an anchor
+      can throw before the fallback to `super.getAlbumTitle(...)`. Flutter
+      `albumTitleFromDocument(...)` returns `null` for missing title/author and
+      `getAlbumTitle(...)` catches all failures, so malformed title markup
+      quietly falls back instead of matching Java's null-dereference path.
+- [ ] Java `ZizkiRipper.getFirstPage()` stores jsoup
+      `Connection.Response.cookies()` and later passes that cookie map into
+      `downloadURL(...)` with the album referrer. Flutter rebuilds cookies from
+      the raw `set-cookie` header with `cookiesFromSetCookieHeader(...)`; this
+      is not equivalent to jsoup cookie extraction for all valid Set-Cookie
+      headers and can alter authenticated/referrer image downloads.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
