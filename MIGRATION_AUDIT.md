@@ -1959,6 +1959,22 @@ Findings:
       the raw `set-cookie` header with `cookiesFromSetCookieHeader(...)`; this
       is not equivalent to jsoup cookie extraction for all valid Set-Cookie
       headers and can alter authenticated/referrer image downloads.
+- [ ] Java `HentaiimageRipper.getNextPage(...)` throws
+      `IOException("No more pages")` when no paginator span contains an anchor
+      whose text is exactly `next>`, and fetches the next page before returning
+      when it does find one. Flutter `HentaiimageRipper.nextPageFromDocument`
+      returns `null` for the missing-next case and only returns the URI; `rip()`
+      then catches next-page fetch failures as a quiet stop.
+- [ ] Java `MyhentaicomicsRipper.getAlbumsToQueue(...)` queues
+      `getDomain() + elem.attr("href")`, producing strings such as
+      `myhentaicomics.com/index.php/...` without a scheme. Flutter
+      `albumUrlsFromDocument(...)` prefixes `https://myhentaicomics.com`,
+      changing the queue payloads produced for search/tag pages.
+- [ ] Java `MyhentaicomicsRipper.getNextPage(...)` throws
+      `IOException("No more pages")` when the right-arrow link exists but its
+      `href` does not match `/index.php/<slug>?page=<digit>`. Flutter
+      `nextPageUrlFromDocument(...)` returns `null` for the same non-matching
+      href and ends pagination cleanly.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
