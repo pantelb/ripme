@@ -2127,6 +2127,13 @@ Findings:
       are prefixed with `https://xlecx.org`. Flutter `XlecxRipper` inherits
       Dart `XcartxRipper.imageUrlsFromDocument(...)`, which hard-codes
       `https://xcartx.com`, so Xlecx downloads are pointed at the wrong host.
+- [ ] Java `ChanRipper.getURLsFromPage(...)` sends non-self-hosted links through
+      `RipUtils.getFilesFromURL(...)`, which expands redgifs/gifdeliverynetwork
+      pages, preserves `v.redd.it` URLs, handles `i.reddituploads.com`, and
+      returns generic direct media URLs in addition to Imgur, Vidble, Erome, and
+      Soundgasm. Flutter `ChanRipper` delegates that branch to
+      `RedditRipper.expandNonDirectUrl(...)`, which currently covers only the
+      latter subset, so several Java-expanded Chan links now disappear.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
