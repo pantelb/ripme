@@ -840,6 +840,13 @@ Findings:
       as `imgur_` can also fail at `fields.get(1)`. Flutter has no equivalent
       fallback history guessing, so an implementation must choose bug parity or
       an intentional migration fix.
+- [ ] Java `RipUtils.urlFromDeviantartDirectoryName(...)` accepts any directory
+      starting with `deviantart`, then immediately calls
+      `dir.substring("deviantart_".length())`; a bare `deviantart` directory can
+      therefore throw before returning `null` or a URL. Directory names with a
+      trailing underscore can also reach `fields[1]` after Java's split drops
+      trailing empty fields. Flutter has no equivalent fallback history
+      guessing, so this malformed-directory behavior needs a parity decision.
 - [ ] Java history clear deletes both album history and downloaded-URL history
       through `Utils.clearURLHistory()`, optionally after
       `history.warn_before_delete` confirmation. Flutter clear behavior needs to
