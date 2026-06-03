@@ -793,6 +793,14 @@ Findings:
 - [ ] Java writes `url`, `startDate`, `modifiedDate`, `title`, `count`, and
       `selected`, but does not write `dir` even though it reads `dir`.
       Flutter writes `dir`; the migration file must track this format extension.
+- [ ] Java history import is strict for the core JSON shape:
+      `History.fromJSON(...)` calls `getJSONObject(i)`, and
+      `HistoryEntry.fromJSON(...)` requires `url`, `startDate`, and
+      `modifiedDate` through `getString`/`getLong`; malformed entries make
+      `fromFile(...)` throw an `IOException`. Flutter `HistoryProvider` filters
+      non-map list entries and `HistoryEntry.fromJson(...)` defaults missing
+      `url` to `''` and missing dates to epoch `0`, so invalid/partial history
+      files are accepted differently.
 - [ ] Java history table displays dates as `yyyy/MM/dd`. Flutter date display
       needs comparison.
 - [ ] Java history context menu supports check all, uncheck all, check selected,
