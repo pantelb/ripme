@@ -840,6 +840,13 @@ Findings:
 - [ ] Java configured cookies use `cookies.<domain>` and check parent domains;
       values are parsed as semicolon-delimited `key=value` pairs. Flutter does
       similar domain lookup, but parser edge cases and precedence need tests.
+- [ ] Java shared cookie parsing in `RipUtils.getCookiesFromString(...)` uses
+      `pair.split("=")` with no split limit and no malformed-pair guard:
+      `a=b=c` becomes `a -> b`, and a semicolon segment without `=` throws
+      instead of being skipped. Flutter shared parsing in
+      `Http._parseCookieHeader(...)` preserves extra `=` characters and ignores
+      malformed segments; per-ripper parsers such as Furaffinity currently test
+      the Flutter behavior, not the Java quirk.
 - [ ] Java proxy CLI/config accepts single strings such as
       `[user:password]@host[:port]` for HTTP and SOCKS. Flutter currently uses
       `proxy.enabled`, `proxy.host`, `proxy.port`, `proxy.username`, and
