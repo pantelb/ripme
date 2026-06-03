@@ -2424,6 +2424,13 @@ Findings:
       Soundgasm. Flutter `ChanRipper` delegates that branch to
       `RedditRipper.expandNonDirectUrl(...)`, which currently covers only the
       latter subset, so several Java-expanded Chan links now disappear.
+- [ ] Java `ChanRipper.canRip(...)` accepts baked-in or configured chan domains
+      without validating a board/thread path, and `getHost()` later reads
+      `this.url.toExternalForm().split("/")[3]`. A bare accepted domain can
+      therefore fail with the Java split/index behavior. Flutter
+      `ChanRipper.getHost()` uses `url.pathSegments.isNotEmpty ? first : ''`,
+      returning an empty board instead of matching the Java malformed-path
+      failure.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
