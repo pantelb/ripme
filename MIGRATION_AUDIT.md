@@ -1860,6 +1860,11 @@ Findings:
       `totalPagesFromJson({})` returns `1`, `urlsFromJson({})` returns an empty
       list, and the rip can send `ripComplete` with no downloads. That changes
       both source-page validation and malformed/empty API failure behavior.
+- [ ] Java `LusciousRipper` also inherits `AbstractHTMLRipper.canRip(...)`, so
+      any host ending in `luscious.net` is accepted before `getGID(...)`
+      validates the `/albums/...` shape. Flutter `LusciousRipper.canRip(...)`
+      applies the album regex directly, narrowing Java's domain-level dispatch
+      surface for non-album Luscious URLs.
 - [ ] Java `RedgifsRipper.sanitizeURL(...)` removes `/gifs/detail` rather
       than rewriting it to `/watch`; for
       `https://www.redgifs.com/gifs/detail/exampleid`, Java sanitizes to
