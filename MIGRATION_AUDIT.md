@@ -1913,6 +1913,12 @@ Findings:
       stores jsoup `Response.cookies()` from the first page, while Flutter
       reconstructs cookies by splitting the raw `set-cookie` header on commas,
       which is not equivalent for cookie attributes such as `Expires`.
+- [ ] Java `SankakuComplexRipper` inherits `AbstractHTMLRipper.canRip(...)`,
+      so any host ending in `sankakucomplex.com` is accepted before
+      `getGID(...)` validates a `tags=` query. Flutter
+      `SankakuComplexRipper.canRip(...)` applies the tag regex directly, and
+      its Dart test rejects `https://idol.sankakucomplex.com/posts` even though
+      Java would accept it at dispatch and fail later in `getGID(...)`.
 - [ ] Java `SankakuComplexRipper.getSubDomain(...)` calls
       `URLDecoder.decode(m.group(1), "UTF-8")` even when the optional
       subdomain group is absent. A bare `https://sankakucomplex.com/?tags=abc`
