@@ -2832,6 +2832,12 @@ Findings:
       interpolates `item['name']`, which can emit
       `https://ba.hitomi.la/galleries/<category>/null` for a missing `name`
       field instead of matching Java's strict missing-key failure.
+- [ ] Java `HitomiRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+      host ending in `hitomi.la` is accepted before `getGID(...)` validates the
+      strict `https://hitomi.la/(cg|doujinshi|gamecg|manga)/...html` shape.
+      Flutter `HitomiRipper.canRip(...)` applies that regex directly, and its
+      Dart test rejects another `hitomi.la` path that Java would accept at the
+      dispatch layer.
 - [ ] Java `AllporncomicRipper.getURLsFromPage(...)` and
       `getAlbumsToQueue(...)` add jsoup `attr(...)` values directly, including
       empty strings when `data-src` or `href` is absent. Flutter
