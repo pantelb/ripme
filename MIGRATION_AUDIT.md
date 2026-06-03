@@ -1130,6 +1130,14 @@ Findings:
       `getSupportedLanguages`, `getSelectedLanguage`, `setLanguage`,
       `configureLogger`, `playSound`, `getListOfAlbumRippers`, and
       `getListOfVideoRippers`.
+- [ ] Java `Utils` also exposes production helpers with source/test-source
+      contracts that Flutter's shared `Utils` does not currently provide:
+      `stripURLParameter`, `shortenPath(Path)`, `bytesToHumanReadable`,
+      `getByteStatusText`, `getEXTFromMagic`, `between`, and
+      `shortenSaveAsWindows`. The Java source also keeps the shipped
+      `shortenPath(String)` bug (`return shortenPath(path);` self-recursion),
+      so parity needs either a compatible bug test or a documented intentional
+      retirement instead of silently replacing it with Dart path shortening.
 - [x] Java query parsing uses `URLDecoder` with UTF-8, preserves empty values for
       keys without `=`, and decodes each key/value independently. Flutter URL
       query helpers now cover those exact edge cases, duplicate handling, extra
@@ -1367,8 +1375,10 @@ Findings:
       uses Dart's standard encoder where encoding is needed for test fixtures or
       non-Java replacement code.
 - [ ] Add Dart tests for `Utils.getEXTFromMagic`, `stripURLParameter`,
-      `shortenPath`, `bytesToHumanReadable`, `getByteStatusText`, `between`,
-      `shortenSaveAsWindows`, and `sanitizeSaveAs`.
+      `shortenPath(Path)`, Java's self-recursive `shortenPath(String)` overload,
+      `bytesToHumanReadable`, `getByteStatusText`, `between`,
+      `shortenSaveAsWindows`, and `sanitizeSaveAs`; current Flutter utility
+      tests cover only `filesystemSafe` and one `sanitizeSaveAs` case.
 - [ ] Add Dart tests for Java proxy string parsing for HTTP and SOCKS, even if
       SOCKS execution is later marked unsupported on a platform.
 - [ ] Add Dart tests for Java label-bundle key rules and status-message string
