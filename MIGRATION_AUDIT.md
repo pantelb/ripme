@@ -825,6 +825,13 @@ Findings:
       directory-name prefixes such as `imgur_`, `imagefap_`, and `deviantart_`.
       Flutter must preserve, intentionally fix, or document this current-source
       behavior.
+- [ ] Java `RipUtils.urlFromRedditDirectoryName(...)` appears unreachable for
+      the intended `reddit_sub_*`, `reddit_user_*`, and `reddit_post_*`
+      directory names: after confirming `dir.startsWith("reddit_")`, it splits
+      on `_` and switches on `fields[0]`, which is still `reddit`, not `sub`,
+      `user`, or `post`. Flutter has no history-folder reconstruction, so any
+      future replacement must decide whether to preserve this shipped Reddit
+      reconstruction bug.
 - [ ] Java history clear deletes both album history and downloaded-URL history
       through `Utils.clearURLHistory()`, optionally after
       `history.warn_before_delete` confirmation. Flutter clear behavior needs to
