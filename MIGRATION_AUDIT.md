@@ -1147,12 +1147,11 @@ Findings:
       `/read/ID`.
 - [ ] The same Flutter factory constructor-guard bypass affects additional
       direct routes whose own Dart `canRip(...)` is stricter than the factory
-      host predicate, including `AllporncomicRipper`, `BatoRipper`,
-      `FapDungeonRipper`, `FemjoyhunterRipper`, `FuskatorRipper`,
-      `GirlsOfDesireRipper`, `HentaifoundryRipper`, `EightmusesRipper`,
-      `NewgroundsRipper`, `NfsfwRipper`, `TheyiffgalleryRipper`, and
-      `ViewcomicRipper`. These must be fixed as one dispatch contract, not only
-      for the first examples above.
+      host predicate, including `BatoRipper`, `FapDungeonRipper`,
+      `FemjoyhunterRipper`, `FuskatorRipper`, `GirlsOfDesireRipper`,
+      `HentaifoundryRipper`, `EightmusesRipper`, `NewgroundsRipper`,
+      `NfsfwRipper`, `TheyiffgalleryRipper`, and `ViewcomicRipper`. These must
+      be fixed as one dispatch contract, not only for the first examples above.
 - [ ] Flutter `RipperFactory.getRipper(...)` also expands several direct host
       routes by using `host.contains(...)` instead of Java's inherited
       `AbstractHTMLRipper.canRip(...)` `url.getHost().endsWith(getDomain())`
@@ -1532,6 +1531,11 @@ Findings:
 - [ ] Java byte-progress/resume overrides must be verified:
       `HqpornerRipper.tryResumeDownload` and
       `HqpornerRipper.useByteProgessBar`.
+- [ ] Java `HqpornerRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+      host ending in `hqporner.com` is accepted before `getGID(...)` validates
+      either `/hdporn/...html` or the category/top/actress/studio listing
+      pattern. Flutter `HqpornerRipper.canRip(...)` applies those strict
+      patterns directly, narrowing Java's domain-level dispatch surface.
 - [ ] Java `HqpornerRipper.getBestQualityLink(...)` returns `null` for an
       empty candidate list before checking quality substrings. Flutter
       `HqpornerRipper.bestQualityLink(...)` currently returns an empty string
@@ -1782,6 +1786,11 @@ Findings:
       Flutter `FuraffinityRipper.getNextPage(...)` returns `null`, so
       Furaffinity pagination end-state behavior follows Flutter's nullable
       helper convention instead of Java's exception contract.
+- [ ] Java `FuraffinityRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+      host ending in `furaffinity.net` is accepted before `getGID(...)`
+      validates `/gallery/USER` or `/scraps/USER` on `www.furaffinity.net`.
+      Flutter `FuraffinityRipper.canRip(...)` applies those two regexes
+      directly, narrowing Java's domain-level dispatch surface.
 - [ ] Java `FuraffinityRipper.getURLsFromPage(...)` calls
       `getImageFromPost(...)`, but then checks the ripper field `url != null`
       before calling `urlToAdd.startsWith("http")`; if an image post has no
@@ -2767,6 +2776,11 @@ Findings:
       `getNextPage(...)` throws `IOException("No more pages")` after the final
       album/page, while Flutter returns `null` from `getNextDocument(...)` and
       `getNextPage(...)`.
+- [ ] Java `PhotobucketRipper` inherits `AbstractHTMLRipper.canRip(...)`, so
+      any host ending in `photobucket.com` is accepted before `sanitizeURL(...)`
+      and `getGID(...)` apply the `SUBDOMAIN.photobucket.com/user/USER/library`
+      URL shape. Flutter `PhotobucketRipper.canRip(...)` sanitizes and applies
+      that regex directly, narrowing Java's domain-level dispatch surface.
 - [ ] Java `PhotobucketRipper.AlbumMetadata` strictly reads metadata keys
       `url`, `location`, and `sortOrder`, keeps the raw `location` path except
       replacing spaces with underscores, and stores jsoup response cookies for
@@ -2890,6 +2904,11 @@ Findings:
       `a[data-original-title="Thumbnails"]` selector and throws a controlled
       `Unable to get first page` when no link exists, so fallback selection and
       malformed-selector failure behavior are not Java-compatible.
+- [ ] Java `Hentai2readRipper` inherits `AbstractHTMLRipper.canRip(...)`, so
+      any host ending in `hentai2read.com` is accepted before
+      `pageContainsAlbums(...)` or `getGID(...)` validates comic/chapter path
+      shapes. Flutter `Hentai2readRipper.canRip(...)` applies the root/chapter
+      regexes directly, narrowing Java's domain-level dispatch surface.
 - [ ] Java `Hentai2readRipper.getAlbumsToQueue(...)` and
       `chapterUrlsFromPage` parity is only partial: Java queues raw jsoup
       `href` values from `.nav-chapters > li > div.media > a`, including empty
