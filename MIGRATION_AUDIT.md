@@ -1715,6 +1715,13 @@ Findings:
       `AbstractJSONRipper`'s `No images found at ...` failure path. Flutter
       `CoomerPartyRipper.parseJSON(...)` stops cleanly when `posts.length < 50`
       and only throws on an empty first page, changing end-of-rip semantics.
+- [ ] Java `CoomerPartyRipper.canRip(...)` accepts any host ending in
+      `coomer.party` or `coomer.su`, then its constructor reads path elements
+      `0` and `2` before the blank/null guard. Short accepted paths therefore
+      throw `IndexOutOfBoundsException` rather than the later
+      `MalformedURLException("Invalid coomer.party URL: ...")`. Flutter
+      `_pathElement(...)` throws a controlled `FormatException`, so malformed
+      Coomer URL behavior is not Java-compatible.
 - [ ] Java `CoomerPartyRipper.pullFileUrl(...)` and
       `pullAttachmentUrls(...)` catch `JSONException`, log
       `Unable to Parse FileURL ...` / `Unable to Parse AttachmentURL ...`, and
