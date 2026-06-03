@@ -2927,6 +2927,11 @@ Findings:
       `_lowercasePercentEscapes(...)`, so uppercase-encoded emoji or other
       escaped bytes produce different GIDs and filesystem-safe album names than
       Java.
+- [ ] Java `FapwizRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+      host ending in `fapwiz.com` is accepted before `getGID(...)` applies the
+      category/user/post regexes and may throw. Flutter
+      `FapwizRipper.canRip(...)` applies those strict regexes up front, so
+      domain-valid but path-invalid Fapwiz URLs are rejected earlier than Java.
 - [ ] Java `FapwizRipper.getNextPage(...)` throws `IOException("No more pages.")`
       when `a.next` is absent, and `FapwizRipperTest.testGetNextPage_NoNextPage`
       documents that exception contract. Flutter `FapwizRipper.getNextPage(...)`
