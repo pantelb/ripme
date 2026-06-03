@@ -2615,6 +2615,12 @@ Findings:
       returns an empty list for non-map JSON, missing/non-list `images`, and
       per-image missing `imageUrl`, so malformed successful API responses are
       silently treated like no images instead of Java's parser failure.
+- [ ] Java `FuskatorRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+      host ending in `fuskator.com` is accepted before `sanitizeURL(...)` and
+      `getGID(...)` enforce the `/full/<id>/...` gallery shape. Flutter
+      `FuskatorRipper.canRip(...)` sanitizes `/thumbs/` and `/expanded/` first
+      but then applies the strict full-gallery regex, narrowing Java's
+      domain-level acceptance.
 - [ ] Java `HentaiNexusRipper.getURLsFromJSON(...)` strictly requires JSON keys
       `f`, `b`, `r`, `i`, and each image's `h`/`p`, and a missing
       `initReader(...)` payload returns `""` which then reaches Java Base64
@@ -2627,6 +2633,11 @@ Findings:
       in a subalbum that use `data-cfsrc` are added only to that returned list
       and are therefore not scheduled by Java's parent call, while Flutter
       `_downloadsFromPage(...)` recursively collects and downloads them.
+- [ ] Java `EightmusesRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+      host ending in `8muses.com` is accepted before `getGID(...)` validates the
+      `/comix|comics/album/...` path. Flutter `EightmusesRipper.canRip(...)`
+      applies the album regex directly, narrowing Java's domain-level dispatch
+      surface for non-album 8muses URLs.
 - [ ] Java `EightmusesRipper.getURLsFromPage(...)` directly dereferences
       `thumb.select("img").first().attr("data-src")` for picture tiles without
       `data-cfsrc`; missing `img` or `data-src` markup can throw or build the
@@ -2647,6 +2658,11 @@ Findings:
       cookies from raw `set-cookie` headers via `FuskatorRipper` helpers and
       uses a nullable CSRF selector. Missing CSRF markup or comma-bearing cookie
       attributes therefore follow different request-state and failure behavior.
+- [ ] Java `HentaifoundryRipper` inherits `AbstractHTMLRipper.canRip(...)`, so
+      any host ending in `hentai-foundry.com` is accepted before `getGID(...)`
+      validates `/pictures/user/...` or `/stories/user/...`. Flutter
+      `HentaifoundryRipper.canRip(...)` applies that regex directly, narrowing
+      Java's domain-level dispatch surface for other Hentai Foundry paths.
 - [ ] Java `HentaifoundryRipper.getURLsFromPage(...)` catches image-page fetch
       `IOException`, sets `imagePage = null`, then immediately dereferences
       `imagePage.select(...)`; a failed image page can throw before the rip
