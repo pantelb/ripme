@@ -832,6 +832,14 @@ Findings:
       `user`, or `post`. Flutter has no history-folder reconstruction, so any
       future replacement must decide whether to preserve this shipped Reddit
       reconstruction bug.
+- [ ] Java `RipUtils.urlFromImgurDirectoryName(...)` also has current-source
+      edge cases that must not be silently smoothed over: it builds
+      `List<String> fields = Arrays.asList(dir.split("_"))`, then the subreddit
+      branch calls `fields.remove(...)`, which throws
+      `UnsupportedOperationException` on the fixed-size list; short names such
+      as `imgur_` can also fail at `fields.get(1)`. Flutter has no equivalent
+      fallback history guessing, so an implementation must choose bug parity or
+      an intentional migration fix.
 - [ ] Java history clear deletes both album history and downloaded-URL history
       through `Utils.clearURLHistory()`, optionally after
       `history.warn_before_delete` confirmation. Flutter clear behavior needs to
