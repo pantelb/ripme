@@ -1897,6 +1897,12 @@ Findings:
       `ripComplete` without reporting the Java-style no-images/malformed-page
       failure. This is separate from the already-tested query shape and
       Java-compatible best-area bug.
+- [ ] Java `ScrolllerRipper` inherits `AbstractJSONRipper.canRip(...)`, so any
+      host ending in `scrolller.com` is accepted before `getGID(...)` applies
+      the `https?://scrolller.com/r/[a-zA-Z0-9]+` regex. Flutter
+      `ScrolllerRipper.canRip(...)` applies that regex directly, and its Dart
+      test rejects `www.scrolller.com` and hyphenated subreddit paths that Java
+      would accept at dispatch and reject later.
 - [ ] Java `TwitterRipper.sanitizeURL(...)` only recognizes
       `twitter.com` and `m.twitter.com` account/search URLs. Flutter
       `TwitterRipper.classifyUrl(...)` also accepts `x.com`, and
