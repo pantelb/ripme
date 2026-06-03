@@ -661,6 +661,14 @@ Findings:
 - [ ] Java persists queue state through the `queue` config key on updates and
       restores it on startup. Flutter queue persistence/restoration needs to be
       implemented or intentionally replaced.
+- [ ] Java queue persistence has a shipped empty-queue edge case:
+      `MainWindow.updateQueue(...)` only calls `Utils.setConfigList("queue",
+      ...)` and `Utils.saveConfig()` when `model.size() > 0`. Removing the last
+      queued item or using the queue context menu's remove-all action updates
+      the in-memory model/label but can leave stale persisted `queue` config
+      entries for the next startup. Flutter currently has no queue persistence,
+      so parity needs a choice between matching this bug, fixing it with a
+      migration note, or documenting retirement.
 - [ ] Java queue context menu supports remove selected and remove all with a
       confirmation dialog. Flutter queue actions need matching widget coverage.
 - [ ] Java `-a` appends text to the rip working-folder name through
