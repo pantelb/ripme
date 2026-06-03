@@ -886,6 +886,12 @@ Findings:
       non-retriable 4xx handling, retriable 5xx handling, and an Imgur
       503-byte-as-404 special case. Flutter needs shared tests or documented
       replacement behavior.
+- [ ] Java `DownloadFileThread` catches `SocketTimeoutException`, logs
+      `timedout!`, breaks out of the retry loop, and then still falls through to
+      `observer.downloadCompleted(url, saveAs.toPath())`. Flutter shared
+      download/page requests surface timeout failures instead. This shipped Java
+      timeout-completion behavior needs a compatibility test or an explicit
+      intentional-fix note.
 - [ ] Java `download.max_size` is only used by config validation/update
       plumbing; `DownloadFileThread` does not compare response size against that
       key before saving. Flutter `Http.downloadFile(...)` rejects any response
@@ -894,6 +900,12 @@ Findings:
 - [ ] Java `DownloadVideoThread` first issues a HEAD request for total bytes,
       then downloads with no connect timeout and byte-progress events. Flutter
       video helpers need exact progress comparison.
+- [ ] Java `DownloadVideoThread` retry behavior also differs from shared
+      Flutter downloads: it has no retry-sleep delay, gets total bytes through a
+      separate HEAD request before the retry loop, and only increments `tries`
+      after the GET connection is configured. Flutter routes video downloads
+      through the shared `Http.downloadFile(...)` response path, so timeout and
+      retry timing are not Java-compatible.
 - [ ] Java `CliphunterRipper.rip()` schedules the decrypted video with
       `addURLToDownload(url, HOST + "_" + getGID(...))`; Java
       `VideoRipper.addURLToDownload(..., referrer, cookies, ...)` ignores
