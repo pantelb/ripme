@@ -2133,6 +2133,11 @@ Findings:
       `count < 60` and otherwise only returns the next URI without resetting
       `count` or fetching/checking the document; `rip()` separately catches
       next-page fetch failures and breaks as successful completion.
+- [ ] Java `NewgroundsRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+      host ending in `newgrounds.com` is accepted before `getGID(...)` requires
+      a username subdomain. Flutter constructs `NewgroundsRipper` with
+      `_usernameFromUrl(...)` and `canRip(...)` uses the strict subdomain regex,
+      so bare/domain-level Newgrounds URLs fail earlier than Java.
 - [ ] Java `JabArchivesRipper.getNextPage(...)` throws
       `IOException("No more pages")` when `a[title="Next page"]` is absent,
       sleeps, then fetches the hardcoded `https://jabarchives.com...` URL.
@@ -2882,6 +2887,11 @@ Findings:
       `rip()`, so the public queue-support contract exposed by
       `AbstractHTMLRipper` is not equivalent even though the main rip path has
       similar behavior.
+- [ ] Java `NfsfwRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any host
+      ending in `nfsfw.com` is accepted before `getGID(...)` validates the
+      `/gallery/v/...` shape. Flutter `NfsfwRipper.canRip(...)` sanitizes the
+      URL and applies the gallery regex directly, narrowing Java's domain-level
+      dispatch surface.
 - [ ] Java `NfsfwRipper.getNextPage(...)` sleeps and then throws
       `IOException("No more pages")` when neither `a.next` nor queued
       subalbums provide a valid next URL. Flutter `NfsfwRipper.getNextPage(...)`
