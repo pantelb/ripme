@@ -2574,6 +2574,12 @@ Findings:
       `src` because the broad try/catch wraps every image, while Flutter skips
       empty `src` images and continues later images. These parser and per-image
       failure paths are not Java-equivalent.
+- [ ] Java `TapasticRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+      host ending in `tapas.io` is accepted before `getGID(...)` validates
+      exact `https://tapas.io/series/...` or `/episode/...` paths. Flutter
+      `TapasticRipper.canRip(...)` requires `url.host == "tapas.io"`, and its
+      Dart test rejects `https://www.tapas.io/series/TPIAG`, narrowing Java's
+      domain-level dispatch surface.
 - [ ] Java `TsuminoRipper.getPageUrls(...)` catches only the page-load
       `IOException` path, sends the captcha warning, returns `null`, and then
       `getURLsFromPage(...)` immediately dereferences `imageIds.length()`.
