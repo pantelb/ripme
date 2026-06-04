@@ -2212,6 +2212,12 @@ Findings:
       a username subdomain. Flutter constructs `NewgroundsRipper` with
       `_usernameFromUrl(...)` and `canRip(...)` uses the strict subdomain regex,
       so bare/domain-level Newgrounds URLs fail earlier than Java.
+- [ ] Java `NewgroundsRipper.getURLsFromPage(...)` logs
+      `IO Error on trying to check extension: <detail-url>` when a detail page
+      fetch fails while probing allowed extensions, then skips that entry.
+      Flutter `imageUrlsFromDocument(...)` catches `IOException` with a
+      comment-only silent skip, so Newgrounds detail-probe failure diagnostics
+      are not Java-compatible even when the resulting URL list matches.
 - [ ] Java `JabArchivesRipper.getNextPage(...)` throws
       `IOException("No more pages")` when `a[title="Next page"]` is absent,
       sleeps, then fetches the hardcoded `https://jabarchives.com...` URL.
