@@ -2405,6 +2405,13 @@ Findings:
       missing/empty hrefs and, when no explicit `baseUri` is supplied, resolves
       against `http://rule34.paheal.net` rather than the document location used
       by Java.
+- [ ] Java `PahealRipper.downloadURL(...)` derives the output basename with
+      `new URI(name).getPath()` inside a `try/catch`; malformed percent-encoding
+      or other URI syntax errors log `Error while downloading URL ...` and skip
+      that item. Flutter `PahealRipper.downloadFileName(...)` calls
+      `Uri.decodeComponent(name)` without a per-download catch, so malformed
+      Paheal filenames can abort the rip path instead of following Java's
+      logger-only skip behavior.
 - [ ] Java `PornpicsRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
       host ending in `pornpics.com` is accepted before `getGID(...)` checks the
       strict `www.pornpics.com/galleries/ID` shape. Flutter
