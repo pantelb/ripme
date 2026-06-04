@@ -1769,6 +1769,14 @@ Findings:
       assert nullable no-next-page helpers, and Photobucket has no equivalent
       no-next-page assertion, so pagination end-state behavior needs a shared
       Java-compatible decision.
+- [ ] Java `PornhubRipper.downloadURL(...)` queues a
+      `PornhubImageThread` for each photo page and sleeps after queueing; the
+      thread logs `[!] Exception while loading/parsing <photo-page-url>` for
+      fetch, missing-image/null-dereference, or URI failures. Flutter
+      `_queueImageFromPage(...)` catches every image-page failure with
+      `catch (_) { return; }` and `directImageUrlFromDocument(...)` returns
+      `null` for missing/empty image sources, so broken Pornhub photo pages are
+      silent skips instead of Java-visible per-page failures.
 - [ ] Java `HentaifoundryRipper.getNextPage(...)` also throws
       `IOException("No more pages")` when `li.next.hidden` is present or the
       next-page anchor is missing. Flutter `HentaifoundryRipper.getNextPage(...)`
