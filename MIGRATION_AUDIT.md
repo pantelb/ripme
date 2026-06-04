@@ -2002,6 +2002,12 @@ Findings:
       Download link or fetch fails, `urlToAdd` can be `null` and Java can throw.
       Flutter checks `imageUrl != null` and skips the post, changing missing
       image-link failure behavior.
+- [ ] Java `FuraffinityRipper.getURLsFromPage(...)` stops after the first
+      gallery post when `AbstractRipper.isThisATest()` is true, because the loop
+      breaks on `isStopped() || isThisATest()`. Flutter has no shared
+      `markAsTest()` / `isThisATest()` path and iterates every post returned by
+      `postUrlsFromPage(...)`, so Java-compatible FurAffinity test-mode crawl
+      limiting is missing.
 - [ ] Java `FuraffinityRipper.setCookies(...)` parses
       `furaffinity.cookies` through shared `RipUtils.getCookiesFromString(...)`
       and sends `DOWNLOAD_ERRORED` when the configured value equals the bundled
