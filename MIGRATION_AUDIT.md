@@ -262,7 +262,7 @@ Parity checklist:
 - [ ] Queue count is visible and updates like Java's `queue(n)` label.
 - [ ] Queue is saved to config after updates.
 - [ ] Queue is restored from config at startup.
-- [ ] Queue clear/remove/reorder behavior matches Java context-menu actions.
+- [ ] Queue clear/remove behavior matches Java context-menu actions.
 - [ ] Stop interrupts current rip and leaves remaining queue behavior documented.
 
 Required tests:
@@ -671,6 +671,11 @@ Findings:
       migration note, or documenting retirement.
 - [ ] Java queue context menu supports remove selected and remove all with a
       confirmation dialog. Flutter queue actions need matching widget coverage.
+- [ ] Java `QueueMenuMouseListener` has no copy or reorder actions; it only
+      removes selected queue entries or clears all entries after
+      `queue.validation` confirmation. Flutter `QueueView` exposes copy,
+      move-up, and move-down actions for individual queue rows, so the queue UI
+      currently has extra behavior that needs an intentional parity decision.
 - [ ] Java `-a` appends text to the rip working-folder name through
       `App.stringToAppendToFoldername`; Flutter has no verified equivalent.
 - [ ] Java `-j` self-update replaces a jar on disk. Flutter should document the
