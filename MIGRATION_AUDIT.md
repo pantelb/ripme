@@ -1035,6 +1035,14 @@ Findings:
 - [ ] Java duplicate suppression is per ripper pending/completed/errored maps
       unless `allowDuplicates()` is overridden. Flutter has a per-ripper
       attempted URL set; override coverage needs verification.
+- [ ] Java shared download paths surface prior downloads and existing files as
+      warning statuses: URL-history hits send `DOWNLOAD_WARN` with
+      `Already downloaded <url>`, and `downloadExists(...)` sends
+      `DOWNLOAD_WARN` with `<url> already saved as <file>` while marking the
+      item completed. Flutter `downloadFile(...)` emits `RipStatus.downloadSkip`
+      with `Already downloaded: <url>` or `File already exists: <path>` instead,
+      changing status category, message text, and completed-item accounting for
+      these common skip paths.
 - [ ] Java `DownloadThreadPool.waitForThreads()` shuts down the fixed thread
       pool and waits at most 3600 seconds for termination. Flutter
       `AbstractRipper.downloadFiles` waits on all worker futures with no
