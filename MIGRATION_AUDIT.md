@@ -1047,14 +1047,6 @@ Findings:
 - [ ] Java writes downloaded URLs to URL history before handing a download to
       the thread pool. Flutter marks downloads after `Http.downloadFile`
       succeeds; this changes retry/interruption semantics.
-- [ ] Java `AbstractRipper.writeDownloadedURL(...)` appends the normalized URL
-      to the plain history file with `BufferedWriter.write(downloadedURL)` and
-      no line separator, while `hasDownloadedURL(...)` later scans with
-      `Scanner.nextLine()`. Consecutive successful downloads can therefore
-      concatenate into one history line in the shipped Java behavior. Flutter
-      `DownloadHistoryProvider` stores a sorted JSON set of normalized URLs, so
-      import/export, duplicate lookup, and repeated-write semantics are not
-      Java-compatible with the current history-file edge case.
 - [ ] Java normalizes URL-history keys through overridable
       `AbstractRipper.normalizeUrl` before both history lookup and history
       write. Current Java overrides are `ArtStationRipper` (strips a terminal
