@@ -3729,12 +3729,16 @@ Java user-facing source read:
 - `README.md`
 - `CONTRIBUTING.md`
 - `SECURITY.md`
+- `.github/ISSUE_TEMPLATE.md`
+- `.github/PULL_REQUEST_TEMPLATE.md`
 
 Flutter files checked:
 
 - `README.md`
 - `CONTRIBUTING.md`
 - `SECURITY.md`
+- `.github/ISSUE_TEMPLATE.md`
+- `.github/PULL_REQUEST_TEMPLATE.md`
 - `MIGRATION_AUDIT.md`
 
 Findings:
@@ -3767,6 +3771,13 @@ Findings:
       reporting tied to the Java-era project. Flutter release/version/security
       support policy needs a migration-specific update before user-facing docs
       can be considered parity-complete.
+- [ ] Java `.github/ISSUE_TEMPLATE.md` and
+      `.github/PULL_REQUEST_TEMPLATE.md` are carried forward unchanged. The
+      issue template still asks for `Java version` / `java -version`, and the
+      PR template still requires `gradlew test`. Flutter issue/PR templates need
+      platform-specific fields for Android/desktop, Flutter version/build
+      artifacts, and the Dart analyze/test commands before repository workflow
+      docs are migration-complete.
 
 ### L. Java Test Metadata And Disabled/Flaky Coverage
 
