@@ -2679,6 +2679,12 @@ Findings:
       `TapasticRipper.canRip(...)` requires `url.host == "tapas.io"`, and its
       Dart test rejects `https://www.tapas.io/series/TPIAG`, narrowing Java's
       domain-level dispatch surface.
+- [ ] Java `TapasticRipper.downloadURL(...)` logs
+      `[!] Exception while downloading <episode-url>` when an individual episode
+      page fetch or image URL conversion throws, and the exception remains tied
+      to that episode's download task. Flutter `TapasticRipper.rip()` catches
+      every per-episode fetch/parse failure with `catch (_) { continue; }`, so
+      failed Tapas episodes disappear without Java-compatible diagnostics.
 - [ ] Java `TsuminoRipper.getPageUrls(...)` catches only the page-load
       `IOException` path, sends the captcha warning, returns `null`, and then
       `getURLsFromPage(...)` immediately dereferences `imageIds.length()`.
