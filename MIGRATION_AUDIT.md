@@ -1318,6 +1318,16 @@ Findings:
       `imgur.com.evil`, `evilreddit.com.invalid`, `redgifs.com.evil`, or
       `8muses.com.evil` can dispatch in Flutter where Java would reject the
       constructor and keep scanning/fail.
+- [ ] Java `Utils.getClassesForPackage(...)` discovers ripper constructors
+      differently in filesystem versus packaged-JAR mode. Filesystem mode lists
+      only direct `.class` files in the requested package, but JAR mode accepts
+      any entry whose path starts with that package path, including
+      `com/rarchives/ripme/ripper/rippers/video/*.class` while scanning
+      `com.rarchives.ripme.ripper.rippers`. Because `VideoRipper` subclasses
+      still extend `AbstractRipper`, packaged Java builds can expose video
+      constructors during the first album-ripper pass before the explicit video
+      pass. Flutter `RipperFactory` has one fixed hand-written order, so
+      overlap/precedence parity for packaged Java dispatch is unproven.
 - [ ] Java `download.ignore_extensions` suppresses extension-matched URLs with
       `DOWNLOAD_SKIP`; Flutter has a similar check but needs exact tests.
 - [ ] Java `sleep(milliseconds)` applies gaussian jitter with a minimum of 47%
