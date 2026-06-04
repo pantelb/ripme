@@ -1125,6 +1125,14 @@ Findings:
       `YoupornRipper.prefix(...)`, and album `YuvutuRipper.prefix(...)`
       unconditionally return `NNN_`; their tests cover only the enabled prefix
       path, so these ports ignore Java's global no-save-order setting.
+- [ ] Java `XvideosRipper.getURLsFromPage(...)` returns raw
+      `div.thumb > a` `href` strings for album pages, and
+      `AbstractHTMLRipper.rip()` immediately converts each string with
+      `new URI(imageURL).toURL()`. Relative album hrefs therefore fail before
+      queueing in Java. Flutter `XvideosRipper.albumUrlsFromDocument(...)`
+      preserves relative hrefs and `rip()` parses them as relative `Uri`
+      download targets, so relative album entries fail later/differently instead
+      of matching Java's immediate URI-to-URL failure path.
 - [ ] Java has package-distinct album and video rippers with duplicate simple
       class names: `rippers/PornhubRipper.java` and
       `rippers/video/PornhubRipper.java`, `rippers/VkRipper.java` and
