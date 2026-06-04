@@ -1442,8 +1442,8 @@ Findings:
       formatting.
 - [ ] Keep the existing ripper test reconciliation, but do a final generated
       source-tree check in CI so new Java rippers cannot be missed.
-- [ ] Mechanical test-method scan found 287 Java `@Test` methods across 111
-      Java test classes, including 44 disabled methods and 125 tagged
+- [ ] Mechanical test-method scan found 289 Java `@Test` methods across 118
+      Java test classes, including 44 disabled methods and 126 tagged
       slow/flaky methods. Dart parity must be mapped at method/behavior level,
       not only file-name level.
 - [ ] Non-ripper Java test methods requiring direct Dart coverage are:
@@ -1466,7 +1466,7 @@ Findings:
       `NudeGalsRipperTest`, `SankakuComplexRipperTest`, `VkRipperTest`, and
       `XvideosRipperTest`.
 - [ ] Mechanical test-name scan found 118 Java test classes under
-      `src/test/java/com/rarchives/ripme` and 128 Dart test files. Most ripper
+      `src/test/java/com/rarchives/ripme` and 130 Dart test files. Most ripper
       tests have direct or naming-alias coverage; direct missing/non-direct
       Java utility/UI tests are `proxyTest`, `RipStatusMessageTest`,
       `RipButtonHandlerTest`, `UIContextMenuTests`, `UpdateUtilsTest`,
