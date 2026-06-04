@@ -3616,9 +3616,15 @@ Findings:
 Java build/release sources read:
 
 - `build.gradle.kts`
+- `settings.gradle.kts`
+- `gradle/wrapper/gradle-wrapper.properties`
+- `gradle/wrapper/gradle-wrapper.jar`
+- `gradlew`
+- `gradlew.bat`
 - `.github/workflows/gradle.yml`
 - `.github/workflows/run-flutter-release.yml`
 - `ripme.json`
+- `.gitignore`
 - `README.md`
 - `src/main/java/com/rarchives/ripme/ui/UpdateUtils.java`
 
@@ -3662,6 +3668,19 @@ Findings:
       `origin/main`. Flutter has no equivalent root helper scripts or documented
       replacement workflow, so contributor/build workflow parity is not fully
       accounted for.
+- [ ] Java includes a root Gradle wrapper pinned by
+      `gradle/wrapper/gradle-wrapper.properties` to Gradle `8.10.2` plus
+      `gradlew` / `gradlew.bat` entrypoints. Flutter has Android-scoped Gradle
+      wrapper metadata pinned to Gradle `8.14` and no root Gradle wrapper, so
+      Java build-tool bootstrap behavior must be recorded as retired or replaced
+      by Flutter tooling rather than silently disappearing.
+- [ ] Java `.gitignore` explicitly protects app/runtime artifacts such as
+      `ripme.log`, `rips/`, `.history`, `ripme.jar.update`, `history.json`,
+      generated jars/archives, and keeps `LabelsBundle*.properties` tracked
+      despite `*.properties`-style resource handling. Flutter `.gitignore` is a
+      generic Flutter ignore file and does not explicitly cover several
+      Java-era runtime outputs, so source hygiene for generated rip/config/update
+      artifacts needs a migration-specific decision.
 - [ ] Java build excludes `flaky` and `slow` JUnit tags by default and exposes
       `testAll`, `testFlaky`, `testSlow`, and `testTagged` Gradle tasks.
       Flutter currently runs one `flutter test` suite. Dart test metadata needs
