@@ -1972,6 +1972,11 @@ Findings:
       `postLink` with `siteUrl.resolve(...)`, and its Dart test explicitly
       accepts an absolute thumbnail href, so post-link handling has drifted
       from Java.
+- [ ] Java `SankakuComplexRipper.getURLsFromPage(...)` catches per-thumbnail
+      `IOException`s from loading post pages, logs
+      `Error while loading page <postLink>`, and continues. Flutter catches only
+      `IOException` in the same loop but silently skips those thumbnails, so
+      SankakuComplex per-post load failures lose Java's diagnostic log surface.
 - [ ] Java `BooruRipper.getNextPage(...)` dereferences the first `<posts>`
       element and parses `offset` / `count` with strict
       `Integer.parseInt(...)`; missing or malformed attributes fail before a
