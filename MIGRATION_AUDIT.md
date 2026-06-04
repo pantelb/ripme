@@ -1156,9 +1156,10 @@ Findings:
       direct routes whose own Dart `canRip(...)` is stricter than the factory
       host predicate, including `BatoRipper`, `FapDungeonRipper`,
       `FemjoyhunterRipper`, `FuskatorRipper`, `GirlsOfDesireRipper`,
-      `HentaifoundryRipper`, `EightmusesRipper`, `NewgroundsRipper`,
-      `NfsfwRipper`, `TheyiffgalleryRipper`, and `ViewcomicRipper`. These must
-      be fixed as one dispatch contract, not only for the first examples above.
+      `HentaifoundryRipper`, `EightmusesRipper`, `ImgurRipper`,
+      `NewgroundsRipper`, `NfsfwRipper`, `TheyiffgalleryRipper`, and
+      `ViewcomicRipper`. These must be fixed as one dispatch contract, not only
+      for the first examples above.
 - [ ] Flutter `RipperFactory.getRipper(...)` also expands several direct host
       routes by using `host.contains(...)` instead of Java's inherited
       `AbstractHTMLRipper.canRip(...)` `url.getHost().endsWith(getDomain())`
