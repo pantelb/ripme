@@ -856,6 +856,18 @@ Findings:
       through `Utils.clearURLHistory()`, optionally after
       `history.warn_before_delete` confirmation. Flutter clear behavior needs to
       be checked for both stores.
+- [ ] Java history button behavior is selection-centric and dialog-backed, not
+      per-entry only: `historyButtonRemove` removes the table's selected view
+      rows after `convertRowIndexToModel`, `historyButtonClear` honors
+      `history.warn_before_delete` by opening a separate `"Are you sure?"`
+      `JFrame` with literal `YES`/`NO` buttons before clearing both
+      `Utils.clearURLHistory()` and `HISTORY`, and `historyButtonRerip` queues
+      only `HistoryEntry.selected` rows while showing `RipMe Error` dialogs for
+      empty history (`history.load.none`) or no checked rows
+      (`history.load.none.checked`). Flutter `HistoryView` currently exposes
+      clear without this warning dialog, per-entry remove/rerip popup actions,
+      no selected checkbox state, and no bulk checked re-rip/error-dialog
+      contract.
 
 ### D. HTTP, Cookies, Proxy, And Network Semantics
 
