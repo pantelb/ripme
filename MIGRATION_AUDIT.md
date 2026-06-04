@@ -2712,6 +2712,11 @@ Findings:
       explicitly configured empty string. Flutter `setAuthCookie()` requires
       the value to be non-null and non-empty, so empty configured session
       cookies are dropped instead of being sent as Java would.
+- [ ] Java `EromeRipper.getMediaFromPage(...)` logs the empty-result
+      `erome.laravel_session` hint with `logger.warn(...)` only when no media
+      is found and the cookie map is empty. Flutter `EromeRipper.getURLsFromPage(...)`
+      sends the same hint as `RipStatus.downloadWarn`, changing visible status
+      feed/count behavior for empty unauthenticated Erome pages.
 - [ ] Java `ImgurRipper.getImgurAlbum(...)` tries API JSON first and, if
       `data.images[*].link` parsing throws `JSONException` or
       `URISyntaxException`, falls back to the `/noscript` HTML parser for the
