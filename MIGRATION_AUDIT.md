@@ -1994,6 +1994,14 @@ Findings:
       `EHentaiRipper.imagePageUrlsFromGallery(...)` filters out empty hrefs, so
       malformed gallery entries no longer schedule the Java empty-URL image-page
       load/failure path.
+- [ ] Java `EHentaiRipper.getPageWithRetries(...)` logs each IP-ban retry with
+      `logger.warn("Hit rate limit while loading ...")`, and
+      `EHentaiImageThread.fetchImage()` logs missing images or image-page
+      exceptions before returning. Flutter `getPageWithRetries(...)` delays
+      silently on the same IP-ban marker, and `downloadFromImagePage(...)`
+      catches all image-page failures and returns `null` silently, so E-Hentai
+      retry/missing-image log parity is missing even when the download result is
+      otherwise skipped.
 - [ ] Java `ImagebamRipper.getURLsFromPage(...)` selects
       `div > a[class=thumbnail]:not(.footera)`, which requires the `class`
       attribute to be exactly `thumbnail` before the `:not(.footera)` filter.
