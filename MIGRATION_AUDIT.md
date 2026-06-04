@@ -1883,6 +1883,15 @@ Findings:
       entries, treats missing `title` as nullable, and drops missing/empty
       `image_url` values. Malformed project JSON can therefore become a clean
       empty or partial rip in Flutter where Java would throw.
+- [ ] Java `ArtStationRipper` portfolio traversal has source-visible index
+      semantics that Flutter does not reproduce: `getFirstPage()` downloads
+      `data[0]`, then the first `getNextPage(...)` initializes
+      `projectIndex = 0` and returns `data[0]` again when `total_count > 1`,
+      while the `total_count > currentProject` guard skips the final project.
+      Flutter `_downloadPortfolio(...)` walks each returned `data` page once
+      and increments `processed` per item, so multi-project ArtStation
+      portfolios avoid Java's duplicate-first/skip-last behavior instead of
+      matching it.
 - [ ] Java `LusciousRipper` is still an `AbstractHTMLRipper`: `rip()` first
       fetches the sanitized album page through `getCachedFirstPage()`, then
       `getURLsFromPage(...)` ignores the HTML body but strictly walks
