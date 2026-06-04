@@ -1134,6 +1134,13 @@ Findings:
       rippers catch an error with `sendUpdate(RipStatus.ripErrored, ...)` and
       then still fall through to `sendUpdate(RipStatus.ripComplete, ...)`,
       making failed rips look completed in the event stream.
+- [ ] Java `DownloadFileThread.run()` sends `DOWNLOAD_STARTED` at the start of
+      every download attempt before connection, status-code, redirect, and retry
+      handling. Flutter `AbstractRipper.downloadFile(...)` calls
+      `Http.downloadFile(...)` first and emits `RipStatus.downloadStarted` only
+      after the shared HTTP request has already returned a 200 response, so
+      failed attempts, retries, redirects, 4xx/5xx responses, and timeouts do
+      not produce Java-compatible started status events.
 - [ ] Java shared test mode is a static `AbstractRipper.thisIsATest` flag set by
       `markAsTest()`. `AbstractHTMLRipper` and `AbstractJSONRipper` remove all
       but one media URL per page, stop before fetching the next page, suppress
