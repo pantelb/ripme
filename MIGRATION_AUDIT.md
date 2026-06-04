@@ -2702,6 +2702,14 @@ Findings:
       after the final gallery page. Flutter `MrCongRipper.getNextPage(...)`
       returns `null` when `currPageNum >= lastPageNum`, turning Java's final-page
       exception path into normal pagination completion.
+- [ ] Java non-tag `MrCongRipper.getFirstPage(...)` builds the root gallery URL
+      with `url.toExternalForm().replaceAll("(|/|/[0-9]+/?)$", "/")`. Because
+      the empty alternative can match at the end, Java turns
+      `https://misskon.com/gallery/` and paged URLs such as
+      `https://misskon.com/gallery/2/` into `https://misskon.com/gallery//`.
+      Flutter `MrCongRipper.rootGalleryUrl(...)` removes the page segment and
+      collapses the result to one trailing slash, so first-page fetch URLs are
+      not Java-compatible for those inputs.
 - [ ] Java `MrCongRipper.getNextPage(...)` mutates `url`, fetches the next
       document immediately into `currDoc`, increments `currPageNum`, and returns
       the fetched document. Flutter returns only the computed `Uri`, increments
