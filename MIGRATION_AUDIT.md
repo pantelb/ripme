@@ -2021,6 +2021,15 @@ Findings:
       conversion instead of downloading. Flutter normalizes protocol-relative
       image sources to `https:` and its Dart test asserts that behavior, so
       direct image extraction is not Java-identical.
+- [ ] Java `ImagebamRipper.ImagebamImageThread.fetchImage(...)` also isolates
+      each image-page fetch/parse in a thread-level `try/catch`: missing
+      `img[class*=main-image]` logs `Image not found at ...` and returns, while
+      `IOException` / `URISyntaxException` logs
+      `Exception while loading/parsing ...` and the album continues. Flutter
+      `directImageUrlFromDocument(...)` returns `null` silently for missing
+      images, and `directImageUrlFromPageUrl(...)` fetch failures escape the
+      main rip loop, so Imagebam per-page diagnostics and continue/abort
+      behavior are not Java-compatible.
 - [ ] Java `ImagevenueRipper.getURLsFromPage(...)` adds `thumb.attr("href")`
       for every `a[target=_blank]`, including anchors with a missing or empty
       `href`, so the later image-thread URL conversion sees those empty
