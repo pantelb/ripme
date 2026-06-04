@@ -1116,6 +1116,16 @@ Findings:
       after the first completion/error while test mode is active. Flutter has no
       equivalent shared test-mode surface, so Java live-test contracts and
       test-only side effects are not reproducible outside ad hoc Dart mocks.
+- [ ] Java concrete rippers also add subclass-specific `isThisATest()` branches
+      outside the shared abstract loops: `ChanRipper`, `EightmusesRipper`,
+      `ErofusRipper`, `FivehundredpxRipper`, `ImagefapRipper`,
+      `MotherlessRipper`, `NatalieMuRipper`, `RedditRipper`, `TapasticRipper`,
+      and `XhamsterRipper` break extraction or pagination early, while
+      `MotherlessImageRunnable` ignores a stopped rip when test mode is active.
+      Flutter has no shared flag for these concrete branches, and several ports
+      currently expose only normal extraction helpers, so the Java live-test
+      crawl limits and stopped/test interactions need focused Dart coverage or
+      explicit retirement.
 - [ ] Java video rippers that perform their own `rip()` logic throw out on
       missing extraction markers and do not emit successful completion from the
       concrete method: `TwitchVideoRipper` throws when no `<script>` exists,
