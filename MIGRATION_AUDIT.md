@@ -1758,6 +1758,14 @@ Findings:
       differs: Java includes `RipMe:github.com/RipMeApp/ripme:<jar version>
       (by /u/metaprime and /u/ineedmorealts)`, while Flutter sends a
       `flutter-port` marker.
+- [ ] Java Reddit next-page construction uses `Utils.stripURLParameter(url,
+      "after")`, whose implementation searches for the substring `"?after"` or
+      `"&after"` and removes that segment before appending the new token with
+      `?after=` or `&after=`. This is not structured query parsing and can also
+      match parameter names that merely start with `after`. Flutter
+      `RedditRipper.nextPageUrl(...)` builds a `queryParameters` map and assigns
+      `after`, preserving other parameters structurally and avoiding Java's
+      prefix-removal behavior.
 - [ ] Java `RedditRipper.getJsonURL(...)` appends `.json` directly to
       `url.getPath()` and preserves any trailing slash, so
       `https://reddit.com/r/example/` becomes
