@@ -3737,6 +3737,32 @@ Findings:
       preserve the broader Java risk taxonomy through tags, skips, fake
       fixtures, or documented live-network test policy instead of silently
       omitting risky cases.
+- [ ] The exact Java `@Disabled` inventory is source-backed and must be mapped
+      before parity can be claimed: `ArtstnRipperTest.testUserPortfolio`
+      (Cloudflare), `BatoRipperTest.testRip`, `BatoRipperTest.testGetAlbumTitle`,
+      six `DeviantartRipperTest` methods marked `Broken ripper`,
+      `FivehundredpxRipperTest.test500pxAlbum`,
+      `FuskatorRipperTest.testFuskatorAlbum`,
+      `FuskatorRipperTest.testUrlsWithTiled`,
+      `HentainexusRipperTest.testHentaiNexusJson`,
+      `HitomiRipperTest.testRip`, `ImagevenueRipperTest.testImagevenueRip`,
+      `InstagramRipperTest.testInstagramSingle`,
+      `JagodibujaRipperTest.testJagodibujaRipper`,
+      `KingcomixRipperTest.testRip`, `LusciousRipperTest.testLusciousRipper`,
+      `NfsfwRipperTest.testNfsfwRip`, both disabled
+      `PhotobucketRipperTest` methods, `RedditRipperTest.testRedditPostRip`,
+      both disabled `SankakuComplexRipperTest` methods,
+      `ShesFreakyRipperTest.testShesFreakyRip`, both disabled `StaRipperTest`
+      methods, `TapasticRipperTest.testTapasticRip`, both disabled
+      `ThechiveRipperTest` GIF methods, both disabled `TsuminoRipperTest`
+      methods, four disabled `TumblrRipperTest` methods,
+      `TwodgalleriesRipperTest.testTwodgalleriesRip`, disabled
+      `VideoRippersTest` Twitch/Pornhub methods,
+      `ViewcomicRipperTest.testViewcomicRipper`, `WebtoonsRipperTest.testGetGID`,
+      `XcartxRipperTest.testAlbum`, and `XlecxRipperTest.testAlbum`. Several
+      Flutter tests exercise static parser helpers for these rippers despite
+      Java marking the live ripper/test broken or unavailable, so the audit must
+      distinguish "ported parser contract" from "Java live-test parity".
 - [ ] Java UI tests include flaky coverage for the rip button and context menu
       behavior. Flutter needs widget/integration coverage for those UI workflows
       before UI parity can be marked complete.
