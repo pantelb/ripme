@@ -1741,6 +1741,16 @@ Findings:
       `attr("abs:href")` to `getDocument(...)`. Flutter reads the raw `href`
       and returns `null` when it is absent or empty, so malformed next anchors
       are silent completion in Flutter instead of Java's fetch/failure path.
+- [ ] Java `E621Ripper.downloadURL(...)` sleeps, then queues an
+      `E621FileThread` with the candidate's Java prefix. The thread catches
+      post-page fetch and direct-image URI failures and logs
+      `Unable to get full sized image from <post-url>`, while only blacklist
+      pages send the explicit `RIP_ERRORED` blacklist message. Flutter
+      `E621Ripper.fullSizedImage(...)` catches all fetch failures and returns
+      `null`; if all post candidates on a page return `null`, `rip()` emits
+      `RipStatus.ripErrored` with `No images found at <album-url>`. E621
+      per-post failure diagnostics and all-failed-page status behavior are not
+      Java-compatible.
 - [ ] Java test-backed pagination exception contracts extend beyond E621:
       `HqpornerRipperTest` asserts `IOException("No next page found.")`,
       `PornhubRipperTest` asserts `IOException("No more pages")`, and
