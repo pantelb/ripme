@@ -1136,6 +1136,14 @@ Findings:
       `AbstractVideoRipper` and custom Dart `rip()` overrides still catch and
       then send `ripComplete`, so UI/runtime status parity remains unproven
       for these source-backed failure paths.
+- [ ] Java `TwitchVideoRipper.rip()` only throws for an entirely absent
+      `<script>` set; if scripts exist but none contain the `"source":"..."`
+      regex, it queues nothing and calls `waitForThreads()` without adding a
+      download. Flutter `TwitchVideoRipper.getVideoURLForRip(...)` throws when
+      no source URLs are found, but concrete `rip()` builds an empty download
+      list from `videoDownloadsFromDocument(...)` and still sends
+      `ripComplete`. The "scripts present, no source marker" path is therefore
+      not Java-compatible.
 - [ ] Java `MotherlessVideoRipper.rip()` logs the hardcoded error message
       `WTF` whenever the fetched HTML contains the `__fileurl = '` marker, and
       then still extracts the first marker and schedules the download. Flutter
