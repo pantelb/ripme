@@ -1178,6 +1178,11 @@ Findings:
       preserves relative hrefs and `rip()` parses them as relative `Uri`
       download targets, so relative album entries fail later/differently instead
       of matching Java's immediate URI-to-URL failure path.
+- [ ] Java `XvideosRipper.getURLsFromPage(...)` breaks after the first
+      `div.thumb > a` album link when `AbstractRipper.isThisATest()` is true.
+      Flutter has no shared `markAsTest()` / `isThisATest()` equivalent and
+      `albumUrlsFromDocument(...)` always returns every matching thumb link, so
+      Java-compatible Xvideos album test-mode limiting is missing.
 - [ ] Java has package-distinct album and video rippers with duplicate simple
       class names: `rippers/PornhubRipper.java` and
       `rippers/video/PornhubRipper.java`, `rippers/VkRipper.java` and
