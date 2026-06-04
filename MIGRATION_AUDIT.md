@@ -1144,8 +1144,10 @@ Findings:
       bypasses that constructor guard for direct host routes, returning rippers
       without calling their stricter `canRip(...)`; for example
       `cliphunter.com` accepts any path before `CliphunterRipper.canRip(...)`
-      can require `/w/ID`, `hentaifox.com` accepts any path before
-      `HentaifoxRipper.canRip(...)` can require `/gallery/ID`,
+      can require `/w/ID`, and hosts such as `cliphunter.com.evil` can also
+      dispatch before Java's full-URL regex would reject them;
+      `hentaifox.com` accepts any path before `HentaifoxRipper.canRip(...)`
+      can require `/gallery/ID`,
       `fitnakedgirls.com` accepts any path before `FitnakedgirlsRipper.canRip(...)`
       can require `/photos/gallery/...`, and `hentainexus.com` accepts any path
       before `HentaiNexusRipper.canRip(...)` can require `/view/ID` or
