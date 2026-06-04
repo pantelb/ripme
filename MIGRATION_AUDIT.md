@@ -3202,11 +3202,32 @@ Findings:
       first eager video pass and returns, so Java's second-pass statuses,
       duplicate-skip side effects, and possible pagination failure behavior are
       absent.
+- [ ] Java album `VkRipper.getURLsFromJSON(...)` for `/videos...` strictly reads
+      `page.getJSONArray("all")`, then `videos.getJSONArray(i)` and
+      `jsonVideo.getInt(1)` for every row. If resolving one video's page throws
+      `IOException`, Java logs `Error while ripping video id: <id>` and returns
+      the URLs collected so far. Flutter `VkRipper.videoUrlsFromJsonPage(...)`
+      returns an empty list when `all` is absent/non-list, skips malformed rows,
+      coerces IDs through `_toInt(...)`, and propagates `getVideoURLAtPage(...)`
+      failures, so malformed video JSON and per-video fetch failures are not
+      Java-compatible.
+- [ ] Java album `VkRipper.downloadURL(...)` for video-list rips calls
+      `addURLToDownload(...)` first and only then sleeps 500 ms before the next
+      video URL is scheduled. Flutter `_ripVideos()` builds a list of
+      `RipperDownload`s, waits 500 ms after each list append, and starts
+      `downloadFiles(...)` only after all video URLs are resolved, changing the
+      Java queue-start/throttle timing.
 - [ ] Java `VkRipper.getPage(...)` collects photo IDs in a `HashSet`, then
       iterates that set when fetching each photo JSON object, so album image
       request/download order is hash-set dependent rather than document order.
       Flutter `VkRipper.photoIdsFromAnchors(...)` uses Dart's insertion-ordered
       set and returns IDs in page order, changing Java's ordering behavior.
+- [ ] Java `VkRipper.getNextPage(...)` stops pagination immediately when
+      `AbstractRipper.isThisATest()` is true, returning `null` before calling
+      `getPage()`. Flutter has no shared `markAsTest()` / `isThisATest()`
+      equivalent for VK and `_ripImages()` keeps paginating until the remote
+      response has no `<div>` or no images, so Java-compatible VK test-mode
+      limiting is missing.
 - [ ] Java `VkRipper.getPhotoIDsToURLs(...)` only lets checked `IOException`s
       be caught by the caller's per-photo skip path; JSON parsing failures from
       `new JSONObject(response.body())` or strict object traversal escape the
