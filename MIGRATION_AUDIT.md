@@ -1086,6 +1086,11 @@ Findings:
       `AbstractVideoRipper` and custom Dart `rip()` overrides still catch and
       then send `ripComplete`, so UI/runtime status parity remains unproven
       for these source-backed failure paths.
+- [ ] Java `MotherlessVideoRipper.rip()` logs the hardcoded error message
+      `WTF` whenever the fetched HTML contains the `__fileurl = '` marker, and
+      then still extracts the first marker and schedules the download. Flutter
+      `MotherlessVideoRipper.videoUrlFromHtml(...)` extracts the same marker
+      without emitting that Java-visible diagnostic side effect.
 - [ ] Java deletes an empty working directory during cleanup. Flutter does not
       yet verify this cleanup behavior.
 - [ ] Java `AbstractHTMLRipper` supports queue-only pages through
