@@ -3617,6 +3617,7 @@ Java build/release sources read:
 
 - `build.gradle.kts`
 - `.github/workflows/gradle.yml`
+- `.github/workflows/run-flutter-release.yml`
 - `ripme.json`
 - `README.md`
 - `src/main/java/com/rarchives/ripme/ui/UpdateUtils.java`
@@ -3647,6 +3648,13 @@ Findings:
       `latest-<branch-slug>` with jar artifacts. Flutter release automation
       publishes tag-driven releases through `softprops/action-gh-release`; the
       branch-latest release behavior needs a replacement decision.
+- [ ] `origin/main` also contains `.github/workflows/run-flutter-release.yml`,
+      a manual `workflow_dispatch` wrapper that accepts `tag`, `build_ref`,
+      `draft`, and `prerelease` inputs and calls
+      `pantelb/ripme/.github/workflows/release.yml@Flutter`. The Flutter branch
+      carries direct `flutter.yml` and `release.yml` workflows but not this
+      wrapper, so manual release invocation semantics need to be documented or
+      restored.
 - [ ] Java root developer scripts are part of the source workflow:
       `build.sh` and `build.bat` both run `./gradlew clean build -x test`, while
       `remote-branch.sh` and `remote-merge.sh` add a user remote, fetch a branch,
