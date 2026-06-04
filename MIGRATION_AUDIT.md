@@ -1871,6 +1871,13 @@ Findings:
       silently for non-200 download-button responses and missing/avatar scaled
       images, and maps unexpected URL format through the generic catch. The
       DeviantArt per-image `DOWNLOAD_ERRORED` surface is not Java-compatible.
+- [ ] Disabled Java `DeviantartRipperTest.testSanitizeURL` asserts that
+      `https://www.deviantart.com/airgee`, `/airgee/`, and `/airgee/gallery/`
+      all sanitize to `https://www.deviantart.com/airgee/gallery/`, but current
+      Java `DeviantartRipper` does not override `sanitizeURL(...)` and inherits
+      the identity implementation from `AbstractHTMLRipper`. Flutter should not
+      treat this disabled assertion as current Java behavior until the stale test
+      expectation is reconciled against source.
 - [ ] Java `RipUtils.getFilesFromURL` helper coverage must be verified for
       Reddit/Chan-style direct links and embedded media expansion:
       Imgur album/gifv/single pages, Redgifs/gifdeliverynetwork, Vidble
