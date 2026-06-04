@@ -2257,6 +2257,12 @@ Findings:
       attribute to be exactly `thumbnail` before the `:not(.footera)` filter.
       Flutter uses `div > a.thumbnail:not(.footera)`, so links with additional
       non-`footera` classes are included by Flutter but skipped by Java.
+- [ ] Java `ImagebamRipper.getURLsFromPage(...)` adds `thumb.attr("href")`
+      for every matched thumbnail, including missing or empty `href`
+      attributes; those empty strings are then handed to
+      `ImagebamImageThread` for URL conversion/logging. Flutter
+      `imagePageUrlsFromDocument(...)` filters empty `href` values before the
+      image-page step, so malformed thumbnail anchors are silently dropped.
 - [ ] Java `ImagebamRipper.ImagebamImageThread.fetchImage(...)` passes the raw
       `img[class*=main-image]` `src` through `new URI(imgsrc).toURL()`;
       protocol-relative values such as `//images.example/full.jpg` fail that
