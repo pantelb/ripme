@@ -924,6 +924,14 @@ Findings:
       and `PorncomixRipper` saying `Expected proncomix URL format`; several
       Dart ports normalize or rewrite those messages with `FormatException`
       text, and the suite does not mechanically prove exact message parity.
+- [ ] The malformed-URL message drift includes additional concrete Java typos
+      and copy/paste strings that Flutter currently cleans up or does not lock:
+      `ErofusRipper` reuses the `8muses.com/index/category/albumname`
+      expectation, `HentaiimageRipper` says `Expected hitomi URL format`,
+      `JagodibujaRipper` says `hwww.jagodibuja.com/Comic name/`,
+      `MrCongRipper` says `Expected misskon.com URL format`,
+      `ReadcomicRipper` says `Expected view-comic URL format`, and
+      `JabArchivesRipper` says `Expected javarchives.com URL format`.
 - [ ] Java `Http` retry loop attempts exactly the configured count. Flutter's
       `_getResponse` currently loops `attempt <= retries`, which is one extra
       attempt for the same setting.
