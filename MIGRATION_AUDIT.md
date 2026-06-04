@@ -1587,6 +1587,12 @@ Findings:
       image URL strings for album pages, while `downloadsFromPage(...)` builds
       the subdirectory download requests separately, so callers that rely on the
       shared `getURLsFromPage` contract observe behavior Java never exposed.
+- [ ] Java `ErofusRipper.getURLsFromPage(...)` sends `LOADING_RESOURCE` before
+      fetching each subalbum, but subalbum load failures only call
+      `logger.warn("Error while loading subalbum ...")`. Flutter
+      `_downloadsFromPage(...)` sends `RipStatus.downloadWarn` for the same
+      failures, adding user-visible warning/status-count output Java did not
+      emit.
 - [ ] Java blacklist config arrays must be verified for exact tag matching and
       warning text: `ehentai.blacklist.tags`, `nhentai.blacklist.tags`, and
       `tsumino.blacklist.tags`.
@@ -2664,6 +2670,11 @@ Findings:
       in a subalbum that use `data-cfsrc` are added only to that returned list
       and are therefore not scheduled by Java's parent call, while Flutter
       `_downloadsFromPage(...)` recursively collects and downloads them.
+- [ ] Java `EightmusesRipper.getURLsFromPage(...)` also handles subalbum fetch
+      failures by logging `logger.warn("Error while loading subalbum ...")`
+      after the prior `LOADING_RESOURCE` update. Flutter `_downloadsFromPage(...)`
+      converts those failures into `RipStatus.downloadWarn`, changing the
+      visible status feed and warning counters for broken 8muses subalbums.
 - [ ] Java `EightmusesRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
       host ending in `8muses.com` is accepted before `getGID(...)` validates the
       `/comix|comics/album/...` path. Flutter `EightmusesRipper.canRip(...)`
