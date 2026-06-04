@@ -1097,6 +1097,13 @@ Findings:
       rippers catch an error with `sendUpdate(RipStatus.ripErrored, ...)` and
       then still fall through to `sendUpdate(RipStatus.ripComplete, ...)`,
       making failed rips look completed in the event stream.
+- [ ] Java shared test mode is a static `AbstractRipper.thisIsATest` flag set by
+      `markAsTest()`. `AbstractHTMLRipper` and `AbstractJSONRipper` remove all
+      but one media URL per page, stop before fetching the next page, suppress
+      history checks/writes, and `addURLToDownload(...)` stops later downloads
+      after the first completion/error while test mode is active. Flutter has no
+      equivalent shared test-mode surface, so Java live-test contracts and
+      test-only side effects are not reproducible outside ad hoc Dart mocks.
 - [ ] Java video rippers that perform their own `rip()` logic throw out on
       missing extraction markers and do not emit successful completion from the
       concrete method: `TwitchVideoRipper` throws when no `<script>` exists,
