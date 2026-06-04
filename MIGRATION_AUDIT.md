@@ -2864,6 +2864,13 @@ Findings:
       retries `401` based on `e.toString().contains("401")`; other API failures
       are rethrown through `AbstractJSONRipper`, so the Java status messages and
       stop semantics are missing.
+- [ ] Java `TumblrRipper.getApiKey()` caches one randomly selected default key
+      in static `API_KEY` via `new Random().nextInt(...)`, and its
+      `useDefaultApiKey` fallback flag is static across Tumblr ripper instances.
+      Flutter `TumblrRipper.getApiKey()` stores `_selectedDefaultApiKey` and
+      `_useDefaultApiKey` per instance, and chooses the default key with
+      deterministic `Random(0)`. Default-key selection and post-401 fallback
+      lifetime therefore differ from Java.
 - [ ] Java `TumblrRipper.handleJSON(...)` strictly dereferences
       `response.posts` / `response.liked_posts` and each post `date`; missing or
       malformed top-level API structure throws. Flutter
@@ -2884,6 +2891,14 @@ Findings:
       ordered filenames continue `001_`, `002_`, ... across pagination. Flutter
       `TwitterRipper.parseJSON(...)` builds each page's download list with
       `i + 1`, so ordered filenames can restart at `001_` on each API page.
+- [ ] Java `TwitterRipper` reads `twitter.max_requests`,
+      `twitter.rip_retweets`, `twitter.exclude_replies`, and
+      `twitter.max_items_request` into `static final` fields when the class is
+      loaded, while `twitter.auth` and `download.save_order` are read later.
+      Flutter reads these same request/filter/count settings from
+      `Utils` during each rip/API URL build. Runtime preference changes after
+      first Java class load therefore have different lifetime semantics in
+      Flutter.
 - [ ] Java `BatoRipper.getAlbumTitle(...)` builds
       `bato_<gid>_<cached-first-page-title-with-spaces-as-underscores>` by
       calling `getCachedFirstPage()`, with a disabled Java test documenting the
