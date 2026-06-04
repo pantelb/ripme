@@ -1660,6 +1660,16 @@ Findings:
       container is missing and filters empty `href` values, so malformed
       gallery pages stop/skip cleanly instead of following Java's
       null-dereference or empty-download-candidate paths.
+- [ ] Java `DeviantartImageThread.getFullSizeURL()` has several distinct
+      per-deviation error/status branches: missing image sends
+      `DOWNLOAD_ERRORED` with `ERROR at\n<url>`, unexpected `/v1/` splitting
+      sends `Unexpected URL Format`, broad IO/URI failure falls through to
+      `No image found for <url>`, and avatar/text-art pages log without a
+      status send. Flutter `downloadFromDeviationPage(...)` sends a generic
+      `$pageUrl : <exception>` only for thrown exceptions, returns `null`
+      silently for non-200 download-button responses and missing/avatar scaled
+      images, and maps unexpected URL format through the generic catch. The
+      DeviantArt per-image `DOWNLOAD_ERRORED` surface is not Java-compatible.
 - [ ] Java `RipUtils.getFilesFromURL` helper coverage must be verified for
       Reddit/Chan-style direct links and embedded media expansion:
       Imgur album/gifv/single pages, Redgifs/gifdeliverynetwork, Vidble
