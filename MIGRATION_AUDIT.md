@@ -2698,6 +2698,14 @@ Findings:
       after the prior `LOADING_RESOURCE` update. Flutter `_downloadsFromPage(...)`
       converts those failures into `RipStatus.downloadWarn`, changing the
       visible status feed and warning counters for broken 8muses subalbums.
+- [ ] Java `EightmusesRipper.getURLsFromPage(...)` schedules discovered picture
+      tiles immediately through `addURLToDownload(..., getPrefixShort(i), "",
+      null, true)`, so the downloader uses `getFileExtFromMIME=true` and can
+      replace the saved extension from response content/magic-number detection.
+      Flutter `_downloadForImage(...)` derives the saved name from the URL path
+      with `fileNameForUrl(...)`, so 8muses full-image URLs whose path lacks or
+      misstates the extension do not follow Java's MIME-derived filename
+      behavior.
 - [ ] Java `EightmusesRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
       host ending in `8muses.com` is accepted before `getGID(...)` validates the
       `/comix|comics/album/...` path. Flutter `EightmusesRipper.canRip(...)`
