@@ -2324,6 +2324,15 @@ Findings:
       catches all image-page failures and returns `null` silently, so E-Hentai
       retry/missing-image log parity is missing even when the download result is
       otherwise skipped.
+- [ ] Java `EHentaiRipper.downloadURL(...)` queues an `EHentaiImageThread` into
+      its dedicated `DownloadThreadPool` for each gallery image page, sleeps
+      1500ms after queueing, and each worker schedules the final image download
+      as soon as it resolves the image URL. Flutter `EHentaiRipper.rip()`
+      awaits `downloadFromImagePage(...)` serially for every gallery entry,
+      sleeps after each fetch, collects all resolved `RipperDownload`s, and only
+      then calls `downloadFiles(...)`. E-Hentai image-page lookup, failure
+      isolation, and final-download start timing are therefore not Java
+      equivalent.
 - [ ] Java `ImagebamRipper.getURLsFromPage(...)` selects
       `div > a[class=thumbnail]:not(.footera)`, which requires the `class`
       attribute to be exactly `thumbnail` before the `:not(.footera)` filter.
