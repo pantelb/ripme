@@ -3076,6 +3076,16 @@ Findings:
       GID. Flutter only has `lib/ripper/rippers/vk_ripper.dart`, where
       `canRip(...)` deliberately rejects individual `/video123_456` URLs and
       no equivalent `vk_<gid>` save-name path exists.
+- [ ] Java album `VkRipper.rip()` handles `/videos...` URLs by first loading the
+      silent video JSON, scheduling every resolved video URL with its own
+      `downloadURL(..., index)` loop, waiting for those threads, and then still
+      falling through to `super.rip()`. That second pass reloads the video JSON
+      through `getFirstPage()`, runs duplicate/history handling in
+      `AbstractJSONRipper`, and can continue into the normal `getNextPage(...)`
+      pagination/error path. Flutter `VkRipper._ripVideos()` performs only the
+      first eager video pass and returns, so Java's second-pass statuses,
+      duplicate-skip side effects, and possible pagination failure behavior are
+      absent.
 - [ ] Java `VkRipper.getPage(...)` collects photo IDs in a `HashSet`, then
       iterates that set when fetching each photo JSON object, so album image
       request/download order is hash-set dependent rather than document order.
