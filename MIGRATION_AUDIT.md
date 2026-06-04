@@ -1511,6 +1511,13 @@ Findings:
       Flutter parity needs tests or documented replacement text for these
       strings wherever they are user-visible through status, logs, dialogs, tray
       notifications, or CLI output.
+- [ ] Java also has direct `System.out` diagnostics that bypass the logger and
+      status observer: `MrCongRipper` prints the input URL, tag-page state,
+      next-page URL rewrites, end-of-tag pagination, last-page discoveries, and
+      collected URL lists; `NsfwAlbumRipper` prints the thumbnail count;
+      `RedditRipper` prints self-post URLs; and `TeenplanetRipper` prints the
+      found image-URL count. Flutter rippers generally do not print these
+      diagnostics, so CLI/stdout parity needs explicit retirement or tests.
 
 ### H. Java Tests Still To Reconcile
 
