@@ -2543,6 +2543,12 @@ Findings:
       list when the content container is absent and uses `int.tryParse(...)` to
       ignore malformed srcset widths, converting Java parser failures into
       successful empty/fallback media results.
+- [ ] Java `FapDungeonRipper.downloadURL(...)` sleeps 1000 ms and then queues
+      the URL through `addURLToDownload(url, getPrefix(index))`, preserving the
+      shared Java download-thread behavior after the throttle. Flutter
+      `FapDungeonRipper.rip()` sleeps before each item and then awaits
+      `downloadFile(...)` directly, making FapDungeon serial per-file downloads
+      instead of Java's queued worker path.
 - [ ] Java `SinfestRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
       host ending in `sinfest.net` is accepted before `getGID(...)` checks the
       strict `view.php?date=...` shape. Flutter `SinfestRipper.canRip(...)`
