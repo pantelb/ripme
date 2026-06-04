@@ -949,6 +949,15 @@ Findings:
       after the GET connection is configured. Flutter routes video downloads
       through the shared `Http.downloadFile(...)` response path, so timeout and
       retry timing are not Java-compatible.
+- [ ] Java DASH manifest selection in `RedditRipper.parseRedditVideoMPD(...)`
+      considers only the `height` attribute, treats a missing height as `0`,
+      updates the candidate only when the height is strictly greater than the
+      previous largest value, and then appends the selected `BaseURL` text to
+      the original video URL. Flutter's shared
+      `AbstractVideoRipper.bestDashVideoUrl(...)` falls back to `bandwidth` when
+      `height` is absent and resolves `BaseURL` relative to the manifest URL.
+      DASH manifests with missing heights, bandwidth-only variants, duplicate
+      heights, or relative base paths can therefore choose a different media URL.
 - [ ] Java `CliphunterRipper.rip()` schedules the decrypted video with
       `addURLToDownload(url, HOST + "_" + getGID(...))`; Java
       `VideoRipper.addURLToDownload(..., referrer, cookies, ...)` ignores
@@ -1723,6 +1732,13 @@ Findings:
       differs: Java includes `RipMe:github.com/RipMeApp/ripme:<jar version>
       (by /u/metaprime and /u/ineedmorealts)`, while Flutter sends a
       `flutter-port` marker.
+- [ ] Java `RedditRipper.getJsonURL(...)` appends `.json` directly to
+      `url.getPath()` and preserves any trailing slash, so
+      `https://reddit.com/r/example/` becomes
+      `https://reddit.com/r/example/.json`. Flutter `RedditRipper.getJsonUrl`
+      strips a trailing slash before replacing the path, producing
+      `https://reddit.com/r/example.json`. Reddit URLs ending in `/` therefore
+      hit different JSON endpoints.
 - [ ] Java `RedditRipper.canRip(...)` accepts any host ending in `reddit.com`,
       but Java `getGID(...)` and gallery `getJsonURL(...)` regexes only allow
       `[a-zA-Z0-9.]{0,4}` before `reddit.com`; longer accepted subdomains can
@@ -2916,6 +2932,13 @@ Findings:
       partial API result and never falls back to `/noscript`. Malformed Imgur
       album API data can therefore produce partial Flutter output where Java
       would discard the API parse and use the fallback path.
+- [ ] Java `ImgurRipper.getGID(...)` mutates `this.url` to canonical album URLs
+      for gallery, `/a`/`/t`, and subreddit-media inputs
+      (`https://imgur.com/a/<gid>` or `https://imgur.com/r/<sub>/<gid>`) before
+      `rip()` calls `ripAlbum(this.url)`. Flutter `ImgurRipper.classifyUrl(...)`
+      returns only the type/GID and leaves the stored `url` unchanged, so
+      loading-resource statuses and any logic using the instance URL continue
+      to see the user-supplied URL rather than Java's canonical URL.
 - [ ] Java `ImgurRipper.ripUserAccount(...)` strictly requires account
       submission JSON `success`, `status == 200`, array `data`, and per-item
       `link`, `is_album`, `id`, optional `mp4`; unexpected status throws
