@@ -3076,6 +3076,20 @@ Findings:
       is found and the cookie map is empty. Flutter `EromeRipper.getURLsFromPage(...)`
       sends the same hint as `RipStatus.downloadWarn`, changing visible status
       feed/count behavior for empty unauthenticated Erome pages.
+- [ ] Java `EromeRipper.getAlbumTitle(...)` treats a present
+      `meta[property=og:title]` with a missing/empty `content` attribute as a
+      valid title: Jsoup `attr("content")` returns `""`, `substring(...)`
+      succeeds, and the folder name becomes `erome_<gid>_` with a trailing
+      underscore. Flutter checks the nullable `content` attribute and returns
+      `erome_<gid>` when it is absent, so malformed Erome title metadata changes
+      the working-directory name.
+- [ ] Java `GirlsOfDesireRipper.getAlbumTitle(...)` first tries `.albumName`,
+      but if that selector is absent it falls through to
+      `AbstractRipper.getAlbumTitle(...)`; the inherited call then uses Java's
+      broken `getGID(...)` regex against `url.toExternalForm()` and throws for
+      normal `http://www.girlsofdesire.org/galleries/.../` URLs. Flutter fixed
+      the URL regex, so the same missing-title page falls back to
+      `GirlsOfDesire_<gid>` instead of Java's setup-time failure.
 - [ ] Java `ImgurRipper.getImgurAlbum(...)` tries API JSON first and, if
       `data.images[*].link` parsing throws `JSONException` or
       `URISyntaxException`, falls back to the `/noscript` HTML parser for the
