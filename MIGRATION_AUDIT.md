@@ -1390,6 +1390,14 @@ Findings:
       progress counters from observed log events and sets simpler status text,
       so the full Java status/UI contract needs parity tests or documented
       retirement.
+- [ ] Java `MainWindow.handleEvent(...)` does not append duplicate album-history
+      rows on repeated `RIP_COMPLETE` for the same source URL: it calls
+      `HISTORY.containsURL(url)`, updates the existing entry's `count` and
+      `modifiedDate`, and only creates a new `HistoryEntry` when the URL is
+      absent. Flutter `RipManager._addToHistory(...)` currently inserts a new
+      `HistoryEntry` at index 0 for every `ripComplete`, so repeated rips of the
+      same URL can duplicate history rows instead of following Java's
+      update-in-place behavior.
 - [ ] Java text-field context menu includes Undo, Cut, Copy, Paste, Select All,
       tracks the last cut/paste for undo, and replaces the whole text field on
       paste. Flutter default text-field menus need an intentional parity call.
