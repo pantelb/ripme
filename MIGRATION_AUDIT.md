@@ -2703,6 +2703,13 @@ Findings:
       missing/empty hrefs and, when no explicit `baseUri` is supplied, resolves
       against `http://rule34.paheal.net` rather than the document location used
       by Java.
+- [ ] Java `PahealRipper.getNextPage(...)` only follows paginator anchors whose
+      text `equalsIgnoreCase("next")` without trimming, then immediately fetches
+      `e.absUrl("href")` with the age-gate cookie map. Flutter
+      `PahealRipper.nextPageUrlFromPage(...)` trims the link text, returns a URI
+      instead of fetching, and returns `null` for missing/empty `href`, so
+      whitespace-padded labels and malformed next links no longer follow Java's
+      exact pagination/failure path.
 - [ ] Java `PahealRipper.downloadURL(...)` derives the output basename with
       `new URI(name).getPath()` inside a `try/catch`; malformed percent-encoding
       or other URI syntax errors log `Error while downloading URL ...` and skip
