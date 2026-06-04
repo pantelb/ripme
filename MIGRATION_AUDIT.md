@@ -1433,6 +1433,14 @@ Findings:
 - [ ] Java label-bundle tests assert every non-default key also exists in the
       default bundle. Flutter needs this coverage or an equivalent generated
       localization check.
+- [ ] Java `LabelsBundlesTest.testKeyCount()` is not actually a key-count
+      assertion: it builds a dictionary of keys whose translated value differs
+      from the default bundle, logs them with the misleading text
+      `Keys missing in ...`, and contains no `assert*` call. Flutter localization
+      parity should preserve the real hard contract from
+      `LabelsBundlesTest.testKeyName()` while treating `testKeyCount()` as a
+      diagnostic-only source signal unless an intentional stronger check is
+      documented.
 - [ ] Java completion sound is `camera.wav`; the Java blob
       `src/main/resources/camera.wav` is carried forward byte-identically as
       `assets/sounds/camera.wav`, but Flutter currently uses platform alert
