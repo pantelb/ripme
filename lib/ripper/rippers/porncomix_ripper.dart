@@ -23,7 +23,7 @@ class PorncomixRipper extends AbstractHTMLRipper {
   String getDomain() => 'porncomix.info';
 
   @override
-  bool canRip(Uri url) => _gidPattern.hasMatch(url.toString());
+  bool canRip(Uri url) => url.host.endsWith(getDomain());
 
   @override
   Future<String> getGID(Uri url) async {

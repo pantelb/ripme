@@ -2920,11 +2920,13 @@ Findings:
       Multporn referrer into each image download. Flutter now attaches the
       canonical source URL as the `Referer` header for each image download, with
       Dart coverage for the generated download request.
-- [ ] Java `PorncomixRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+- [x] Java `PorncomixRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
       host ending in `porncomix.info` is accepted before `getGID(...)` checks
       the strict `www.porncomix.info/SLUG` pattern. Flutter
       `PorncomixRipper.canRip(...)` directly uses the strict GID regex,
-      narrowing Java's domain-level support.
+      narrowing Java's domain-level support. Flutter now uses Java's host suffix
+      check while keeping strict `getGID(...)` parsing, with Dart coverage for
+      both behaviors.
 - [ ] Java `ShesFreakyRipper` and `TsuminoRipper` inherit
       `AbstractHTMLRipper.canRip(...)`, so any host ending in
       `shesfreaky.com` or `tsumino.com` is accepted before their strict

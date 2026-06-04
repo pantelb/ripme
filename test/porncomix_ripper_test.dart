@@ -22,10 +22,18 @@ void main() {
       ripper.canRip(
         Uri.parse('https://porncomix.info/lust-unleashed-desire-to-submit/'),
       ),
-      isFalse,
+      isTrue,
     );
     expect(
       ripper.canRip(Uri.parse('https://www.porncomix.info/comic/page/2/')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://not-porncomix.info/anything')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://porncomix.info.evil/anything')),
       isFalse,
     );
 
@@ -34,6 +42,16 @@ void main() {
         Uri.parse('http://www.porncomix.info/lust-unleashed-desire-to-submit/'),
       ),
       'lust-unleashed-desire-to-submit',
+    );
+    await expectLater(
+      ripper.getGID(
+        Uri.parse('https://porncomix.info/lust-unleashed-desire-to-submit/'),
+      ),
+      throwsFormatException,
+    );
+    await expectLater(
+      ripper.getGID(Uri.parse('https://www.porncomix.info/comic/page/2/')),
+      throwsFormatException,
     );
   });
 
