@@ -3366,6 +3366,22 @@ Findings:
       async path and `XhamsterRipper.prefix(...)` always emits a padded prefix,
       so both ASAP side effects and save-order configuration parity need exact
       tests.
+- [ ] Java `XhamsterRipper.getNextPage(...)` first checks for any
+      `a.prev-next-list-link`, then immediately dereferences
+      `a.prev-next-list-link--next`. If the generic previous/next link exists
+      but the next-specific link is absent, Java throws via that dereference;
+      if the next href exists but does not start with `http`, Java falls through
+      to `IOException("No more pages")`. Flutter `nextPageUrl(...)` returns
+      `null` for both cases, converting Java failure/end-state behavior into
+      normal pagination completion.
+- [ ] Java `XhamsterRipper.getURLsFromPage(...)` old-gallery handling fetches
+      each `.clearfix > div > a.slided` page and adds
+      `select("a > img#photoCurr").attr("src")` even when that selector is
+      missing, producing an empty-string download attempt through
+      `downloadFile("")` and logging only malformed URL failures there. Flutter
+      `imageFromOldImagePage(...)` returns `null` for missing/empty `src` and
+      skips the item, so malformed old gallery pages no longer exercise Java's
+      empty-download/logging path.
 - [ ] Java downloaded-URL history normalization is per-ripper:
       `AbstractRipper.normalizeUrl(...)` returns the original URL unchanged,
       while `ArtStationRipper` strips only a terminal `?\w+` suffix and
