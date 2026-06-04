@@ -2098,6 +2098,16 @@ Findings:
       unreachable in the shipped Java flow. Flutter bypasses that abstract
       call and implements nullable Listal pagination directly, so next-page
       behavior is not Java-identical.
+- [ ] Java `ListalRipper.downloadURL(...)` queues a
+      `ListalImageDownloadThread` for each image-page candidate with the
+      candidate's `index`; the thread logs `Couldnt find image from url: ...`
+      for missing `.pure-img` sources and logs `[!] Exception while downloading
+      image: ...` for fetch/URI failures. Flutter resolves each image page
+      before creating a `RipperDownload`, `imageUrlFromImagePageUrl(...)`
+      catches all failures and returns `null`, and the ordered index increments
+      only after a direct image URL is found. Missing or broken Listal image
+      pages are therefore silent and can shift later ordered filenames compared
+      with Java.
 - [ ] Java `MotherlessRipper.getFirstPage(...)` reads
       `path.charAt(2)` for every URL that reaches the ripper, so malformed or
       short paths can throw before the homepage-to-`/GM...` rewrite completes.
