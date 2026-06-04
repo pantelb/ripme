@@ -3763,6 +3763,26 @@ Findings:
       Flutter tests exercise static parser helpers for these rippers despite
       Java marking the live ripper/test broken or unavailable, so the audit must
       distinguish "ported parser contract" from "Java live-test parity".
+- [ ] Java flaky/slow risk is concentrated in specific test classes, not a
+      generic suite-level concern. Class-level tag inventory: `Allporncomic` 2
+      flaky, `ArtStation` 2, `Artstn` 1, `Baraag` 1, `Booru` 1, `Chan` 2,
+      `Chevereto` 2, `CoomerParty` 1, `Danbooru` 1, `Dynastyscans` 1, `E621`
+      5, `Eightmuses` 1, `Erofus` 2, `Erome` 4 slow, `Fapwiz` 3,
+      `Femjoyhunter` 1, `Flickr` 1 slow, `Furaffinity` 1 flaky and 2 slow,
+      `GirlsOfDesire` 1, `Hentai2read` 1, `Hentaifoundry` 3,
+      `Hentainexus` 1, `Imagebam` 1, `Imagefap` 2, `Imgbox` 1, `Imgur` 4,
+      `Instagram` 1, `Listal` 2, `Mangadex` 2, `Mastodon` 1,
+      `MastodonXyz` 1, `Motherless` 1, `Myhentaicomics` 2,
+      `Myhentaigallery` 1, `Newgrounds` 1, `Nhentai` 1, `NsfwXxx` 1,
+      `Pawoo` 1, `Pichunter` 2, `Porncomixinfo` 1, `Pornhub` 1, `Reddit` 7,
+      `Redgifs` 1, `RipButtonHandlerTest` 1, `Rule34` 1, `RulePorn` 1,
+      `Sinfest` 1, `Smutty` 1, `Soundgasm` 2, `SpankBang` 1, `Teenplanet` 1,
+      `Thechive` 3, `Theyiffgallery` 1, `Twitter` 2, `UIContextMenuTests` 6,
+      `Vk` 3, `Vsco` 2, `Webtoons` 2, `WordpressComic` 9, `Xhamster` 7,
+      `Xvideos` 3, `Youporn` 1, `Yuvutu` 1, and `Zizki` 2. Flutter currently
+      has no equivalent class-level flaky/slow tagging scheme, so these classes
+      need explicit fake fixture coverage, opt-in live tests, or documented
+      retirement decisions.
 - [ ] Java UI tests include flaky coverage for the rip button and context menu
       behavior. Flutter needs widget/integration coverage for those UI workflows
       before UI parity can be marked complete.
