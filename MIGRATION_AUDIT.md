@@ -1942,6 +1942,11 @@ Findings:
       `ScrolllerRipper.canRip(...)` applies that regex directly, and its Dart
       test rejects `www.scrolller.com` and hyphenated subreddit paths that Java
       would accept at dispatch and reject later.
+- [ ] Java `ScrolllerRipper.convertFilterString(...)` logs
+      `Invalid filter <value> using no filter` for unsupported `filter=` values
+      before returning an empty filter string. Flutter `convertFilterString(...)`
+      returns the same empty string silently, so invalid Scrolller filter
+      diagnostics are not Java-compatible.
 - [ ] Java `TwitterRipper.sanitizeURL(...)` only recognizes
       `twitter.com` and `m.twitter.com` account/search URLs. Flutter
       `TwitterRipper.classifyUrl(...)` also accepts `x.com`, and
