@@ -2298,6 +2298,15 @@ Findings:
       cases. Flutter substitutes empty strings when those elements are absent,
       producing sanitized empty-prefix filenames instead of Java's immediate
       null-dereference failure.
+- [ ] Java `WordpressComicRipper.downloadURL(...)` falls through after the
+      page-title-prefix branch: for `buttsmithy.com`,
+      `www.totempole666.com`, and `themonsterunderthebed.net`, it calls
+      `addURLToDownload(url, pageTitle + "_")` and then also calls
+      `addURLToDownload(url, getPrefix(index))`, scheduling title-prefixed and
+      order-prefixed download candidates. Flutter
+      `WordpressComicRipper.fileNameForUrl(...)` chooses either the title
+      prefix or the numeric prefix and schedules only one candidate for those
+      hosts.
 - [ ] Java `NewgroundsRipper.getNextPage(...)` throws
       `IOException("No more pages")` when fewer than 60 art links were seen,
       resets `count` when pagination continues, fetches the next AJAX document
