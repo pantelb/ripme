@@ -12,6 +12,8 @@ import '../abstract_ripper.dart';
 class HentaifoxRipper extends AbstractHTMLRipper {
   HentaifoxRipper(super.url);
 
+  Document? _cachedFirstPage;
+
   static const String domain = 'hentaifox.com';
   static final RegExp _galleryPattern =
       RegExp(r'^https://hentaifox\.com/gallery/([\d]+)/?$');
@@ -30,7 +32,7 @@ class HentaifoxRipper extends AbstractHTMLRipper {
 
     Document page;
     try {
-      page = await Http.get(url);
+      page = await getFirstPage();
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
       return;
@@ -65,7 +67,7 @@ class HentaifoxRipper extends AbstractHTMLRipper {
   @override
   Future<String> getAlbumTitle(Uri url) async {
     try {
-      final page = await Http.get(url);
+      final page = await getFirstPage();
       final title = albumTitleFromPage(page);
       if (title != null) return '${getHost()}_${title}_${await getGID(url)}';
     } catch (_) {
@@ -73,6 +75,12 @@ class HentaifoxRipper extends AbstractHTMLRipper {
     }
     return super.getAlbumTitle(url);
   }
+
+  Future<Document> getFirstPage() async {
+    return _cachedFirstPage ??= await fetchFirstPage();
+  }
+
+  Future<Document> fetchFirstPage() => Http.get(url);
 
   @override
   Future<List<String>> getURLsFromPage(Document page) async {
@@ -83,9 +91,9 @@ class HentaifoxRipper extends AbstractHTMLRipper {
   Future<Uri?> getNextPage(Document page) async => null;
 
   static String? albumTitleFromPage(Document page) {
-    final title = page.querySelector('div.info > h1')?.text.trim();
-    if (title == null || title.isEmpty) return null;
-    return title;
+    final title = page.querySelector('div.info > h1');
+    if (title == null) return null;
+    return title.text.trim();
   }
 
   static List<String> imageUrlsFromPage(Document page) {

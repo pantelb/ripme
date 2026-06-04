@@ -2887,13 +2887,13 @@ Findings:
       strict `https://hentaifox.com/gallery/ID` shape. Flutter
       `HentaifoxRipper.canRip(...)` directly uses the strict gallery regex,
       narrowing Java's domain-level support.
-- [ ] Java `HentaifoxRipper.getAlbumTitle(...)` derives the title from
+- [x] Java `HentaifoxRipper.getAlbumTitle(...)` derives the title from
       `getCachedFirstPage().select("div.info > h1").first().text()` and returns
       `hentaifox__GID` when the selected `h1` exists but has empty text.
       Flutter `HentaifoxRipper.getAlbumTitle(...)` fetches the page again
       during setup and `albumTitleFromPage(...)` treats missing or empty title
       text as `null`, falling back to `hentaifox_GID`; cached-response and
-      empty-title working-directory parity are therefore missing.
+      empty-title working-directory parity were added with Dart tests.
 - [ ] Java `HypnohubRipper.ripPost(...)` uses
       `doc.selectFirst("a:matchesOwn(^Original image$")`, a malformed jsoup
       selector, for the Original-image fallback in both string and document

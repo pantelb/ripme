@@ -1,8 +1,22 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:ripme/ripper/rippers/hentaifox_ripper.dart';
 import 'package:ripme/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+class _FakeHentaifoxRipper extends HentaifoxRipper {
+  _FakeHentaifoxRipper(super.url, this.page);
+
+  final Document page;
+  int fetches = 0;
+
+  @override
+  Future<Document> fetchFirstPage() async {
+    fetches++;
+    return page;
+  }
+}
 
 void main() {
   test('matches Java host, domain, URL support, and GIDs', () async {
@@ -23,7 +37,33 @@ void main() {
     final page = parse('<div class="info"><h1>Gallery Title</h1></div>');
 
     expect(HentaifoxRipper.albumTitleFromPage(page), 'Gallery Title');
+    expect(
+      HentaifoxRipper.albumTitleFromPage(
+        parse('<div class="info"><h1></h1></div>'),
+      ),
+      '',
+    );
     expect(HentaifoxRipper.albumTitleFromPage(parse('<main></main>')), isNull);
+  });
+
+  test('builds album title with empty h1 text like Java', () async {
+    final ripper = _FakeHentaifoxRipper(
+      Uri.parse('https://hentaifox.com/gallery/38544/'),
+      parse('<div class="info"><h1></h1></div>'),
+    );
+
+    expect(await ripper.getAlbumTitle(ripper.url), 'hentaifox__38544');
+    expect(ripper.fetches, 1);
+  });
+
+  test('caches first page like Java AbstractHTMLRipper', () async {
+    final ripper = _FakeHentaifoxRipper(
+      Uri.parse('https://hentaifox.com/gallery/38544/'),
+      parse('<div class="info"><h1>Gallery Title</h1></div>'),
+    );
+
+    expect(await ripper.getFirstPage(), same(await ripper.getFirstPage()));
+    expect(ripper.fetches, 1);
   });
 
   test('normalizes preview thumbnails to full image URLs like Java', () {
