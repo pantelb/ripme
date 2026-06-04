@@ -26,11 +26,27 @@ void main() {
     expect(ripper.canRip(ripper.url), isTrue);
     expect(
       ripper.canRip(Uri.parse('http://hentaifox.com/gallery/38544/')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://www.hentaifox.com/anything')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://not-hentaifox.com/anything')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://hentaifox.com.evil/gallery/38544/')),
       isFalse,
     );
     expect(ripper.getHost(), 'hentaifox');
     expect(ripper.getDomain(), 'hentaifox.com');
     expect(await ripper.getGID(ripper.url), '38544');
+    expect(
+      () => ripper.getGID(Uri.parse('http://hentaifox.com/gallery/38544/')),
+      throwsFormatException,
+    );
   });
 
   test('extracts album title from div.info h1 like Java', () {

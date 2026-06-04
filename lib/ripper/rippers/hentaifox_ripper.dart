@@ -24,7 +24,7 @@ class HentaifoxRipper extends AbstractHTMLRipper {
   String getDomain() => domain;
 
   @override
-  bool canRip(Uri url) => _galleryPattern.hasMatch(url.toString());
+  bool canRip(Uri url) => url.host.endsWith(domain);
 
   @override
   Future<void> rip() async {

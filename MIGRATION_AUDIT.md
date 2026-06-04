@@ -2882,11 +2882,13 @@ Findings:
       and runs `rip()` immediately. Flutter tag-page `rip()` only emits
       `RipStatus.queueAdd` messages for the collected child URLs and completes,
       so tag pages no longer execute the same recursive child-gallery rip flow.
-- [ ] Java `HentaifoxRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+- [x] Java `HentaifoxRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
       host ending in `hentaifox.com` is accepted before `getGID(...)` checks the
       strict `https://hentaifox.com/gallery/ID` shape. Flutter
       `HentaifoxRipper.canRip(...)` directly uses the strict gallery regex,
-      narrowing Java's domain-level support.
+      narrowing Java's domain-level support. Flutter now uses Java's host suffix
+      check while keeping strict `getGID(...)` parsing, with Dart coverage for
+      both behaviors.
 - [x] Java `HentaifoxRipper.getAlbumTitle(...)` derives the title from
       `getCachedFirstPage().select("div.info > h1").first().text()` and returns
       `hentaifox__GID` when the selected `h1` exists but has empty text.
