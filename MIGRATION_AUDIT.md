@@ -1921,6 +1921,12 @@ Findings:
       `_getUrlsFromJson(...)`, `_getUrlsForGallery(...)`, and `getVideoUrl(...)`
       all fall back from `hd` to `sd`, changing both malformed API failure
       semantics and selected media quality.
+- [ ] Java `RedgifsRipper.getSearchOrTagsURL(...)` logs warnings for
+      unsupported `tab` values, unexpected query parameters, and missing
+      tags/search tab selections before defaulting to GIF results. Flutter
+      `_searchOrTagsUri(...)` silently ignores unknown query parameters and
+      unsupported tab values while defaulting to GIFs, so Redgifs search/tag URL
+      normalization loses Java's warning diagnostics.
 - [ ] Java `ScrolllerRipper.getPosts(...)` catches transport/parsing failures
       and returns `new JSONObject("{}")`, after which
       `getURLsFromJSON(...)` strictly dereferences
