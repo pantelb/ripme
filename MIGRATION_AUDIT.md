@@ -3223,6 +3223,13 @@ Findings:
       `_useDefaultApiKey` per instance, and chooses the default key with
       deterministic `Random(0)`. Default-key selection and post-401 fallback
       lifetime therefore differ from Java.
+- [ ] Java `TumblrRipper.getApiKey()` first checks
+      `AbstractRipper.isThisATest()` and returns the dedicated test key
+      `UHpRFx16HFIRgQjtjJKgfVIcwIeb71BYwOQXTMtiCvdSEPjV7N` before reading
+      config or choosing a random default key. Flutter has no shared
+      `markAsTest()` / `isThisATest()` equivalent for Tumblr and uses the
+      normal configured/default-key path in tests, so Java-compatible Tumblr
+      test authentication behavior is missing.
 - [ ] Java `TumblrRipper.handleJSON(...)` strictly dereferences
       `response.posts` / `response.liked_posts` and each post `date`; missing or
       malformed top-level API structure throws. Flutter
