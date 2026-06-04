@@ -2392,6 +2392,14 @@ Findings:
       `wallpaperSlugsFromDocument(...)` and later skips empty `imageUrl` values
       during `rip()`, so malformed/empty media candidates no longer follow
       Java's failure path.
+- [ ] Java `PicstatioRipper.getNextPage(...)` checks
+      `doc.select("a.next_page") != null`, which is always true for jsoup's
+      `Elements`, then fetches `https://www.picstatio.com` plus the selected
+      `href` before returning; an absent next link therefore still attempts the
+      site root and request failures escape through the HTML loop. Flutter
+      `PicstatioRipper.nextPageUrl(...)` only returns the constructed URI
+      (`https://www.picstatio.com` when absent) and `rip()` later catches fetch
+      failures as quiet pagination completion.
 - [ ] Java `PorncomixinfoRipper` inherits
       `AbstractHTMLRipper.canRip(...)`, so any host ending in
       `porncomixinfo.net` is accepted before `getGID(...)` applies the stricter
