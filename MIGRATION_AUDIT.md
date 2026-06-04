@@ -1088,6 +1088,14 @@ Findings:
 - [ ] Java stops an HTML rip after `history.end_rip_after_already_seen` already
       downloaded URLs and sends `DOWNLOAD_COMPLETE_HISTORY`. Flutter sends a
       download-skip message and stops; status parity is missing.
+- [ ] Java stops a JSON rip after the same
+      `history.end_rip_after_already_seen` threshold inside
+      `AbstractJSONRipper.rip()` but sends `DOWNLOAD_COMPLETE` with
+      `Already seen the last N images ending rip` before breaking. Flutter's
+      shared history-limit path runs inside `downloadFile(...)`, emits
+      `RipStatus.downloadSkip` with `Already seen the last N files, ending rip`,
+      and calls `stop()`, so JSON-ripper status category, text, and stop timing
+      differ from Java.
 - [ ] Java `AbstractHTMLRipper` remembers each processed `doc.location()` and
       breaks when a next page resolves to a previously processed location.
       Flutter `AbstractHTMLRipper` has no visited-location guard, so bad or
