@@ -965,6 +965,14 @@ Findings:
       non-retriable 4xx handling, retriable 5xx handling, and an Imgur
       503-byte-as-404 special case. Flutter needs shared tests or documented
       replacement behavior.
+- [ ] Java file downloads always set request properties `accept: */*`,
+      `User-agent: <AbstractRipper.USER_AGENT>`, and `Cookie: <serialized map>`,
+      with `Cookie` present even when the per-download cookie map is empty.
+      Flutter `Http._buildHeaders(...)` sets `User-Agent`, does not add
+      `Accept: */*` for downloads, and omits `Cookie` entirely when no configured
+      or per-download cookies exist. Header names are normally case-insensitive,
+      but the Java-visible request shape and empty-cookie behavior still need
+      parity tests before claiming compatibility.
 - [ ] Java `DownloadFileThread` catches `SocketTimeoutException`, logs
       `timedout!`, breaks out of the retry loop, and then still falls through to
       `observer.downloadCompleted(url, saveAs.toPath())`. Flutter shared
@@ -1143,11 +1151,12 @@ Findings:
       making failed rips look completed in the event stream.
 - [ ] Java `DownloadFileThread.run()` sends `DOWNLOAD_STARTED` at the start of
       every download attempt before connection, status-code, redirect, and retry
-      handling. Flutter `AbstractRipper.downloadFile(...)` calls
-      `Http.downloadFile(...)` first and emits `RipStatus.downloadStarted` only
-      after the shared HTTP request has already returned a 200 response, so
-      failed attempts, retries, redirects, 4xx/5xx responses, and timeouts do
-      not produce Java-compatible started status events.
+      handling. Flutter `AbstractRipper.downloadFile(...)` emits
+      `RipStatus.downloadStarted` before calling `Http.downloadFile(...)`, so a
+      failed high-level download can produce one started event, but shared HTTP
+      retries and redirects stay hidden inside `Http._getResponse(...)`.
+      Multi-attempt failures therefore still do not produce Java-compatible
+      per-attempt started status events.
 - [ ] Java shared test mode is a static `AbstractRipper.thisIsATest` flag set by
       `markAsTest()`. `AbstractHTMLRipper` and `AbstractJSONRipper` remove all
       but one media URL per page, stop before fetching the next page, suppress
