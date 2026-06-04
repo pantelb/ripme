@@ -1381,6 +1381,17 @@ Findings:
       `Utils.getListOfAlbumRippers()` / `getListOfVideoRippers()` and can open
       the GitHub project page. Flutter About/update UI needs equivalent
       supported-site visibility or a documented replacement.
+- [ ] Java tray About dialog has source-visible content semantics that need
+      exact replacement coverage: it builds two sections headed
+      `Download albums from various websites:` and
+      `Download videos from video sites:`, derives each displayed site by taking
+      the constructor's fully-qualified class name, stripping everything through
+      the last `.`, then stripping the first `Ripper` suffix, and asks
+      `Do you want to visit the project homepage on GitHub?`; a `YES` response
+      opens `http://github.com/ripmeapp/ripme`. Flutter has no verified
+      equivalent supported-site/about dialog, and catalog display names,
+      ordering, album-vs-video grouping, and homepage URL behavior must be
+      tested or intentionally replaced.
 
 ### G. Resources, Localization, Logging, And Updates
 
