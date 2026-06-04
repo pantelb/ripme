@@ -1307,6 +1307,20 @@ Findings:
       include all of these.
 - [ ] Java `RipStatusComplete` carries directory and count. Flutter history
       updates from `ripComplete` need exact count/directory parity.
+- [ ] Java `MainWindow.handleEvent(...)` applies status-specific UI side effects
+      that Flutter has not matched exactly: every non-stopped event first sets
+      progress from `ripper.getCompletionPercentage()`, shows the progress bar,
+      and displays `ripper.getStatusText()`; log append behavior is gated by the
+      configured log level and Java colors (`BLACK`, `GREEN`, `RED`, `ORANGE`,
+      `YELLOW`); `RIP_ERRORED` and `NO_ALBUM_OR_USER` both hide the open button,
+      reset/hide progress, disable Stop, and set `Error: <object>`; and
+      `RIP_COMPLETE` updates/adds a Java `HistoryEntry`, optionally plays
+      `camera.wav`, saves history, hides progress, shows the open button as
+      localized `open` plus `Utils.shortenPath(...)`, resets the title, and then
+      may run the configured finish command. Flutter `RipManager` derives
+      progress counters from observed log events and sets simpler status text,
+      so the full Java status/UI contract needs parity tests or documented
+      retirement.
 - [ ] Java text-field context menu includes Undo, Cut, Copy, Paste, Select All,
       tracks the last cut/paste for undo, and replaces the whole text field on
       paste. Flutter default text-field menus need an intentional parity call.
