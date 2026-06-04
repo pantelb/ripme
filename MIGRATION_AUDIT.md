@@ -3095,6 +3095,14 @@ Findings:
       retries `401` based on `e.toString().contains("401")`; other API failures
       are rethrown through `AbstractJSONRipper`, so the Java status messages and
       stop semantics are missing.
+- [ ] Java `TumblrRipper.canRip(...)` is a broad host guard that accepts any
+      URL whose host ends with `tumblr.com`, then `getGID(...)` decides whether
+      the path is a supported subdomain, tag, post, or likes URL. Flutter
+      `TumblrRipper.canRip(...)` delegates to `classifyUrl(...)`, which rejects
+      unsupported Tumblr-host paths before Java's later `getGID` failure point
+      and also accepts non-`tumblr.com` hosts that happen to match the generic
+      `/tagged/...` or `/post/...` regexes. Tumblr URL acceptance/rejection is
+      therefore not Java-compatible.
 - [ ] Java `TumblrRipper.getApiKey()` caches one randomly selected default key
       in static `API_KEY` via `new Random().nextInt(...)`, and its
       `useDefaultApiKey` fallback flag is static across Tumblr ripper instances.
