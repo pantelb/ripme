@@ -1168,6 +1168,13 @@ Findings:
       after the first completion/error while test mode is active. Flutter has no
       equivalent shared test-mode surface, so Java live-test contracts and
       test-only side effects are not reproducible outside ad hoc Dart mocks.
+- [ ] Java `DownloadFileThread.run()` has an additional test-only download
+      shortcut: when `HttpURLConnection.getContentLength() / 1000000 >= 10`
+      and `AbstractRipper.isThisATest()` is true, it logs that the file is over
+      10 MB and does not read/write the response body. Flutter
+      `Http.downloadFile(...)` always fetches the full response bytes before
+      applying the normal `download.max_size` limit, and there is no shared
+      test-mode flag or content-length-based skip path.
 - [ ] Java concrete rippers also add subclass-specific `isThisATest()` branches
       outside the shared abstract loops: `ChanRipper`, `EightmusesRipper`,
       `ErofusRipper`, `FivehundredpxRipper`, `ImagefapRipper`,
@@ -2355,6 +2362,12 @@ Findings:
       then calls `downloadFiles(...)`. E-Hentai image-page lookup, failure
       isolation, and final-download start timing are therefore not Java
       equivalent.
+- [ ] Java `EHentaiRipper.getAlbumTitle(...)` returns
+      `"e-hentai_" + elems.first().text()` whenever `#gn` exists, even when the
+      title text is empty, yielding `e-hentai_`. Flutter
+      `EHentaiRipper.getAlbumTitle(...)` treats missing or empty `#gn` text as
+      a fallback case and returns the inherited `e-hentai_GID`, so empty-title
+      gallery pages no longer match Java's working-directory name.
 - [ ] Java `ImagebamRipper.getURLsFromPage(...)` selects
       `div > a[class=thumbnail]:not(.footera)`, which requires the `class`
       attribute to be exactly `thumbnail` before the `:not(.footera)` filter.
@@ -2366,6 +2379,12 @@ Findings:
       `ImagebamImageThread` for URL conversion/logging. Flutter
       `imagePageUrlsFromDocument(...)` filters empty `href` values before the
       image-page step, so malformed thumbnail anchors are silently dropped.
+- [ ] Java `ImagebamRipper.getAlbumTitle(...)` reads `[id=gallery-name]` from
+      `getCachedFirstPage()`, so title lookup and the later rip loop share the
+      same first-page response. Flutter `ImagebamRipper.getAlbumTitle(...)`
+      performs a fresh `Http.get(url)` during setup, so request counts, cookies,
+      and working-directory names can diverge when the setup fetch and rip fetch
+      return different content.
 - [ ] Java `ImagebamRipper.ImagebamImageThread.fetchImage(...)` passes the raw
       `img[class*=main-image]` `src` through `new URI(imgsrc).toURL()`;
       protocol-relative values such as `//images.example/full.jpg` fail that
@@ -2868,6 +2887,13 @@ Findings:
       strict `https://hentaifox.com/gallery/ID` shape. Flutter
       `HentaifoxRipper.canRip(...)` directly uses the strict gallery regex,
       narrowing Java's domain-level support.
+- [ ] Java `HentaifoxRipper.getAlbumTitle(...)` derives the title from
+      `getCachedFirstPage().select("div.info > h1").first().text()` and returns
+      `hentaifox__GID` when the selected `h1` exists but has empty text.
+      Flutter `HentaifoxRipper.getAlbumTitle(...)` fetches the page again
+      during setup and `albumTitleFromPage(...)` treats missing or empty title
+      text as `null`, falling back to `hentaifox_GID`; cached-response and
+      empty-title working-directory parity are therefore missing.
 - [ ] Java `HypnohubRipper.ripPost(...)` uses
       `doc.selectFirst("a:matchesOwn(^Original image$")`, a malformed jsoup
       selector, for the Original-image fallback in both string and document
