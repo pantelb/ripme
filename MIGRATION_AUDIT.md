@@ -1318,6 +1318,17 @@ Findings:
 - [ ] Java queue/history/context popups position themselves around the pointer,
       shifting left when `x > 500`; Flutter popup positioning should either
       match where practical or be documented as a platform-native difference.
+- [ ] Java context-menu trigger/enabled-state behavior is more specific than a
+      generic platform menu: `QueueMenuMouseListener` and
+      `HistoryMenuMouseListener` open only when `getModifiersEx()` equals
+      `BUTTON3_DOWN_MASK` and the event source is respectively a `JList` or
+      `JTable`; `ContextMenuMouseListener` also uses `isPopupTrigger()` on
+      press/release but, on right-click `mouseClicked`, requires a
+      `JTextComponent`, requests focus, and enables Undo/Cut/Copy/Paste/Select
+      All from enabled/editable/selection/clipboard/last-action state before
+      showing the shifted popup. Flutter currently relies on native/context
+      controls and queue/history widgets without verified parity for these
+      exact trigger, focus, action-availability, and saved-string semantics.
 - [ ] Java tray icon, popup notifications, and open-folder button are desktop
       behaviors that need per-platform Flutter verification or documented
       replacements. The Java implementation uses `SystemTray`, `TrayIcon`,
