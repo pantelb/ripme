@@ -1161,12 +1161,13 @@ Findings:
       routes by using `host.contains(...)` instead of Java's inherited
       `AbstractHTMLRipper.canRip(...)` `url.getHost().endsWith(getDomain())`
       guard. For routes such as `AllporncomicRipper`, `ArtStationRipper`,
-      `BaraagRipper`, `BatoRipper`, `FlickrRipper`, `ImagefapRipper`,
-      `ImgurRipper`, `InstagramRipper`, `MastodonRipper`,
-      `MastodonXyzRipper`, `NhentaiRipper`, `PawooRipper`, `RedditRipper`,
-      `RedgifsRipper`, and `TumblrRipper`, hosts like `imgur.com.evil`,
-      `evilreddit.com.invalid`, or `redgifs.com.evil` can dispatch in Flutter
-      where Java would reject the constructor and keep scanning/fail.
+      `ArtstnRipper`, `BaraagRipper`, `BatoRipper`, `EightmusesRipper`,
+      `FlickrRipper`, `ImagefapRipper`, `ImgurRipper`, `InstagramRipper`,
+      `MastodonRipper`, `MastodonXyzRipper`, `NhentaiRipper`, `PawooRipper`,
+      `RedditRipper`, `RedgifsRipper`, and `TumblrRipper`, hosts like
+      `imgur.com.evil`, `evilreddit.com.invalid`, `redgifs.com.evil`, or
+      `8muses.com.evil` can dispatch in Flutter where Java would reject the
+      constructor and keep scanning/fail.
 - [ ] Java `download.ignore_extensions` suppresses extension-matched URLs with
       `DOWNLOAD_SKIP`; Flutter has a similar check but needs exact tests.
 - [ ] Java `sleep(milliseconds)` applies gaussian jitter with a minimum of 47%
@@ -1960,6 +1961,12 @@ Findings:
       clean end-of-pagination result. Flutter `BooruRipper.getNextPage(...)`
       returns `null` when `<posts>` is absent and defaults malformed numeric
       attributes to zero, turning Java parse failures into a normal stop.
+- [ ] Java `BooruRipper.canRip(...)` checks `url.toExternalForm().contains(...)`
+      for `xbooru` or `gelbooru`, so the constructor accepts any URL string
+      containing either token before later `getGID(...)` validation. Flutter
+      `RipperFactory` only routes hosts containing `xbooru.com` or
+      `gelbooru.com`, narrowing Java's shipped candidate-selection behavior for
+      malformed or non-canonical URLs.
 - [ ] Java `BooruRipper.getURLsFromPage(...)` adds
       `e.absUrl("file_url") + "#" + e.attr("id")` for every `<post>`, even when
       `file_url` is missing or empty, producing `#<id>` entries. Flutter skips
