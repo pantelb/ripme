@@ -2957,6 +2957,15 @@ Findings:
       absent/empty, and `entriesFromJson(...)` returns an empty list when the
       first page has no `items`. This changes malformed JSON and no-next-page
       behavior into nullable completion instead of Java's exception contracts.
+- [ ] Java `NsfwXxxRipper.getURLsFromJSON(...)` maps every array element with
+      `items.getJSONObject(i)`, requires `author` and `title` via
+      `getString(...)`, and when `src` is absent requires the video `html`
+      field to contain a `src="..."` match before `matches.group(1)` is read.
+      Flutter `entriesFromJson(...)` skips non-map entries, converts missing
+      `author`/`title` to the literal string `"null"` through `.toString()`,
+      and then stores those titles in `descriptions` for filename prefixes.
+      Malformed item handling and title-to-download alignment are therefore not
+      proven Java-compatible.
 - [ ] Mechanical Java strict-JSON access scan found additional rippers whose
       Java source uses `JSONObject.get*` / `JSONArray.get*` contracts that
       throw on missing or malformed API data, while the current Flutter tree has
