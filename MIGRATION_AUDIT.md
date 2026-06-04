@@ -1066,8 +1066,12 @@ Findings:
 - [ ] Java shortens Windows paths above 260 characters and long filenames above
       filesystem limits; Flutter has no verified equivalent.
 - [ ] Java `getFileName` strips query, fragment, ampersand, and colon segments,
-      adds prefix before extension handling, then sanitizes. Flutter rippers use
-      local filename helpers that need shared parity tests.
+      adds prefix before extension handling, then sanitizes. Its URL-extension
+      inference also uses `lastBit.split(".")`, where `"."` is a regex matching
+      any character, so callers that pass an explicit `fileName` but no
+      `extension` usually do not receive an inferred extension from the URL.
+      Flutter rippers use local filename helpers that need shared parity tests,
+      especially for custom-filename/no-extension overloads.
 - [ ] Java writes downloaded URLs to URL history before handing a download to
       the thread pool. Flutter marks downloads after `Http.downloadFile`
       succeeds; this changes retry/interruption semantics.
