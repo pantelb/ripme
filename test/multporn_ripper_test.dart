@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart' as html;
 import 'package:ripme/ripper/rippers/multporn_ripper.dart';
@@ -53,6 +55,23 @@ void main() {
       'https://img.multporn.net/two.png?x=1',
       '',
     ]);
+  });
+
+  test('MultpornRipper carries Java canonical referrer into downloads', () {
+    final canonicalUrl = Uri.parse(
+      'https://multporn.net/node/98765/example-comic?mode=simple',
+    );
+    final download = MultpornRipper.downloadForImageUrl(
+      'https://img.multporn.net/path/page.jpg?token=abc#fragment',
+      7,
+      workingDir: Directory('rip-root'),
+      referrer: canonicalUrl,
+    );
+
+    expect(download.url.toString(),
+        'https://img.multporn.net/path/page.jpg?token=abc#fragment');
+    expect(download.headers, {'Referer': canonicalUrl.toString()});
+    expect(download.saveAs.path.replaceAll('\\', '/'), 'rip-root/007_page.jpg');
   });
 
   test('MultpornRipper uses Java-style ordered filenames', () {

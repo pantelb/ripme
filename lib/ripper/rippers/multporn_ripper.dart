@@ -77,16 +77,12 @@ class MultpornRipper extends AbstractHTMLRipper {
     for (final imageUrl in await getURLsFromPage(page)) {
       if (isStopped) break;
       index++;
-      final imageUri = Uri.parse(imageUrl);
       downloads.add(
-        RipperDownload(
-          url: imageUri,
-          saveAs: File(
-            p.join(
-              workingDir.path,
-              fileNameForUrl(imageUri, prefix: prefixForIndex(index)),
-            ),
-          ),
+        downloadForImageUrl(
+          imageUrl,
+          index,
+          workingDir: workingDir,
+          referrer: sourceUrl,
         ),
       );
     }
@@ -128,6 +124,25 @@ class MultpornRipper extends AbstractHTMLRipper {
       result.add(item.attributes['href'] ?? '');
     }
     return result;
+  }
+
+  static RipperDownload downloadForImageUrl(
+    String imageUrl,
+    int index, {
+    required Directory workingDir,
+    required Uri referrer,
+  }) {
+    final imageUri = Uri.parse(imageUrl);
+    return RipperDownload(
+      url: imageUri,
+      saveAs: File(
+        p.join(
+          workingDir.path,
+          fileNameForUrl(imageUri, prefix: prefixForIndex(index)),
+        ),
+      ),
+      headers: {'Referer': referrer.toString()},
+    );
   }
 
   static String prefixForIndex(int index) {

@@ -2912,12 +2912,14 @@ Findings:
       catches the fetch failure with a comment-only silent skip, so those
       Hypnohub missing-image and per-post failure diagnostics disappear from the
       Java-compatible log/status surface.
-- [ ] Java `MultpornRipper.getGID(...)` may rewrite the instance `url` to the
+- [x] Java `MultpornRipper.getGID(...)` may rewrite the instance `url` to the
       canonical `/node/ID/...` simple-mode URL, and `downloadURL(...)` passes
       that `this.url.toExternalForm()` as the download referrer via
       `addURLToDownload(...)`. Flutter uses the canonical URL for loading the
       page, but its `RipperDownload` path does not carry Java's canonical
-      Multporn referrer into each image download.
+      Multporn referrer into each image download. Flutter now attaches the
+      canonical source URL as the `Referer` header for each image download, with
+      Dart coverage for the generated download request.
 - [ ] Java `PorncomixRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
       host ending in `porncomix.info` is accepted before `getGID(...)` checks
       the strict `www.porncomix.info/SLUG` pattern. Flutter
