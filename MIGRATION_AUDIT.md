@@ -1154,6 +1154,14 @@ Findings:
       `modules.php?name=YuGallery&action=view&set_id=...`, and `RipperFactory`
       has no separate Yuvutu video route, so Java-supported Yuvutu video URLs
       currently resolve to no Dart ripper.
+- [ ] Java album `YuvutuRipper.getURLsFromPage(...)` adds every
+      `div#galleria > a > img` `src` value, including empty strings, and the
+      shared `AbstractHTMLRipper.rip()` then converts each candidate with
+      `new URI(imageURL).toURL()`. Empty or relative `src` values therefore fail
+      immediately in Java. Flutter `YuvutuRipper.imageUrlsFromDocument(...)`
+      also preserves empty strings, but `rip()` parses them as relative `Uri`
+      download targets and builds `RipperDownload`s, changing the failure point
+      and status path for malformed gallery images.
 - [ ] Java `AbstractRipper(URL)` rejects a candidate constructor whenever that
       class's `canRip(url)` is false before `AbstractRipper.getRipper(...)`
       tries the next album/video class. Flutter `RipperFactory.getRipper(...)`
