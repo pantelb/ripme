@@ -1158,9 +1158,10 @@ Findings:
       guard. For routes such as `AllporncomicRipper`, `ArtStationRipper`,
       `BatoRipper`, `FlickrRipper`, `ImagefapRipper`, `ImgurRipper`,
       `InstagramRipper`, `MastodonRipper`, `NhentaiRipper`, `PawooRipper`,
-      `RedditRipper`, and `TumblrRipper`, hosts like `imgur.com.evil` or
-      `evilreddit.com.invalid` can dispatch in Flutter where Java would reject
-      the constructor and keep scanning/fail.
+      `RedditRipper`, `RedgifsRipper`, and `TumblrRipper`, hosts like
+      `imgur.com.evil`, `evilreddit.com.invalid`, or `redgifs.com.evil` can
+      dispatch in Flutter where Java would reject the constructor and keep
+      scanning/fail.
 - [ ] Java `download.ignore_extensions` suppresses extension-matched URLs with
       `DOWNLOAD_SKIP`; Flutter has a similar check but needs exact tests.
 - [ ] Java `sleep(milliseconds)` applies gaussian jitter with a minimum of 47%
