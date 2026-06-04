@@ -2184,6 +2184,13 @@ Findings:
       `Error while loading page <postLink>`, and continues. Flutter catches only
       `IOException` in the same loop but silently skips those thumbnails, so
       SankakuComplex per-post load failures lose Java's diagnostic log surface.
+- [ ] Java `SankakuComplexRipper.downloadURL(...)` sleeps 8000 ms immediately
+      before calling `addURLToDownload(...)`, so each discovered high-res URL is
+      throttled and queued through the normal Java download-thread path one at a
+      time. Flutter waits eight seconds inside `rip()` while collecting each
+      page's `RipperDownload`s, then starts `downloadFiles(...)` only after the
+      page batch has been built. The URL list can match while Java's throttling
+      and queue-start timing do not.
 - [ ] Java `BooruRipper.getNextPage(...)` dereferences the first `<posts>`
       element and parses `offset` / `count` with strict
       `Integer.parseInt(...)`; missing or malformed attributes fail before a
