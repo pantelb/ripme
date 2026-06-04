@@ -3153,6 +3153,18 @@ Findings:
       missing `b`/`r`/`i` to empty strings and returns an empty list when `f` is
       absent or malformed. That can produce malformed URLs or clean completion
       where Java would throw.
+- [ ] Java `NatalieMuRipper.getURLsFromPage(...)` checks `isThisATest()` inside
+      the thumbnail loop and stops after the first matching gallery image in
+      Java test mode; it also checks `isStopped()` while parsing the page.
+      Flutter `NatalieMuRipper.imageUrlsFromDocument(...)` is a static full-page
+      extractor with no test-mode limit and no stopped-rip check, so
+      Java-compatible test limiting and parser-time stop behavior are not
+      preserved.
+- [ ] Java `NsfwAlbumRipper.getURLsFromPage(...)` writes
+      `<n> elements (thumbnails) found.` to stdout before URL conversion.
+      Flutter `NsfwAlbumRipper.imageUrlsFromDocument(...)` has no matching
+      stdout, log, or status diagnostic, so source-visible CLI/debug output
+      parity is missing for this ripper.
 - [ ] Java `EightmusesRipper.getURLsFromPage(...)` recurses into subalbums but
       only logs `subalbumImages.size()` and ignores the returned list. Images
       in a subalbum that use `data-cfsrc` are added only to that returned list
