@@ -1580,6 +1580,14 @@ Findings:
       it to a download URL. Flutter normalizes the same raw source through
       `normalizeProtocolRelative(...)`, so protocol-relative direct MP4 sources
       become `https:` URLs in Flutter but remain raw in Java.
+- [ ] Java `HqpornerRipper.downloadURL(...)` queues one
+      `HqpornerDownloadThread` per video and `fetchVideo()` catches
+      `IOException | URISyntaxException`, logging
+      `[!] Exception while downloading video.` without aborting the listing
+      thread pool. Flutter `_ripListing()` awaits `_downloadVideoPage(...)`
+      serially, and fetch/parse exceptions bubble to the top-level `rip()`
+      catch as `RipStatus.ripErrored`, so one broken Hqporner video can stop a
+      listing that Java would continue.
 - [ ] Java ASAP-ripping overrides must be verified for exact shared-runtime
       bypass semantics. `EightmusesRipper`, `ErofusRipper`, `FlickrRipper`,
       `TwitterRipper`, and `XhamsterRipper` return `hasASAPRipping() == true`,
