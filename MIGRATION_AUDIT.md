@@ -935,6 +935,13 @@ Findings:
 - [ ] Java `Http` retry loop attempts exactly the configured count. Flutter's
       `_getResponse` currently loops `attempt <= retries`, which is one extra
       attempt for the same setting.
+- [ ] Java `Http.TIMEOUT` is a `static final` value read once from
+      `Utils.getConfigInteger("page.timeout", 5 * 1000)` when `Http` is loaded,
+      and every default Jsoup connection then uses that frozen timeout. Flutter
+      `_getResponse(...)` reads `Utils.getConfigInteger(timeoutKey,
+      defaultTimeoutMs)` on every request, so changing `page.timeout` after the
+      first Java `Http` class load affects Flutter requests but not Java page
+      requests.
 - [ ] Java CLI `-4` sets `errors.skip404`, and `DownloadFileThread` checks that
       same typo key before returning immediately on a 404; otherwise it keeps
       retrying through the Java download loop. Flutter checks
@@ -2900,6 +2907,14 @@ Findings:
       `ChanRipper.getHost()` uses `url.pathSegments.isNotEmpty ? first : ''`,
       returning an empty board instead of matching the Java malformed-path
       failure.
+- [ ] Java `ChanRipper` parses `chans.chan_sites` into the static
+      `user_give_explicit_domains` field at class-load time and then
+      `canRip(...)` appends that frozen list into the static `explicit_domains`
+      collection. Flutter `ChanRipper.explicitDomains()` calls
+      `Utils.getConfigString('chans.chan_sites', null)` and reparses on every
+      lookup, so config changes after first Java class load are visible in
+      Flutter but not Java, and repeated Java `canRip(...)` calls mutate a
+      shared static list while Dart rebuilds a fresh one.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
@@ -3783,6 +3798,80 @@ Findings:
       has no equivalent class-level flaky/slow tagging scheme, so these classes
       need explicit fake fixture coverage, opt-in live tests, or documented
       retirement decisions.
+- [ ] Exact Java `@Tag("slow")` inventory is source-backed and must be mapped:
+      `EromeRipperTest.testVideoAlbumWithSingleItemRip`,
+      `EromeRipperTest.testVideoAlbumWithMultipleItemsRip`,
+      `EromeRipperTest.testAlbumWithBothVideoLastRip`,
+      `EromeRipperTest.testAlbumWithBothVideoFirstRip`,
+      `FlickrRipperTest.testFlickrAlbum`,
+      `FuraffinityRipperTest.testFuraffinityAlbum`, and
+      `FuraffinityRipperTest.testFuraffinityScrap`.
+- [ ] Exact Java `@Tag("flaky")` inventory is source-backed and must be mapped
+      at method level. Grouped by class: `AllporncomicRipperTest`
+      (`testAlbum1`, `testAlbum2`), `ArtStationRipperTest`
+      (`testArtStationProjects`, `testArtStationUserProfiles`),
+      `ArtstnRipperTest` (`testSingleProject`), `BaraagRipperTest`
+      (`testRip`), `BooruRipperTest` (`testRip`), `ChanRipperTest`
+      (`testChanURLPasses`, `testChanRipper`), `CheveretoRipperTest`
+      (`testSubdirAlbum1`, `testSubdirAlbum2`), `CoomerPartyRipperTest`
+      (`testRip`), `DanbooruRipperTest` (`testRip`),
+      `DynastyscansRipperTest` (`testRip`), `E621RipperTest`
+      (`testFlashOrWebm`, `testGetNextPage`, `testOldRip`,
+      `testOldFlashOrWebm`, `testOldGetNextPage`), `EightmusesRipperTest`
+      (`testEightmusesAlbum`), `ErofusRipperTest` (`testRip`, `testGetGID`),
+      `FapwizRipperTest` (`testGetNextPage_NoNextPage`,
+      `testGetNextPage_HasNextPage`, `testRipPostWithEmojiInLongUrlAtEnd`),
+      `FemjoyhunterRipperTest` (`testRip`), `FuraffinityRipperTest`
+      (`testLogin`), `GirlsOfDesireRipperTest` (`testGirlsofdesireAlbum`),
+      `Hentai2readRipperTest` (`testHentai2readAlbum`),
+      `HentaifoundryRipperTest` (`testHentaifoundryRip`,
+      `testHentaifoundryGetGID`, `testHentaifoundryPdfRip`),
+      `HentainexusRipperTest` (`testHentaiNexusJson`), `ImagebamRipperTest`
+      (`testImagebamRip`), `ImagefapRipperTest` (`testImagefapAlbums`,
+      `testImagefapGetAlbumTitle`), `ImgboxRipperTest` (`testImgboxRip`),
+      `ImgurRipperTest` (`testImgurAlbums`, `testImgurUserAccount`,
+      `testImgurAlbumWithMoreThan20Pictures`,
+      `testImgurAlbumWithMoreThan100Pictures`), `InstagramRipperTest`
+      (`testInstagramAlbums`), `ListalRipperTest` (`testPictures`,
+      `testRipListType`), `MangadexRipperTest` (`testRip`, `test2`),
+      `MastodonRipperTest` (`testRip`), `MastodonXyzRipperTest` (`testRip`),
+      `MotherlessRipperTest` (`testMotherlessVideoRip`),
+      `MyhentaicomicsRipperTest` (`testMyhentaicomicsAlbum`,
+      `testGetAlbumsToQueue`), `MyhentaigalleryRipperTest`
+      (`testMyhentaigalleryAlbum`), `NewgroundsRipperTest`
+      (`testNewgroundsRip`), `NhentaiRipperTest` (`testTagBlackList`),
+      `NsfwXxxRipperTest` (`testNsfwXxxUser`), `PawooRipperTest`
+      (`testRip`), `PichunterRipperTest` (`testPichunterModelPageRip`,
+      `testPichunterGalleryRip`), `PorncomixinfoRipperTest` (`testRip`),
+      `PornhubRipperTest` (`testGetNextPage`), `RedditRipperTest`
+      (`testRedditSubredditRip`, `testRedditSubredditTopRip`,
+      `testRedditGfyGoodURL`, `testSelfPostRip`, `testSelfPostAuthorRip`,
+      `testRedditGfyBadURL`, `testRedditGallery`), `RedgifsRipperTest`
+      (`testRedditRedgifs`), `RipButtonHandlerTest` (`duplicateUrlTestCase`),
+      `Rule34RipperTest` (`testShesFreakyRip`), `RulePornRipperTest`
+      (`testRip`), `SinfestRipperTest` (`testRip`), `SmuttyRipperTest`
+      (`testRip`), `SoundgasmRipperTest` (`testSoundgasmURLs`,
+      `testRedditSoundgasmURL`), `SpankBangRipperTest` (`testSpankBangVideo`),
+      `TeenplanetRipperTest` (`testTeenplanetRip`), `ThechiveRipperTest`
+      (`testTheChiveRip`, `testTheChiveGif`, `testIDotThechive`),
+      `TheyiffgalleryRipperTest` (`testTheyiffgallery`), `TwitterRipperTest`
+      (`testTwitterUserRip`, `testTwitterSearchRip`), `UIContextMenuTests`
+      (`class`, `testCut`, `testCopy`, `testPaste`, `testSelectAll`,
+      `testUndo`), `VkRipperTest` (`testVkAlbumHttpRip`, `testVkPhotosRip`,
+      `testFindJSONObjectContainingPhotoID`), `VscoRipperTest`
+      (`testSingleImageRip`, `testHyphenatedRip`), `WebtoonsRipperTest`
+      (`testWebtoonsAlbum`, `testWedramabtoonsType`),
+      `WordpressComicRipperTest` (`test_totempole666`, `test_buttsmithy`,
+      `test_themonsterunderthebed`, `test_konradokonski_1`,
+      `test_konradokonski_2`, `test_freeadultcomix`, `test_delvecomic`,
+      `test_spyingwithlana_download`, `test_pepsaga`), `XhamsterRipperTest`
+      (`testXhamsterAlbum1`, `testXhamster2Album`, `testXhamsterAlbum2`,
+      `testXhamsterAlbumDesiDomain`, `testXhamsterVideo`,
+      `testBrazilianXhamster`, `testGetNextPage`), `XvideosRipperTest`
+      (`testXvideosVideo1`, `testXvideosAmateursAlbum`,
+      `testXvideosProfilesAlbum`), `YoupornRipperTest`
+      (`testYoupornRipper`), `YuvutuRipperTest` (`testYuvutuAlbum1`), and
+      `ZizkiRipperTest` (`testRip`, `testAlbumTitle`).
 - [ ] Java UI tests include flaky coverage for the rip button and context menu
       behavior. Flutter needs widget/integration coverage for those UI workflows
       before UI parity can be marked complete.
