@@ -3647,6 +3647,13 @@ Findings:
       `latest-<branch-slug>` with jar artifacts. Flutter release automation
       publishes tag-driven releases through `softprops/action-gh-release`; the
       branch-latest release behavior needs a replacement decision.
+- [ ] Java root developer scripts are part of the source workflow:
+      `build.sh` and `build.bat` both run `./gradlew clean build -x test`, while
+      `remote-branch.sh` and `remote-merge.sh` add a user remote, fetch a branch,
+      create a local `<user>-<branch>` branch, and optionally merge it into
+      `origin/main`. Flutter has no equivalent root helper scripts or documented
+      replacement workflow, so contributor/build workflow parity is not fully
+      accounted for.
 - [ ] Java build excludes `flaky` and `slow` JUnit tags by default and exposes
       `testAll`, `testFlaky`, `testSlow`, and `testTagged` Gradle tasks.
       Flutter currently runs one `flutter test` suite. Dart test metadata needs
