@@ -1322,6 +1322,14 @@ Findings:
       `imgur.com.evil`, `evilreddit.com.invalid`, `redgifs.com.evil`, or
       `8muses.com.evil` can dispatch in Flutter where Java would reject the
       constructor and keep scanning/fail.
+- [ ] Java dispatch is also host-case-sensitive: `java.net.URL.getHost()`
+      preserves uppercase input such as `WWW.DRIBBBLE.COM`, and Java's
+      inherited `canRip(...)` compares it with case-sensitive
+      `endsWith(getDomain())`. Flutter `RipperFactory.getRipper(...)`
+      lowercases `uri.host` before every direct route, and several Dart
+      per-ripper `canRip(...)` methods also call `url.host.toLowerCase()`, so
+      uppercase-host URLs route in Flutter where Java constructors would reject
+      them.
 - [ ] Java `Utils.getClassesForPackage(...)` discovers ripper constructors
       differently in filesystem versus packaged-JAR mode. Filesystem mode lists
       only direct `.class` files in the requested package, but JAR mode accepts
