@@ -3004,6 +3004,14 @@ Findings:
       `Utils` during each rip/API URL build. Runtime preference changes after
       first Java class load therefore have different lifetime semantics in
       Flutter.
+- [ ] Java `TwitterRipper.getURLsFromJSON(...)` logs malformed/unsupported
+      media decisions: missing `extended_entities` emits
+      `XXX Tweet doesn't have entities`, video/gif variants with no selected
+      bitrate URL emit `URLToDownload was null`, and unexpected photo
+      `media_url` hosts emit `Unexpected media_url`. Flutter
+      `TwitterRipper.mediaFromTweets(...)` / `mediaUrl(...)` silently skip all
+      three cases, so Twitter diagnostics and failed-media visibility are not
+      Java-compatible.
 - [ ] Java `BatoRipper.getAlbumTitle(...)` builds
       `bato_<gid>_<cached-first-page-title-with-spaces-as-underscores>` by
       calling `getCachedFirstPage()`, with a disabled Java test documenting the
