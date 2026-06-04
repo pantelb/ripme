@@ -3549,6 +3549,15 @@ Findings:
       queued subalbums. Flutter loops over `_subalbumURLs` until it finds a
       matching subalbum or exhausts the queue, skipping invalid entries and
       potentially continuing where Java would stop.
+- [ ] Java `NfsfwRipper.downloadURL(...)` starts a `NfsfwImageThread` in the
+      dedicated `DownloadThreadPool` for each image page; the worker fetches the
+      image page with `Http.url(this.url).referrer(this.url).get()`, logs
+      missing `.gbBlock img` or parse failures, and schedules the final image
+      download immediately via `addURLToDownload(...)`. Flutter resolves image
+      pages serially in `rip()`, catches image-page fetch failures as `null`,
+      collects `RipperDownload`s, and only then calls `downloadFiles(...)`.
+      NFSFW image lookup concurrency, logging, failure isolation, and final
+      download start timing are not Java-equivalent.
 - [ ] Java `NhentaiRipper.getAlbumsToQueue(...)` and
       `getURLsFromPage(...)` add raw/transformed jsoup attributes directly:
       missing `href` queues `https://nhentai.net`, and missing `data-src`
