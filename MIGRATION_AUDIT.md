@@ -1724,6 +1724,14 @@ Findings:
       Imgur album/gifv/single pages, Redgifs/gifdeliverynetwork, Vidble
       album/show, `v.redd.it`, Erome, Soundgasm, `i.reddituploads.com`, direct
       image/video regex, and Imgur meta fallback.
+- [ ] Java `RipUtils.getFilesFromURL(...)` treats a URL as direct media only
+      when it matches
+      `(https?://[a-zA-Z0-9\\-.]+\\.[a-zA-Z]{2,3}(/\\S*)\\.(jpg|jpeg|gif|png|mp4)(\\?.*)?)`.
+      Flutter `RedditRipper._isDirectMedia(...)` accepts any parsed URI whose
+      path ends in `.jpg`, `.jpeg`, `.png`, `.gif`, `.webp`, `.mp4`, or `.webm`,
+      without Java's 2-3 letter TLD constraint. Reddit body/post links ending
+      in `.webp` or `.webm`, or direct-media hosts Java's regex would not
+      match, can therefore download in Flutter where Java would return no file.
 - [ ] Java `RedditRipper.handleBody` extracts URLs from self text and comments
       with `RipUtils.getURLRegex()`, whose pattern only accepts `http(s)` URLs
       with `[a-zA-Z]{2,3}` TLDs and a slash path, then strips only trailing
