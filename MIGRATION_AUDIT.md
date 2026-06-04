@@ -2057,6 +2057,13 @@ Findings:
       `pornmd.com`; a missing/empty `href` becomes `https://motherless.com`.
       Flutter filters empty hrefs, so malformed thumbnail anchors are silently
       skipped instead of matching Java.
+- [ ] Java `MotherlessRipper.MotherlessImageRunnable.run()` handles image-page
+      fetch/parse exceptions with `logger.error(...)` only, and handles a
+      missing `__fileurl` token with `logger.warn(...)` only. Flutter
+      `MotherlessRipper.fileUrlFromImagePage(...)` converts fetch/parse
+      exceptions into `RipStatus.downloadWarn` while still returning `null`,
+      so failed Motherless image pages become visible warning/count events that
+      Java did not send.
 - [ ] Java `OglafRipper.getNextPage(...)` throws `IOException("No more pages")`
       both when `div#nav > a > div#nx` is missing and when the parent link's
       `href` is empty. Flutter `OglafRipper.getNextPage(...)` returns `null`
