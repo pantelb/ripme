@@ -2777,6 +2777,12 @@ Findings:
       `null`, or timestamp `0` for missing/malformed fields. This changes many
       malformed Instagram API/media-item states into skipped media or
       `1970-01-01_00-00-00_` prefixes instead of Java-compatible failures.
+- [ ] Java `InstagramRipper.downloadURL(...)` honors
+      `instagram.download_images_only=true` by logging `Skipped video url: ...`
+      and returning before scheduling `.mp4?` downloads; it does not send a
+      `DOWNLOAD_SKIP` status. Flutter checks the same key but emits
+      `RipStatus.downloadSkip`, changing UI/log/count semantics for skipped
+      Instagram videos.
 - [ ] Java `MangadexRipper.getURLsFromJSON(...)` strictly reads chapter JSON
       keys `hash`, `server`, and `page_array`, and manga JSON key `chapter` plus
       `lang_name` / numeric `chapter`; missing or malformed fields throw. During
