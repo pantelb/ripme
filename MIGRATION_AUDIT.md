@@ -1063,6 +1063,18 @@ Findings:
       breaks when a next page resolves to a previously processed location.
       Flutter `AbstractHTMLRipper` has no visited-location guard, so bad or
       cyclic pagination can loop until stopped or until a fetch fails.
+- [ ] Java `AbstractHTMLRipper` exposes one instance-level
+      `cachedFirstPage` through `getCachedFirstPage()`, so a first page fetched
+      while deriving the working-directory title is reused by the later rip
+      loop. Current Java concrete title/queue paths using that cache include
+      `BatoRipper`, `ChanRipper`, `CheveretoRipper`, `EightmusesRipper`,
+      `EromeRipper`, `FlickrRipper`, `GirlsOfDesireRipper`,
+      `HentaifoxRipper`, `ImagebamRipper`, `ImagefapRipper`, `NfsfwRipper`,
+      `ViewcomicRipper`, `XhamsterRipper`, and `ZizkiRipper`. Flutter has no
+      shared `AbstractHTMLRipper` first-page cache; several ports fetch the
+      album-title page and the rip page independently, which can change request
+      counts, cookie/status side effects, and behavior when the two responses
+      differ.
 - [ ] Java shared HTML/JSON ripper layers throw `IOException("No images found
       at ...")` when URL extraction returns no media and the ripper is not
       doing ASAP/custom downloading. Flutter `AbstractHTMLRipper` currently
