@@ -2410,6 +2410,13 @@ Findings:
       cases. Flutter substitutes empty strings when those elements are absent,
       producing sanitized empty-prefix filenames instead of Java's immediate
       null-dereference failure.
+- [ ] Java `WordpressComicRipper.getURLsFromPage(...)` handles
+      `freeadultcomix.com` only through the jsoup selector
+      `div.post-texto > p > noscript > img[class*=aligncenter]`, adding each
+      matched element's `src` directly. Flutter runs the same outer selector
+      and then additionally parses every matching `noscript` element's text as
+      HTML to find nested `img[class*=aligncenter]` entries, which can discover
+      or duplicate image URLs that Java's current source would not schedule.
 - [ ] Java `WordpressComicRipper.downloadURL(...)` falls through after the
       page-title-prefix branch: for `buttsmithy.com`,
       `www.totempole666.com`, and `themonsterunderthebed.net`, it calls
