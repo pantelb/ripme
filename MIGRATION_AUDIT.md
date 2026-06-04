@@ -2814,6 +2814,13 @@ Findings:
       `RipStatus.downloadWarn` for the same failure, so broken Instagram video
       fallback pages become user-visible warnings/counts that Java did not
       emit.
+- [ ] Java `InstagramRipper.downloadItemDetailsJson(...)` records failed
+      shortcodes in `failedItems` and `getNextPage(...)` later writes those
+      entries with `logger.error` only when pagination reaches its natural end.
+      Flutter `_downloadItemDetailsJson(...)` records the same shortcodes but
+      `rip()` emits every entry as `RipStatus.downloadWarn`, so missing
+      Instagram item-detail pages become user-visible warning statuses instead
+      of Java's logger-only failures.
 - [ ] Java `InstagramRipper.downloadURL(...)` honors
       `instagram.download_images_only=true` by logging `Skipped video url: ...`
       and returning before scheduling `.mp4?` downloads; it does not send a
