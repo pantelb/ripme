@@ -2964,6 +2964,13 @@ Findings:
       lookup, so config changes after first Java class load are visible in
       Flutter but not Java, and repeated Java `canRip(...)` calls mutate a
       shared static list while Dart rebuilds a fresh one.
+- [ ] Java `ChanSite` constructors throw `IllegalArgumentException("Domains")`
+      for empty domain values and `IllegalArgumentException("CdnDomains")` for
+      empty CDN values, so malformed `chans.chan_sites` entries such as `[]`,
+      `site[]`, or an empty comma segment fail during Java config parsing.
+      Flutter `ChanSite` and `ChanRipper.getChansFromConfig(...)` accept empty
+      strings/lists and can add blank domains or CDN needles, changing malformed
+      config handling and `canRip(...)` matching.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
