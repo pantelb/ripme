@@ -2896,13 +2896,15 @@ Findings:
       during setup and `albumTitleFromPage(...)` treats missing or empty title
       text as `null`, falling back to `hentaifox_GID`; cached-response and
       empty-title working-directory parity were added with Dart tests.
-- [ ] Java `HypnohubRipper.ripPost(...)` uses
+- [x] Java `HypnohubRipper.ripPost(...)` uses
       `doc.selectFirst("a:matchesOwn(^Original image$")`, a malformed jsoup
       selector, for the Original-image fallback in both string and document
       variants. Flutter `HypnohubRipper.imageUrlFromPostDocument(...)` instead
       scans `a[href]` text and successfully supports the Original-image fallback,
       so post pages without `img#image` no longer follow Java's selector-failure
-      behavior.
+      behavior. Flutter now evaluates the same malformed selector after
+      `img#image` misses, with Dart tests covering Original-image and
+      `og:image` documents.
 - [ ] Java `HypnohubRipper.ripPost(...)` logs
       `No image found on post page...` / `No image found in document...` when
       all image selectors fail, and pool rips log `Failed to rip post...` for

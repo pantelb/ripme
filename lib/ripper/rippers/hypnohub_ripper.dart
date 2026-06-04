@@ -130,9 +130,9 @@ class HypnohubRipper extends AbstractHTMLRipper {
       return normalizeHypnohubUrl(imageSource);
     }
 
-    for (final link in page.querySelectorAll('a[href]')) {
-      if (link.text.trim() != 'Original image') continue;
-      final href = link.attributes['href'] ?? '';
+    final originalLink = page.querySelector('a:matchesOwn(^Original image\$');
+    if (originalLink != null) {
+      final href = originalLink.attributes['href'] ?? '';
       if (href.isNotEmpty) return normalizeHypnohubUrl(href);
     }
 

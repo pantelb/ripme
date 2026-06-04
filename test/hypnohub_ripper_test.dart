@@ -30,8 +30,7 @@ void main() {
     );
   });
 
-  test('extracts post image using Java fallback order and URL normalization',
-      () {
+  test('extracts post img#image using Java URL normalization', () {
     expect(
       HypnohubRipper.imageUrlFromPostDocument(
         html.parse('<img id="image" src="//cdn.hypnohub.net/sample.jpg">'),
@@ -44,21 +43,28 @@ void main() {
       ),
       'https://hypnohub.net/data/sample.jpg',
     );
+  });
+
+  test('keeps Java malformed Original-image selector behavior', () {
     expect(
-      HypnohubRipper.imageUrlFromPostDocument(
+      () => HypnohubRipper.imageUrlFromPostDocument(
         html.parse('<a href="/data/original.png">Original image</a>'),
       ),
-      'https://hypnohub.net/data/original.png',
+      throwsA(isA<FormatException>()),
     );
     expect(
-      HypnohubRipper.imageUrlFromPostDocument(
+      () => HypnohubRipper.imageUrlFromPostDocument(
         html.parse(
-            '<meta property="og:image" content="https://cdn.example/post.webp">'),
+          '<meta property="og:image" content="https://cdn.example/post.webp">',
+        ),
       ),
-      'https://cdn.example/post.webp',
+      throwsA(isA<FormatException>()),
     );
-    expect(HypnohubRipper.imageUrlFromPostDocument(html.parse('<html></html>')),
-        isNull);
+    expect(
+      () =>
+          HypnohubRipper.imageUrlFromPostDocument(html.parse('<html></html>')),
+      throwsA(isA<FormatException>()),
+    );
   });
 
   test('expands pool thumbnails by fetching each post like Java', () async {
