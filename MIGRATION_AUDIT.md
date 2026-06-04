@@ -1364,6 +1364,16 @@ Findings:
 - [ ] Java completion can run a user finish command when
       `enable.finish.command=true`, substituting `%url%` and `%path%`. Flutter
       has no verified equivalent.
+- [ ] Java finish-command execution is also exact enough to require dedicated
+      parity tests: `MainWindow` reads `finish.command` with default `ls`,
+      applies `String.replaceAll("%url%", url)` and
+      `String.replaceAll("%path%", absolutePath)`, splits the resulting command
+      only on literal spaces with `cmdStr.split(" ")`, starts it with
+      `Runtime.getRuntime().exec(String[])`, logs stdout line by line, prints
+      stderr lines to `System.out`, and catches only `IOException`. Flutter has
+      no corresponding execution path, and any future implementation using a
+      shell, quote-aware parser, different placeholder semantics, or different
+      stdout/stderr handling would not match Java.
 - [ ] Java save-directory label opens the working directory on click; the save
       directory chooser uses directory-only mode and stores `rips.directory`.
       Flutter save-directory interactions need parity tests.
