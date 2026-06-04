@@ -2447,6 +2447,13 @@ Findings:
       scans `a[href]` text and successfully supports the Original-image fallback,
       so post pages without `img#image` no longer follow Java's selector-failure
       behavior.
+- [ ] Java `HypnohubRipper.ripPost(...)` logs
+      `No image found on post page...` / `No image found in document...` when
+      all image selectors fail, and pool rips log `Failed to rip post...` for
+      per-post `IOException`s before continuing. Flutter returns `null` or
+      catches the fetch failure with a comment-only silent skip, so those
+      Hypnohub missing-image and per-post failure diagnostics disappear from the
+      Java-compatible log/status surface.
 - [ ] Java `MultpornRipper.getGID(...)` may rewrite the instance `url` to the
       canonical `/node/ID/...` simple-mode URL, and `downloadURL(...)` passes
       that `this.url.toExternalForm()` as the download referrer via
