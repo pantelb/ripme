@@ -935,6 +935,15 @@ Findings:
 - [ ] Java `Http` retry loop attempts exactly the configured count. Flutter's
       `_getResponse` currently loops `attempt <= retries`, which is one extra
       attempt for the same setting.
+- [ ] Java CLI `-4` sets `errors.skip404`, and `DownloadFileThread` checks that
+      same typo key before returning immediately on a 404; otherwise it keeps
+      retrying through the Java download loop. Flutter checks
+      `error.skip404` in `_getResponse(...)`; when true it returns the 404
+      response early, but `Http.get(...)`, `Http.getJSON(...)`, and
+      `Http.downloadFile(...)` still throw because the response status is not
+      200. Therefore the Dart flag changes retry timing rather than producing a
+      Java-compatible skip/error path, and the `error.skip404` versus
+      `errors.skip404` alias is not just a defaults mismatch.
 - [ ] Java `Http.response()` does not inspect `Retry-After` on 429 or 503; it
       applies the configured `download.retry.sleep` delay between retries or
       retries immediately when that value is zero. Flutter `_getResponse(...)`
