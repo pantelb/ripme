@@ -2793,6 +2793,12 @@ Findings:
       `null`, or timestamp `0` for missing/malformed fields. This changes many
       malformed Instagram API/media-item states into skipped media or
       `1970-01-01_00-00-00_` prefixes instead of Java-compatible failures.
+- [ ] Java `InstagramRipper.getVideoUrlFromPage(...)` catches per-shortcode
+      page-fetch failures by logging `logger.warn("Unable to get page ...")`
+      and returning an empty string. Flutter `_videoUrlFromPage(...)` sends
+      `RipStatus.downloadWarn` for the same failure, so broken Instagram video
+      fallback pages become user-visible warnings/counts that Java did not
+      emit.
 - [ ] Java `InstagramRipper.downloadURL(...)` honors
       `instagram.download_images_only=true` by logging `Skipped video url: ...`
       and returning before scheduling `.mp4?` downloads; it does not send a
