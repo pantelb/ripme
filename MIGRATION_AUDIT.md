@@ -3727,10 +3727,14 @@ Findings:
 Java user-facing source read:
 
 - `README.md`
+- `CONTRIBUTING.md`
+- `SECURITY.md`
 
 Flutter files checked:
 
 - `README.md`
+- `CONTRIBUTING.md`
+- `SECURITY.md`
 - `MIGRATION_AUDIT.md`
 
 Findings:
@@ -3752,6 +3756,17 @@ Findings:
 - [ ] Java README lists known broken/flaky sites in prose, such as Twitter/X and
       DeviantArt. Flutter catalog/docs must keep those caveats instead of
       presenting every port as fully operational without current evidence.
+- [ ] Java `CONTRIBUTING.md` is carried forward unchanged and still tells
+      contributors to base work on `master`, verify with `gradlew test`, and
+      use Java ripper-test examples such as
+      `src/test/java/com/rarchives/ripme/tst/ripper/rippers/ImgurRipperTest.java`.
+      Flutter needs contributor instructions for branch `Flutter`, Dart/Flutter
+      tests, generated platform code, and migration audit rules.
+- [ ] Java `SECURITY.md` is also carried forward unchanged and still lists
+      supported versions as `2.1.x`, `1.7.x`, and `< 1.7`, with vulnerability
+      reporting tied to the Java-era project. Flutter release/version/security
+      support policy needs a migration-specific update before user-facing docs
+      can be considered parity-complete.
 
 ### L. Java Test Metadata And Disabled/Flaky Coverage
 
