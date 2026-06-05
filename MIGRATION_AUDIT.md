@@ -5178,3 +5178,50 @@ Still open:
 - [ ] Bucket strict parser candidates by class and record one of: existing audit
       row covers it, Dart has Java-compatible strictness, or new malformed-input
       parity gap row needed.
+
+Continuation: 2026-06-05, parser strictness bucket A/B
+
+HTML/pagination-heavy classes dispositioned:
+
+- `BooruRipper`: existing section I rows cover strict `<posts>` dereference,
+      integer parsing, broad `canRip(...)`, and empty `file_url` behavior.
+- `CfakeRipper`: existing section I rows cover strict next-page exception
+      variants, inherited `canRip(...)`, and malformed/empty thumbnail `src`.
+- `FreeComicOnlineRipper`: existing section I rows cover inherited
+      `canRip(...)` and strict second pagination-link access.
+- `WordpressComicRipper`: existing section I rows cover strict next-page,
+      theme-specific dereferences, malformed comic image/title handling, and
+      download filename fallthrough.
+- `EightmusesRipper`: existing section I rows cover subalbum recursion,
+      subalbum warning/status behavior, ASAP scheduling, inherited
+      `canRip(...)`, strict tile/image dereferences, and title fallback drift.
+- `FuraffinityRipper`: existing section I rows cover next-page exceptions,
+      inherited `canRip(...)`, post/image fetch behavior, cookie parsing, and
+      disabled-but-present description helpers.
+- `PicstatioRipper`: existing section I rows cover inherited `canRip(...)`,
+      parent-href assumptions, full-size download-page lookup, and next-page
+      behavior.
+- `MyhentaicomicsRipper`: existing section I rows cover queue URL construction
+      and next-page dereference/exception behavior.
+- `Rule34Ripper`: existing section I rows cover API no-more-pages behavior and
+      empty `file_url` handling.
+- `DynastyscansRipper`: existing section I rows cover strict next-page
+      exception behavior and strict pages-JSON parsing.
+
+JSON-heavy classes dispositioned:
+
+- `ArtStationRipper`, `CoomerPartyRipper`, `DanbooruRipper`, `DerpiRipper`,
+      `FivehundredpxRipper`, `FlickrRipper`, `MangadexRipper`, `NsfwXxxRipper`,
+      `PhotobucketRipper`, `RedditRipper`, `RedgifsRipper`, `VkRipper`,
+      `LusciousRipper`, and `FuskatorRipper` were spot-checked against Java
+      strict JSON access and Dart null/empty-list guards.
+- No new distinct row was added from this bucket. The apparent
+      `LusciousRipper` GraphQL strictness candidate is already covered by the
+      existing Luscious row that mentions Java's strict
+      `data.picture.list.items` / `info.total_pages` walk and Flutter's empty
+      malformed-response completion path.
+
+Still open:
+
+- [ ] Continue parser strictness bucketing for the remaining rippers not in
+      bucket A/B, especially mixed HTML/API rippers and video helper classes.
