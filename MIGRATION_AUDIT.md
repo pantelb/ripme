@@ -4857,3 +4857,53 @@ Open work:
       scripts/tests before any final parity claim.
 - [ ] Keep the audit status open; this pass increases confidence but does not
       prove that every parity gap has been found.
+
+Continuation: 2026-06-05
+
+Additional sources re-read:
+
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/Jpg3Ripper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/ImgboxRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/MyhentaigalleryRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/PorncomixRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/SmuttyRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/TeenplanetRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/FreeComicOnlineRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/HentaiimageRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/HentaiNexusRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/HypnohubRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/MangadexRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/NatalieMuRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/video/CliphunterRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/video/TwitchVideoRipper.java`
+- Matching Flutter files under `lib/ripper/rippers/`
+- Matching focused Dart tests under `test/`
+
+Additional confirmed existing findings, no new distinct row added:
+
+- `Jpg3Ripper.getNextPage(...)` nullable/exception drift and constructor
+      `sanitizeURL(...)` behavior are already recorded in section I and tested
+      in the focused Dart file.
+- `ImgboxRipper.getURLsFromPage(...)` malformed empty/missing `src` behavior is
+      already recorded in section I.
+- `TeenplanetRipper` direct `System.out` image-count diagnostic is already
+      recorded in section G's non-localized diagnostic string inventory.
+- `CliphunterRipper` decrypted-video download referrer drift is already
+      recorded in section E.
+- `FreeComicOnlineRipper.getNextPage(...)` strict second-link access and
+      nullable Flutter drift are already recorded in section I.
+- `HentaiimageRipper.getNextPage(...)` `IOException("No more pages")` contract
+      versus Flutter `null` is already recorded in section I.
+- `HentaiNexusRipper.getURLsFromJSON(...)` strict JSON key/object access is
+      already recorded in section I.
+- `MangadexRipper.getURLsFromJSON(...)` strict chapter/manga JSON behavior and
+      one-second per-download delay are already recorded in section I and
+      focused Dart tests.
+- `NatalieMuRipper.getURLsFromPage(...)` `isThisATest()` early-break behavior
+      is already recorded in section I.
+
+Still open:
+
+- [ ] Continue the same low-mention sweep with the remaining count-4 and count-5
+      rippers, then repeat from a different mechanical angle before claiming
+      the discovery pass is exhausted.
