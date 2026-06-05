@@ -3067,14 +3067,18 @@ Findings:
       with Java-compatible messages for empty domain/list constructor cases and
       empty config domain entries, while preserving the current-source
       `site[] -> [""]` CDN behavior with Dart coverage.
-- [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
+- [x] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter
       returns `null` when `page` is absent/non-integer or when `items` is
       absent/empty, and `entriesFromJson(...)` returns an empty list when the
       first page has no `items`. This changes malformed JSON and no-next-page
       behavior into nullable completion instead of Java's exception contracts.
-- [ ] Java `NsfwXxxRipper.getURLsFromJSON(...)` maps every array element with
+      Flutter now requires an integer `page`, requires next-page `items` to be
+      a list, throws a dedicated `No more pages` exception for empty next-page
+      items, and keeps that no-more-pages exception as a normal pagination stop
+      in `parseJSON(...)`, with fake-API Dart coverage.
+- [x] Java `NsfwXxxRipper.getURLsFromJSON(...)` maps every array element with
       `items.getJSONObject(i)`, requires `author` and `title` via
       `getString(...)`, and when `src` is absent requires the video `html`
       field to contain a `src="..."` match before `matches.group(1)` is read.
@@ -3082,7 +3086,10 @@ Findings:
       `author`/`title` to the literal string `"null"` through `.toString()`,
       and then stores those titles in `descriptions` for filename prefixes.
       Malformed item handling and title-to-download alignment are therefore not
-      proven Java-compatible.
+      proven Java-compatible. Flutter now requires `items` to be present as a
+      list, requires every item to be an object, requires `author` and `title`,
+      and requires `html` plus a `src="..."` match when `src` is absent, with
+      Dart coverage for the Java-compatible failure paths.
 - [ ] Mechanical Java strict-JSON access scan found additional rippers whose
       Java source uses `JSONObject.get*` / `JSONArray.get*` contracts that
       throw on missing or malformed API data, while the current Flutter tree has

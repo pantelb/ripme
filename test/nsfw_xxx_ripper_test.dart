@@ -4,6 +4,10 @@ import 'package:ripme/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  tearDown(() {
+    NsfwXxxRipper.getJsonForTesting = null;
+  });
+
   test('NsfwXxxRipper sanitizes Java user URL forms', () {
     expect(
       NsfwXxxRipper.sanitizeUrl(
@@ -68,6 +72,89 @@ void main() {
       'https://cdn.nsfw.xxx/video.mp4?x=1&y=2',
     ]);
     expect(entries.map((entry) => entry.title), ['Photo Title', 'Video Title']);
+  });
+
+  test('NsfwXxxRipper keeps Java strict item parsing failures', () {
+    expect(
+      () => NsfwXxxRipper.entriesFromJson({'page': 1}),
+      throwsFormatException,
+    );
+    expect(
+      () => NsfwXxxRipper.entriesFromJson({
+        'page': 1,
+        'items': ['not an object'],
+      }),
+      throwsFormatException,
+    );
+    expect(
+      () => NsfwXxxRipper.entriesFromJson({
+        'page': 1,
+        'items': [
+          {
+            'src': 'https://cdn.nsfw.xxx/photo.jpg',
+            'title': 'No Author',
+          },
+        ],
+      }),
+      throwsFormatException,
+    );
+    expect(
+      () => NsfwXxxRipper.entriesFromJson({
+        'page': 1,
+        'items': [
+          {
+            'html': '<video></video>',
+            'author': 'alice',
+            'title': 'No Video Src',
+          },
+        ],
+      }),
+      throwsFormatException,
+    );
+  });
+
+  test('NsfwXxxRipper getNextPage follows Java page and items contracts',
+      () async {
+    final ripper = NsfwXxxRipper(Uri.parse('https://nsfw.xxx/user/smay3991'));
+    final requests = <Uri>[];
+    NsfwXxxRipper.getJsonForTesting = (url) async {
+      requests.add(url);
+      if (url.path == '/slide-page/2') {
+        return {
+          'page': 2,
+          'items': [
+            {
+              'src': 'https://cdn.nsfw.xxx/two.jpg',
+              'author': 'alice',
+              'title': 'Two',
+            },
+          ],
+        };
+      }
+      if (url.path == '/slide-page/3') {
+        return {
+          'page': 3,
+          'items': [],
+        };
+      }
+      fail('Unexpected nsfw.xxx request: $url');
+    };
+
+    final next = await ripper.getNextPage({'page': 1});
+    expect(next['page'], 2);
+    expect(
+      requests.single.toString(),
+      'https://nsfw.xxx/slide-page/2?nsfw%5B%5D=0&types%5B%5D=image&types%5B%5D=video&types%5B%5D=gallery&slider=1&jsload=1&user=smay3991',
+    );
+
+    await expectLater(
+      ripper.getNextPage({}),
+      throwsFormatException,
+    );
+    await expectLater(
+      ripper.getNextPage({'page': 2}),
+      throwsA(isA<NsfwXxxNoMorePagesException>()),
+    );
   });
 
   test('NsfwXxxRipper stores descriptions in JSON extraction order', () {

@@ -12,6 +12,7 @@ class NsfwXxxRipper extends AbstractJSONRipper {
   NsfwXxxRipper(Uri url) : super(sanitizeUrl(url));
 
   static const String domain = 'nsfw.xxx';
+  static Future<dynamic> Function(Uri url)? getJsonForTesting;
 
   final List<String> descriptions = <String>[];
 
@@ -59,9 +60,9 @@ class NsfwXxxRipper extends AbstractJSONRipper {
   Future<void> parseJSON(Uri url) async {
     descriptions.clear();
     var index = 0;
-    Map<String, dynamic>? json = await getFirstPage();
+    var json = await getFirstPage();
 
-    while (json != null && !isStopped) {
+    while (!isStopped) {
       final urls = getURLsFromJSON(json);
       if (urls.isEmpty) {
         throw StateError('No images found at $url');
@@ -87,26 +88,37 @@ class NsfwXxxRipper extends AbstractJSONRipper {
       await downloadFiles(downloads);
 
       if (isStopped) break;
-      json = await getNextPage(json);
+      try {
+        json = await getNextPage(json);
+      } on NsfwXxxNoMorePagesException {
+        break;
+      }
     }
   }
 
   Future<Map<String, dynamic>> getFirstPage() async {
-    final json = await Http.getJSON(await getPage(1));
+    final json = await _getJson(await getPage(1));
     if (json is Map<String, dynamic>) return json;
     throw const FormatException('Expected nsfw.xxx JSON object');
   }
 
-  Future<Map<String, dynamic>?> getNextPage(Map<String, dynamic> doc) async {
-    final page = doc['page'];
-    if (page is! int) return null;
+  Future<Map<String, dynamic>> getNextPage(Map<String, dynamic> doc) async {
+    if (!doc.containsKey('page') || doc['page'] is! int) {
+      throw const FormatException('Expected nsfw.xxx page integer');
+    }
+    final page = doc['page'] as int;
 
-    final nextJson = await Http.getJSON(await getPage(page + 1));
+    final nextJson = await _getJson(await getPage(page + 1));
     if (nextJson is! Map<String, dynamic>) {
       throw const FormatException('Expected nsfw.xxx JSON object');
     }
     final items = nextJson['items'];
-    if (items is! List || items.isEmpty) return null;
+    if (items is! List) {
+      throw const FormatException('Expected nsfw.xxx items array');
+    }
+    if (items.isEmpty) {
+      throw const NsfwXxxNoMorePagesException();
+    }
     return nextJson;
   }
 
@@ -118,23 +130,43 @@ class NsfwXxxRipper extends AbstractJSONRipper {
 
   static List<NsfwXxxEntry> entriesFromJson(Map<String, dynamic> json) {
     final items = json['items'];
-    if (items is! List) return const [];
+    if (items is! List) {
+      throw const FormatException('Expected nsfw.xxx items array');
+    }
 
     return [
-      for (final item in items)
-        if (item is Map<String, dynamic>) entryFromItem(item),
+      for (final item in items) entryFromItem(_itemAsMap(item)),
     ];
   }
 
   static NsfwXxxEntry entryFromItem(Map<String, dynamic> item) {
+    if (!item.containsKey('author')) {
+      throw const FormatException('Expected nsfw.xxx item author');
+    }
+    if (!item.containsKey('title')) {
+      throw const FormatException('Expected nsfw.xxx item title');
+    }
     final src = item.containsKey('src')
         ? item['src'].toString()
-        : videoSrcFromHtml(item['html'].toString());
+        : videoSrcFromHtml(_requiredString(item, 'html'));
     return NsfwXxxEntry(
       srcUrl: src,
       author: item['author'].toString(),
       title: item['title'].toString(),
     );
+  }
+
+  static Map<String, dynamic> _itemAsMap(Object? item) {
+    if (item is Map<String, dynamic>) return item;
+    if (item is Map) return Map<String, dynamic>.from(item);
+    throw const FormatException('Expected nsfw.xxx item object');
+  }
+
+  static String _requiredString(Map<String, dynamic> item, String key) {
+    if (!item.containsKey(key)) {
+      throw FormatException('Expected nsfw.xxx item $key');
+    }
+    return item[key].toString();
   }
 
   static String videoSrcFromHtml(String htmlText) {
@@ -155,6 +187,19 @@ class NsfwXxxRipper extends AbstractJSONRipper {
         uri.pathSegments.isNotEmpty ? uri.pathSegments.last : 'file';
     return Utils.sanitizeSaveAs('${prefixForIndex(index)}${title}_$fileName');
   }
+
+  static Future<dynamic> _getJson(Uri url) async {
+    final fetcher = getJsonForTesting;
+    if (fetcher != null) return fetcher(url);
+    return Http.getJSON(url);
+  }
+}
+
+class NsfwXxxNoMorePagesException implements Exception {
+  const NsfwXxxNoMorePagesException();
+
+  @override
+  String toString() => 'No more pages';
 }
 
 class NsfwXxxEntry {
