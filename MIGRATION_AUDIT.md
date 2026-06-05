@@ -5146,3 +5146,35 @@ Still open:
 - [ ] Expand or cross-reference the inherited-`canRip(...)` inventory so every
       one of the 81 classes is explicitly dispositioned as already row-covered,
       Dart-compatible despite the override, or requiring a new parity gap row.
+
+Continuation: 2026-06-05, parser strictness/error-surface scan
+
+Mechanical scan started:
+
+- Java searched for jsoup/JSON strict access patterns:
+      `.attr("...")`, `getString(...)`, `getInt(...)`, `getLong(...)`,
+      `getDouble(...)`, `getJSONArray(...)`, and `getJSONObject(...)` in
+      `origin/main:src/main/java/com/rarchives/ripme/ripper/` and
+      `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/`.
+- Flutter searched for nullable DOM/JSON guards and masking patterns:
+      `attributes[...]`, `querySelector(...)`, `querySelectorAll(...)`,
+      `json[...]`, `is! Map`, `is! List`, `tryParse`, `??`, `continue`,
+      `return null`, and `return const []` under `lib/ripper/` and `lib/utils/`.
+
+Immediate result:
+
+- The scan still produces a broad candidate surface rather than an exhaustion
+      result. Top candidates overlap heavily with existing section I rows:
+      `BooruRipper`, `CfakeRipper`, `DynastyscansRipper`, `EightmusesRipper`,
+      `FuraffinityRipper`, `FreeComicOnlineRipper`, `MangadexRipper`,
+      `MyhentaicomicsRipper`, `PicstatioRipper`, `Rule34Ripper`,
+      `WordpressComicRipper`, and related JSON rippers.
+- Because the command output is intentionally capped and candidate-heavy, this
+      scan is not complete and must continue as smaller class buckets with each
+      strict Java access point dispositioned against Dart behavior.
+
+Still open:
+
+- [ ] Bucket strict parser candidates by class and record one of: existing audit
+      row covers it, Dart has Java-compatible strictness, or new malformed-input
+      parity gap row needed.
