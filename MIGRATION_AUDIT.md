@@ -4969,3 +4969,83 @@ Still open:
 - [ ] Continue the low-mention sweep with the remaining count-6 and count-7
       rippers, then re-run a cross-cutting scan for hooks, config keys,
       diagnostics, and malformed-input behavior before any exhaustion claim.
+
+Continuation: 2026-06-05, count-6/count-7 and cross-cutting sweep
+
+Additional sources re-read or mechanically compared:
+
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/ArtstnRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/BooruRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/DerpiRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/FreeComicOnlineRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/HentaiimageRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/HentaiNexusRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/JagodibujaRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/ListalRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/MangadexRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/MyhentaicomicsRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/NatalieMuRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/OglafRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/PahealRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/PicstatioRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/PorncomixinfoRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/ReadcomicRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/Rule34Ripper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/RulePornRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/StaRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/VscoRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/CfakeRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/DynastyscansRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/ErofusRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/Hentai2readRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/HentaifoxRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/LusciousRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/NhentaiRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/TheyiffgalleryRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/AbstractSingleFileRipper.java`
+- `origin/main:src/main/resources/rip.properties`
+- Matching Flutter files under `lib/ripper/rippers/`, `lib/ripper/`,
+      `lib/utils/`, `lib/config_defaults.dart`, `lib/ripper/ripper_factory.dart`,
+      and `lib/ripper/ripper_migration_catalog.dart`
+- Matching focused Dart tests under `test/`
+
+Additional confirmed existing findings, no new distinct row added:
+
+- `BooruRipper` strict `<posts>` / `offset` / `count` parsing and empty
+      `file_url` behavior are already recorded in section I.
+- `FreeComicOnlineRipper`, `HentaiimageRipper`, `MyhentaicomicsRipper`,
+      `OglafRipper`, `PicstatioRipper`, `PorncomixinfoRipper`, `Rule34Ripper`,
+      `CfakeRipper`, `DynastyscansRipper`, `Hentai2readRipper`, and
+      `TheyiffgalleryRipper` strict Java pagination exception behavior is
+      already recorded in the section I pagination inventory.
+- `HentaiNexusRipper` and `MangadexRipper` strict JSON field access are already
+      recorded in section I.
+- `JagodibujaRipper`, `ListalRipper`, `NatalieMuRipper`, `PahealRipper`,
+      `StaRipper`, `VscoRipper`, `ErofusRipper`, `HentaifoxRipper`,
+      `LusciousRipper`, and `NhentaiRipper` each already have source-backed
+      class-specific rows for the observed drift points.
+- `RulePornRipper` is covered by the shared `AbstractSingleFileRipper`
+      byte-progress/status row plus the video/single-file forced-prefix
+      inventory.
+- Java `rip.properties` / `Utils.getConfig*` keys absent from Flutter or mapped
+      differently are already covered by the config inventory: descriptions,
+      finish command, downloaded history location, warning-before-delete,
+      proxy key model, language, log/window persistence, rips directory,
+      update/security toggles, SSL verification, and the `errors.skip404` typo.
+- Java ripper catalog coverage is mechanically complete at this checkpoint:
+      116 Java ripper classes, 116 Dart ripper files, and every Java class name
+      appears in the Flutter factory/catalog text. The remaining simple
+      snake-case filename differences (`EHentaiRipper`, `RulePornRipper`, etc.)
+      are naming aliases, not missing ports.
+- Focused Dart test coverage is mechanically complete at the name level: every
+      Java ripper has either an obvious focused Dart test file or class-name
+      coverage in the test tree. This does not prove behavior parity and does
+      not close any existing behavioral rows.
+
+Still open:
+
+- [ ] Continue audit-discovery from a different mechanical angle: Java test
+      method inventory versus Dart assertion coverage, inherited superclass
+      override matrix, parser strictness/error-surface scan, and UI/CLI/runtime
+      feature inventory. Do not mark audit mode complete until these independent
+      scans stop producing candidates.
