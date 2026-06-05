@@ -280,6 +280,36 @@ void main() {
         'abc123-Imgur Gifv-example.mp4');
   });
 
+  test('expands Java RipUtils direct passthrough URLs', () async {
+    expect(
+      (await RedditRipper.expandNonDirectUrl(
+        Uri.parse('https://v.redd.it/abc123/DASH_720.mp4'),
+      ))
+          .map((uri) => uri.toString()),
+      ['https://v.redd.it/abc123/DASH_720.mp4'],
+    );
+    expect(
+      (await RedditRipper.expandNonDirectUrl(
+        Uri.parse('https://i.reddituploads.com/uploadid?fit=max&amp;s=token'),
+      ))
+          .map((uri) => uri.toString()),
+      ['https://i.reddituploads.com/uploadid?fit=max&s=token'],
+    );
+    expect(
+      (await RedditRipper.expandNonDirectUrl(
+        Uri.parse('https://cdn.example.com/path/image.jpg?size=large'),
+      ))
+          .map((uri) => uri.toString()),
+      ['https://cdn.example.com/path/image.jpg?size=large'],
+    );
+    expect(
+      await RedditRipper.expandNonDirectUrl(
+        Uri.parse('https://cdn.example.info/path/image.webp'),
+      ),
+      isEmpty,
+    );
+  });
+
   test('extracts Imgur page media from Java meta tags', () {
     final videoPage = parse('''
       <html><head>

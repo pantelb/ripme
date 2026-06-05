@@ -112,11 +112,17 @@ void main() {
     final page = html.parse('''
       <html><body>
         <a href="https://i.imgur.com/example.gifv">gifv</a>
+        <a href="https://v.redd.it/abc123/DASH_720.mp4">v.redd.it</a>
+        <a href="https://i.reddituploads.com/uploadid?fit=max&amp;s=token">upload</a>
+        <a href="https://cdn.example.com/path/image.jpg?size=large">direct</a>
       </body></html>
     ''');
 
     expect(await ripper.getURLsFromPage(page), [
       'https://i.imgur.com/example.mp4',
+      'https://v.redd.it/abc123/DASH_720.mp4',
+      'https://i.reddituploads.com/uploadid?fit=max&s=token',
+      'https://cdn.example.com/path/image.jpg?size=large',
     ]);
   });
 

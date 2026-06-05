@@ -332,6 +332,24 @@ class RedditRipper extends AbstractJSONRipper {
   static Future<List<Uri>> expandNonDirectUrl(Uri uri) async {
     final host = uri.host.toLowerCase();
 
+    if (uri.toString().contains('v.redd.it')) {
+      return [uri];
+    }
+
+    if (RegExp(r'^https?://i\.reddituploads\.com/[a-zA-Z0-9]+\?.*')
+        .hasMatch(uri.toString())) {
+      return [
+        Uri.parse(uri.toString().replaceAll('&amp;', '&')),
+      ];
+    }
+
+    if (RegExp(
+      r'^(https?://[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,3}(/\S*)\.(jpg|jpeg|gif|png|mp4)(\?.*)?)$',
+      caseSensitive: false,
+    ).hasMatch(uri.toString())) {
+      return [uri];
+    }
+
     if (host.endsWith('i.imgur.com') &&
         uri.toString().toLowerCase().contains('.gifv')) {
       return [
