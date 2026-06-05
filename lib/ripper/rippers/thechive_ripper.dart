@@ -49,8 +49,7 @@ class ThechiveRipper extends AbstractHTMLRipper {
   String getDomain() => 'thechive.com';
 
   @override
-  bool canRip(Uri url) =>
-      isPostUrl(url) || _userPattern.hasMatch(url.toString());
+  bool canRip(Uri url) => url.host.toLowerCase().endsWith(getDomain());
 
   @override
   Future<String> getGID(Uri url) async {

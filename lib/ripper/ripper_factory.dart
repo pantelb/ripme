@@ -271,11 +271,7 @@ class RipperFactory {
     final twitchVideoRipper = TwitchVideoRipper(uri);
     if (twitchVideoRipper.canRip(uri)) return twitchVideoRipper;
     if (host.endsWith('2dgalleries.com')) return TwodgalleriesRipper(uri);
-    if (host.endsWith('twitter.com') ||
-        host == 'x.com' ||
-        host.endsWith('.x.com')) {
-      return TwitterRipper(uri);
-    }
+    if (host.endsWith('twitter.com')) return TwitterRipper(uri);
     if (host.endsWith('vidble.com')) return VidbleRipper(uri);
     final viddmeRipper = ViddmeRipper(uri);
     if (viddmeRipper.canRip(uri)) return viddmeRipper;

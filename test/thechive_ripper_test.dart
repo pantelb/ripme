@@ -17,7 +17,7 @@ void main() {
     expect(postRipper.canRip(postUrl), isTrue);
     expect(userRipper.canRip(userUrl), isTrue);
     expect(postRipper.canRip(Uri.parse('https://thechive.com/not/a/post')),
-        isFalse);
+        isTrue);
 
     expect(await postRipper.getGID(postUrl), 'beautiful-badasses');
     expect(await userRipper.getGID(userUrl), 'witcheva');
@@ -27,6 +27,10 @@ void main() {
     );
     await expectLater(
       postRipper.getGID(Uri.parse('https://example.com/2019/03/16/post/')),
+      throwsA(isA<FormatException>()),
+    );
+    await expectLater(
+      postRipper.getGID(Uri.parse('https://thechive.com/not/a/post')),
       throwsA(isA<FormatException>()),
     );
   });

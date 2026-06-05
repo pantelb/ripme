@@ -447,7 +447,8 @@ void main() {
     final twodgalleries = RipperFactory.getRipper(
       Uri.parse('http://www.2dgalleries.com/artist/regis-loisel-6477'),
     );
-    final twitter = RipperFactory.getRipper(Uri.parse('https://x.com/example'));
+    final twitter =
+        RipperFactory.getRipper(Uri.parse('https://twitter.com/example'));
     final vidble = RipperFactory.getRipper(
       Uri.parse('https://vidble.com/album/cGEFr8zi'),
     );
@@ -620,6 +621,10 @@ void main() {
   test('unknown URLs still return null', () {
     expect(
       RipperFactory.getRipper(Uri.parse('https://example.invalid/gallery')),
+      isNull,
+    );
+    expect(
+      RipperFactory.getRipper(Uri.parse('https://x.com/example')),
       isNull,
     );
   });

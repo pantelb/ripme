@@ -5363,13 +5363,13 @@ classes:
 
 New findings from this classification:
 
-- [ ] Java `ThechiveRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+- [x] Java `ThechiveRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
       host ending in `thechive.com` is accepted before `getGID(...)` separates
       post URLs from `i.thechive.com` user URLs. Flutter
       `ThechiveRipper.canRip(...)` applies the post/user regexes directly, so
       other `thechive.com` paths fail at `canRip(...)` instead of Java's later
       GID/error path.
-- [ ] Java `TwitterRipper` inherits `AbstractJSONRipper.canRip(...)`, so any
+- [x] Java `TwitterRipper` inherits `AbstractJSONRipper.canRip(...)`, so any
       host ending in `twitter.com` is accepted by the superclass host guard
       before `sanitizeURL(...)` recognizes only account/search URL shapes.
       Flutter `TwitterRipper.canRip(...)` delegates to `classifyUrl(...)`,

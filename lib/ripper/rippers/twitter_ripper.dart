@@ -44,7 +44,7 @@ class TwitterRipper extends AbstractJSONRipper {
   String getHost() => 'twitter';
 
   @override
-  bool canRip(Uri url) => classifyUrl(url) != null;
+  bool canRip(Uri url) => url.host.toLowerCase().endsWith('twitter.com');
 
   @override
   Future<String> getGID(Uri url) async {
@@ -166,10 +166,10 @@ class TwitterRipper extends AbstractJSONRipper {
   static TwitterUrlMatch? classifyUrl(Uri url) {
     final text = url.toString();
     var match = RegExp(
-            r'^https?://(m\.)?(twitter|x)\.com/search\?(.*)q=([a-zA-Z0-9%_-]+).*$')
+            r'^https?://(m\.)?twitter\.com/search\?(.*)q=([a-zA-Z0-9%_-]+).*$')
         .firstMatch(text);
     if (match != null) {
-      var search = match.group(4)!;
+      var search = match.group(3)!;
       if (search.startsWith('from%3A')) search = search.substring(7);
       if (search.contains('x')) search = search.replaceAll('x', '');
       return TwitterUrlMatch(
@@ -179,10 +179,10 @@ class TwitterRipper extends AbstractJSONRipper {
       );
     }
 
-    match = RegExp(r'^https?://(m\.)?(twitter|x)\.com/([a-zA-Z0-9_-]+).*$')
+    match = RegExp(r'^https?://(m\.)?twitter\.com/([a-zA-Z0-9_-]+).*$')
         .firstMatch(text);
     if (match != null) {
-      final account = match.group(3)!;
+      final account = match.group(2)!;
       if (account == 'search') return null;
       return TwitterUrlMatch(
         type: TwitterAlbumType.account,

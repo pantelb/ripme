@@ -78,13 +78,20 @@ void main() {
     expect(await tumblr.getGID(Uri.parse('https://example.tumblr.com/post/1')),
         'example.tumblr.com_post_1');
 
-    final twitter = TwitterRipper(Uri.parse('https://x.com/user/status/123'));
+    final twitter =
+        TwitterRipper(Uri.parse('https://twitter.com/user/status/123'));
     expect(twitter.canRip(Uri.parse('https://twitter.com/user/status/123')),
         isTrue);
-    expect(twitter.canRip(Uri.parse('https://x.com/user/status/123')), isTrue);
+    expect(twitter.canRip(Uri.parse('https://m.twitter.com/user/status/123')),
+        isTrue);
+    expect(twitter.canRip(Uri.parse('https://x.com/user/status/123')), isFalse);
     expect(twitter.getHost(), 'twitter');
-    expect(await twitter.getGID(Uri.parse('https://x.com/user/status/123')),
+    expect(
+        await twitter.getGID(Uri.parse('https://twitter.com/user/status/123')),
         'account_user');
+    expect(
+        TwitterRipper.classifyUrl(Uri.parse('https://x.com/user/status/123')),
+        isNull);
   });
 
   test('Imgur parser extracts i.imgur.com images and normalizes protocol',

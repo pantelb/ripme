@@ -9,8 +9,11 @@ void main() {
 
     expect(await ripper.getGID(Uri.parse('https://twitter.com/example')),
         'account_example');
-    expect(await ripper.getGID(Uri.parse('https://x.com/example/status/123')),
-        'account_example');
+    expect(ripper.canRip(Uri.parse('https://twitter.com/not-a-real-route')),
+        isTrue);
+    expect(ripper.canRip(Uri.parse('https://x.com/example')), isFalse);
+    expect(
+        TwitterRipper.classifyUrl(Uri.parse('https://x.com/example')), isNull);
 
     final search = TwitterRipper.classifyUrl(
         Uri.parse('https://twitter.com/search?q=from%3Aartist%20filter'))!;
@@ -26,14 +29,15 @@ void main() {
     });
     await Utils.init();
 
-    final account = TwitterRipper.classifyUrl(Uri.parse('https://x.com/user'))!;
+    final account =
+        TwitterRipper.classifyUrl(Uri.parse('https://twitter.com/user'))!;
     expect(
       TwitterRipper.getApiUrl(account, 123).toString(),
       'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=user&include_entities=true&exclude_replies=false&trim_user=true&count=50&tweet_mode=extended&max_id=123',
     );
 
-    final search =
-        TwitterRipper.classifyUrl(Uri.parse('https://x.com/search?q=abc'))!;
+    final search = TwitterRipper.classifyUrl(
+        Uri.parse('https://twitter.com/search?q=abc'))!;
     expect(
       TwitterRipper.getApiUrl(search, 0).toString(),
       'https://api.twitter.com/1.1/search/tweets.json?q=abc&include_entities=true&result_type=recent&count=100&tweet_mode=extended',
