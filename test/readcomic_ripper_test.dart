@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart' as html;
+import 'package:ripme/ripper/abstract_ripper.dart';
 import 'package:ripme/ripper/rippers/readcomic_ripper.dart';
 
 void main() {
@@ -47,6 +50,7 @@ void main() {
     final page = html.parse('''
       <div class="pinbin-copy">
         <a><img src="https://cdn.example.com/001.jpg"></a>
+        <a><img></a>
         <a><img src="https://cdn.example.com/002.jpg"></a>
       </div>
       <div class="separator"><a><img src="https://cdn.example.com/view.jpg"></a></div>
@@ -54,8 +58,40 @@ void main() {
 
     expect(ReadcomicRipper.imageUrlsFromDocument(page), [
       'https://cdn.example.com/001.jpg',
+      '',
       'https://cdn.example.com/002.jpg',
     ]);
+  });
+
+  test('ReadcomicRipper keeps missing src entries in download queue like Java',
+      () async {
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    addTearDown(server.close);
+    server.listen((request) async {
+      request.response.headers.contentType = ContentType.html;
+      request.response.write('''
+        <div class="pinbin-copy">
+          <a><img></a>
+          <a><img src="https://cdn.example.com/002.jpg"></a>
+        </div>
+      ''');
+      await request.response.close();
+    });
+
+    final ripper = _RecordingReadcomicRipper(
+      Uri.parse('http://127.0.0.1:${server.port}/comic/'),
+    );
+    final tempDir = await Directory.systemTemp.createTemp('readcomic-test-');
+    addTearDown(() => tempDir.delete(recursive: true));
+    ripper.workingDir = tempDir;
+
+    await ripper.rip();
+
+    expect(ripper.downloads.map((download) => download.url.toString()), [
+      '',
+      'https://cdn.example.com/002.jpg',
+    ]);
+    expect(ripper.downloads.first.saveAs.path, endsWith('001_file'));
   });
 
   test('ReadcomicRipper applies inherited Viewcomic title cleanup', () {
@@ -75,4 +111,15 @@ void main() {
       '004_page-001.jpg',
     );
   });
+}
+
+class _RecordingReadcomicRipper extends ReadcomicRipper {
+  _RecordingReadcomicRipper(super.url);
+
+  final downloads = <RipperDownload>[];
+
+  @override
+  Future<void> downloadFiles(Iterable<RipperDownload> downloads) async {
+    this.downloads.addAll(downloads);
+  }
 }

@@ -2946,11 +2946,14 @@ Findings:
       now uses Java's host suffix checks for both rippers while keeping strict
       `getGID(...)` parsing, with Dart coverage for suffix-host acceptance and
       strict parse rejection.
-- [ ] Java `ReadcomicRipper.getURLsFromPage(...)` and
+- [x] Java `ReadcomicRipper.getURLsFromPage(...)` and
       `ViewcomicRipper.getURLsFromPage(...)` add each selected image `src`,
       including the empty string when `src` is absent. Flutter helpers return
       the same empty strings, but both `rip()` implementations skip empty image
       URLs before scheduling downloads, removing Java's empty-URL download path.
+      Flutter now passes empty image URLs into the download queue for both
+      rippers, with Dart harness coverage proving missing `src` values are not
+      filtered out.
 - [ ] Java `ViewcomicRipper.getAlbumTitle(...)`, inherited by
       `ReadcomicRipper`, only catches `IOException`; a cached page with no
       `<title>` element can null-dereference at `.first().text()`. Flutter

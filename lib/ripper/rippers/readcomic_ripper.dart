@@ -61,7 +61,6 @@ class ReadcomicRipper extends AbstractHTMLRipper {
     var index = 0;
     for (final imageUrl in await getURLsFromPage(page)) {
       if (isStopped) break;
-      if (imageUrl.isEmpty) continue;
       index++;
       final imageUri = Uri.parse(imageUrl);
       downloads.add(
