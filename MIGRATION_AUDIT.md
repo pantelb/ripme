@@ -2954,11 +2954,13 @@ Findings:
       Flutter now passes empty image URLs into the download queue for both
       rippers, with Dart harness coverage proving missing `src` values are not
       filtered out.
-- [ ] Java `ViewcomicRipper.getAlbumTitle(...)`, inherited by
+- [x] Java `ViewcomicRipper.getAlbumTitle(...)`, inherited by
       `ReadcomicRipper`, only catches `IOException`; a cached page with no
       `<title>` element can null-dereference at `.first().text()`. Flutter
       title extraction treats a missing `<title>` as an empty string and returns
-      `view-comic_`/`read-comic_` rather than surfacing Java's failure.
+      `view-comic_`/`read-comic_` rather than surfacing Java's failure. Flutter
+      now only falls back on `IOException` and lets missing-title failures
+      surface, with Dart coverage for both rippers.
 - [ ] Java `ArtstnRipper.getFinalUrl(...)` follows `location` redirects by
       constructing `new URI(response.header("location")).toURL()`, so relative
       redirect locations fail URL conversion instead of being resolved against

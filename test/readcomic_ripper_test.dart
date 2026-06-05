@@ -102,6 +102,21 @@ void main() {
     expect(ReadcomicRipper.titleFromDocument(page), 'ExampleTitle');
   });
 
+  test('ReadcomicRipper surfaces missing title failures like Java', () async {
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    addTearDown(server.close);
+    server.listen((request) async {
+      request.response.headers.contentType = ContentType.html;
+      request.response.write('<main>No title here</main>');
+      await request.response.close();
+    });
+
+    final url = Uri.parse('http://127.0.0.1:${server.port}/comic/');
+    final ripper = ReadcomicRipper(url);
+
+    await expectLater(ripper.getAlbumTitle(url), throwsA(isA<TypeError>()));
+  });
+
   test('ReadcomicRipper uses Java-style ordered filenames', () {
     expect(
       ReadcomicRipper.fileNameForUrl(

@@ -40,7 +40,7 @@ class ViewcomicRipper extends AbstractHTMLRipper {
     try {
       final page = await Http.get(url);
       return '${getHost()}_${titleFromDocument(page)}';
-    } catch (_) {
+    } on IOException {
       return super.getAlbumTitle(url);
     }
   }
@@ -96,7 +96,7 @@ class ViewcomicRipper extends AbstractHTMLRipper {
   }
 
   static String titleFromDocument(Document page) {
-    final titleText = page.querySelector('title')?.text ?? '';
+    final titleText = page.querySelector('title')!.text;
     return titleText
         .replaceAll('Viewcomic reading comics online for free', '')
         .replaceAll('_', '')
