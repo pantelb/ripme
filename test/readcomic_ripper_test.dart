@@ -17,14 +17,30 @@ void main() {
     );
     expect(
       ripper.canRip(Uri.parse('https://www.read-comic.com/comic-name/')),
-      isFalse,
+      isTrue,
     );
     expect(
       ripper.canRip(Uri.parse('https://read-comic.com/comic0/')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://not-read-comic.com/anything')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://read-comic.com.evil/comic-name/')),
       isFalse,
     );
 
     expect(await ripper.getGID(url), 'comic-name');
+    await expectLater(
+      ripper.getGID(Uri.parse('https://www.read-comic.com/comic-name/')),
+      throwsFormatException,
+    );
+    await expectLater(
+      ripper.getGID(Uri.parse('https://read-comic.com/comic0/')),
+      throwsFormatException,
+    );
   });
 
   test('ReadcomicRipper extracts pinbin-copy image sources like Java', () {

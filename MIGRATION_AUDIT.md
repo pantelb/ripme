@@ -2938,11 +2938,14 @@ Findings:
       host suffix checks for both rippers, keeps strict `getGID(...)` parsing,
       and routes Tsumino suffix hosts through `RipperFactory`, with Dart coverage
       for those paths.
-- [ ] Java `ReadcomicRipper` and `ViewcomicRipper` inherit
+- [x] Java `ReadcomicRipper` and `ViewcomicRipper` inherit
       `AbstractHTMLRipper.canRip(...)`, so any host ending in `read-comic.com`
       or `view-comic.com` is accepted before their strict slug-only
       `getGID(...)` regexes run. Flutter `ReadcomicRipper.canRip(...)` and
-      `ViewcomicRipper.canRip(...)` use those strict regexes directly.
+      `ViewcomicRipper.canRip(...)` use those strict regexes directly. Flutter
+      now uses Java's host suffix checks for both rippers while keeping strict
+      `getGID(...)` parsing, with Dart coverage for suffix-host acceptance and
+      strict parse rejection.
 - [ ] Java `ReadcomicRipper.getURLsFromPage(...)` and
       `ViewcomicRipper.getURLsFromPage(...)` add each selected image `src`,
       including the empty string when `src` is absent. Flutter helpers return

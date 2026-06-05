@@ -17,9 +17,21 @@ void main() {
     );
     expect(
       ripper.canRip(Uri.parse('https://view-comic.com/batman/issue-1')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://not-view-comic.com/anything')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://view-comic.com.evil/batman')),
       isFalse,
     );
     expect(await ripper.getGID(url), 'batman-no-mans-land-vol-1');
+    await expectLater(
+      ripper.getGID(Uri.parse('https://view-comic.com/batman/issue-1')),
+      throwsFormatException,
+    );
   });
 
   test('ViewcomicRipper extracts separator image sources like Java', () {
