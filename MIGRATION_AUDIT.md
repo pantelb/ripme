@@ -5344,3 +5344,50 @@ Still open:
 - [ ] Do not mark audit-discovery complete without a final mechanical inventory
       proving that every Java ripper, helper route, superclass behavior, and
       Java test method has a recorded disposition.
+
+Continuation: 2026-06-05, inherited `canRip(...)` strict/custom classification
+
+Generated strict/custom Dart `canRip(...)` bucket from the 81 Java-inherited
+classes:
+
+- `CfakeRipper`, `EightmusesRipper`, `FapwizRipper`,
+      `FreeComicOnlineRipper`, `FuraffinityRipper`, `FuskatorRipper`,
+      `GirlsOfDesireRipper`, `Hentai2readRipper`, `HentaifoundryRipper`,
+      `HentaiNexusRipper`, `HitomiRipper`, `HqpornerRipper`,
+      `LusciousRipper`, `MastodonRipper`, `MrCongRipper`,
+      `NewgroundsRipper`, `NfsfwRipper`, `PhotobucketRipper`,
+      `PichunterRipper`, `PicstatioRipper`, `PorncomixinfoRipper`,
+      `PornpicsRipper`, `SankakuComplexRipper`, `ScrolllerRipper`,
+      `SinfestRipper`, `StaRipper`, `TapasticRipper`, `ThechiveRipper`,
+      `TheyiffgalleryRipper`, `TwitterRipper`, and `ZizkiRipper`.
+
+New findings from this classification:
+
+- [ ] Java `ThechiveRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
+      host ending in `thechive.com` is accepted before `getGID(...)` separates
+      post URLs from `i.thechive.com` user URLs. Flutter
+      `ThechiveRipper.canRip(...)` applies the post/user regexes directly, so
+      other `thechive.com` paths fail at `canRip(...)` instead of Java's later
+      GID/error path.
+- [ ] Java `TwitterRipper` inherits `AbstractJSONRipper.canRip(...)`, so any
+      host ending in `twitter.com` is accepted by the superclass host guard
+      before `sanitizeURL(...)` recognizes only account/search URL shapes.
+      Flutter `TwitterRipper.canRip(...)` delegates to `classifyUrl(...)`,
+      rejects non-account/non-search `twitter.com` paths earlier than Java, and
+      also accepts `x.com` account/search URLs that Java's superclass guard
+      would reject before Twitter-specific parsing.
+
+Disposition:
+
+- The other strict/custom candidates above already have source-backed rows or
+      shared-family rows in this file for the inherited-guard mismatch and/or
+      adjacent Java behavior. This statement is a bucket disposition only, not a
+      completion claim.
+
+Still open:
+
+- [ ] Continue classifying the remaining host-suffix candidates for subtler
+      differences such as factory dispatch, case/host normalization,
+      constructor URL mutation, and superclass download/runtime hooks.
+- [ ] Continue parser strictness/error-surface sweeps after inherited
+      `canRip(...)` matrix disposition.
