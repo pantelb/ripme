@@ -4907,3 +4907,65 @@ Still open:
 - [ ] Continue the same low-mention sweep with the remaining count-4 and count-5
       rippers, then repeat from a different mechanical angle before claiming
       the discovery pass is exhausted.
+
+Continuation: 2026-06-05, count-4/count-5 sweep
+
+Additional sources re-read:
+
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/NsfwAlbumRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/PornpicsRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/SpankbangRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/XlecxRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/AllporncomicRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/BaraagRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/DanbooruRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/FemjoyhunterRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/ImagevenueRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/MastodonXyzRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/PawooRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/PichunterRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/ShesFreakyRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/SinfestRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/TwodgalleriesRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/XcartxRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/YoupornRipper.java`
+- Matching Flutter files under `lib/ripper/rippers/`
+- Matching focused Dart tests under `test/`
+
+Additional confirmed existing findings, no new distinct row added:
+
+- `NsfwAlbumRipper` thumbnail-count `System.out` behavior is already recorded in
+      section G's direct diagnostic inventory.
+- `PornpicsRipper` broad inherited `canRip(...)` behavior and empty `a.rel-link`
+      handling are already recorded in section I.
+- `SpankbangRipper` missing embed behavior is already recorded in section E and
+      covered by focused Dart parser tests.
+- `XcartxRipper` / `XlecxRipper` inherited domain/GID and virtual-domain image
+      construction behavior is already recorded in section I and reflected in
+      focused Dart tests.
+- `AllporncomicRipper` empty image/queue URL filtering drift is already recorded
+      in section I.
+- Mastodon subclass behavior for `BaraagRipper`, `MastodonXyzRipper`, and
+      `PawooRipper` remains covered by the shared `MastodonRipper` rows in
+      section I plus the constructor-guard rows in section E.
+- `DanbooruRipper` strict JSON access and OkHttp/mobile-header behavior are
+      already recorded in sections I and J.
+- `FemjoyhunterRipper` inherited `canRip(...)` behavior and exact `getGID(...)`
+      regex behavior are already recorded in section I.
+- `ImagevenueRipper` empty target-link handling and per-image fetch/continue
+      behavior are already recorded in section I.
+- `PichunterRipper` inherited host guard, last-arrow pagination dereference, and
+      empty-href pagination behavior are already recorded in section I.
+- `ShesFreakyRipper` broad host guard is already recorded in section I.
+- `SinfestRipper` inherited host guard and `getNextPage(...)` null/exception
+      behavior are already recorded in section I.
+- `TwodgalleriesRipper` offset pagination, login token/cookie behavior, and
+      next-page empty-result exception are already recorded in section I.
+- `YoupornRipper` is covered by the video/single-file forced-prefix inventory in
+      section E and focused Dart extraction tests.
+
+Still open:
+
+- [ ] Continue the low-mention sweep with the remaining count-6 and count-7
+      rippers, then re-run a cross-cutting scan for hooks, config keys,
+      diagnostics, and malformed-input behavior before any exhaustion claim.
