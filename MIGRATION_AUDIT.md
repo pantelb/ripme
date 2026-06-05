@@ -5049,3 +5049,77 @@ Still open:
       override matrix, parser strictness/error-surface scan, and UI/CLI/runtime
       feature inventory. Do not mark audit mode complete until these independent
       scans stop producing candidates.
+
+Continuation: 2026-06-05, Java test-method inventory
+
+Mechanical result:
+
+- Java `origin/main` currently exposes 120 `@Test` methods under
+      `src/test/java`.
+- A method-name pass found 75 Java `@Test` methods whose exact method names are
+      not named in this audit file yet. Some are already behavior-covered by
+      focused Dart tests or broader audit rows, but method-level parity has not
+      been fully dispositioned.
+
+Open method-level disposition queue:
+
+- `Base64Test.java`: `testDecode`
+- `BooruRipperTest.java`: `testGetDomain`, `testGetHost`
+- `ChanRipperTest.java`: `testChanStringParsing`
+- `CoomerPartyRipperTest.java`: `testUrlParsing`
+- `DanbooruRipperTest.java`: `testGetHost`
+- `DribbbleRipperTest.java`: `testDribbbleRip`
+- `EhentaiRipperTest.java`: `testEHentaiAlbum`
+- `EightmusesRipperTest.java`: `testGetSubdir`, `testGID`
+- `EromeRipperTest.java`: `testEmptyPageDoesNotContainAlbums`,
+      `testGetGIDAlbum`, `testGetGIDProfilePage`,
+      `testGetURLsFromPhotoAlbumPage`, `testPageContainsAlbums`,
+      `testPhotoAlbumRip`
+- `FapDungeonRipperTest.java`: `testFapDungeon1`, `testFapDungeon2`,
+      `testFapDungeon3`
+- `FapwizRipperTest.java`: `testPostGetGID1_Simple`,
+      `testPostGetGID2_WithEmojiInLongUrlInTheMiddle`,
+      `testRipPostWithEmojiInLongUrlInTheMiddle`,
+      `testRipPostWithEmojiInShortUrl`, `testRipPostWithNumbersInUsername1`,
+      `testUserGetGID1_Simple`, `testUserGetGID2_Numbers`,
+      `testUserGetGID3_HyphensAndNumbers`, `testUserGetGID4_Underscores`
+- `FreeComicOnlineRipperTest.java`: `testFreeComicOnlineChapterAlbum`
+- `HqpornerRipperTest.java`: `testFlyFlvVideoHost`,
+      `testGetURLsFromPage`, `testMyDaddyVideoHost`, `testUnknownVideoHost`
+- `HypnohubRipperTest.java`: `testRipPoolAndPost`
+- `ImgurRipperTest.java`: `testImgurSingleImage`, `testImgurURLFailures`,
+      `testImgurVideoFromGetFilesFromURL`
+- `InstagramRipperTest.java`: `testInstagramGID`
+- `ListalRipperTest.java`: `testRipFolderType`
+- `ModelmayhemRipperTest.java`: `testModelmayhemRip`
+- `MotherlessRipperTest.java`: `testMotherlessAlbumRip`
+- `MrCongRipperTest.java`: `testMrCongAlbumRip1`, `testMrCongAlbumRip2`,
+      `testMrCongAlbumRip3`, `testMrCongTagRip`
+- `MyhentaicomicsRipperTest.java`: `testPageContainsAlbums`
+- `NsfwAlbumRipperTest.java`: `testNsfwAlbum1`, `testNsfwAlbum2`
+- `NudeGalsRipperTest.java`: `testAlbumRip`, `testGetAlbumGID`,
+      `testGetVideoGID`, `testVideoRip`
+- `PahealRipperTest.java`: `testPahealRipper`
+- `PicstatioRipperTest.java`: `testGID`
+- `PornhubRipperTest.java`: `testPornhubAlbumRip`,
+      `testPornhubMultiPageAlbumRip`
+- `RedditRipperTest.java`: `testRedditGfycatRedirectURL`
+- `RedgifsRipperTest.java`: `testRedgifsBadRL`, `testRedgifsGoodURL`,
+      `testRedgifsProfile`, `testRedgifsSearch`, `testRedgifsTags`
+- `SankakuComplexRipperTest.java`: `testgetSubDomain`
+- `ScrolllerRipperTest.java`: `testScrolllerFilterRegex`, `testScrolllerGID`
+- `TumblrRipperTest.java`: `testTumblrAudioRip`
+- `VidbleRipperTest.java`: `testVidbleRip`
+- `VkRipperTest.java`: `testGetBestSourceUrl`
+- `WordpressComicRipperTest.java`: `test_Eightmuses_download`,
+      `test_Eightmuses_getAlbumTitle`, `test_konradokonski_getAlbumTitle`,
+      `test_prismblush`, `test_spyingwithlana_getAlbumTitle`
+- `XvideosRipperTest.java`: `testXvideosVideo2`
+- `YuvutuRipperTest.java`: `testYuvutuAlbum2`
+
+Still open:
+
+- [ ] For each method above, classify as one of: behavior already proved by a
+      Dart test, behavior already represented by an audit gap row, Java test is
+      flaky/live-only and needs an offline equivalent, or new missing
+      behavior/gap row required.
