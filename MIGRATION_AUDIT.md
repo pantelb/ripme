@@ -5225,3 +5225,74 @@ Still open:
 
 - [ ] Continue parser strictness bucketing for the remaining rippers not in
       bucket A/B, especially mixed HTML/API rippers and video helper classes.
+
+Continuation: 2026-06-05, video helper bucket
+
+Video package sources re-read:
+
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/video/CliphunterRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/video/ViddmeRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/video/VidearnRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/video/PornhubRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/video/VkRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/video/YuvutuRipper.java`
+- Matching Flutter files under `lib/ripper/rippers/` and focused tests under
+      `test/`
+
+Disposition:
+
+- `CliphunterRipper` decrypted-video referrer drift and broad factory host
+      dispatch are already recorded in sections D/E.
+- `ViddmeRipper` and `VidearnRipper` missing-marker exception behavior and
+      Java video filename construction are covered by existing audit rows and
+      focused Dart tests.
+- Java `rippers/video/PornhubRipper.java`, `rippers/video/VkRipper.java`, and
+      `rippers/video/YuvutuRipper.java` duplicate/standalone video-route
+      behavior is already recorded in section E/I, including the missing
+      Flutter routes for Pornhub and Yuvutu video URLs and the missing individual
+      VK `/video...` route.
+
+Still open:
+
+- [ ] Continue with inherited-`canRip(...)` matrix disposition and the remaining
+      mixed parser buckets; do not treat video helper review as exhaustive for
+      all video-adjacent album rippers.
+
+Continuation: 2026-06-05, inherited `canRip(...)` exact list
+
+Mechanical list of 81 concrete rippers where Java inherits superclass
+`canRip(...)` but Dart defines a concrete `canRip(...)` override:
+
+- `AllporncomicRipper`, `ArtStationRipper`, `CfakeRipper`,
+      `DanbooruRipper`, `DerpiRipper`, `DeviantartRipper`,
+      `DribbbleRipper`, `DynastyscansRipper`, `E621Ripper`,
+      `EHentaiRipper`, `EightmusesRipper`, `ErofusRipper`, `EromeRipper`,
+      `FapwizRipper`, `FemjoyhunterRipper`, `FitnakedgirlsRipper`,
+      `FivehundredpxRipper`, `FlickrRipper`, `FreeComicOnlineRipper`,
+      `FuraffinityRipper`, `FuskatorRipper`, `GirlsOfDesireRipper`,
+      `Hentai2readRipper`, `HentaifoundryRipper`, `HentaifoxRipper`,
+      `HentaiNexusRipper`, `HitomiRipper`, `HqpornerRipper`,
+      `HypnohubRipper`, `ImagebamRipper`, `ImagefapRipper`,
+      `ImagevenueRipper`, `ImgboxRipper`, `InstagramRipper`,
+      `JabArchivesRipper`, `JagodibujaRipper`, `Jpg3Ripper`,
+      `KingcomixRipper`, `ListalRipper`, `LusciousRipper`,
+      `MastodonRipper`, `ModelmayhemRipper`, `MrCongRipper`,
+      `MultpornRipper`, `MyhentaicomicsRipper`, `MyhentaigalleryRipper`,
+      `MyreadingmangaRipper`, `NewgroundsRipper`, `NfsfwRipper`,
+      `NhentaiRipper`, `NsfwAlbumRipper`, `NsfwXxxRipper`,
+      `NudeGalsRipper`, `OglafRipper`, `PahealRipper`,
+      `PhotobucketRipper`, `PichunterRipper`, `PicstatioRipper`,
+      `PorncomixinfoRipper`, `PorncomixRipper`, `PornpicsRipper`,
+      `ReadcomicRipper`, `RulePornRipper`, `SankakuComplexRipper`,
+      `ScrolllerRipper`, `ShesFreakyRipper`, `SinfestRipper`,
+      `SoundgasmRipper`, `StaRipper`, `TapasticRipper`,
+      `TeenplanetRipper`, `ThechiveRipper`, `TheyiffgalleryRipper`,
+      `TsuminoRipper`, `TwitterRipper`, `TwodgalleriesRipper`,
+      `VidbleRipper`, `ViewcomicRipper`, `XcartxRipper`,
+      `XlecxRipper`, and `ZizkiRipper`.
+
+Still open:
+
+- [ ] Cross-reference the 81-class list against existing class-specific rows,
+      then add missing rows for classes currently covered only by broad
+      inherited-`canRip(...)` wording.
