@@ -3002,17 +3002,22 @@ Findings:
       Flutter now uses Java's host suffix check while keeping strict
       `getGID(...)` parsing, with Dart coverage for accepted invalid paths and
       strict GID rejection.
-- [ ] Java `XcartxRipper` and `XlecxRipper` inherit domain-level
+- [x] Java `XcartxRipper` and `XlecxRipper` inherit domain-level
       `AbstractHTMLRipper.canRip(...)`, then rely on `getGID(...)` to reject
       non-matching `.html` pages. Flutter also uses domain-level `canRip(...)`,
       but Dart `XcartxRipper.getGID(...)` anchors and escapes `.html` more
       strictly than Java's `^https?://xcartx.com/SLUG.html` `matches()` pattern,
       changing which xcartx URLs are rejected at GID time.
-- [ ] Java `XlecxRipper` inherits `XcartxRipper.getURLsFromPage(...)`, whose
+      Flutter now preserves Java's full-match behavior while keeping the
+      unescaped-dot `SLUG.html` quirk, with Dart coverage for slash-as-dot
+      acceptance and trailing-extra rejection.
+- [x] Java `XlecxRipper` inherits `XcartxRipper.getURLsFromPage(...)`, whose
       image URL construction calls virtual `getDomain()`, so Xlecx image URLs
       are prefixed with `https://xlecx.org`. Flutter `XlecxRipper` inherits
       Dart `XcartxRipper.imageUrlsFromDocument(...)`, which hard-codes
       `https://xcartx.com`, so Xlecx downloads are pointed at the wrong host.
+      Flutter now lets the shared extraction helper receive the virtual domain,
+      and Xlecx Dart coverage verifies inherited URLs use `https://xlecx.org`.
 - [ ] Java `ChanRipper.getURLsFromPage(...)` sends non-self-hosted links through
       `RipUtils.getFilesFromURL(...)`, which expands redgifs/gifdeliverynetwork
       pages, preserves `v.redd.it` URLs, handles `i.reddituploads.com`, and

@@ -11,7 +11,7 @@ import '../abstract_ripper.dart';
 
 class XcartxRipper extends AbstractHTMLRipper {
   static final RegExp _gidPattern =
-      RegExp(r'^https?://xcartx.com/([a-zA-Z0-9_\-]+).html$');
+      RegExp(r'^https?://xcartx.com/([a-zA-Z0-9_\-]+).html');
 
   XcartxRipper(super.url);
 
@@ -26,7 +26,9 @@ class XcartxRipper extends AbstractHTMLRipper {
   @override
   Future<String> getGID(Uri url) async {
     final match = _gidPattern.firstMatch(url.toString());
-    if (match != null) return match.group(1)!;
+    if (match != null && match.group(0) == url.toString()) {
+      return match.group(1)!;
+    }
     throw FormatException(
       'Expected URL format: http://xcartx.com/comic, got: $url',
     );
@@ -62,16 +64,19 @@ class XcartxRipper extends AbstractHTMLRipper {
 
   @override
   Future<List<String>> getURLsFromPage(Document page) async {
-    return imageUrlsFromDocument(page);
+    return imageUrlsFromDocument(page, domain: getDomain());
   }
 
   @override
   Future<Uri?> getNextPage(Document page) async => null;
 
-  static List<String> imageUrlsFromDocument(Document page) {
+  static List<String> imageUrlsFromDocument(
+    Document page, {
+    String domain = 'xcartx.com',
+  }) {
     return [
       for (final image in page.querySelectorAll('div.f-desc img'))
-        'https://xcartx.com${image.attributes['data-src'] ?? ''}',
+        'https://$domain${image.attributes['data-src'] ?? ''}',
     ];
   }
 

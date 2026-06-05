@@ -39,7 +39,7 @@ void main() {
     ''');
 
     expect(await ripper.getURLsFromPage(page), [
-      'https://xcartx.com/uploads/001.jpg',
+      'https://xlecx.org/uploads/001.jpg',
     ]);
     expect(
       XcartxRipper.fileNameForUrl(

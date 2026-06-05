@@ -11,11 +11,22 @@ void main() {
     expect(ripper.getDomain(), 'xcartx.com');
     expect(ripper.canRip(uri), isTrue);
     expect(await ripper.getGID(uri), '4937-tokimeki-nioi');
+    expect(
+      await ripper
+          .getGID(Uri.parse('http://xcartx.com/4937-tokimeki-nioi/html')),
+      '4937-tokimeki-nioi',
+    );
 
     final invalid = Uri.parse('http://xcartx.com/4937-tokimeki-nioi');
     expect(ripper.canRip(invalid), isTrue);
     await expectLater(
       ripper.getGID(invalid),
+      throwsA(isA<FormatException>()),
+    );
+    await expectLater(
+      ripper.getGID(
+        Uri.parse('http://xcartx.com/4937-tokimeki-nioi.html/extra'),
+      ),
       throwsA(isA<FormatException>()),
     );
   });
