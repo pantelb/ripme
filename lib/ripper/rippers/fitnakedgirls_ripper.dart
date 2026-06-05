@@ -21,7 +21,7 @@ class FitnakedgirlsRipper extends AbstractHTMLRipper {
   String getDomain() => 'fitnakedgirls.com';
 
   @override
-  bool canRip(Uri url) => _galleryPattern.hasMatch(url.toString());
+  bool canRip(Uri url) => url.host.endsWith(getDomain());
 
   @override
   Future<String> getGID(Uri url) async {

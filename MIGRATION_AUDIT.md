@@ -2267,6 +2267,15 @@ Findings:
       before returning an empty filter string. Flutter `convertFilterString(...)`
       returns the same empty string silently, so invalid Scrolller filter
       diagnostics are not Java-compatible.
+- [ ] Java sorted `ScrolllerRipper.getPostsSorted(...)` uses a
+      Java-WebSocket subscription, stores every message string, and then
+      blindly reads `postsJsonStrings.get(postsJsonStrings.size() - 1)` to build
+      the iterator object. An empty WebSocket stream or a stream that closes
+      before a message therefore fails through Java collection/JSON access,
+      while Flutter `getPostsSorted(...)` returns a non-null object with
+      `iterator: null` and an empty `posts` list. The sorted-request empty
+      stream and malformed-message behavior needs Dart coverage separate from
+      the unsorted GraphQL malformed-structure row above.
 - [ ] Java `TwitterRipper.sanitizeURL(...)` only recognizes
       `twitter.com` and `m.twitter.com` account/search URLs. Flutter
       `TwitterRipper.classifyUrl(...)` also accepts `x.com`, and
@@ -2986,10 +2995,13 @@ Findings:
       Flutter uses `RegExp.hasMatch`/`firstMatch` with the same unanchored
       pattern, accepting longer URLs whose prefix matches where Java would throw.
       Flutter now anchors the GID regex and covers longer-path rejection in Dart.
-- [ ] Java `FitnakedgirlsRipper` inherits `AbstractHTMLRipper.canRip(...)`, so
+- [x] Java `FitnakedgirlsRipper` inherits `AbstractHTMLRipper.canRip(...)`, so
       any host ending in `fitnakedgirls.com` is accepted before its gallery
       regex runs. Flutter `FitnakedgirlsRipper.canRip(...)` requires the strict
       `/photos/gallery/...` pattern up front, narrowing Java's URL acceptance.
+      Flutter now uses Java's host suffix check while keeping strict
+      `getGID(...)` parsing, with Dart coverage for accepted invalid paths and
+      strict GID rejection.
 - [ ] Java `XcartxRipper` and `XlecxRipper` inherit domain-level
       `AbstractHTMLRipper.canRip(...)`, then rely on `getGID(...)` to reject
       non-matching `.html` pages. Flutter also uses domain-level `canRip(...)`,

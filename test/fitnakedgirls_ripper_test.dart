@@ -14,9 +14,25 @@ void main() {
 
     expect(ripper.canRip(ripper.url), isTrue);
     expect(ripper.canRip(subdomain), isTrue);
+    expect(
+      ripper.canRip(Uri.parse('https://fitnakedgirls.com/not-a-gallery/')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://not-fitnakedgirls.com/anything')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://fitnakedgirls.com.evil/photos/')),
+      isFalse,
+    );
     expect(ripper.getHost(), 'fitnakedgirls');
     expect(ripper.getDomain(), 'fitnakedgirls.com');
     expect(await ripper.getGID(ripper.url), 'erin-ashford-nude/');
+    await expectLater(
+      ripper.getGID(Uri.parse('https://fitnakedgirls.com/not-a-gallery/')),
+      throwsFormatException,
+    );
   });
 
   test('extracts entry-inner images preferring data-src over src', () {
