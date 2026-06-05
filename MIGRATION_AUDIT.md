@@ -5296,3 +5296,51 @@ Still open:
 - [ ] Cross-reference the 81-class list against existing class-specific rows,
       then add missing rows for classes currently covered only by broad
       inherited-`canRip(...)` wording.
+
+Continuation: 2026-06-05, audit-completion correction and low-mention
+inherited-`canRip(...)` sweep
+
+Operator correction:
+
+- Audit-discovery mode is not complete. A bucket disposition means only that the
+      checked bucket has not produced a new source-backed gap yet; it is not a
+      proof that all parity gaps have been found.
+- The active working posture remains audit-discovery only: keep verifying
+      Java behavior from `origin/main` against Flutter/Dart and keep this file
+      open until repeated independent sweeps stop producing new evidence.
+
+Low-mention inherited-`canRip(...)` sources re-read:
+
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/VidbleRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/SoundgasmRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/FitnakedgirlsRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/NudeGalsRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/MyreadingmangaRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/KingcomixRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/ModelmayhemRipper.java`
+- Matching Flutter files under `lib/ripper/rippers/`
+
+Disposition:
+
+- `VidbleRipper`, `SoundgasmRipper`, `MyreadingmangaRipper`,
+      `KingcomixRipper`, and `ModelmayhemRipper` currently line up with Java
+      on strict GID regexes, extraction selectors, and ordered filename prefix
+      construction. No new class-specific gap was proven in this pass.
+- `FitnakedgirlsRipper` currently preserves Java's slow-site one-second delay,
+      referrer header, and `data-src`/`src` fallback behavior. Its inherited
+      `canRip(...)` strictness gap remains covered by the existing row.
+- `NudeGalsRipper` currently preserves Java's album/video GID split, URL
+      construction, space-to-`%20` replacement, and referrer header. No new
+      class-specific gap was proven in this pass.
+
+Still open:
+
+- [ ] Continue the 81-class inherited-`canRip(...)` matrix beyond the
+      low-mention subset above, especially classes where Dart uses a strict
+      URL-pattern `canRip(...)` while Java inherited only `host.endsWith`.
+- [ ] Continue parser strictness/error-surface sweeps for mixed HTML/API
+      rippers and any route-helper rippers not covered by the video-helper
+      bucket.
+- [ ] Do not mark audit-discovery complete without a final mechanical inventory
+      proving that every Java ripper, helper route, superclass behavior, and
+      Java test method has a recorded disposition.
