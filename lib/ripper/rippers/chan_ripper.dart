@@ -61,6 +61,10 @@ class ChanRipper extends AbstractHTMLRipper {
     'saucenao.com',
   ];
 
+  static List<ChanSite>? _configuredExplicitDomains;
+  static bool _configuredExplicitDomainsLoaded = false;
+  static final List<ChanSite> _explicitDomains = [];
+
   final ChanSite chanSite;
   final bool generalChanSite;
 
@@ -227,12 +231,22 @@ class ChanRipper extends AbstractHTMLRipper {
   }
 
   static List<ChanSite> explicitDomains() {
-    final sites = <ChanSite>[...bakedInExplicitDomains];
-    final configured = getChansFromConfig(
-      Utils.getConfigString('chans.chan_sites', null),
-    );
-    if (configured != null) sites.addAll(configured);
-    return sites;
+    _explicitDomains.addAll(bakedInExplicitDomains);
+    if (!_configuredExplicitDomainsLoaded) {
+      _configuredExplicitDomains = getChansFromConfig(
+        Utils.getConfigString('chans.chan_sites', null),
+      );
+      _configuredExplicitDomainsLoaded = true;
+    }
+    final configured = _configuredExplicitDomains;
+    if (configured != null) _explicitDomains.addAll(configured);
+    return _explicitDomains;
+  }
+
+  static void resetExplicitDomainsForTesting() {
+    _configuredExplicitDomains = null;
+    _configuredExplicitDomainsLoaded = false;
+    _explicitDomains.clear();
   }
 
   static bool isUrlBlacklisted(String url) {

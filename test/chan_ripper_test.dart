@@ -8,6 +8,7 @@ import 'package:ripme/utils/utils.dart';
 
 void main() {
   setUp(() async {
+    ChanRipper.resetExplicitDomainsForTesting();
     SharedPreferences.setMockInitialValues({});
     await Utils.init();
   });
@@ -105,6 +106,44 @@ void main() {
 
     expect(ripper.canRip(url), isTrue);
     expect(await ripper.getGID(url), '123');
+  });
+
+  test('ChanRipper freezes configured domains like Java class load', () async {
+    SharedPreferences.setMockInitialValues({
+      'chans.chan_sites': 'firstchan.test[cdn.firstchan.test]',
+    });
+    await Utils.init();
+    ChanRipper.resetExplicitDomainsForTesting();
+
+    final firstUrl = Uri.parse('https://firstchan.test/a/res/123.html');
+    final secondUrl = Uri.parse('https://secondchan.test/a/res/123.html');
+
+    expect(ChanRipper(firstUrl).canRip(firstUrl), isTrue);
+
+    SharedPreferences.setMockInitialValues({
+      'chans.chan_sites': 'secondchan.test[cdn.secondchan.test]',
+    });
+    await Utils.init();
+
+    expect(ChanRipper(firstUrl).canRip(firstUrl), isTrue);
+    expect(ChanRipper(secondUrl).canRip(secondUrl), isFalse);
+  });
+
+  test('ChanRipper keeps Java shared explicit domain list mutation', () async {
+    SharedPreferences.setMockInitialValues({
+      'chans.chan_sites': 'examplechan.test[cdn.examplechan.test]',
+    });
+    await Utils.init();
+    ChanRipper.resetExplicitDomainsForTesting();
+
+    final firstLength = ChanRipper.explicitDomains().length;
+    final secondLength = ChanRipper.explicitDomains().length;
+
+    expect(firstLength, ChanRipper.bakedInExplicitDomains.length + 1);
+    expect(
+      secondLength,
+      firstLength + ChanRipper.bakedInExplicitDomains.length + 1,
+    );
   });
 
   test('ChanRipper extracts direct media URLs with Java normalization rules',

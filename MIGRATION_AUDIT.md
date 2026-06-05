@@ -3046,14 +3046,17 @@ Findings:
       failure. Flutter now derives the board from a Java-style slash split
       after dropping trailing empty pieces, with Dart coverage for normal board
       extraction and bare-domain/trailing-slash `RangeError` behavior.
-- [ ] Java `ChanRipper` parses `chans.chan_sites` into the static
+- [x] Java `ChanRipper` parses `chans.chan_sites` into the static
       `user_give_explicit_domains` field at class-load time and then
       `canRip(...)` appends that frozen list into the static `explicit_domains`
       collection. Flutter `ChanRipper.explicitDomains()` calls
       `Utils.getConfigString('chans.chan_sites', null)` and reparses on every
       lookup, so config changes after first Java class load are visible in
       Flutter but not Java, and repeated Java `canRip(...)` calls mutate a
-      shared static list while Dart rebuilds a fresh one.
+      shared static list while Dart rebuilds a fresh one. Flutter now caches
+      configured Chan sites on first explicit-domain lookup, including the
+      absent-config case, and appends into a shared static list on every lookup,
+      with Dart coverage for frozen config changes and repeated-list growth.
 - [ ] Java `ChanSite` constructors throw `IllegalArgumentException("Domains")`
       for empty domain values and `IllegalArgumentException("CdnDomains")` for
       empty CDN values, so malformed `chans.chan_sites` entries such as `[]`,
