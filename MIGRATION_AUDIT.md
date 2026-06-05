@@ -5123,3 +5123,26 @@ Still open:
       Dart test, behavior already represented by an audit gap row, Java test is
       flaky/live-only and needs an offline equivalent, or new missing
       behavior/gap row required.
+
+Continuation: 2026-06-05, inherited override matrix
+
+Mechanical result:
+
+- Java ripper class count checked: 116.
+- Dart ripper file count checked: 116.
+- Queue-support override mismatch count: 0.
+- Description-support/helper mismatch count: 1, `FuraffinityRipper`; already
+      recorded in section E / section I as Java helper methods with
+      `hasDescriptionSupport() == false`.
+- `canRip(...)` inheritance mismatch count: 81. These are classes where Java
+      does not override `canRip(...)` in the concrete ripper class, so it
+      inherits the broad superclass host/domain check, while Flutter defines a
+      concrete Dart `canRip(...)` override. Many of these already have
+      class-specific rows, but the matrix confirms this remains a broad
+      behavioral surface rather than isolated one-offs.
+
+Still open:
+
+- [ ] Expand or cross-reference the inherited-`canRip(...)` inventory so every
+      one of the 81 classes is explicitly dispositioned as already row-covered,
+      Dart-compatible despite the override, or requiring a new parity gap row.
