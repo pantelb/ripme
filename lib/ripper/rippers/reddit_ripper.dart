@@ -277,6 +277,16 @@ class RedditRipper extends AbstractJSONRipper {
     final host = uri.host.toLowerCase();
     final expandedUrls = await expandNonDirectUrl(uri);
     if (expandedUrls.isNotEmpty) {
+      if (host.endsWith('redgifs.com')) {
+        return [
+          for (final expandedUrl in expandedUrls)
+            RedditMedia(
+              url: expandedUrl,
+              prefix: _singleUrlPrefix(id, title),
+              headers: {'Referer': 'https://www.redgifs.com/'},
+            ),
+        ];
+      }
       return _mediaFromExpandedUrls(expandedUrls, id, title);
     }
 
@@ -314,16 +324,23 @@ class RedditRipper extends AbstractJSONRipper {
       ];
     }
 
-    if (host.contains('redgifs.com') ||
-        host.contains('gifdeliverynetwork.com')) {
-      final videoUrl = await RedgifsRipper.getVideoUrl(uri);
-      return [
-        RedditMedia(
-          url: Uri.parse(videoUrl),
-          prefix: _singleUrlPrefix(id, title),
-          headers: {'Referer': 'https://www.redgifs.com/'},
-        ),
-      ];
+    if (host.endsWith('redgifs.com')) {
+      try {
+        final videoUrl = await RedgifsRipper.getVideoUrl(uri);
+        return [
+          RedditMedia(
+            url: Uri.parse(videoUrl),
+            prefix: _singleUrlPrefix(id, title),
+            headers: {'Referer': 'https://www.redgifs.com/'},
+          ),
+        ];
+      } catch (_) {
+        return const [];
+      }
+    }
+
+    if (host.endsWith('gifdeliverynetwork.com')) {
+      return const [];
     }
 
     return const [];
@@ -348,6 +365,18 @@ class RedditRipper extends AbstractJSONRipper {
       caseSensitive: false,
     ).hasMatch(uri.toString())) {
       return [uri];
+    }
+
+    if (host.endsWith('redgifs.com')) {
+      try {
+        return [Uri.parse(await RedgifsRipper.getVideoUrl(uri))];
+      } catch (_) {
+        return const [];
+      }
+    }
+
+    if (host.endsWith('gifdeliverynetwork.com')) {
+      return const [];
     }
 
     if (host.endsWith('i.imgur.com') &&

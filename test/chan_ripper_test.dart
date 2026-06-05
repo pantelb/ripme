@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart' as html;
 import 'package:ripme/ripper/rippers/chan_ripper.dart';
+import 'package:ripme/ripper/rippers/redgifs_ripper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:ripme/utils/utils.dart';
@@ -9,6 +10,11 @@ void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     await Utils.init();
+  });
+
+  tearDown(() {
+    RedgifsRipper.getJsonForTesting = null;
+    RedgifsRipper.resetAuthTokenForTesting();
   });
 
   test('ChanRipper parses Java chan config strings', () {
@@ -106,6 +112,21 @@ void main() {
   });
 
   test('ChanRipper expands non-CDN links on explicit archive sites', () async {
+    RedgifsRipper.getJsonForTesting = (url, {headers}) async {
+      if (url.toString() == 'https://api.redgifs.com/v2/auth/temporary') {
+        return {'token': 'test-token'};
+      }
+      if (url.toString() == 'https://api.redgifs.com/v2/gifs/exampleid') {
+        return {
+          'gif': {
+            'gallery': null,
+            'urls': {'hd': 'https://media.redgifs.com/exampleid.mp4'},
+          },
+        };
+      }
+      fail('Unexpected Redgifs request: $url');
+    };
+
     final ripper = ChanRipper(
       Uri.parse('https://desuarchive.org/wsg/thread/2770629'),
     );
@@ -115,6 +136,8 @@ void main() {
         <a href="https://v.redd.it/abc123/DASH_720.mp4">v.redd.it</a>
         <a href="https://i.reddituploads.com/uploadid?fit=max&amp;s=token">upload</a>
         <a href="https://cdn.example.com/path/image.jpg?size=large">direct</a>
+        <a href="https://www.redgifs.com/watch/exampleid-extra">redgifs</a>
+        <a href="https://www.gifdeliverynetwork.com/exampleid">gifdeliverynetwork</a>
       </body></html>
     ''');
 
@@ -123,6 +146,7 @@ void main() {
       'https://v.redd.it/abc123/DASH_720.mp4',
       'https://i.reddituploads.com/uploadid?fit=max&s=token',
       'https://cdn.example.com/path/image.jpg?size=large',
+      'https://media.redgifs.com/exampleid.mp4',
     ]);
   });
 

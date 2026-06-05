@@ -22,6 +22,8 @@ class RedgifsRipper extends AbstractJSONRipper {
   static const int _pageSize = 40;
 
   static String? _authToken;
+  static Future<dynamic> Function(Uri url, {Map<String, String>? headers})?
+      getJsonForTesting;
 
   int _currentPage = 1;
   int _maxPages = 1;
@@ -115,7 +117,7 @@ class RedgifsRipper extends AbstractJSONRipper {
     }
 
     final gid = sanitized.pathSegments.last.split('-').first;
-    final json = await Http.getJSON(
+    final json = await _getJson(
       Uri.parse('$_gifsDetailEndpoint/$gid'),
       headers: _authHeaders,
     );
@@ -136,7 +138,7 @@ class RedgifsRipper extends AbstractJSONRipper {
       case _RedgifsMode.singleton:
         final gid = await getGID(url);
         _maxPages = 1;
-        return Http.getJSON(Uri.parse('$_gifsDetailEndpoint/$gid'),
+        return _getJson(Uri.parse('$_gifsDetailEndpoint/$gid'),
             headers: _authHeaders);
       case _RedgifsMode.profile:
         final username = await getGID(url);
@@ -148,13 +150,13 @@ class RedgifsRipper extends AbstractJSONRipper {
             'page': '$_currentPage',
           },
         );
-        final json = await Http.getJSON(pageUri, headers: _authHeaders);
+        final json = await _getJson(pageUri, headers: _authHeaders);
         _maxPages = json['pages'] ?? 1;
         return json;
       case _RedgifsMode.search:
       case _RedgifsMode.tags:
         final pageUri = _searchOrTagsUri(mode);
-        final json = await Http.getJSON(pageUri, headers: _authHeaders);
+        final json = await _getJson(pageUri, headers: _authHeaders);
         _maxPages = json['pages'] ?? 1;
         return json;
     }
@@ -180,7 +182,7 @@ class RedgifsRipper extends AbstractJSONRipper {
   }
 
   Future<List<String>> _getUrlsForGallery(String galleryId) async {
-    final json = await Http.getJSON(Uri.parse('$_galleryEndpoint/$galleryId'),
+    final json = await _getJson(Uri.parse('$_galleryEndpoint/$galleryId'),
         headers: _authHeaders);
     final gifs = json['gifs'] as List? ?? const [];
     return gifs
@@ -239,8 +241,21 @@ class RedgifsRipper extends AbstractJSONRipper {
 
   static Future<void> _ensureAuthToken() async {
     if (_authToken != null && _authToken!.isNotEmpty) return;
-    final json = await Http.getJSON(Uri.parse(_temporaryAuthEndpoint));
+    final json = await _getJson(Uri.parse(_temporaryAuthEndpoint));
     _authToken = json['token'];
+  }
+
+  static Future<dynamic> _getJson(Uri url,
+      {Map<String, String>? headers}) async {
+    final fetcher = getJsonForTesting;
+    if (fetcher != null) {
+      return fetcher(url, headers: headers);
+    }
+    return Http.getJSON(url, headers: headers);
+  }
+
+  static void resetAuthTokenForTesting() {
+    _authToken = null;
   }
 
   static Map<String, String> get _authHeaders => {

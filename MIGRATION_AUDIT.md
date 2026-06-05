@@ -3018,7 +3018,7 @@ Findings:
       `https://xcartx.com`, so Xlecx downloads are pointed at the wrong host.
       Flutter now lets the shared extraction helper receive the virtual domain,
       and Xlecx Dart coverage verifies inherited URLs use `https://xlecx.org`.
-- [~] Java `ChanRipper.getURLsFromPage(...)` sends non-self-hosted links through
+- [x] Java `ChanRipper.getURLsFromPage(...)` sends non-self-hosted links through
       `RipUtils.getFilesFromURL(...)`, which expands redgifs/gifdeliverynetwork
       pages, preserves `v.redd.it` URLs, handles `i.reddituploads.com`, and
       returns generic direct media URLs in addition to Imgur, Vidble, Erome, and
@@ -3028,9 +3028,15 @@ Findings:
       Flutter now preserves Java's zero-network passthrough cases for
       `v.redd.it`, `i.reddituploads.com`, and generic direct
       `jpg/jpeg/gif/png/mp4` URLs, with shared Reddit helper coverage and
-      Chan explicit-archive coverage. Redgifs/gifdeliverynetwork page expansion
-      still needs a separate network-backed parity unit before this row can be
-      marked complete.
+      Chan explicit-archive coverage. Re-reading `origin/main` showed that
+      Java enters the Redgifs branch for both `redgifs.com` and
+      `gifdeliverynetwork.com`, but `RedgifsRipper.getVideoURL(...)` only
+      matches `redgifs.com/watch/...`; gifdeliverynetwork therefore returns an
+      empty list through Java's caught exception path. Flutter now mirrors that
+      by expanding Redgifs singleton pages through the Redgifs API helper and
+      preserving the current-source empty gifdeliverynetwork helper behavior,
+      with fake-API Dart coverage for Reddit shared expansion and Chan
+      explicit-archive extraction.
 - [ ] Java `ChanRipper.canRip(...)` accepts baked-in or configured chan domains
       without validating a board/thread path, and `getHost()` later reads
       `this.url.toExternalForm().split("/")[3]`. A bare accepted domain can

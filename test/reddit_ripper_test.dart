@@ -1,10 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart' show parse;
+import 'package:ripme/ripper/rippers/redgifs_ripper.dart';
 import 'package:ripme/ripper/rippers/reddit_ripper.dart';
 import 'package:ripme/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  tearDown(() {
+    RedgifsRipper.getJsonForTesting = null;
+    RedgifsRipper.resetAuthTokenForTesting();
+  });
+
   test('builds Reddit JSON URLs like the Java ripper', () {
     expect(
       RedditRipper.getJsonUrl(
@@ -305,6 +311,45 @@ void main() {
     expect(
       await RedditRipper.expandNonDirectUrl(
         Uri.parse('https://cdn.example.info/path/image.webp'),
+      ),
+      isEmpty,
+    );
+  });
+
+  test('expands Redgifs singleton links like Java RipUtils', () async {
+    RedgifsRipper.getJsonForTesting = (url, {headers}) async {
+      if (url.toString() == 'https://api.redgifs.com/v2/auth/temporary') {
+        return {'token': 'test-token'};
+      }
+      if (url.toString() == 'https://api.redgifs.com/v2/gifs/exampleid') {
+        return {
+          'gif': {
+            'gallery': null,
+            'urls': {'hd': 'https://media.redgifs.com/exampleid.mp4'},
+          },
+        };
+      }
+      fail('Unexpected Redgifs request: $url');
+    };
+
+    expect(
+      (await RedditRipper.expandNonDirectUrl(
+        Uri.parse('https://www.redgifs.com/watch/exampleid-extra'),
+      ))
+          .map((uri) => uri.toString()),
+      ['https://media.redgifs.com/exampleid.mp4'],
+    );
+  });
+
+  test('leaves gifdeliverynetwork empty like Java RipUtils helper failure',
+      () async {
+    RedgifsRipper.getJsonForTesting = (url, {headers}) async {
+      fail('gifdeliverynetwork should not fetch Redgifs JSON in RipUtils mode');
+    };
+
+    expect(
+      await RedditRipper.expandNonDirectUrl(
+        Uri.parse('https://www.gifdeliverynetwork.com/exampleid'),
       ),
       isEmpty,
     );
