@@ -29,6 +29,45 @@ void main() {
     expect(chans[1].cdnDomains, ['cdn.site2.co.uk']);
   });
 
+  test('ChanSite keeps Java malformed config exceptions', () {
+    expect(
+      () => ChanSite([]),
+      throwsA(isA<ArgumentError>().having(
+        (error) => error.message,
+        'message',
+        'Domains',
+      )),
+    );
+    expect(
+      () => ChanSite(['site.example'], []),
+      throwsA(isA<ArgumentError>().having(
+        (error) => error.message,
+        'message',
+        'CdnDomains',
+      )),
+    );
+    expect(
+      () => ChanRipper.getChansFromConfig(''),
+      throwsA(isA<ArgumentError>().having(
+        (error) => error.message,
+        'message',
+        'Domains',
+      )),
+    );
+    expect(
+      () => ChanRipper.getChansFromConfig('[]'),
+      throwsA(isA<ArgumentError>().having(
+        (error) => error.message,
+        'message',
+        'Domains',
+      )),
+    );
+
+    final emptyCdn = ChanRipper.getChansFromConfig('site.example[]')!.single;
+    expect(emptyCdn.domains, ['site.example']);
+    expect(emptyCdn.cdnDomains, ['']);
+  });
+
   test('ChanRipper matches Java baked-in chan URLs, hosts, domains, and GIDs',
       () async {
     final cases = [

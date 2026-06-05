@@ -3057,13 +3057,16 @@ Findings:
       configured Chan sites on first explicit-domain lookup, including the
       absent-config case, and appends into a shared static list on every lookup,
       with Dart coverage for frozen config changes and repeated-list growth.
-- [ ] Java `ChanSite` constructors throw `IllegalArgumentException("Domains")`
-      for empty domain values and `IllegalArgumentException("CdnDomains")` for
-      empty CDN values, so malformed `chans.chan_sites` entries such as `[]`,
-      `site[]`, or an empty comma segment fail during Java config parsing.
-      Flutter `ChanSite` and `ChanRipper.getChansFromConfig(...)` accept empty
-      strings/lists and can add blank domains or CDN needles, changing malformed
-      config handling and `canRip(...)` matching.
+- [x] Java `ChanSite` constructors throw `IllegalArgumentException("Domains")`
+      when the selected constructor receives an empty domain string/list and
+      `IllegalArgumentException("CdnDomains")` when it receives an empty CDN
+      list/string. Re-reading `origin/main` corrected an audit overstatement:
+      `[]` and empty comma segments fail during config parsing, but `site[]`
+      is accepted by `ChanRipper.getChansFromConfig(...)` because Java passes a
+      one-element CDN list containing `""`. Flutter now throws `ArgumentError`
+      with Java-compatible messages for empty domain/list constructor cases and
+      empty config domain entries, while preserving the current-source
+      `site[] -> [""]` CDN behavior with Dart coverage.
 - [ ] Java `NsfwXxxRipper.getNextPage(...)` strictly reads
       `doc.getInt("page")`, requires `nextPage.getJSONArray("items")`, and
       throws `IOException("No more pages")` when that array is empty. Flutter

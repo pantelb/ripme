@@ -13,8 +13,15 @@ class ChanSite {
   final List<String> domains;
   final List<String> cdnDomains;
 
-  const ChanSite(this.domains, [List<String>? cdnDomains])
-      : cdnDomains = cdnDomains ?? domains;
+  ChanSite(this.domains, [List<String>? cdnDomains])
+      : cdnDomains = cdnDomains ?? domains {
+    if (domains.isEmpty) {
+      throw ArgumentError('Domains');
+    }
+    if (this.cdnDomains.isEmpty) {
+      throw ArgumentError('CdnDomains');
+    }
+  }
 
   factory ChanSite.single(String domain, [List<String>? cdnDomains]) {
     return ChanSite([domain], cdnDomains);
@@ -22,7 +29,7 @@ class ChanSite {
 }
 
 class ChanRipper extends AbstractHTMLRipper {
-  static const List<ChanSite> bakedInExplicitDomains = [
+  static final List<ChanSite> bakedInExplicitDomains = [
     ChanSite([
       'boards.4chan.org',
     ], [
@@ -213,10 +220,16 @@ class ChanRipper extends AbstractHTMLRipper {
     for (final chanInfo in rawChanString.split(',')) {
       if (chanInfo.contains('[')) {
         final siteUrl = chanInfo.split('[').first;
+        if (siteUrl.isEmpty) {
+          throw ArgumentError('Domains');
+        }
         final cdns =
             chanInfo.replaceAll('$siteUrl[', '').replaceAll(']', '').split('|');
         userChans.add(ChanSite([siteUrl], cdns));
       } else {
+        if (chanInfo.isEmpty) {
+          throw ArgumentError('Domains');
+        }
         userChans.add(ChanSite([chanInfo]));
       }
     }
