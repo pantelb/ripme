@@ -12,12 +12,15 @@ class ArtstnRipper extends ArtStationRipper {
 
   @override
   Future<String> getGID(Uri url) async {
-    _artStationUrl ??= await getFinalUrl(url);
-    final resolved = _artStationUrl;
-    if (resolved == null) {
-      throw FormatException('Could not resolve ArtStation short URL: $url');
+    if (_artStationUrl == null) {
+      try {
+        _artStationUrl = await getFinalUrl(url);
+      } on Exception {
+        // Java logs redirect-resolution failures, then lets the superclass/null
+        // path surface the observable failure.
+      }
     }
-    return super.getGID(resolved);
+    return super.getGID(_artStationUrl!);
   }
 
   static Future<Uri?> getFinalUrl(Uri url, {http.Client? client}) async {
@@ -44,6 +47,11 @@ class ArtstnRipper extends ArtStationRipper {
     if (statusCode ~/ 100 != 3 || location == null || location.isEmpty) {
       return null;
     }
-    return source.resolve(location);
+    final target = Uri.parse(location);
+    if (!target.hasScheme) {
+      throw const FormatException(
+          'Relative redirect location cannot be converted');
+    }
+    return target;
   }
 }

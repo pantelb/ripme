@@ -2961,17 +2961,20 @@ Findings:
       `view-comic_`/`read-comic_` rather than surfacing Java's failure. Flutter
       now only falls back on `IOException` and lets missing-title failures
       surface, with Dart coverage for both rippers.
-- [ ] Java `ArtstnRipper.getFinalUrl(...)` follows `location` redirects by
+- [x] Java `ArtstnRipper.getFinalUrl(...)` follows `location` redirects by
       constructing `new URI(response.header("location")).toURL()`, so relative
       redirect locations fail URL conversion instead of being resolved against
       the short URL. Flutter `ArtstnRipper.redirectTarget(...)` uses
       `source.resolve(location)`, so relative ArtStation short-link redirects
-      are accepted rather than following Java's failure path.
-- [ ] Java `ArtstnRipper.getGID(...)` logs redirect-resolution failures and then
+      are accepted rather than following Java's failure path. Flutter now rejects
+      relative redirect targets and keeps Dart coverage for the failure path.
+- [x] Java `ArtstnRipper.getGID(...)` logs redirect-resolution failures and then
       calls `super.getGID(artStationUrl)` even if `artStationUrl` is still
       `null`, allowing the Java failure to surface through the superclass/null
       path. Flutter throws `FormatException('Could not resolve ArtStation short URL...')`
       as soon as the final URL is unresolved, changing the observable error.
+      Flutter now lets unresolved short URLs surface through its null path, with
+      Dart coverage for that Java-compatible failure behavior.
 - [ ] Java `FemjoyhunterRipper` inherits `AbstractHTMLRipper.canRip(...)`, so
       any host ending in `femjoyhunter.com` is accepted before `getGID(...)`.
       Flutter `FemjoyhunterRipper.canRip(...)` requires a `www.femjoyhunter.com`
