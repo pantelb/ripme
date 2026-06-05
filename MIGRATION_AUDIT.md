@@ -4787,3 +4787,73 @@ Open work:
       Flutter selected-history model or documented replacement.
 - [ ] Open-folder and tray/popup behavior is source-audited and still needs
       platform-specific Flutter replacement decisions.
+
+### Pass 2: Low-Mention Rippers And Runtime Hooks
+
+Started: 2026-06-05
+
+Mode: audit-discovery only. No implementation changes were kept from this pass.
+
+Sources re-read:
+
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/ModelmayhemRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/MyreadingmangaRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/VidbleRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/DribbbleRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/KingcomixRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/MultpornRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/NudeGalsRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/SoundgasmRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/FitnakedgirlsRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/OglafRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/GirlsOfDesireRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/HentaifoxRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/HitomiRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/NhentaiRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/ZizkiRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/video/ViddmeRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/video/VidearnRipper.java`
+- `origin/main:src/main/java/com/rarchives/ripme/ripper/rippers/video/MotherlessVideoRipper.java`
+- Matching Flutter files under `lib/ripper/rippers/`
+- Matching focused Dart tests under `test/`
+
+Mechanical scans re-run:
+
+- Java ripper list versus Flutter ripper file list.
+- Audit mention counts for every Java `*Ripper.java`, prioritizing classes with
+      the fewest exact mentions.
+- Constructor-time URL sanitation and `this.url` mutation sites.
+- Java override surfaces for `getFirstPage`, `getNextPage`,
+      `getURLsFromPage`, `getURLsFromJSON`, `getAlbumTitle`,
+      `getAlbumsToQueue`, `pageContainsAlbums`, `hasASAPRipping`,
+      `getThreadPool`, `sanitizeURL`, and `normalizeUrl`.
+- Java platform/runtime API use for process exit, shutdown hooks, desktop open,
+      tray, dialogs, clipboard, sound, file/path APIs, and finish-command
+      execution.
+
+Confirmed existing findings, no new distinct row added:
+
+- `DribbbleRipper.getNextPage(...)` exact `IOException("No more pages")`,
+      `https://www.dribbble.com` concatenation, and null/empty-href drift are
+      already recorded in section I.
+- Java constructor/sanitize URL behavior, including Soundgasm and other
+      constructor-time normalization risks, is already recorded in section E.
+- Java per-ripper thread-pool overrides and ASAP-ripping hooks are already
+      recorded in section E.
+- `ZizkiRipper.getAlbumTitle(...)` malformed-DOM exception behavior is already
+      recorded in section I.
+- `GirlsOfDesireRipper.getGID(...)` scheme-less Java regex behavior is already
+      recorded in section I.
+- `HitomiRipper` category-as-gallery-id behavior and strict JSON/name handling
+      are already recorded in section I.
+- Video-ripper marker extraction and `MotherlessVideoRipper`'s hardcoded `WTF`
+      log behavior are already recorded in section E.
+
+Open work:
+
+- [ ] Continue the low-mention ripper sweep beyond the classes above until a
+      full pass across every Java ripper produces no new source-backed gaps.
+- [ ] Convert the ad hoc mechanical scans from this pass into checked-in audit
+      scripts/tests before any final parity claim.
+- [ ] Keep the audit status open; this pass increases confidence but does not
+      prove that every parity gap has been found.
