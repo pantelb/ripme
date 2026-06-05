@@ -12,6 +12,14 @@ void main() {
     expect(ripper.canRip(ripper.url), isTrue);
     expect(
       ripper.canRip(Uri.parse('https://femjoyhunter.com/no-www/')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://not-femjoyhunter.com/anything')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://femjoyhunter.com.evil/gallery/')),
       isFalse,
     );
     expect(ripper.getHost(), 'femjoyhunter');
@@ -19,6 +27,14 @@ void main() {
     expect(
       await ripper.getGID(ripper.url),
       'alisa-i-got-nice-big-breasts-and-fine-ass-so-she-seems-to-be-a-hottest-brunette-5936',
+    );
+    await expectLater(
+      ripper.getGID(Uri.parse('https://femjoyhunter.com/no-www/')),
+      throwsFormatException,
+    );
+    await expectLater(
+      ripper.getGID(Uri.parse('https://www.femjoyhunter.com/gallery/extra')),
+      throwsFormatException,
     );
   });
 

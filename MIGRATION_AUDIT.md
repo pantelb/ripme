@@ -2975,14 +2975,17 @@ Findings:
       as soon as the final URL is unresolved, changing the observable error.
       Flutter now lets unresolved short URLs surface through its null path, with
       Dart coverage for that Java-compatible failure behavior.
-- [ ] Java `FemjoyhunterRipper` inherits `AbstractHTMLRipper.canRip(...)`, so
+- [x] Java `FemjoyhunterRipper` inherits `AbstractHTMLRipper.canRip(...)`, so
       any host ending in `femjoyhunter.com` is accepted before `getGID(...)`.
       Flutter `FemjoyhunterRipper.canRip(...)` requires a `www.femjoyhunter.com`
       URL that matches the GID regex, narrowing Java's domain-level acceptance.
-- [ ] Java `FemjoyhunterRipper.getGID(...)` uses `Matcher.matches()` with
+      Flutter now uses Java's host suffix `canRip(...)`, with Dart coverage for
+      suffix-host acceptance and strict GID rejection.
+- [x] Java `FemjoyhunterRipper.getGID(...)` uses `Matcher.matches()` with
       `https?://www.femjoyhunter.com/SLUG/?`, so the whole URL must match.
       Flutter uses `RegExp.hasMatch`/`firstMatch` with the same unanchored
       pattern, accepting longer URLs whose prefix matches where Java would throw.
+      Flutter now anchors the GID regex and covers longer-path rejection in Dart.
 - [ ] Java `FitnakedgirlsRipper` inherits `AbstractHTMLRipper.canRip(...)`, so
       any host ending in `fitnakedgirls.com` is accepted before its gallery
       regex runs. Flutter `FitnakedgirlsRipper.canRip(...)` requires the strict

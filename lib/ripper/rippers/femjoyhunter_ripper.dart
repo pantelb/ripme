@@ -15,7 +15,7 @@ class FemjoyhunterRipper extends AbstractHTMLRipper {
   static const String domain = 'femjoyhunter.com';
   static const String downloadReferer = 'https://a2h6m3w6.ssl.hwcdn.net/';
   static final RegExp _gidPattern =
-      RegExp(r'https?://www\.femjoyhunter\.com/([a-zA-Z0-9_-]+)/?');
+      RegExp(r'^https?://www\.femjoyhunter\.com/([a-zA-Z0-9_-]+)/?$');
 
   @override
   String getHost() => 'femjoyhunter';
@@ -23,7 +23,7 @@ class FemjoyhunterRipper extends AbstractHTMLRipper {
   String getDomain() => domain;
 
   @override
-  bool canRip(Uri url) => _gidPattern.hasMatch(url.toString());
+  bool canRip(Uri url) => url.host.endsWith(getDomain());
 
   @override
   Future<String> getGID(Uri url) async {
