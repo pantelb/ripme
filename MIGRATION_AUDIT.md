@@ -2927,14 +2927,17 @@ Findings:
       narrowing Java's domain-level support. Flutter now uses Java's host suffix
       check while keeping strict `getGID(...)` parsing, with Dart coverage for
       both behaviors.
-- [ ] Java `ShesFreakyRipper` and `TsuminoRipper` inherit
+- [x] Java `ShesFreakyRipper` and `TsuminoRipper` inherit
       `AbstractHTMLRipper.canRip(...)`, so any host ending in
       `shesfreaky.com` or `tsumino.com` is accepted before their strict
       `getGID(...)` regexes run. Flutter `ShesFreakyRipper.canRip(...)` and
       `TsuminoRipper.canRip(...)` use those strict regexes directly; additionally,
       `RipperFactory` only routes exact `www.tsumino.com` hosts and constructs
       `TsuminoRipper` without calling its `canRip(...)`, so Tsumino dispatch does
-      not match Java's domain-level constructor guard.
+      not match Java's domain-level constructor guard. Flutter now uses Java's
+      host suffix checks for both rippers, keeps strict `getGID(...)` parsing,
+      and routes Tsumino suffix hosts through `RipperFactory`, with Dart coverage
+      for those paths.
 - [ ] Java `ReadcomicRipper` and `ViewcomicRipper` inherit
       `AbstractHTMLRipper.canRip(...)`, so any host ending in `read-comic.com`
       or `view-comic.com` is accepted before their strict slug-only

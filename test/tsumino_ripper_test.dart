@@ -20,6 +20,14 @@ void main() {
     );
     expect(
       ripper.canRip(Uri.parse('https://tsumino.com/Book/Info/43528/title')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://not-tsumino.com/anything')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://tsumino.com.evil/Book/Info/43528')),
       isFalse,
     );
 
@@ -30,6 +38,10 @@ void main() {
     );
     await expectLater(
       ripper.getGID(Uri.parse('https://www.tsumino.com/Book/Read/43528')),
+      throwsA(isA<FormatException>()),
+    );
+    await expectLater(
+      ripper.getGID(Uri.parse('https://tsumino.com/Book/Info/43528/title')),
       throwsA(isA<FormatException>()),
     );
     expect(TsuminoRipper.albumIdFromUrl(url), '43528');

@@ -432,6 +432,9 @@ void main() {
     final tsumino = RipperFactory.getRipper(
       Uri.parse('http://www.tsumino.com/Book/Info/43528/title'),
     );
+    final tsuminoBareHost = RipperFactory.getRipper(
+      Uri.parse('https://tsumino.com/Book/Info/43528/title'),
+    );
     final tumblr = RipperFactory.getRipper(
       Uri.parse('https://example.tumblr.com/post/1'),
     );
@@ -591,6 +594,7 @@ void main() {
     expect(thechive, isA<ThechiveRipper>());
     expect(theyiffgallery, isA<TheyiffgalleryRipper>());
     expect(tsumino, isA<TsuminoRipper>());
+    expect(tsuminoBareHost, isA<TsuminoRipper>());
     expect(tumblr, isA<TumblrRipper>());
     expect(twitch, isA<TwitchVideoRipper>());
     expect(twitchHttp, isNull);

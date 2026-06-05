@@ -19,10 +19,22 @@ void main() {
     );
     expect(
       ripper.canRip(Uri.parse('https://shesfreaky.com/galleries/id.html')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://not-shesfreaky.com/anything')),
+      isTrue,
+    );
+    expect(
+      ripper.canRip(Uri.parse('https://shesfreaky.com.evil/gallery/id.html')),
       isFalse,
     );
 
     expect(await ripper.getGID(url), 'nicee-snow-bunny-579NbPjUcYa');
+    await expectLater(
+      ripper.getGID(Uri.parse('https://shesfreaky.com/galleries/id.html')),
+      throwsFormatException,
+    );
   });
 
   test('ShesFreakyRipper keeps Java malformed URL error text', () async {

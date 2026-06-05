@@ -32,9 +32,7 @@ class TsuminoRipper extends AbstractHTMLRipper {
   String getDomain() => 'tsumino.com';
 
   @override
-  bool canRip(Uri url) =>
-      _gidWithTitlePattern.hasMatch(url.toString()) ||
-      _gidWithoutTitlePattern.hasMatch(url.toString());
+  bool canRip(Uri url) => url.host.endsWith(getDomain());
 
   @override
   Future<String> getGID(Uri url) async {

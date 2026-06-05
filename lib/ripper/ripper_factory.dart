@@ -266,7 +266,7 @@ class RipperFactory {
     final thechiveRipper = ThechiveRipper(uri);
     if (thechiveRipper.canRip(uri)) return thechiveRipper;
     if (host == 'theyiffgallery.com') return TheyiffgalleryRipper(uri);
-    if (host == 'www.tsumino.com') return TsuminoRipper(uri);
+    if (host.endsWith('tsumino.com')) return TsuminoRipper(uri);
     if (host.contains('tumblr.com')) return TumblrRipper(uri);
     final twitchVideoRipper = TwitchVideoRipper(uri);
     if (twitchVideoRipper.canRip(uri)) return twitchVideoRipper;
