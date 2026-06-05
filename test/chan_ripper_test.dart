@@ -77,6 +77,23 @@ void main() {
     expect(await ChanRipper(url).getGID(url), '123');
   });
 
+  test('ChanRipper getHost keeps Java split-index board behavior', () {
+    expect(
+      ChanRipper(Uri.parse('https://boards.4chan.org/hr/thread/3015701'))
+          .getHost(),
+      '4chan_hr',
+    );
+
+    expect(
+      () => ChanRipper(Uri.parse('https://boards.4chan.org')).getHost(),
+      throwsRangeError,
+    );
+    expect(
+      () => ChanRipper(Uri.parse('https://boards.4chan.org/')).getHost(),
+      throwsRangeError,
+    );
+  });
+
   test('ChanRipper supports user configured explicit domains', () async {
     SharedPreferences.setMockInitialValues({
       'chans.chan_sites': 'examplechan.test[cdn.examplechan.test]',

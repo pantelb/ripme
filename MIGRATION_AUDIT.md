@@ -3037,13 +3037,15 @@ Findings:
       preserving the current-source empty gifdeliverynetwork helper behavior,
       with fake-API Dart coverage for Reddit shared expansion and Chan
       explicit-archive extraction.
-- [ ] Java `ChanRipper.canRip(...)` accepts baked-in or configured chan domains
+- [x] Java `ChanRipper.canRip(...)` accepts baked-in or configured chan domains
       without validating a board/thread path, and `getHost()` later reads
       `this.url.toExternalForm().split("/")[3]`. A bare accepted domain can
       therefore fail with the Java split/index behavior. Flutter
       `ChanRipper.getHost()` uses `url.pathSegments.isNotEmpty ? first : ''`,
       returning an empty board instead of matching the Java malformed-path
-      failure.
+      failure. Flutter now derives the board from a Java-style slash split
+      after dropping trailing empty pieces, with Dart coverage for normal board
+      extraction and bare-domain/trailing-slash `RangeError` behavior.
 - [ ] Java `ChanRipper` parses `chans.chan_sites` into the static
       `user_give_explicit_domains` field at class-load time and then
       `canRip(...)` appends that frozen list into the static `explicit_domains`

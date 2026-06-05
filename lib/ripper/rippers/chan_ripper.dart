@@ -75,7 +75,11 @@ class ChanRipper extends AbstractHTMLRipper {
     if (host.contains('.')) {
       host = host.substring(host.lastIndexOf('.') + 1);
     }
-    final board = url.pathSegments.isNotEmpty ? url.pathSegments.first : '';
+    final urlPieces = url.toString().split('/');
+    while (urlPieces.isNotEmpty && urlPieces.last.isEmpty) {
+      urlPieces.removeLast();
+    }
+    final board = urlPieces[3];
     return '${host}_$board';
   }
 
