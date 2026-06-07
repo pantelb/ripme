@@ -49,8 +49,13 @@ class ViddmeRipper extends AbstractVideoRipper {
     if (stream == null) {
       throw HttpException('Could not find twitter:player:stream at $pageUrl');
     }
-    final content = stream.attributes['content'] ?? '';
-    return Uri.parse(content.replaceAll('&amp;', '&'));
+    final content =
+        (stream.attributes['content'] ?? '').replaceAll('&amp;', '&');
+    final videoUrl = Uri.parse(content);
+    if (content.trim().isEmpty || !videoUrl.hasScheme) {
+      throw HttpException('Malformed video URL at $pageUrl');
+    }
+    return videoUrl;
   }
 
   static String javaDownloadFileName(Uri videoUrl, String gid) {

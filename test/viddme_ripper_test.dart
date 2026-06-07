@@ -44,6 +44,13 @@ void main() {
           html.parse('<html></html>'), pageUrl),
       throwsA(isA<HttpException>()),
     );
+    expect(
+      () => ViddmeRipper.videoUrlFromDocument(
+        html.parse('<meta name="twitter:player:stream" content="">'),
+        pageUrl,
+      ),
+      throwsA(isA<HttpException>()),
+    );
   });
 
   test('builds Java Viddme video download filenames', () {

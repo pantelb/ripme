@@ -1203,13 +1203,12 @@ Findings:
       list from `videoDownloadsFromDocument(...)` and still sends
       `ripComplete`. The "scripts present, no source marker" path is therefore
       not Java-compatible.
-- [ ] Java `ViddmeRipper.rip()` and `VidearnRipper.rip()` convert the extracted
+- [x] Java `ViddmeRipper.rip()` and `VidearnRipper.rip()` convert the extracted
       video string with `new URI(vidUrl).toURL()` before scheduling the
       download, so a present marker with an empty `content` / `file:""` value
-      fails immediately as a malformed URL. Flutter parses the empty string as
-      a relative `Uri` in `videoUrlFromDocument(...)` / `videoUrlFromHtml(...)`
-      and lets `AbstractVideoRipper` proceed into filename/download handling,
-      changing the malformed-source failure path.
+      fails immediately as a malformed URL. Flutter now rejects empty or
+      non-absolute extracted video strings in `videoUrlFromDocument(...)` /
+      `videoUrlFromHtml(...)`, with focused Dart regression tests.
 - [ ] Java `MotherlessVideoRipper.rip()` logs the hardcoded error message
       `WTF` whenever the fetched HTML contains the `__fileurl = '` marker, and
       then still extracts the first marker and schedules the download. Flutter

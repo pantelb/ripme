@@ -45,7 +45,12 @@ class VidearnRipper extends AbstractVideoRipper {
     if (urls.isEmpty) {
       throw HttpException('Could not find files at $pageUrl');
     }
-    return Uri.parse(urls.first);
+    final content = urls.first;
+    final videoUrl = Uri.parse(content);
+    if (content.trim().isEmpty || !videoUrl.hasScheme) {
+      throw HttpException('Malformed video URL at $pageUrl');
+    }
+    return videoUrl;
   }
 
   static List<String> between(String value, String start, String end) {

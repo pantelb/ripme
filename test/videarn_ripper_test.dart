@@ -41,6 +41,10 @@ void main() {
       () => VidearnRipper.videoUrlFromHtml('<html></html>', pageUrl),
       throwsA(isA<HttpException>()),
     );
+    expect(
+      () => VidearnRipper.videoUrlFromHtml('player.setup({file:""});', pageUrl),
+      throwsA(isA<HttpException>()),
+    );
   });
 
   test('builds Java Videarn video download filenames', () {
