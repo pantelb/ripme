@@ -78,6 +78,7 @@ import 'rippers/picstatio_ripper.dart';
 import 'rippers/porncomix_ripper.dart';
 import 'rippers/porncomixinfo_ripper.dart';
 import 'rippers/pornhub_ripper.dart';
+import 'rippers/pornhub_video_ripper.dart';
 import 'rippers/pornpics_ripper.dart';
 import 'rippers/readcomic_ripper.dart';
 import 'rippers/reddit_ripper.dart';
@@ -201,6 +202,7 @@ class RipperFactory {
     (uri) => PorncomixRipper(uri),
     (uri) => PorncomixinfoRipper(uri),
     (uri) => PornhubRipper(uri),
+    (uri) => PornhubVideoRipper(uri),
     (uri) => PornpicsRipper(uri),
     (uri) => ReadcomicRipper(uri),
     (uri) => RedditRipper(uri),

@@ -79,6 +79,7 @@ import 'package:ripme/ripper/rippers/picstatio_ripper.dart';
 import 'package:ripme/ripper/rippers/porncomix_ripper.dart';
 import 'package:ripme/ripper/rippers/porncomixinfo_ripper.dart';
 import 'package:ripme/ripper/rippers/pornhub_ripper.dart';
+import 'package:ripme/ripper/rippers/pornhub_video_ripper.dart';
 import 'package:ripme/ripper/rippers/pornpics_ripper.dart';
 import 'package:ripme/ripper/rippers/readcomic_ripper.dart';
 import 'package:ripme/ripper/rippers/reddit_ripper.dart';
@@ -369,6 +370,9 @@ void main() {
     final pornhub = RipperFactory.getRipper(
       Uri.parse('https://www.pornhub.com/album/15680522?page=2'),
     );
+    final pornhubVideo = RipperFactory.getRipper(
+      Uri.parse('https://www.pornhub.com/view_video.php?viewkey=abc123'),
+    );
     final pornpics = RipperFactory.getRipper(
       Uri.parse('https://www.pornpics.com/galleries/example-gallery/'),
     );
@@ -580,6 +584,7 @@ void main() {
     expect(porncomix, isA<PorncomixRipper>());
     expect(porncomixinfo, isA<PorncomixinfoRipper>());
     expect(pornhub, isA<PornhubRipper>());
+    expect(pornhubVideo, isA<PornhubVideoRipper>());
     expect(pornpics, isA<PornpicsRipper>());
     expect(readcomic, isA<ReadcomicRipper>());
     expect(reddit, isA<RedditRipper>());

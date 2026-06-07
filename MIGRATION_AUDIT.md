@@ -1273,15 +1273,15 @@ Findings:
       `rippers/video/VkRipper.java`, plus `rippers/YuvutuRipper.java` and
       `rippers/video/YuvutuRipper.java`. Flutter's migration catalog tracks
       only simple class names, so simple-name set equality can hide a collapsed
-      album/video implementation. Yuvutu album/video routing is now represented
-      separately; Pornhub and VK still need the same source-backed proof or
+      album/video implementation. Yuvutu and Pornhub album/video routing are now
+      represented separately; VK still needs the same source-backed proof or
       implementation.
-- [ ] Java `rippers/video/PornhubRipper.canRip(...)` accepts
+- [x] Java `rippers/video/PornhubRipper.canRip(...)` accepts
       `https?://[wm.]*pornhub.com/view_video.php?viewkey=...` after the album
-      package scan fails to match non-album URLs. Flutter only imports the album
-      `PornhubRipper`, whose `canRip(...)` requires `url.path.startsWith('/album')`;
-      `RipperFactory` has no separate Pornhub video route, so Java-supported
-      Pornhub video URLs currently resolve to no Dart ripper.
+      package scan fails to match non-album URLs. Flutter now has a separate
+      `PornhubVideoRipper` with Java-compatible URL/GID parsing, reconstructed
+      quality-variable video URL selection, Java-style quality/viewkey filename
+      prefixing, and factory resolution tests.
 - [x] Java `rippers/video/YuvutuRipper.canRip(...)` accepts
       `http://www.yuvutu.com/video/ID/SLUG` after the album package scan fails.
       Flutter now has a separate `YuvutuVideoRipper` route with Java-compatible
