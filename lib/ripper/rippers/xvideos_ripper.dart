@@ -77,7 +77,7 @@ class XvideosRipper extends AbstractHTMLRipper {
     for (final source in await getURLsFromPage(page)) {
       if (isStopped) break;
       index++;
-      final sourceUri = Uri.parse(source);
+      final sourceUri = javaDownloadUri(source);
       downloads.add(
         RipperDownload(
           url: sourceUri,
@@ -131,6 +131,14 @@ class XvideosRipper extends AbstractHTMLRipper {
       for (final link in page.querySelectorAll('div.thumb > a'))
         link.attributes['href'] ?? '',
     ];
+  }
+
+  static Uri javaDownloadUri(String source) {
+    final uri = Uri.parse(source);
+    if (!uri.hasScheme) {
+      throw HttpException('Malformed download URL: $source');
+    }
+    return uri;
   }
 
   static String prefix(int index) {

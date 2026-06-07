@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:ripme/ripper/rippers/xvideos_ripper.dart';
@@ -68,6 +70,17 @@ void main() {
         prefix: XvideosRipper.prefix(4),
       ),
       '004_high.mp4',
+    );
+  });
+
+  test('rejects relative album hrefs before queueing like Java', () {
+    expect(
+      XvideosRipper.javaDownloadUri('https://img.example/one.jpg').toString(),
+      'https://img.example/one.jpg',
+    );
+    expect(
+      () => XvideosRipper.javaDownloadUri('/relative/two.jpg'),
+      throwsA(isA<HttpException>()),
     );
   });
 

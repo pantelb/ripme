@@ -1252,14 +1252,13 @@ Findings:
       `YoupornRipper.prefix(...)`, and album `YuvutuRipper.prefix(...)`
       unconditionally return `NNN_`; their tests cover only the enabled prefix
       path, so these ports ignore Java's global no-save-order setting.
-- [ ] Java `XvideosRipper.getURLsFromPage(...)` returns raw
+- [x] Java `XvideosRipper.getURLsFromPage(...)` returns raw
       `div.thumb > a` `href` strings for album pages, and
       `AbstractHTMLRipper.rip()` immediately converts each string with
       `new URI(imageURL).toURL()`. Relative album hrefs therefore fail before
       queueing in Java. Flutter `XvideosRipper.albumUrlsFromDocument(...)`
-      preserves relative hrefs and `rip()` parses them as relative `Uri`
-      download targets, so relative album entries fail later/differently instead
-      of matching Java's immediate URI-to-URL failure path.
+      still preserves raw hrefs, and `rip()` now uses a Java-style download URI
+      conversion that rejects relative sources before building download requests.
 - [ ] Java `XvideosRipper.getURLsFromPage(...)` breaks after the first
       `div.thumb > a` album link when `AbstractRipper.isThisATest()` is true.
       Flutter has no shared `markAsTest()` / `isThisATest()` equivalent and
