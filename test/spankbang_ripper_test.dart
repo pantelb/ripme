@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart' as html;
 import 'package:ripme/ripper/rippers/spankbang_ripper.dart';
@@ -59,9 +61,17 @@ void main() {
     ]);
   });
 
-  test('SpankbangRipper keeps Java missing and empty source behavior', () {
+  test('SpankbangRipper keeps Java missing and empty source behavior',
+      () async {
+    final ripper =
+        SpankbangRipper(Uri.parse('https://spankbang.com/2a7fh/video/mdb901'));
+
     expect(SpankbangRipper.videoUrlsFromDocument(html.parse('<video></video>')),
         isNull);
+    await expectLater(
+      ripper.getURLsFromPage(html.parse('<video></video>')),
+      throwsA(isA<HttpException>()),
+    );
     expect(
       SpankbangRipper.videoUrlsFromDocument(
         html.parse('<video class="video-js"><source></video>'),

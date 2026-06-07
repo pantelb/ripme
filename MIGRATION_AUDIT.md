@@ -1239,13 +1239,12 @@ Findings:
       ports for these classes currently extend `AbstractHTMLRipper`; their
       tests cover extraction/filenames, but not Java single-file byte-progress
       inheritance semantics.
-- [ ] Java `SpankbangRipper.getURLsFromPage(...)` returns `null` when
+- [x] Java `SpankbangRipper.getURLsFromPage(...)` returns `null` when
       `.video-js > source` is absent, after logging that the embed code could
       not be found. Flutter `SpankbangRipper.videoUrlsFromDocument(...)`
-      preserves that helper-level `null`, but the framework-facing
-      `getURLsFromPage(...)` converts it to `const []`, so a missing video
-      source becomes an empty successful extraction instead of Java's null
-      result path.
+      preserves that helper-level `null`, and the framework-facing
+      `getURLsFromPage(...)` now throws the same missing-embed failure instead
+      of converting it to an empty successful extraction.
 - [x] Java single-file-style rippers still use `AbstractHTMLRipper.getPrefix(...)`
       when their concrete `downloadURL(...)` calls `addURLToDownload(url,
       getPrefix(index))`, so `download.save_order=false` disables ordered

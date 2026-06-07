@@ -79,7 +79,11 @@ class SpankbangRipper extends AbstractHTMLRipper {
 
   @override
   Future<List<String>> getURLsFromPage(Document page) async {
-    return videoUrlsFromDocument(page) ?? const [];
+    final urls = videoUrlsFromDocument(page);
+    if (urls == null) {
+      throw HttpException('Could not find Embed code at $url');
+    }
+    return urls;
   }
 
   @override
