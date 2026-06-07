@@ -1267,27 +1267,26 @@ Findings:
       Flutter has no shared `markAsTest()` / `isThisATest()` equivalent and
       `albumUrlsFromDocument(...)` always returns every matching thumb link, so
       Java-compatible Xvideos album test-mode limiting is missing.
-- [ ] Java has package-distinct album and video rippers with duplicate simple
+- [~] Java has package-distinct album and video rippers with duplicate simple
       class names: `rippers/PornhubRipper.java` and
       `rippers/video/PornhubRipper.java`, `rippers/VkRipper.java` and
       `rippers/video/VkRipper.java`, plus `rippers/YuvutuRipper.java` and
       `rippers/video/YuvutuRipper.java`. Flutter's migration catalog tracks
       only simple class names, so simple-name set equality can hide a collapsed
-      album/video implementation. Factory routing and tests must prove both
-      Java behaviors are represented separately or document an intentional
-      merge.
+      album/video implementation. Yuvutu album/video routing is now represented
+      separately; Pornhub and VK still need the same source-backed proof or
+      implementation.
 - [ ] Java `rippers/video/PornhubRipper.canRip(...)` accepts
       `https?://[wm.]*pornhub.com/view_video.php?viewkey=...` after the album
       package scan fails to match non-album URLs. Flutter only imports the album
       `PornhubRipper`, whose `canRip(...)` requires `url.path.startsWith('/album')`;
       `RipperFactory` has no separate Pornhub video route, so Java-supported
       Pornhub video URLs currently resolve to no Dart ripper.
-- [ ] Java `rippers/video/YuvutuRipper.canRip(...)` accepts
+- [x] Java `rippers/video/YuvutuRipper.canRip(...)` accepts
       `http://www.yuvutu.com/video/ID/SLUG` after the album package scan fails.
-      Flutter `YuvutuRipper` implements only the Java gallery URL pattern
-      `modules.php?name=YuGallery&action=view&set_id=...`, and `RipperFactory`
-      has no separate Yuvutu video route, so Java-supported Yuvutu video URLs
-      currently resolve to no Dart ripper.
+      Flutter now has a separate `YuvutuVideoRipper` route with Java-compatible
+      URL/GID parsing, iframe/script `file: "..."` extraction, video filename
+      prefixing, and factory resolution tests.
 - [ ] Java album `YuvutuRipper.getURLsFromPage(...)` adds every
       `div#galleria > a > img` `src` value, including empty strings, and the
       shared `AbstractHTMLRipper.rip()` then converts each candidate with

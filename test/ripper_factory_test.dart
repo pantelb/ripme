@@ -116,6 +116,7 @@ import 'package:ripme/ripper/rippers/xlecx_ripper.dart';
 import 'package:ripme/ripper/rippers/xvideos_ripper.dart';
 import 'package:ripme/ripper/rippers/youporn_ripper.dart';
 import 'package:ripme/ripper/rippers/yuvutu_ripper.dart';
+import 'package:ripme/ripper/rippers/yuvutu_video_ripper.dart';
 import 'package:ripme/ripper/rippers/zizki_ripper.dart';
 
 void main() {
@@ -494,6 +495,9 @@ void main() {
         'http://www.yuvutu.com/modules.php?name=YuGallery&action=view&set_id=420333',
       ),
     );
+    final yuvutuVideo = RipperFactory.getRipper(
+      Uri.parse('http://www.yuvutu.com/video/12345/example-slug'),
+    );
     final zizki = RipperFactory.getRipper(
       Uri.parse('http://zizki.com/dee-chorde/we-got-spirit'),
     );
@@ -615,6 +619,7 @@ void main() {
     expect(xvideos, isA<XvideosRipper>());
     expect(youporn, isA<YoupornRipper>());
     expect(yuvutu, isA<YuvutuRipper>());
+    expect(yuvutuVideo, isA<YuvutuVideoRipper>());
     expect(zizki, isA<ZizkiRipper>());
   });
 

@@ -115,6 +115,7 @@ import 'rippers/xlecx_ripper.dart';
 import 'rippers/xvideos_ripper.dart';
 import 'rippers/youporn_ripper.dart';
 import 'rippers/yuvutu_ripper.dart';
+import 'rippers/yuvutu_video_ripper.dart';
 import 'rippers/zizki_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
 
@@ -237,6 +238,7 @@ class RipperFactory {
     (uri) => XvideosRipper(uri),
     (uri) => YoupornRipper(uri),
     (uri) => YuvutuRipper(uri),
+    (uri) => YuvutuVideoRipper(uri),
     (uri) => ZizkiRipper(uri),
   ];
 
