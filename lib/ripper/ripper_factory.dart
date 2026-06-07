@@ -106,8 +106,9 @@ import 'rippers/vidble_ripper.dart';
 import 'rippers/viddme_ripper.dart';
 import 'rippers/videarn_ripper.dart';
 import 'rippers/viewcomic_ripper.dart';
-import 'rippers/vsco_ripper.dart';
 import 'rippers/vk_ripper.dart';
+import 'rippers/vk_video_ripper.dart';
+import 'rippers/vsco_ripper.dart';
 import 'rippers/webtoons_ripper.dart';
 import 'rippers/wordpress_comic_ripper.dart';
 import 'rippers/xcartx_ripper.dart';
@@ -231,6 +232,7 @@ class RipperFactory {
     (uri) => VidearnRipper(uri),
     (uri) => ViewcomicRipper(uri),
     (uri) => VkRipper(uri),
+    (uri) => VkVideoRipper(uri),
     (uri) => VscoRipper(uri),
     (uri) => WebtoonsRipper(uri),
     (uri) => WordpressComicRipper(uri),

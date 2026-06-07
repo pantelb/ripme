@@ -108,6 +108,7 @@ import 'package:ripme/ripper/rippers/viddme_ripper.dart';
 import 'package:ripme/ripper/rippers/videarn_ripper.dart';
 import 'package:ripme/ripper/rippers/viewcomic_ripper.dart';
 import 'package:ripme/ripper/rippers/vk_ripper.dart';
+import 'package:ripme/ripper/rippers/vk_video_ripper.dart';
 import 'package:ripme/ripper/rippers/vsco_ripper.dart';
 import 'package:ripme/ripper/rippers/webtoons_ripper.dart';
 import 'package:ripme/ripper/rippers/wordpress_comic_ripper.dart';
@@ -469,6 +470,9 @@ void main() {
     final vk = RipperFactory.getRipper(
       Uri.parse('https://vk.com/album45506334_0'),
     );
+    final vkVideo = RipperFactory.getRipper(
+      Uri.parse('https://vk.com/video123_456'),
+    );
     final vsco = RipperFactory.getRipper(
       Uri.parse('https://vsco.co/jolly-roger/gallery'),
     );
@@ -615,6 +619,7 @@ void main() {
     expect(videarn, isA<VidearnRipper>());
     expect(viewcomic, isA<ViewcomicRipper>());
     expect(vk, isA<VkRipper>());
+    expect(vkVideo, isA<VkVideoRipper>());
     expect(vsco, isA<VscoRipper>());
     expect(webtoons, isA<WebtoonsRipper>());
     expect(wordpressComic, isA<WordpressComicRipper>());

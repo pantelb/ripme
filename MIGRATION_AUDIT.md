@@ -1267,15 +1267,14 @@ Findings:
       Flutter has no shared `markAsTest()` / `isThisATest()` equivalent and
       `albumUrlsFromDocument(...)` always returns every matching thumb link, so
       Java-compatible Xvideos album test-mode limiting is missing.
-- [~] Java has package-distinct album and video rippers with duplicate simple
+- [x] Java has package-distinct album and video rippers with duplicate simple
       class names: `rippers/PornhubRipper.java` and
       `rippers/video/PornhubRipper.java`, `rippers/VkRipper.java` and
       `rippers/video/VkRipper.java`, plus `rippers/YuvutuRipper.java` and
-      `rippers/video/YuvutuRipper.java`. Flutter's migration catalog tracks
-      only simple class names, so simple-name set equality can hide a collapsed
-      album/video implementation. Yuvutu and Pornhub album/video routing are now
-      represented separately; VK still needs the same source-backed proof or
-      implementation.
+      `rippers/video/YuvutuRipper.java`. Flutter now represents each duplicate
+      album/video pair with separate Dart routing/tests: `PornhubRipper` /
+      `PornhubVideoRipper`, `VkRipper` / `VkVideoRipper`, and `YuvutuRipper` /
+      `YuvutuVideoRipper`.
 - [x] Java `rippers/video/PornhubRipper.canRip(...)` accepts
       `https?://[wm.]*pornhub.com/view_video.php?viewkey=...` after the album
       package scan fails to match non-album URLs. Flutter now has a separate
