@@ -1296,39 +1296,30 @@ Findings:
       also preserves empty strings, but `rip()` parses them as relative `Uri`
       download targets and builds `RipperDownload`s, changing the failure point
       and status path for malformed gallery images.
-- [ ] Java `AbstractRipper(URL)` rejects a candidate constructor whenever that
+- [x] Java `AbstractRipper(URL)` rejects a candidate constructor whenever that
       class's `canRip(url)` is false before `AbstractRipper.getRipper(...)`
       tries the next album/video class. Flutter `RipperFactory.getRipper(...)`
-      bypasses that constructor guard for direct host routes, returning rippers
-      without calling their stricter `canRip(...)`; for example
-      `cliphunter.com` accepts any path before `CliphunterRipper.canRip(...)`
-      can require `/w/ID`, and hosts such as `cliphunter.com.evil` can also
-      dispatch before Java's full-URL regex would reject them;
-      `hentaifox.com` accepts any path before `HentaifoxRipper.canRip(...)`
-      can require `/gallery/ID`,
-      `fitnakedgirls.com` accepts any path before `FitnakedgirlsRipper.canRip(...)`
-      can require `/photos/gallery/...`, and `hentainexus.com` accepts any path
-      before `HentaiNexusRipper.canRip(...)` can require `/view/ID` or
-      `/read/ID`.
-- [ ] The same Flutter factory constructor-guard bypass affects additional
-      direct routes whose own Dart `canRip(...)` is stricter than the factory
-      host predicate, including `BatoRipper`, `FapDungeonRipper`,
-      `FemjoyhunterRipper`, `FuskatorRipper`, `GirlsOfDesireRipper`,
-      `HentaifoundryRipper`, `EightmusesRipper`, `ImgurRipper`,
-      `NewgroundsRipper`, `NfsfwRipper`, `TheyiffgalleryRipper`, and
-      `ViewcomicRipper`. These must be fixed as one dispatch contract, not only
-      for the first examples above.
-- [ ] Flutter `RipperFactory.getRipper(...)` also expands several direct host
+      now mirrors that dispatch contract by scanning the ordered Dart ripper
+      list, catching incompatible constructor/check failures, and returning a
+      candidate only after its own `canRip(...)` accepts the URL. Focused tests
+      cover strict Java rejects such as unsupported `CliphunterRipper` and
+      `BatoRipper` paths.
+- [x] The same Flutter factory constructor-guard bypass affected additional
+      direct routes whose own Dart `canRip(...)` was stricter than the factory
+      host predicate. The route table no longer returns from host predicates;
+      every ported candidate is gated by its own `canRip(...)`. During
+      implementation, the source check found that some examples previously
+      listed here (`HentaifoxRipper`, `FitnakedgirlsRipper`, and several others)
+      intentionally remain host-only at constructor time because the Java classes
+      inherit `AbstractHTMLRipper.canRip(...)`; their stricter regexes are
+      `getGID(...)` validation, not constructor dispatch validation.
+- [x] Flutter `RipperFactory.getRipper(...)` also expanded several direct host
       routes by using `host.contains(...)` instead of Java's inherited
       `AbstractHTMLRipper.canRip(...)` `url.getHost().endsWith(getDomain())`
-      guard. For routes such as `AllporncomicRipper`, `ArtStationRipper`,
-      `ArtstnRipper`, `BaraagRipper`, `BatoRipper`, `EightmusesRipper`,
-      `FlickrRipper`, `ImagefapRipper`, `ImgurRipper`, `InstagramRipper`,
-      `MastodonRipper`, `MastodonXyzRipper`, `NhentaiRipper`, `PawooRipper`,
-      `RedditRipper`, `RedgifsRipper`, and `TumblrRipper`, hosts like
-      `imgur.com.evil`, `evilreddit.com.invalid`, `redgifs.com.evil`, or
-      `8muses.com.evil` can dispatch in Flutter where Java would reject the
-      constructor and keep scanning/fail.
+      guard. The factory no longer performs `contains` host dispatch. Focused
+      tests cover spoof hosts such as `imgur.com.evil`, `reddit.com.evil`,
+      `redgifs.com.evil`, `8muses.com.evil`, and Tumblr-style spoof subdomains
+      being rejected by the candidate `canRip(...)` checks.
 - [ ] Java dispatch is also host-case-sensitive: `java.net.URL.getHost()`
       preserves uppercase input such as `WWW.DRIBBBLE.COM`, and Java's
       inherited `canRip(...)` compares it with case-sensitive

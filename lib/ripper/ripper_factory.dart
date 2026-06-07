@@ -118,189 +118,138 @@ import 'rippers/yuvutu_ripper.dart';
 import 'rippers/zizki_ripper.dart';
 import 'unsupported_legacy_ripper.dart';
 
+typedef _RipperBuilder = AbstractRipper Function(Uri uri);
+
 class RipperFactory {
+  static final List<_RipperBuilder> _portedRippers = [
+    (uri) => AllporncomicRipper(uri),
+    (uri) => ArtStationRipper(uri),
+    (uri) => ArtstnRipper(uri),
+    (uri) => BaraagRipper(uri),
+    (uri) => BatoRipper(uri),
+    (uri) => BooruRipper(uri),
+    (uri) => CfakeRipper(uri),
+    (uri) => ChanRipper(uri),
+    (uri) => CheveretoRipper(uri),
+    (uri) => CliphunterRipper(uri),
+    (uri) => CoomerPartyRipper(uri),
+    (uri) => DanbooruRipper(uri),
+    (uri) => DerpiRipper(uri),
+    (uri) => DeviantartRipper(uri),
+    (uri) => DribbbleRipper(uri),
+    (uri) => DynastyscansRipper(uri),
+    (uri) => E621Ripper(uri),
+    (uri) => EHentaiRipper(uri),
+    (uri) => ErofusRipper(uri),
+    (uri) => EromeRipper(uri),
+    (uri) => FapDungeonRipper(uri),
+    (uri) => FapwizRipper(uri),
+    (uri) => FemjoyhunterRipper(uri),
+    (uri) => FitnakedgirlsRipper(uri),
+    (uri) => FivehundredpxRipper(uri),
+    (uri) => FreeComicOnlineRipper(uri),
+    (uri) => FuraffinityRipper(uri),
+    (uri) => FuskatorRipper(uri),
+    (uri) => GirlsOfDesireRipper(uri),
+    (uri) => Hentai2readRipper(uri),
+    (uri) => HentaiNexusRipper(uri),
+    (uri) => HentaifoundryRipper(uri),
+    (uri) => HentaifoxRipper(uri),
+    (uri) => HentaiimageRipper(uri),
+    (uri) => HitomiRipper(uri),
+    (uri) => HqpornerRipper(uri),
+    (uri) => HypnohubRipper(uri),
+    (uri) => ImagebamRipper(uri),
+    (uri) => ImagevenueRipper(uri),
+    (uri) => ImgboxRipper(uri),
+    (uri) => EightmusesRipper(uri),
+    (uri) => FlickrRipper(uri),
+    (uri) => ImagefapRipper(uri),
+    (uri) => ImgurRipper(uri),
+    (uri) => InstagramRipper(uri),
+    (uri) => JabArchivesRipper(uri),
+    (uri) => JagodibujaRipper(uri),
+    (uri) => Jpg3Ripper(uri),
+    (uri) => KingcomixRipper(uri),
+    (uri) => ListalRipper(uri),
+    (uri) => LusciousRipper(uri),
+    (uri) => MangadexRipper(uri),
+    (uri) => MastodonRipper(uri),
+    (uri) => MastodonXyzRipper(uri),
+    (uri) => ModelmayhemRipper(uri),
+    (uri) => MotherlessRipper(uri),
+    (uri) => MotherlessVideoRipper(uri),
+    (uri) => MrCongRipper(uri),
+    (uri) => MultpornRipper(uri),
+    (uri) => MyhentaicomicsRipper(uri),
+    (uri) => MyhentaigalleryRipper(uri),
+    (uri) => MyreadingmangaRipper(uri),
+    (uri) => NatalieMuRipper(uri),
+    (uri) => NewgroundsRipper(uri),
+    (uri) => NfsfwRipper(uri),
+    (uri) => NsfwAlbumRipper(uri),
+    (uri) => NsfwXxxRipper(uri),
+    (uri) => NudeGalsRipper(uri),
+    (uri) => NhentaiRipper(uri),
+    (uri) => OglafRipper(uri),
+    (uri) => PahealRipper(uri),
+    (uri) => PawooRipper(uri),
+    (uri) => PhotobucketRipper(uri),
+    (uri) => PichunterRipper(uri),
+    (uri) => PicstatioRipper(uri),
+    (uri) => PorncomixRipper(uri),
+    (uri) => PorncomixinfoRipper(uri),
+    (uri) => PornhubRipper(uri),
+    (uri) => PornpicsRipper(uri),
+    (uri) => ReadcomicRipper(uri),
+    (uri) => RedditRipper(uri),
+    (uri) => RedgifsRipper(uri),
+    (uri) => Rule34Ripper(uri),
+    (uri) => RulePornRipper(uri),
+    (uri) => SankakuComplexRipper(uri),
+    (uri) => ScrolllerRipper(uri),
+    (uri) => ShesFreakyRipper(uri),
+    (uri) => SinfestRipper(uri),
+    (uri) => SmuttyRipper(uri),
+    (uri) => SoundgasmRipper(uri),
+    (uri) => SpankbangRipper(uri),
+    (uri) => StaRipper(uri),
+    (uri) => TapasticRipper(uri),
+    (uri) => TeenplanetRipper(uri),
+    (uri) => ThechiveRipper(uri),
+    (uri) => TheyiffgalleryRipper(uri),
+    (uri) => TsuminoRipper(uri),
+    (uri) => TumblrRipper(uri),
+    (uri) => TwitchVideoRipper(uri),
+    (uri) => TwodgalleriesRipper(uri),
+    (uri) => TwitterRipper(uri),
+    (uri) => VidbleRipper(uri),
+    (uri) => ViddmeRipper(uri),
+    (uri) => VidearnRipper(uri),
+    (uri) => ViewcomicRipper(uri),
+    (uri) => VkRipper(uri),
+    (uri) => VscoRipper(uri),
+    (uri) => WebtoonsRipper(uri),
+    (uri) => WordpressComicRipper(uri),
+    (uri) => XcartxRipper(uri),
+    (uri) => XhamsterRipper(uri),
+    (uri) => XlecxRipper(uri),
+    (uri) => XvideosRipper(uri),
+    (uri) => YoupornRipper(uri),
+    (uri) => YuvutuRipper(uri),
+    (uri) => ZizkiRipper(uri),
+  ];
+
   static AbstractRipper? getRipper(Uri uri) {
-    String host = uri.host.toLowerCase();
-    if (host.contains('allporncomic.com')) return AllporncomicRipper(uri);
-    if (host.contains('artstation.com')) return ArtStationRipper(uri);
-    if (host.contains('artstn.co')) return ArtstnRipper(uri);
-    if (host.contains('baraag.net')) return BaraagRipper(uri);
-    if (host.contains('bato.to')) return BatoRipper(uri);
-    if (host.contains('xbooru.com') || host.contains('gelbooru.com')) {
-      return BooruRipper(uri);
+    for (final buildRipper in _portedRippers) {
+      try {
+        final ripper = buildRipper(uri);
+        if (ripper.canRip(uri)) return ripper;
+      } on Exception {
+        // Java dispatch catches incompatible constructor failures and keeps
+        // scanning the remaining ripper constructors.
+      }
     }
-    if (host == 'cfake.com') return CfakeRipper(uri);
-    final chanRipper = ChanRipper(uri);
-    if (chanRipper.canRip(uri)) return chanRipper;
-    if (CheveretoRipper.explicitDomains.contains(host)) {
-      return CheveretoRipper(uri);
-    }
-    if (host.contains('cliphunter.com')) return CliphunterRipper(uri);
-    if (host.endsWith('coomer.party') || host.endsWith('coomer.su')) {
-      return CoomerPartyRipper(uri);
-    }
-    if (host.endsWith('danbooru.donmai.us')) return DanbooruRipper(uri);
-    if (host.endsWith('derpibooru.org')) return DerpiRipper(uri);
-    if (host.endsWith('deviantart.com')) return DeviantartRipper(uri);
-    if (host.endsWith('dribbble.com')) return DribbbleRipper(uri);
-    if (host.endsWith('dynasty-scans.com')) return DynastyscansRipper(uri);
-    if (host.endsWith('e621.net')) return E621Ripper(uri);
-    if (host.endsWith('e-hentai.org')) return EHentaiRipper(uri);
-    if (host.endsWith('erofus.com')) return ErofusRipper(uri);
-    if (host.endsWith('erome.com')) return EromeRipper(uri);
-    if (host.endsWith('fapdungeon.com')) return FapDungeonRipper(uri);
-    if (host.endsWith('fapwiz.com')) return FapwizRipper(uri);
-    if (host.endsWith('femjoyhunter.com')) return FemjoyhunterRipper(uri);
-    if (host.endsWith('fitnakedgirls.com')) return FitnakedgirlsRipper(uri);
-    if (host.endsWith('500px.com')) return FivehundredpxRipper(uri);
-    if (host.endsWith('freecomiconline.me')) {
-      return FreeComicOnlineRipper(uri);
-    }
-    if (host.endsWith('furaffinity.net')) return FuraffinityRipper(uri);
-    if (host.endsWith('fuskator.com')) return FuskatorRipper(uri);
-    if (host.endsWith('girlsofdesire.org')) {
-      return GirlsOfDesireRipper(uri);
-    }
-    if (host.endsWith('hentai2read.com')) return Hentai2readRipper(uri);
-    if (host.endsWith('hentainexus.com')) return HentaiNexusRipper(uri);
-    if (host.endsWith('hentai-foundry.com')) {
-      return HentaifoundryRipper(uri);
-    }
-    if (host.endsWith('hentaifox.com')) return HentaifoxRipper(uri);
-    final hentaiimageRipper = HentaiimageRipper(uri);
-    if (hentaiimageRipper.canRip(uri)) return hentaiimageRipper;
-    final hitomiRipper = HitomiRipper(uri);
-    if (hitomiRipper.canRip(uri)) return hitomiRipper;
-    final hqpornerRipper = HqpornerRipper(uri);
-    if (hqpornerRipper.canRip(uri)) return hqpornerRipper;
-    if (host.endsWith('hypnohub.net')) return HypnohubRipper(uri);
-    if (host.endsWith('imagebam.com')) return ImagebamRipper(uri);
-    if (host.endsWith('imagevenue.com')) return ImagevenueRipper(uri);
-    if (host.endsWith('imgbox.com')) return ImgboxRipper(uri);
-    if (host.contains('8muses.com')) return EightmusesRipper(uri);
-    if (host.contains('flickr.com')) return FlickrRipper(uri);
-    if (host.contains('imagefap.com')) return ImagefapRipper(uri);
-    if (host.contains('imgur.com')) return ImgurRipper(uri);
-    if (host.contains('instagram.com')) return InstagramRipper(uri);
-    if (host.endsWith('jabarchives.com')) return JabArchivesRipper(uri);
-    if (host.endsWith('jagodibuja.com')) return JagodibujaRipper(uri);
-    if (host.endsWith('jpg3.su')) return Jpg3Ripper(uri);
-    if (host.endsWith('kingcomix.com')) return KingcomixRipper(uri);
-    if (host.endsWith('listal.com')) return ListalRipper(uri);
-    final lusciousRipper = LusciousRipper(uri);
-    if (lusciousRipper.canRip(uri)) return lusciousRipper;
-    if (host.endsWith('mangadex.org')) return MangadexRipper(uri);
-    if (host.contains('mastodon.social')) return MastodonRipper(uri);
-    if (host.contains('mastodon.xyz')) return MastodonXyzRipper(uri);
-    if (host.endsWith('modelmayhem.com')) return ModelmayhemRipper(uri);
-    if (host.contains('motherless.com')) {
-      final motherlessRipper = MotherlessRipper(uri);
-      if (motherlessRipper.canRip(uri)) return motherlessRipper;
-      final motherlessVideoRipper = MotherlessVideoRipper(uri);
-      if (motherlessVideoRipper.canRip(uri)) return motherlessVideoRipper;
-    }
-    if (host.endsWith('misskon.com')) return MrCongRipper(uri);
-    if (host.endsWith('multporn.net')) return MultpornRipper(uri);
-    if (host.endsWith('myhentaicomics.com')) {
-      return MyhentaicomicsRipper(uri);
-    }
-    if (host.endsWith('myhentaigallery.com')) {
-      return MyhentaigalleryRipper(uri);
-    }
-    if (host.endsWith('myreadingmanga.info')) {
-      return MyreadingmangaRipper(uri);
-    }
-    if (host.contains('natalie.mu')) {
-      final natalieMuRipper = NatalieMuRipper(uri);
-      if (natalieMuRipper.canRip(uri)) return natalieMuRipper;
-    }
-    if (host.endsWith('newgrounds.com')) return NewgroundsRipper(uri);
-    if (host.endsWith('nfsfw.com')) return NfsfwRipper(uri);
-    if (host.endsWith('nsfwalbum.com')) return NsfwAlbumRipper(uri);
-    if (host.endsWith('nsfw.xxx')) return NsfwXxxRipper(uri);
-    if (host.endsWith('nude-gals.com')) return NudeGalsRipper(uri);
-    if (host.contains('nhentai.net')) return NhentaiRipper(uri);
-    if (host.endsWith('oglaf.com')) return OglafRipper(uri);
-    if (host.endsWith('rule34.paheal.net')) return PahealRipper(uri);
-    if (host.contains('pawoo.net')) return PawooRipper(uri);
-    final photobucketRipper = PhotobucketRipper(uri);
-    if (photobucketRipper.canRip(uri)) return photobucketRipper;
-    final pichunterRipper = PichunterRipper(uri);
-    if (pichunterRipper.canRip(uri)) return pichunterRipper;
-    final picstatioRipper = PicstatioRipper(uri);
-    if (picstatioRipper.canRip(uri)) return picstatioRipper;
-    final porncomixRipper = PorncomixRipper(uri);
-    if (porncomixRipper.canRip(uri)) return porncomixRipper;
-    final porncomixinfoRipper = PorncomixinfoRipper(uri);
-    if (porncomixinfoRipper.canRip(uri)) return porncomixinfoRipper;
-    final pornhubRipper = PornhubRipper(uri);
-    if (pornhubRipper.canRip(uri)) return pornhubRipper;
-    final pornpicsRipper = PornpicsRipper(uri);
-    if (pornpicsRipper.canRip(uri)) return pornpicsRipper;
-    final readcomicRipper = ReadcomicRipper(uri);
-    if (readcomicRipper.canRip(uri)) return readcomicRipper;
-    if (host.contains('reddit.com')) return RedditRipper(uri);
-    if (host.contains('redgifs.com') ||
-        host.contains('gifdeliverynetwork.com')) {
-      return RedgifsRipper(uri);
-    }
-    final rule34Ripper = Rule34Ripper(uri);
-    if (rule34Ripper.canRip(uri)) return rule34Ripper;
-    final rulepornRipper = RulePornRipper(uri);
-    if (rulepornRipper.canRip(uri)) return rulepornRipper;
-    final sankakuComplexRipper = SankakuComplexRipper(uri);
-    if (sankakuComplexRipper.canRip(uri)) return sankakuComplexRipper;
-    final scrolllerRipper = ScrolllerRipper(uri);
-    if (scrolllerRipper.canRip(uri)) return scrolllerRipper;
-    final shesFreakyRipper = ShesFreakyRipper(uri);
-    if (shesFreakyRipper.canRip(uri)) return shesFreakyRipper;
-    final sinfestRipper = SinfestRipper(uri);
-    if (sinfestRipper.canRip(uri)) return sinfestRipper;
-    if (host.endsWith('smutty.com')) return SmuttyRipper(uri);
-    if (host.endsWith('soundgasm.net')) return SoundgasmRipper(uri);
-    final spankbangRipper = SpankbangRipper(uri);
-    if (spankbangRipper.canRip(uri)) return spankbangRipper;
-    if (host == 'sta.sh') return StaRipper(uri);
-    if (host == 'tapas.io') return TapasticRipper(uri);
-    if (host.endsWith('teenplanet.org')) return TeenplanetRipper(uri);
-    final thechiveRipper = ThechiveRipper(uri);
-    if (thechiveRipper.canRip(uri)) return thechiveRipper;
-    if (host == 'theyiffgallery.com') return TheyiffgalleryRipper(uri);
-    if (host.endsWith('tsumino.com')) return TsuminoRipper(uri);
-    if (host.contains('tumblr.com')) return TumblrRipper(uri);
-    final twitchVideoRipper = TwitchVideoRipper(uri);
-    if (twitchVideoRipper.canRip(uri)) return twitchVideoRipper;
-    if (host.endsWith('2dgalleries.com')) return TwodgalleriesRipper(uri);
-    if (host.endsWith('twitter.com')) return TwitterRipper(uri);
-    if (host.endsWith('vidble.com')) return VidbleRipper(uri);
-    final viddmeRipper = ViddmeRipper(uri);
-    if (viddmeRipper.canRip(uri)) return viddmeRipper;
-    final videarnRipper = VidearnRipper(uri);
-    if (videarnRipper.canRip(uri)) return videarnRipper;
-    if (host.endsWith('view-comic.com')) return ViewcomicRipper(uri);
-    final vkRipper = VkRipper(uri);
-    if (vkRipper.canRip(uri)) return vkRipper;
-    if (host.endsWith('vsco.co')) return VscoRipper(uri);
-    if (host == 'www.webtoons.com') {
-      final webtoonsRipper = WebtoonsRipper(uri);
-      if (webtoonsRipper.canRip(uri)) return webtoonsRipper;
-    }
-    if (WordpressComicRipper.explicitDomains.contains(host)) {
-      final wordpressComicRipper = WordpressComicRipper(uri);
-      if (wordpressComicRipper.canRip(uri)) return wordpressComicRipper;
-    }
-    if (host.endsWith('xcartx.com')) return XcartxRipper(uri);
-    final xhamsterRipper = XhamsterRipper(uri);
-    if (xhamsterRipper.canRip(uri)) return xhamsterRipper;
-    if (host.endsWith('xlecx.org')) return XlecxRipper(uri);
-    final xvideosRipper = XvideosRipper(uri);
-    if (xvideosRipper.canRip(uri)) return xvideosRipper;
-    final youpornRipper = YoupornRipper(uri);
-    if (youpornRipper.canRip(uri)) return youpornRipper;
-    final yuvutuRipper = YuvutuRipper(uri);
-    if (yuvutuRipper.canRip(uri)) return yuvutuRipper;
-    final zizkiRipper = ZizkiRipper(uri);
-    if (zizkiRipper.canRip(uri)) return zizkiRipper;
 
     final legacyMatch = RipperMigrationCatalog.findUnportedLegacyRipper(uri);
     if (legacyMatch != null) return UnsupportedLegacyRipper(uri, legacyMatch);

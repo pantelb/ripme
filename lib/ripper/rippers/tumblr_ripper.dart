@@ -150,6 +150,8 @@ class TumblrRipper extends AbstractJSONRipper {
   }
 
   static TumblrUrlMatch? classifyUrl(Uri url) {
+    if (!_isTumblrHost(url.host)) return null;
+
     final text = url.toString();
     const domainRegex = r'^https?://([a-zA-Z0-9\-.]+)';
 
@@ -201,7 +203,7 @@ class TumblrRipper extends AbstractJSONRipper {
     }
 
     match = RegExp('$domainRegex/?\$').firstMatch(text);
-    if (match != null && url.host.endsWith('tumblr.com')) {
+    if (match != null) {
       final subdomain = match.group(1)!;
       return TumblrUrlMatch(
         type: TumblrAlbumType.subdomain,
@@ -212,6 +214,9 @@ class TumblrRipper extends AbstractJSONRipper {
 
     return null;
   }
+
+  static bool _isTumblrHost(String host) =>
+      host == 'tumblr.com' || host.endsWith('.tumblr.com');
 
   static String getTumblrApiUrl(
       TumblrUrlMatch match, String mediaType, int offset, String apiKey) {

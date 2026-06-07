@@ -629,6 +629,39 @@ void main() {
     );
   });
 
+  test('factory honors Java constructor canRip guard', () {
+    for (final url in [
+      'https://www.cliphunter.com/videos/12345',
+      'https://bato.to/series/12345/example',
+    ]) {
+      expect(RipperFactory.getRipper(Uri.parse(url)), isNull, reason: url);
+    }
+  });
+
+  test('factory does not route hosts rejected by Java canRip checks', () {
+    for (final url in [
+      'https://allporncomic.com.evil/porncomic/title/chapter/',
+      'https://artstation.com.evil/artwork/abc123',
+      'https://artstn.co.evil/p/JlE15Z',
+      'https://baraag.net.evil/@artist',
+      'https://bato.to.evil/chapter/12345/',
+      'https://www.8muses.com.evil/comics/album/example',
+      'https://flickr.com.evil/photos/user/sets/12345/',
+      'https://www.imagefap.com.evil/gallery/abcdef12',
+      'https://imgur.com.evil/a/G058j5F',
+      'https://www.instagram.com.evil/p/abc/',
+      'https://mastodon.social.evil/@alice',
+      'https://mastodon.xyz.evil/@bob',
+      'https://nhentai.net.evil/g/123456/',
+      'https://pawoo.net.evil/@halki/media',
+      'https://www.reddit.com.evil/r/pics',
+      'https://www.redgifs.com.evil/watch/abc',
+      'https://example.tumblr.com.evil/post/1',
+    ]) {
+      expect(RipperFactory.getRipper(Uri.parse(url)), isNull, reason: url);
+    }
+  });
+
   test('migration catalog tracks feature parity progress', () {
     expect(RipperMigrationCatalog.totalLegacyRippers, 116);
     expect(RipperMigrationCatalog.portedRipperCount, 116);
