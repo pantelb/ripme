@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:ripme/ripper/rippers/xvideos_ripper.dart';
+import 'package:ripme/utils/utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   test('matches Java Xvideos URL support, GIDs, and album titles', () async {
@@ -48,7 +50,9 @@ void main() {
     ]);
   });
 
-  test('extracts album thumb hrefs and ordered filenames like Java', () {
+  test('extracts album thumb hrefs and ordered filenames like Java', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
     final page = parse('''
       <div class="thumb"><a href="https://img.example/one.jpg"></a></div>
       <div class="thumb"><a href="/relative/two.jpg"></a></div>
@@ -64,6 +68,20 @@ void main() {
         prefix: XvideosRipper.prefix(4),
       ),
       '004_high.mp4',
+    );
+  });
+
+  test('honors Java download.save_order prefix setting', () async {
+    SharedPreferences.setMockInitialValues({'download.save_order': false});
+    await Utils.init();
+
+    expect(XvideosRipper.prefix(4), '');
+    expect(
+      XvideosRipper.fileNameForUrl(
+        Uri.parse('https://cdn.example/videos/high.mp4'),
+        prefix: XvideosRipper.prefix(4),
+      ),
+      'high.mp4',
     );
   });
 }

@@ -1247,7 +1247,7 @@ Findings:
       `getURLsFromPage(...)` converts it to `const []`, so a missing video
       source becomes an empty successful extraction instead of Java's null
       result path.
-- [ ] Java single-file-style rippers still use `AbstractHTMLRipper.getPrefix(...)`
+- [x] Java single-file-style rippers still use `AbstractHTMLRipper.getPrefix(...)`
       when their concrete `downloadURL(...)` calls `addURLToDownload(url,
       getPrefix(index))`, so `download.save_order=false` disables ordered
       prefixes. Flutter `XvideosRipper.prefix(...)`,

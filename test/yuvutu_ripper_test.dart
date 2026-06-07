@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:ripme/ripper/rippers/yuvutu_ripper.dart';
+import 'package:ripme/utils/utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   test('matches Java Yuvutu URL support and GID parsing', () async {
@@ -45,13 +47,29 @@ void main() {
     ]);
   });
 
-  test('uses Java-style ordered filenames', () {
+  test('uses Java-style ordered filenames', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
     expect(
       YuvutuRipper.fileNameForUrl(
         Uri.parse('https://cdn.example/path/one.jpg'),
         prefix: YuvutuRipper.prefix(2),
       ),
       '002_one.jpg',
+    );
+  });
+
+  test('honors Java download.save_order prefix setting', () async {
+    SharedPreferences.setMockInitialValues({'download.save_order': false});
+    await Utils.init();
+
+    expect(YuvutuRipper.prefix(2), '');
+    expect(
+      YuvutuRipper.fileNameForUrl(
+        Uri.parse('https://cdn.example/path/one.jpg'),
+        prefix: YuvutuRipper.prefix(2),
+      ),
+      'one.jpg',
     );
   });
 }

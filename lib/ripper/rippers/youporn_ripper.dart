@@ -80,7 +80,10 @@ class YoupornRipper extends AbstractHTMLRipper {
     return [videos.first.attributes['src'] ?? ''];
   }
 
-  static String prefix(int index) => '${index.toString().padLeft(3, '0')}_';
+  static String prefix(int index) {
+    if (!Utils.getConfigBoolean('download.save_order', true)) return '';
+    return '${index.toString().padLeft(3, '0')}_';
+  }
 
   static String fileNameForUrl(Uri uri, {required String prefix}) {
     final fileName =
