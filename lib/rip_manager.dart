@@ -139,6 +139,42 @@ class RipManager extends ChangeNotifier {
     return QueueSubmissionResult(accepted: accepted, errors: errors);
   }
 
+  bool? validateUrlInput(String input) {
+    var urlText = input.trim();
+    if (urlText.isEmpty) return null;
+    if (!urlText.startsWith('http')) {
+      urlText = 'http://$urlText';
+    }
+
+    final uri = Uri.tryParse(urlText);
+    if (uri == null || !uri.hasScheme || uri.host.isEmpty) {
+      _reportUrlValidationError('Invalid URL');
+      return false;
+    }
+
+    AbstractRipper? ripper;
+    try {
+      ripper = _ripperResolver(uri);
+      if (ripper == null) {
+        _reportUrlValidationError('No ripper found');
+        return false;
+      }
+      _statusText = '${ripper.getHost()} album detected';
+      notifyListeners();
+      return true;
+    } on Exception catch (error) {
+      _reportUrlValidationError(error.toString());
+      return false;
+    } finally {
+      ripper?.dispose();
+    }
+  }
+
+  void _reportUrlValidationError(String reason) {
+    _statusText = "Can't rip this URL: $reason";
+    notifyListeners();
+  }
+
   QueueSubmissionResult _invalidRange(String url) {
     final error = 'Invalid URL range: $url';
     _reportQueueError(error);

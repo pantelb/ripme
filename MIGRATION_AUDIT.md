@@ -62,8 +62,9 @@ done.
 ### Application Controller
 
 - [~] `src/main/java/com/rarchives/ripme/App.java`
-  - Current finding: Flutter has GUI startup only; Java CLI/headless behavior
-    still needs porting or an explicit replacement.
+  - Current finding: Java CLI/headless argument behavior is ported. Java's
+    album-history fallback guessing from existing rip directories remains
+    tracked in Workstream 3.
 
 ### Core Ripper Runtime
 
@@ -379,21 +380,15 @@ Recent CI evidence:
 
 Required tests:
 
-- [~] CLI parser unit tests for every option.
-  - Added focused entrypoint, help, version, and unported-option tests in
-    `test/cli_controller_test.dart`; option side effects remain open with their
-    implementations.
-- [~] Config side-effect tests for options that mutate settings.
-  - Added coverage for threads, overwrite, save order, skip-404, rips
-    directory, and the `-d` / `-D` conflict. Proxy, history, append-folder, and
-    remaining mutating options stay open with their implementations.
+- [x] CLI parser unit tests for every option.
+- [x] Config side-effect tests for options that mutate settings.
 - [x] URL-file parsing tests.
   - Added exact comment, trimming, invalid-line, failure-continuation, and
     sequential callback coverage in `test/cli_controller_test.dart`.
 - [x] Headless single-URL smoke test using a fake ripper resolver.
   - Completed: `test/cli_controller_test.dart` injects an offline URL rip
     callback and verifies both short and long option forms.
-- [ ] History re-rip tests.
+- [x] History re-rip tests.
 
 ### Workstream 2: Main Window Input And Queue
 
@@ -427,7 +422,17 @@ Parity checklist:
 - [x] Invalid range syntax reports an error without queueing garbage.
   - Completed: missing/unbalanced braces, non-numeric bounds, and descending
     ranges produce an `Invalid URL range` status before any URL is queued.
-- [ ] URL text-field validation detects ripper host and unrippable URLs.
+  - CI: commit `9b1dfd79` passed
+    [run 27331147207](https://github.com/pantelb/ripme/actions/runs/27331147207):
+    [Android](https://github.com/pantelb/ripme/actions/runs/27331147207/artifacts/7557693313),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27331147207/artifacts/7557654881),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27331147207/artifacts/7557652736),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27331147207/artifacts/7557626682).
+- [x] URL text-field validation detects ripper host and unrippable URLs.
+  - Completed: live field changes trim input, prepend `http://` when the text
+    does not start with Java's case-sensitive `http` prefix, resolve a ripper,
+    and display `<host> album detected`. Invalid or unsupported URLs display
+    `Can't rip this URL: <reason>` without changing queue state.
 - [ ] Queue count is visible and updates like Java's `queue(n)` label.
 - [ ] Queue is saved to config after updates.
 - [ ] Queue is restored from config at startup.
@@ -436,7 +441,7 @@ Parity checklist:
 
 Required tests:
 
-- [ ] Unit tests for queue duplicate/range parsing.
+- [x] Unit tests for queue duplicate/range parsing.
 - [ ] `RipManager` tests for queue persistence/restoration.
 - [ ] Widget tests for URL validation/status display.
 

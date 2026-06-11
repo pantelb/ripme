@@ -304,6 +304,7 @@ class _CommandBar extends StatelessWidget {
                   prefixIcon: const Icon(Icons.link_outlined),
                   isDense: true,
                 ),
+                onChanged: ripManager.validateUrlInput,
                 onSubmitted: (value) {
                   if (value.trim().isNotEmpty) onSubmit(value);
                 },

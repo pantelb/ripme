@@ -337,6 +337,45 @@ void main() {
     expect(manager.queue, isEmpty);
   });
 
+  test('URL input validation detects bare hosts through the resolved ripper',
+      () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+    final resolvedUris = <Uri>[];
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_manager_validate_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final manager = RipManager(
+      ripperResolver: (uri) {
+        resolvedUris.add(uri);
+        return BlockingRipper(uri, directory, Future<void>.value());
+      },
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+
+    expect(manager.validateUrlInput(' example.com/album '), isTrue);
+    expect(resolvedUris, [Uri.parse('http://example.com/album')]);
+    expect(manager.statusText, 'test album detected');
+  });
+
+  test('URL input validation reports malformed and unsupported URLs', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+    final manager = RipManager(
+      ripperResolver: (uri) => null,
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+
+    expect(
+        manager.validateUrlInput('https://unsupported.example/album'), isFalse);
+    expect(manager.statusText, "Can't rip this URL: No ripper found");
+
+    expect(manager.validateUrlInput('http://'), isFalse);
+    expect(manager.statusText, "Can't rip this URL: Invalid URL");
+  });
+
   test('adds child URLs emitted by queue-capable rippers', () async {
     SharedPreferences.setMockInitialValues({});
     await Utils.init();
