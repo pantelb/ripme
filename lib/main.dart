@@ -38,8 +38,23 @@ Future<void> main(List<String> args) async {
   );
 }
 
-class RipMeApp extends StatelessWidget {
+class RipMeApp extends StatefulWidget {
   const RipMeApp({super.key});
+
+  @override
+  State<RipMeApp> createState() => _RipMeAppState();
+}
+
+class _RipMeAppState extends State<RipMeApp> {
+  late Locale _locale;
+
+  @override
+  void initState() {
+    super.initState();
+    _locale = AppLocalizations.localeFromLanguageTag(
+      Utils.getConfigString('lang', null),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,9 +77,12 @@ class RipMeApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
+      locale: _locale,
       theme: _buildTheme(lightScheme),
       darkTheme: _buildTheme(darkScheme),
-      home: const MainWindow(),
+      home: MainWindow(
+        onLocaleChanged: (locale) => setState(() => _locale = locale),
+      ),
     );
   }
 
@@ -166,7 +184,12 @@ class RipMeApp extends StatelessWidget {
 }
 
 class MainWindow extends StatefulWidget {
-  const MainWindow({super.key});
+  const MainWindow({
+    super.key,
+    this.onLocaleChanged,
+  });
+
+  final ValueChanged<Locale>? onLocaleChanged;
 
   @override
   State<MainWindow> createState() => _MainWindowState();
@@ -243,7 +266,9 @@ class _MainWindowState extends State<MainWindow>
                   HistoryView(
                       history: ripManager.history, ripManager: ripManager),
                   QueueView(queue: ripManager.queue, ripManager: ripManager),
-                  const ConfigurationView(),
+                  ConfigurationView(
+                    onLocaleChanged: widget.onLocaleChanged,
+                  ),
                 ],
               ),
             ),
@@ -1113,7 +1138,12 @@ class QueueView extends StatelessWidget {
 }
 
 class ConfigurationView extends StatefulWidget {
-  const ConfigurationView({super.key});
+  const ConfigurationView({
+    super.key,
+    this.onLocaleChanged,
+  });
+
+  final ValueChanged<Locale>? onLocaleChanged;
 
   @override
   State<ConfigurationView> createState() => _ConfigurationViewState();
@@ -1533,6 +1563,30 @@ class _ConfigurationViewState extends State<ConfigurationView> {
         _ConfigSection(
           title: strings.app,
           children: [
+            ListTile(
+              leading: _IconBadge(
+                icon: Icons.language_outlined,
+                color: Theme.of(context).colorScheme.primary,
+                compact: true,
+              ),
+              title: Text(strings.language),
+              trailing: DropdownButton<String>(
+                value: AppLocalizations.languageTagForLocale(
+                  Localizations.localeOf(context),
+                ),
+                items: [
+                  for (final tag in AppLocalizations.supportedLanguageTags)
+                    DropdownMenuItem(value: tag, child: Text(tag)),
+                ],
+                onChanged: (tag) async {
+                  if (tag == null) return;
+                  await Utils.setConfigString('lang', tag);
+                  widget.onLocaleChanged?.call(
+                    AppLocalizations.localeFromLanguageTag(tag),
+                  );
+                },
+              ),
+            ),
             ListTile(
               leading: _IconBadge(
                 icon: Icons.info_outline,

@@ -705,7 +705,10 @@ Parity checklist:
 - [ ] Reconcile Java old-config deletion/reload behavior when required keys are
       missing.
 - [ ] Persist settings on exit or immediately in a documented Flutter-native way.
-- [ ] Support language selection and reload behavior.
+- [x] Support language selection and reload behavior.
+  - Completed: the configuration view exposes every Java bundle language tag,
+    persists `lang`, translates Java's legacy `in-ID`/`kr-KR` tags to Flutter
+    locale codes, and immediately rebuilds the localized UI.
 - [ ] Support save directory selection across desktop and Android.
 - [ ] Support window position persistence or explicitly mark not applicable.
 - [ ] Support log level, log save, popup, sound, URLs-only, album-title folders,

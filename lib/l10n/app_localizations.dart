@@ -29,6 +29,54 @@ class AppLocalizations {
     Locale('zh', 'CN'),
   ];
 
+  static const supportedLanguageTags = <String>[
+    'en-US',
+    'ar-AR',
+    'de-DE',
+    'el-GR',
+    'es-ES',
+    'fi-FI',
+    'fr-CH',
+    'in-ID',
+    'it-IT',
+    'kr-KR',
+    'nl-NL',
+    'pl-PL',
+    'pt-PT',
+    'pt-BR',
+    'ru-RU',
+    'zh-CN',
+  ];
+
+  static Locale localeFromLanguageTag(String? tag) {
+    if (tag == null || tag.trim().isEmpty) {
+      return WidgetsBinding.instance.platformDispatcher.locale;
+    }
+    final parts = tag.replaceAll('_', '-').split('-');
+    final language = switch (parts.first.toLowerCase()) {
+      'in' => 'id',
+      'kr' => 'ko',
+      final language => language,
+    };
+    return Locale(language, parts.length > 1 ? parts[1].toUpperCase() : null);
+  }
+
+  static String languageTagForLocale(Locale locale) {
+    for (final tag in supportedLanguageTags) {
+      final candidate = localeFromLanguageTag(tag);
+      if (candidate.languageCode == locale.languageCode &&
+          candidate.countryCode == locale.countryCode) {
+        return tag;
+      }
+    }
+    for (final tag in supportedLanguageTags) {
+      if (localeFromLanguageTag(tag).languageCode == locale.languageCode) {
+        return tag;
+      }
+    }
+    return 'en-US';
+  }
+
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
@@ -151,6 +199,7 @@ class AppLocalizations {
   String get maximumUpvotes => 'Maximum upvotes';
   String get useRedditPostSubfolders => 'Use Reddit post subfolders';
   String get app => 'App';
+  String get language => 'Language';
   String get clipboardAutorip => 'Clipboard autorip';
   String get playSoundWhenRipCompletes =>
       _label('sound.when.rip.completes', 'Play sound when rip completes');

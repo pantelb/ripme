@@ -12,6 +12,16 @@ void main() {
         AppLocalizations.supportedLocales, contains(const Locale('pt', 'BR')));
     expect(
         AppLocalizations.supportedLocales, contains(const Locale('zh', 'CN')));
+    expect(AppLocalizations.supportedLanguageTags, contains('in-ID'));
+    expect(AppLocalizations.supportedLanguageTags, contains('kr-KR'));
+    expect(
+      AppLocalizations.localeFromLanguageTag('in-ID'),
+      const Locale('id', 'ID'),
+    );
+    expect(
+      AppLocalizations.localeFromLanguageTag('kr-KR'),
+      const Locale('ko', 'KR'),
+    );
   });
 
   test('falls back to migrated English UI labels', () async {
