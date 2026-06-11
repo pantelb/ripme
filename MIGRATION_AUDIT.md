@@ -218,12 +218,13 @@ Parity checklist:
     every non-empty argument list through `CliController` before initializing
     Flutter bindings or constructing the GUI. Unported options currently fail
     explicitly instead of launching `MaterialApp`.
-- [ ] Verify desktop runner argument plumbing on every platform before CLI
-      parity is claimed. Windows `main.cpp` and Linux `my_application.cc` pass
-      command-line arguments into Dart, but macOS `MainFlutterWindow.swift`
-      creates a default `FlutterViewController` with no Dart entrypoint
-      arguments, and `lib/main.dart` currently accepts no `List<String> args`
-      and always launches `MaterialApp`.
+- [x] Verify desktop runner argument plumbing on every platform before CLI
+      parity is claimed.
+  - Completed: Windows `main.cpp` and Linux `my_application.cc` explicitly set
+    Dart entrypoint arguments. macOS now explicitly constructs
+    `FlutterDartProject`, whose embedding implementation initializes
+    `dartEntrypointArguments` from process arguments with the executable name
+    removed, and passes that project to `FlutterViewController`.
 - [x] Print Java-compatible help text for `-h` / `--help`.
   - Completed: the help output mirrors the option names, value requirements,
     and descriptions declared by Java `App.getOptions()`.
@@ -302,6 +303,33 @@ Parity checklist:
       represented in Flutter.
 - [ ] Replace Java `-j` updater behavior with the Flutter GitHub release
       checker or explicitly document why CLI self-update is not applicable.
+
+Recent CI evidence:
+
+- CLI configuration options: commit `ec5f63f5` passed
+  [run 27326985119](https://github.com/pantelb/ripme/actions/runs/27326985119):
+  [Android](https://github.com/pantelb/ripme/actions/runs/27326985119/artifacts/7556054692),
+  [Windows](https://github.com/pantelb/ripme/actions/runs/27326985119/artifacts/7556032207),
+  [macOS](https://github.com/pantelb/ripme/actions/runs/27326985119/artifacts/7556016565),
+  [Linux](https://github.com/pantelb/ripme/actions/runs/27326985119/artifacts/7555990604).
+- No-properties-file no-op: commit `b48d1ecb` passed
+  [run 27327236737](https://github.com/pantelb/ripme/actions/runs/27327236737):
+  [Android](https://github.com/pantelb/ripme/actions/runs/27327236737/artifacts/7556151184),
+  [Windows](https://github.com/pantelb/ripme/actions/runs/27327236737/artifacts/7556121715),
+  [macOS](https://github.com/pantelb/ripme/actions/runs/27327236737/artifacts/7556123396),
+  [Linux](https://github.com/pantelb/ripme/actions/runs/27327236737/artifacts/7556094979).
+- Proxy parsing: commit `dc22a35e` passed
+  [run 27327529896](https://github.com/pantelb/ripme/actions/runs/27327529896):
+  [Android](https://github.com/pantelb/ripme/actions/runs/27327529896/artifacts/7556266104),
+  [Windows](https://github.com/pantelb/ripme/actions/runs/27327529896/artifacts/7556235535),
+  [macOS](https://github.com/pantelb/ripme/actions/runs/27327529896/artifacts/7556238218),
+  [Linux](https://github.com/pantelb/ripme/actions/runs/27327529896/artifacts/7556207391).
+- Append-to-folder: commit `0526fef1` passed
+  [run 27328024609](https://github.com/pantelb/ripme/actions/runs/27328024609):
+  [Android](https://github.com/pantelb/ripme/actions/runs/27328024609/artifacts/7556442668),
+  [Windows](https://github.com/pantelb/ripme/actions/runs/27328024609/artifacts/7556409595),
+  [macOS](https://github.com/pantelb/ripme/actions/runs/27328024609/artifacts/7556395878),
+  [Linux](https://github.com/pantelb/ripme/actions/runs/27328024609/artifacts/7556389359).
 
 Required tests:
 
@@ -4334,10 +4362,11 @@ they are not yet a substitute for committed Dart tests.
       annotations, while Flutter currently exposes only two environment-gated
       live smoke tests; the test-policy parity gap is recorded in section L.
 - [x] Inspected desktop runner argument plumbing for Windows, Linux, and macOS.
-      Windows and Linux forward launch arguments into Dart, but macOS currently
-      uses the default `FlutterViewController` with no entrypoint arguments and
-      `lib/main.dart` ignores arguments entirely; the cross-platform CLI launch
-      gap is recorded in Workstream 1.
+      Windows and Linux explicitly forward launch arguments into Dart. A later
+      embedding-source check confirmed macOS `FlutterDartProject` also derives
+      Dart entrypoint arguments from `ProcessInfo.arguments`; the runner now
+      constructs and passes that project explicitly, and `lib/main.dart`
+      accepts the resulting argument list.
 - [x] Re-read Java `ClipboardUtils` and Flutter clipboard autorip code.
       Exact differences in polling interval, accepted schemes, duplicate
       memory scope, whole-clipboard matching, and queue-vs-start behavior are
