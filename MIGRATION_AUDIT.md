@@ -820,6 +820,11 @@ Parity checklist:
   - Completed: Flutter now selects the first non-empty exact/parent-domain
     property and preserves Java parser behavior for whitespace, extra equals
     signs, duplicate keys, trailing delimiters, and malformed pairs.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27363039987/artifacts/7571199444),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27363039987/artifacts/7571181430),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27363039987/artifacts/7571154696),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27363039987/artifacts/7571104243).
 - [x] Verify per-download cookies and referer headers.
   - Completed: file requests preserve explicit referer/cookie maps, send Java's
     `Accept: */*` and empty-cookie defaults, and do not inject page-only
@@ -835,8 +840,11 @@ Parity checklist:
 - [ ] Verify Java `Http` chainable request APIs: `ignoreContentType`,
       `referrer`, `userAgent`, `header`, `cookies`, `data`, `method`, `post`,
       `getJSON`, and `getJSONArray`.
-- [ ] Verify Java HTTP error messages: 401/403 cookie guidance, 404 file-not-found
+- [~] Verify Java HTTP error messages: 401/403 cookie guidance, 404 file-not-found
       handling, and non-retriable/retriable status text.
+  - In progress: shared page requests now stop immediately with Java-compatible
+    401/403 cookie guidance and 404 file-not-found messages. File-download
+    status text remains tracked separately.
 - [x] Verify Java retry attempt counts. `Http` now uses exactly the configured
       number of total attempts, including Java's zero-attempt edge case,
       instead of the former Flutter `attempt <= retries` behavior.

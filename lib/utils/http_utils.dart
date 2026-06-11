@@ -147,6 +147,21 @@ class Http {
           return response;
         }
 
+        if (!isDownload &&
+            (response.statusCode == 401 || response.statusCode == 403)) {
+          throw _NonRetriableHttpException(
+            'Failed to load $url: Status Code ${response.statusCode}. '
+            'You might be able to circumvent this error by setting cookies '
+            'for this domain',
+          );
+        }
+
+        if (!isDownload && response.statusCode == 404) {
+          throw _NonRetriableHttpException(
+            'File not found $url: Status Code 404. ',
+          );
+        }
+
         if (response.statusCode == 404 &&
             (!honorDownloadSkip404 ||
                 Utils.getConfigBoolean('errors.skip404', false))) {
@@ -161,6 +176,8 @@ class Http {
 
         lastError =
             HttpException('Failed to load $url: Status ${response.statusCode}');
+      } on _NonRetriableHttpException {
+        rethrow;
       } on TimeoutException catch (e) {
         lastError = e;
       } on IOException catch (e) {
@@ -262,4 +279,8 @@ class Http {
       return null;
     }
   }
+}
+
+class _NonRetriableHttpException extends HttpException {
+  _NonRetriableHttpException(super.message);
 }

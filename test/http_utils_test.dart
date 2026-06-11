@@ -393,12 +393,57 @@ void main() {
     });
     addTearDown(server.close);
 
+    final url = Uri.parse('http://127.0.0.1:${server.port}/missing');
     await expectLater(
-      Http.get(Uri.parse('http://127.0.0.1:${server.port}/missing')),
-      throwsA(isA<HttpException>()),
+      Http.get(url),
+      throwsA(
+        isA<HttpException>().having(
+          (error) => error.message,
+          'message',
+          'File not found $url: Status Code 404. ',
+        ),
+      ),
     );
     expect(attempts, 1);
   });
+
+  for (final status in [401, 403]) {
+    test('page status $status stops with Java cookie guidance', () async {
+      SharedPreferences.setMockInitialValues({
+        'download.retries': 3,
+        'download.retry.sleep': 25,
+        'page.timeout': 1000,
+      });
+      await Utils.init();
+      final delays = <Duration>[];
+      Http.delay = (duration) async {
+        delays.add(duration);
+      };
+
+      var attempts = 0;
+      final server = await _server((request) async {
+        attempts++;
+        request.response.statusCode = status;
+        await request.response.close();
+      });
+      addTearDown(server.close);
+      final url = Uri.parse('http://127.0.0.1:${server.port}/restricted');
+
+      await expectLater(
+        Http.get(url),
+        throwsA(
+          isA<HttpException>().having(
+            (error) => error.message,
+            'message',
+            'Failed to load $url: Status Code $status. You might be able to '
+                'circumvent this error by setting cookies for this domain',
+          ),
+        ),
+      );
+      expect(attempts, 1);
+      expect(delays, isEmpty);
+    });
+  }
 
   test('download 404 retries use only Java plural skip key', () async {
     SharedPreferences.setMockInitialValues({
