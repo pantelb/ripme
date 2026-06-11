@@ -90,6 +90,8 @@ class AppLocalizations {
   String get saveAlbumTitlesAsFolders =>
       _label('save.album.titles', 'Save album titles as folders');
   String get saveUrlsOnly => _label('save.urls.only', 'Save URLs only');
+  String get preferMp4OverGif =>
+      _label('prefer.mp4.over.gif', 'Prefer MP4 over GIF');
   String get downloads => 'Downloads';
   String get maximumDownloadThreads =>
       _label('max.download.threads', 'Maximum download threads');
@@ -130,6 +132,8 @@ class AppLocalizations {
   String get eromeSession => 'Erome session';
   String get laravelSessionCookieValue => 'Laravel session cookie value';
   String get rememberUrlHistory => 'Remember URL history';
+  String get warnBeforeDeletingHistory =>
+      _label('history.warn.before.delete', 'Warn before deleting history');
   String get stopAfterAlreadySeenCount => 'Stop after already-seen count';
   String get clearDownloadedUrlHistory => 'Clear downloaded URL history';
   String get downloadedUrlHistoryCleared => 'Downloaded URL history cleared';

@@ -34,6 +34,18 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Save URLs only'), findsOneWidget);
+    expect(find.text('Prefer MP4 over GIF'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('Prefer MP4 over GIF'),
+      400,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Prefer MP4 over GIF'));
+    await tester.pumpAndSettle();
+    expect(Utils.getConfigBoolean('prefer.mp4', false), isTrue);
 
     await tester.scrollUntilVisible(
       find.text('Maximum download threads:'),
@@ -62,6 +74,20 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Remember URL history'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('Warn before deleting history'),
+      400,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Warn before deleting history'));
+    await tester.pumpAndSettle();
+    expect(
+      Utils.getConfigBoolean('history.warn_before_delete', true),
+      isFalse,
+    );
 
     await tester.scrollUntilVisible(
       find.text('Filter by upvotes'),

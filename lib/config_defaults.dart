@@ -95,8 +95,10 @@ class ConfigDefaults {
     'reddit.use_sub_dirs': true,
     'remember.url_history': true,
     'history.skip_downloaded_urls': true,
+    'history.warn_before_delete': true,
     'urls_only.save': false,
     'play.sound': false,
+    'prefer.mp4': false,
     'proxy.enabled': false,
   };
 

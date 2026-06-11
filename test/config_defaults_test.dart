@@ -64,7 +64,9 @@ void main() {
     expect(Utils.getConfigBoolean('download.save_order', false), isTrue);
     expect(Utils.getConfigBoolean('album_titles.save', false), isTrue);
     expect(Utils.getConfigBoolean('remember.url_history', false), isTrue);
+    expect(Utils.getConfigBoolean('history.warn_before_delete', false), isTrue);
     expect(Utils.getConfigBoolean('urls_only.save', true), isFalse);
+    expect(Utils.getConfigBoolean('prefer.mp4', true), isFalse);
     expect(Utils.getConfigBoolean('proxy.enabled', true), isFalse);
     expect(Utils.getConfigString('download.ignore_extensions', 'fallback'), '');
     expect(Utils.getConfigStringList('download.ignore_extensions'), isEmpty);

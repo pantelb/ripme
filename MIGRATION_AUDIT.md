@@ -671,13 +671,26 @@ Parity checklist:
   - Completed: all 15 active Java resource defaults match Flutter by key, type,
     and value. A checked-in source fixture and parser-based test fail when a
     Java default is missing or diverges.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27352278102/artifacts/7566755427),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27352278102/artifacts/7566696376),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27352278102/artifacts/7566684492),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27352278102/artifacts/7566650198).
 - [x] Reconcile every Java config key used anywhere in `src/main/java`, not
       only keys present in `rip.properties`.
   - Completed: Flutter now carries an explicit inventory of every literal Java
     runtime key plus dynamic `cookies.<domain>`. A source-derived fixture test
     enforces exact inventory equality; behavioral support remains tracked by
     the following control and hidden-key checklist items.
-- [ ] Reconcile every Java configuration control with Flutter UI.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27352807572/artifacts/7566977046),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27352807572/artifacts/7566914395),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27352807572/artifacts/7566913351),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27352807572/artifacts/7566857039).
+- [~] Reconcile every Java configuration control with Flutter UI.
+  - In progress: Flutter now exposes Java's `prefer.mp4` and
+    `history.warn_before_delete` controls with immediate persistence and widget
+    coverage. Remaining Java controls are tracked below.
 - [ ] Reconcile hidden/runtime-only keys not exposed in UI.
 - [ ] Support Java portable config mode when `rip.properties` exists next to the
       app, or document a Flutter-native replacement.
