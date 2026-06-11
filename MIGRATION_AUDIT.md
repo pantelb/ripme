@@ -340,6 +340,12 @@ Recent CI evidence:
   [Windows](https://github.com/pantelb/ripme/actions/runs/27329308507/artifacts/7556925808),
   [macOS](https://github.com/pantelb/ripme/actions/runs/27329308507/artifacts/7556925904),
   [Linux](https://github.com/pantelb/ripme/actions/runs/27329308507/artifacts/7556888261).
+- Selected-history rerip: commit `fc30aefc` passed
+  [run 27329758516](https://github.com/pantelb/ripme/actions/runs/27329758516):
+  [Android](https://github.com/pantelb/ripme/actions/runs/27329758516/artifacts/7557141177),
+  [Windows](https://github.com/pantelb/ripme/actions/runs/27329758516/artifacts/7557106373),
+  [macOS](https://github.com/pantelb/ripme/actions/runs/27329758516/artifacts/7557076825),
+  [Linux](https://github.com/pantelb/ripme/actions/runs/27329758516/artifacts/7557073975).
 - CLI configuration options: commit `ec5f63f5` passed
   [run 27326985119](https://github.com/pantelb/ripme/actions/runs/27326985119):
   [Android](https://github.com/pantelb/ripme/actions/runs/27326985119/artifacts/7556054692),
@@ -397,7 +403,11 @@ Flutter targets:
 
 Parity checklist:
 
-- [ ] Manual URL submission rejects duplicate queue entries like Java.
+- [x] Manual URL submission rejects duplicate queue entries like Java.
+  - Completed: `RipManager.addUrlToQueue` rejects an exact string only when it
+    is already present in the pending queue and reports Java's duplicate URL
+    status. Current/history URLs and ripper-emitted child URLs remain outside
+    this manual pending-queue check.
 - [ ] Manual URL submission expands `{start-end}` numeric ranges like Java.
 - [ ] Invalid range syntax reports an error without queueing garbage.
 - [ ] URL text-field validation detects ripper host and unrippable URLs.

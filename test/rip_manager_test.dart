@@ -256,6 +256,35 @@ void main() {
     expect(manager.logs, isEmpty);
   });
 
+  test('rejects exact duplicate URLs already in the pending queue', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_manager_duplicate_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final release = Completer<void>();
+    addTearDown(() {
+      if (!release.isCompleted) release.complete();
+    });
+    final manager = RipManager(
+      ripperResolver: (uri) => BlockingRipper(uri, directory, release.future),
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+
+    expect(manager.addUrlToQueue('https://example.com/current'), isTrue);
+    await _waitFor(() => manager.isRipping);
+    expect(manager.addUrlToQueue('https://example.com/duplicate'), isTrue);
+    expect(manager.addUrlToQueue('https://example.com/duplicate'), isFalse);
+
+    expect(manager.queue, ['https://example.com/duplicate']);
+    expect(
+      manager.statusText,
+      'This URL is already in queue: https://example.com/duplicate',
+    );
+  });
+
   test('adds child URLs emitted by queue-capable rippers', () async {
     SharedPreferences.setMockInitialValues({});
     await Utils.init();

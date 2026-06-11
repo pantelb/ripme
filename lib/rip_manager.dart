@@ -61,12 +61,22 @@ class RipManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addUrlToQueue(String url) {
+  bool addUrlToQueue(String url) {
+    if (_queue.contains(url)) {
+      _statusText = 'This URL is already in queue: $url';
+      _addLog(RipStatusMessage(
+        RipStatus.ripErrored,
+        'This URL is already in queue: $url',
+      ));
+      return false;
+    }
+
     _queue.add(url);
     notifyListeners();
     if (!_isRipping) {
       _ripNext();
     }
+    return true;
   }
 
   void removeFromQueue(int index) {
