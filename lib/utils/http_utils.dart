@@ -81,11 +81,6 @@ class Http {
     );
 
     if (response.statusCode == 200) {
-      final maxSize = Utils.getConfigInteger('download.max_size', 104857600);
-      if (response.bodyBytes.length > maxSize) {
-        throw HttpException(
-            'Download exceeds configured max size for $url: ${response.bodyBytes.length} > $maxSize');
-      }
       if (!await saveAs.parent.exists()) {
         await saveAs.parent.create(recursive: true);
       }

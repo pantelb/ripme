@@ -72,7 +72,7 @@ void main() {
     expect(userAgent, javaUserAgent);
   });
 
-  test('enforces max download size', () async {
+  test('does not enforce Java inactive download.max_size key', () async {
     SharedPreferences.setMockInitialValues({
       'download.max_size': 3,
       'download.retries': 1,
@@ -89,13 +89,13 @@ void main() {
     final directory = await Directory.systemTemp.createTemp('ripme_http_test');
     addTearDown(() => directory.delete(recursive: true));
 
-    expect(
-      () => Http.downloadFile(
-        Uri.parse('http://127.0.0.1:${server.port}/file'),
-        File('${directory.path}/file.txt'),
-      ),
-      throwsA(isA<HttpException>()),
+    final saveAs = File('${directory.path}/file.txt');
+    await Http.downloadFile(
+      Uri.parse('http://127.0.0.1:${server.port}/file'),
+      saveAs,
     );
+
+    expect(await saveAs.readAsString(), 'large');
   });
 
   test('uses download timeout for file downloads', () async {

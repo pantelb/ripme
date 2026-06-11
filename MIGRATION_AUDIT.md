@@ -778,6 +778,11 @@ Parity checklist:
   - Verified: shared Flutter requests send the exact
     `AbstractRipper.USER_AGENT` string from Java, with request-level regression
     coverage.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27361556812/artifacts/7570602832),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27361556812/artifacts/7570587008),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27361556812/artifacts/7570526632),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27361556812/artifacts/7570488852).
 - [x] Verify retry count and retry sleep behavior.
   - Completed for shared page/download HTTP requests: the configured retry
     value is the total attempt count and, matching Java `Http.response()`,
@@ -794,7 +799,10 @@ Parity checklist:
     regardless of configuration. File downloads alone consult the active
     plural `errors.skip404` key with Java's false default; the bundled singular
     `error.skip404=true` remains inventoried as an inactive legacy key.
-- [ ] Verify max download size behavior.
+- [x] Verify max download size behavior.
+  - Completed: `download.max_size` remains available for Java old-config
+    validation compatibility but is intentionally not exposed or enforced,
+    matching `DownloadFileThread`.
 - [ ] Verify configured domain cookies.
 - [ ] Verify Java configured-cookie lookup and parsing exactly: `cookies.<host>`
       lookup checks parent domains and parses semicolon-delimited key/value
@@ -1400,11 +1408,10 @@ Findings:
       download/page requests surface timeout failures instead. This shipped Java
       timeout-completion behavior needs a compatibility test or an explicit
       intentional-fix note.
-- [ ] Java `download.max_size` is only used by config validation/update
+- [x] Java `download.max_size` is only used by config validation/update
       plumbing; `DownloadFileThread` does not compare response size against that
-      key before saving. Flutter `Http.downloadFile(...)` rejects any response
-      whose `bodyBytes.length` exceeds `download.max_size`, adding a global
-      download limit Java did not enforce.
+      key before saving. Flutter now retains the property for compatibility
+      without exposing or enforcing the former Flutter-only global limit.
 - [ ] Java `DownloadVideoThread` first issues a HEAD request for total bytes,
       then downloads with no connect timeout and byte-progress events. Flutter
       video helpers need exact progress comparison.

@@ -1277,15 +1277,6 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               max: 3600000,
               onChanged: _refresh,
             ),
-            _ConfigIntegerTile(
-              title: strings.maximumFileSizeBytes,
-              icon: Icons.sd_storage_outlined,
-              keyName: 'download.max_size',
-              defaultValue: 104857600,
-              min: 1,
-              max: 1099511627776,
-              onChanged: _refresh,
-            ),
             _ConfigSwitch(
               title: strings.skipRetriesAfter404,
               icon: Icons.error_outline,
