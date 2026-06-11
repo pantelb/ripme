@@ -633,6 +633,11 @@ Parity checklist:
     bug is covered explicitly. Without a configured path, Flutter deliberately
     retains downloaded URLs in SharedPreferences instead of Java's config-dir
     `url_history.txt`.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27351781506/artifacts/7566547823),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27351781506/artifacts/7566546505),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27351781506/artifacts/7566482793),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27351781506/artifacts/7566437236).
 - [x] Keep downloaded-URL history behavior distinct from album history.
   - Completed: album metadata remains in `HistoryProvider` under `rip_history`;
     configured downloaded-URL files are owned by `DownloadHistoryProvider`.
@@ -666,8 +671,12 @@ Parity checklist:
   - Completed: all 15 active Java resource defaults match Flutter by key, type,
     and value. A checked-in source fixture and parser-based test fail when a
     Java default is missing or diverges.
-- [ ] Reconcile every Java config key used anywhere in `src/main/java`, not
+- [x] Reconcile every Java config key used anywhere in `src/main/java`, not
       only keys present in `rip.properties`.
+  - Completed: Flutter now carries an explicit inventory of every literal Java
+    runtime key plus dynamic `cookies.<domain>`. A source-derived fixture test
+    enforces exact inventory equality; behavioral support remains tracked by
+    the following control and hidden-key checklist items.
 - [ ] Reconcile every Java configuration control with Flutter UI.
 - [ ] Reconcile hidden/runtime-only keys not exposed in UI.
 - [ ] Support Java portable config mode when `rip.properties` exists next to the

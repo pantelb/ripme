@@ -39,6 +39,18 @@ void main() {
     }
   });
 
+  test('inventories every Java runtime configuration key', () {
+    final javaKeys = File(
+      'test/fixtures/java_runtime_config_keys.txt',
+    )
+        .readAsLinesSync()
+        .map((line) => line.trim())
+        .where((line) => line.isNotEmpty)
+        .toSet();
+
+    expect(ConfigDefaults.javaRuntimeKeys, javaKeys);
+  });
+
   test('uses Java rip.properties defaults when preferences are unset',
       () async {
     SharedPreferences.setMockInitialValues({});
