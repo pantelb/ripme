@@ -232,6 +232,36 @@ void main() {
     expect(delays, [const Duration(seconds: 3)]);
   });
 
+  test('waits after every failed Java attempt including the final one',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 2,
+      'download.retry.sleep': 25,
+      'page.timeout': 1000,
+    });
+    await Utils.init();
+
+    final delays = <Duration>[];
+    Http.delay = (duration) async {
+      delays.add(duration);
+    };
+
+    final server = await _server((request) async {
+      request.response.statusCode = 500;
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    await expectLater(
+      Http.get(Uri.parse('http://127.0.0.1:${server.port}/failure')),
+      throwsA(isA<HttpException>()),
+    );
+    expect(delays, [
+      const Duration(milliseconds: 25),
+      const Duration(milliseconds: 25),
+    ]);
+  });
+
   test('parses JSON and HTML without relying on content type', () async {
     SharedPreferences.setMockInitialValues({
       'download.retries': 1,

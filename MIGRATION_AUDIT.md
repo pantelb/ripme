@@ -729,6 +729,11 @@ Parity checklist:
   - In progress: `ssl.verify.off` now has Java's false default, persists
     immediately from the network configuration UI, and controls
     `HttpClient.badCertificateCallback` for the shared page/download client.
+  - CI artifacts for SSL verification:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27359734247/artifacts/7569889411),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27359734247/artifacts/7569824709),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27359734247/artifacts/7569814295),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27359734247/artifacts/7569775867).
 - [ ] Support or intentionally retire finish commands:
       `enable.finish.command` and `finish.command`.
 - [ ] Support or intentionally retire history deletion warning:
@@ -770,7 +775,11 @@ Flutter targets:
 Parity checklist:
 
 - [ ] Verify user-agent parity.
-- [ ] Verify retry count and retry sleep behavior.
+- [x] Verify retry count and retry sleep behavior.
+  - Completed for shared page/download HTTP requests: the configured retry
+    value is the total attempt count and, matching Java `Http.response()`,
+    positive `download.retry.sleep` is applied after every failed attempt,
+    including the final failure.
 - [ ] Verify timeout behavior for pages and downloads.
 - [ ] Verify skip-404 config key spelling and semantics against Java.
 - [ ] Verify max download size behavior.

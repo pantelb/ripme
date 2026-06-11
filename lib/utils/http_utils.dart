@@ -165,7 +165,7 @@ class Http {
         client?.close();
       }
 
-      if (attempt + 1 < attempts && retrySleep.inMilliseconds > 0) {
+      if (retrySleep.inMilliseconds > 0) {
         await delay(retrySleep);
       }
     }
