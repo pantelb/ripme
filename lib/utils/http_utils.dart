@@ -195,12 +195,6 @@ class Http {
             'while downloading $url',
           );
         } else {
-          final rateLimitDelay = _retryAfterDelay(response);
-          if (rateLimitDelay != null && attempt + 1 < attempts) {
-            await delay(rateLimitDelay);
-            continue;
-          }
-
           lastError =
               HttpException('Failed to load $url: Status ${response.statusCode}');
         }
@@ -341,28 +335,6 @@ class Http {
     return cookies;
   }
 
-  static Duration? _retryAfterDelay(http.Response response) {
-    if (response.statusCode != 429 && response.statusCode != 503) return null;
-    final retryAfter = response.headers['retry-after'];
-    if (retryAfter == null || retryAfter.trim().isEmpty) {
-      return Utils.getConfigInteger('download.retry.sleep', 0) > 0
-          ? null
-          : Duration.zero;
-    }
-
-    final seconds = int.tryParse(retryAfter.trim());
-    if (seconds != null) {
-      return Duration(seconds: seconds < 0 ? 0 : seconds);
-    }
-
-    try {
-      final retryAt = HttpDate.parse(retryAfter);
-      final wait = retryAt.difference(DateTime.now().toUtc());
-      return wait.isNegative ? Duration.zero : wait;
-    } on FormatException {
-      return null;
-    }
-  }
 }
 
 class _NonRetriableHttpException extends HttpException {

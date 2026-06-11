@@ -897,6 +897,11 @@ Parity checklist:
     by the shared retry/timeout/proxy/SSL implementation. Tests cover chained
     request metadata, URL-encoded form POSTs, method override, per-request
     retries/timeouts, JSON objects, and JSON arrays.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27365791359/artifacts/7572350291),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27365791359/artifacts/7572307450),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27365791359/artifacts/7572285003),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27365791359/artifacts/7572248858).
 - [x] Verify Java HTTP error messages: 401/403 cookie guidance, 404 file-not-found
       handling, and non-retriable/retriable status text.
   - Completed: shared page requests stop immediately with Java-compatible
@@ -917,7 +922,9 @@ Parity checklist:
     [Windows](https://github.com/pantelb/ripme/actions/runs/27360595539/artifacts/7570201084),
     [macOS](https://github.com/pantelb/ripme/actions/runs/27360595539/artifacts/7570177253),
     [Linux](https://github.com/pantelb/ripme/actions/runs/27360595539/artifacts/7570136070).
-- [ ] Verify rate-limit `Retry-After` handling.
+- [x] Verify rate-limit `Retry-After` handling.
+  - Completed: Java does not inspect `Retry-After`. Flutter now ignores both
+    delta-seconds and date forms and applies only `download.retry.sleep`.
 
 Required tests:
 
@@ -1469,12 +1476,10 @@ Findings:
       the later `HttpStatusException` check that reads this key. Flutter now
       matches the observable behavior: normal page/file 404 responses are
       non-retriable regardless of either skip-404 key.
-- [ ] Java `Http.response()` does not inspect `Retry-After` on 429 or 503; it
+- [x] Java `Http.response()` does not inspect `Retry-After` on 429 or 503; it
       applies the configured `download.retry.sleep` delay between retries or
-      retries immediately when that value is zero. Flutter `_getResponse(...)`
-      parses `Retry-After` for 429/503 and waits for that header-specific delay,
-      so rate-limited pages can pause differently from Java even with the same
-      retry config.
+      retries immediately when that value is zero. Flutter now matches this
+      behavior and has no header-specific delay path.
 - [x] Java file download retry loop increments `tries` and fails when
       `tries > retries`; redirect handling can avoid counting the first redirect.
       Flutter now uses one initial file attempt plus the configured retry count;
@@ -5201,7 +5206,8 @@ Flutter sources:
 Initial status:
 
 - [x] Java `rip.properties` defaults are represented in `ConfigDefaults`.
-- [x] HTTP retries, timeouts, retry-after handling, configured cookies, and HTTP proxy support exist.
+- [x] HTTP retries, timeouts, Java-compatible retry-after ignoring, configured
+      cookies, and HTTP proxy support exist.
 - [x] Album history and downloaded URL history have Flutter providers.
 - [x] History JSON import/export preserves Java dates and selected flags;
       downloaded-history file-location behavior is separately ported and tested.

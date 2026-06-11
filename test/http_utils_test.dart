@@ -389,11 +389,11 @@ void main() {
     expect(unverifiedClient.recordedBadCertificateCallback, isNotNull);
   });
 
-  test('waits for retry-after before retrying rate-limited responses',
+  test('ignores retry-after and uses Java configured retry sleep',
       () async {
     SharedPreferences.setMockInitialValues({
       'download.retries': 2,
-      'download.retry.sleep': 0,
+      'download.retry.sleep': 25,
       'page.timeout': 1000,
     });
     await Utils.init();
@@ -421,7 +421,7 @@ void main() {
 
     expect(json['ok'], isTrue);
     expect(attempts, 2);
-    expect(delays, [const Duration(seconds: 3)]);
+    expect(delays, [const Duration(milliseconds: 25)]);
   });
 
   test('waits after every failed Java attempt including the final one',
