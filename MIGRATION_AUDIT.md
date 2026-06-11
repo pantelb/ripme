@@ -300,10 +300,11 @@ Parity checklist:
     ripper's reported working directory.
 - [x] Support `-H` / `--history`.
   - Completed: Java's option name is misleading: `history.location` controls
-    the newline-delimited downloaded-URL history file returned by
-    `Utils.getURLHistoryFile()`, not album `history.json`. Flutter now writes
-    the same config key and uses the configured line file for downloaded-URL
-    checks, writes, and clearing.
+    the downloaded-URL history file returned by `Utils.getURLHistoryFile()`,
+    not album `history.json`. Flutter now writes the same config key and uses
+    the configured file for downloaded-URL checks, writes, and clearing.
+    Source verification found that Java scans this file by line but appends
+    URLs without separators; Flutter preserves that shipped behavior.
 - [x] Support `-r` / `--rerip` for all history entries.
   - Completed: Flutter loads persisted album history in stored order, re-rips
     every valid URL, continues after invalid URLs or rip failures, and retains
@@ -606,6 +607,11 @@ Parity checklist:
     order, including duplicate URLs like Java's direct queue-model additions.
     Empty history and history with no checked rows produce Java's distinct
     localized messages in a `RipMe Error` dialog.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27348862852/artifacts/7565263191),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27348862852/artifacts/7565229602),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27348862852/artifacts/7565210118),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27348862852/artifacts/7565156681).
 - [x] Support Java fallback history guessing from existing rip directories or
       document why Flutter does not.
   - Completed: Flutter ports `RipUtils.urlFromDirectoryName(...)` mapping order
@@ -616,15 +622,24 @@ Parity checklist:
     no-op scan for its default absolute documents path. Reddit's unreachable
     switch and the Imgur fixed-list failure are preserved as non-candidates;
     malformed names are ignored instead of aborting Flutter startup.
-- [ ] Support configurable history location or document replacement behavior.
-- [ ] Keep downloaded-URL history behavior distinct from album history.
+- [x] Support configurable history location or document replacement behavior.
+  - Completed: `history.location` redirects only runtime downloaded-URL checks,
+    appends, and clearing to the configured file. Java's separator-free append
+    bug is covered explicitly. Without a configured path, Flutter deliberately
+    retains downloaded URLs in SharedPreferences instead of Java's config-dir
+    `url_history.txt`.
+- [x] Keep downloaded-URL history behavior distinct from album history.
+  - Completed: album metadata remains in `HistoryProvider` under `rip_history`;
+    configured downloaded-URL files are owned by `DownloadHistoryProvider`.
+    Clearing either provider alone leaves the other store intact, while the
+    Java-compatible UI clear action intentionally clears both.
 
 Required tests:
 
 - [x] Java history fixture import tests.
 - [x] History selected-state tests.
 - [x] Re-rip queueing tests.
-- [ ] Configured history location tests if supported.
+- [x] Configured history location tests if supported.
 
 ### Workstream 4: Configuration And Preferences
 
@@ -1061,9 +1076,10 @@ Findings:
       `config_defaults.dart` sets `twitter.rip_retweets` to `false`, so the
       default Twitter media set is narrower than Java unless the user changes
       the setting.
-- [ ] Java `history.location` controls downloaded-URL history
-      (`url_history.txt`), not the album history JSON. Flutter currently stores
-      downloaded URLs in SharedPreferences unless explicitly imported/exported.
+- [x] Java `history.location` controls downloaded-URL history
+      (`url_history.txt`), not the album history JSON. Flutter uses the
+      configured file when supplied and otherwise documents SharedPreferences
+      as the replacement for Java's default config-dir file.
 - [ ] Java has config-driven log level and `log.save` file logging behavior.
       Flutter log display exists but rolling file output is not verified.
 - [ ] Mechanical source scan found Java-used config keys missing from Flutter
@@ -1161,10 +1177,10 @@ Findings:
       trailing underscore can also reach `fields[1]` after Java's split drops
       trailing empty fields. Flutter preserves Java splitting for valid names
       but ignores malformed candidates instead of aborting startup.
-- [ ] Java history clear deletes both album history and downloaded-URL history
+- [x] Java history clear deletes both album history and downloaded-URL history
       through `Utils.clearURLHistory()`, optionally after
-      `history.warn_before_delete` confirmation. Flutter clear behavior needs to
-      be checked for both stores.
+      `history.warn_before_delete` confirmation. Flutter's UI clear action and
+      focused provider tests now cover both stores.
 - [ ] Java history button behavior is selection-centric and dialog-backed, not
       per-entry only: `historyButtonRemove` removes the table's selected view
       rows after `convertRowIndexToModel`, `historyButtonClear` honors
@@ -4996,10 +5012,11 @@ Initial status:
 - [x] Java `rip.properties` defaults are represented in `ConfigDefaults`.
 - [x] HTTP retries, timeouts, retry-after handling, configured cookies, and HTTP proxy support exist.
 - [x] Album history and downloaded URL history have Flutter providers.
-- [~] History JSON imports can read Java date fields, but Java selected flags and file-location behavior need audit.
+- [x] History JSON import/export preserves Java dates and selected flags;
+      downloaded-history file-location behavior is separately ported and tested.
 - [~] HTTP proxy support exists; SOCKS proxy parity is not yet verified.
-- [ ] Java `history.location` / `-H` behavior is source-audited and still needs
-      porting/tests.
+- [x] Java `history.location` / `-H` behavior is ported and tested, including
+      the shipped separator-free append bug and album-history separation.
 - [x] Java fallback history guessing from existing rip folders is ported and
       tested, including the shipped full-path and parser edge-case limitations.
 

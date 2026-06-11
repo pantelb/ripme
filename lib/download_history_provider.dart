@@ -72,6 +72,15 @@ class DownloadHistoryProvider {
   }
 
   static Future<void> markDownloaded(Uri url) async {
+    final configuredFile = _configuredFile();
+    if (configuredFile != null) {
+      await configuredFile.writeAsString(
+        _normalize(url),
+        mode: FileMode.append,
+      );
+      return;
+    }
+
     final urls = await loadDownloadedUrls();
     urls.add(_normalize(url));
     await saveDownloadedUrls(urls);
