@@ -84,9 +84,49 @@ class StopAfterFirstDownloadRipper extends TestRipper {
   }
 }
 
+class WorkingDirectoryTestRipper extends AbstractRipper {
+  WorkingDirectoryTestRipper(super.url, this.title);
+
+  final String title;
+
+  @override
+  bool canRip(Uri url) => true;
+
+  @override
+  Future<String> getAlbumTitle(Uri url) async => title;
+
+  @override
+  Future<String> getGID(Uri url) async => 'gid';
+
+  @override
+  String getHost() => 'example';
+
+  @override
+  Future<void> rip() async {}
+}
+
 void main() {
   tearDown(() {
     AbstractRipper.folderNameSuffix = null;
+  });
+
+  test('setup uses Java-safe truncated working directory names', () async {
+    final base = await Directory.systemTemp.createTemp('ripme_working_dir_test');
+    addTearDown(() => base.delete(recursive: true));
+    SharedPreferences.setMockInitialValues({
+      'rips.directory': base.path,
+    });
+    await Utils.init();
+    final longName = List.filled(101, 'a').join();
+    final ripper = WorkingDirectoryTestRipper(
+      Uri.parse('https://example.com/album'),
+      ' $longName/?! ',
+    );
+
+    await ripper.setup();
+
+    expect(p.basename(ripper.workingDir.path), List.filled(99, 'a').join());
+    expect(await ripper.workingDir.exists(), isTrue);
   });
 
   test('append-to-folder redirects file paths to a sibling album root',

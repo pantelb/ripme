@@ -57,7 +57,8 @@ abstract class AbstractRipper {
     Directory baseDir = await Utils.getWorkingDirectory();
     String title = await getAlbumTitle(url);
     title = Utils.filesystemSafe(title);
-    return Directory(p.join(baseDir.path, title));
+    final path = await Utils.getOriginalDirectory(p.join(baseDir.path, title));
+    return Directory(path);
   }
 
   Future<void> rip();

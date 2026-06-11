@@ -103,7 +103,36 @@ class Utils {
   }
 
   static String filesystemSafe(String text) {
-    return text.replaceAll(RegExp(r'[^a-zA-Z0-9-.,_ ]'), '').trim();
+    final safe = text.replaceAll(RegExp(r'[^a-zA-Z0-9-.,_ ]'), '').trim();
+    return safe.length > 100 ? safe.substring(0, 99) : safe;
+  }
+
+  static String filesystemSanitized(String text) {
+    return text.replaceAll(RegExp(r'[^a-zA-Z0-9.-]'), '_');
+  }
+
+  static Future<String> getOriginalDirectory(
+    String path, {
+    bool? caseSensitivePlatform,
+  }) async {
+    final shouldCheckCase = caseSensitivePlatform ?? !Platform.isWindows;
+    if (!shouldCheckCase) return path;
+
+    final parent = Directory(p.dirname(path));
+    if (!await parent.exists()) {
+      throw FileSystemException(
+        'Original directory "${parent.path}" is no directory or not writeable.',
+        parent.path,
+      );
+    }
+
+    final requestedName = p.basename(path).toLowerCase();
+    await for (final entry in parent.list(followLinks: false)) {
+      if (p.basename(entry.path).toLowerCase() == requestedName) {
+        return p.join(parent.path, p.basename(entry.path));
+      }
+    }
+    return path;
   }
 
   static String sanitizeSaveAs(String fileName) {

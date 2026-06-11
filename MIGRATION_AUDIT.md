@@ -913,6 +913,11 @@ Parity checklist:
     [Windows](https://github.com/pantelb/ripme/actions/runs/27363974753/artifacts/7571559785),
     [macOS](https://github.com/pantelb/ripme/actions/runs/27363974753/artifacts/7571508412),
     [Linux](https://github.com/pantelb/ripme/actions/runs/27363974753/artifacts/7571496843).
+  - CI artifacts for file status semantics:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27366309518/artifacts/7572584769),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27366309518/artifacts/7572521141),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27366309518/artifacts/7572531151),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27366309518/artifacts/7572479438).
 - [x] Verify Java retry attempt counts. Page requests use exactly the configured
       number of total attempts, including Java's zero-attempt edge case. File
       downloads use one initial attempt plus `download.retries`, matching
@@ -925,6 +930,11 @@ Parity checklist:
 - [x] Verify rate-limit `Retry-After` handling.
   - Completed: Java does not inspect `Retry-After`. Flutter now ignores both
     delta-seconds and date forms and applies only `download.retry.sleep`.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27366748617/artifacts/7572784535),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27366748617/artifacts/7572735105),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27366748617/artifacts/7572688694),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27366748617/artifacts/7572662798).
 
 Required tests:
 
@@ -955,16 +965,19 @@ Flutter targets:
 
 Parity checklist:
 
-- [ ] Verify working directory naming and sanitization.
-- [ ] Verify Java `Utils.filesystemSafe`: remove characters outside
+- [x] Verify working directory naming and sanitization.
+- [x] Verify Java `Utils.filesystemSafe`: remove characters outside
       `[a-zA-Z0-9-.,_ ]`, trim, and truncate names longer than 100 characters
       to 99.
-- [ ] Verify Java `Utils.filesystemSanitized`: replace characters outside
+- [x] Verify Java `Utils.filesystemSanitized`: replace characters outside
       `[a-zA-Z0-9.-]` with `_`.
 - [ ] Verify Java `Utils.sanitizeSaveAs`: replace `\\:*?"<>|` with `_` and
       preserve the Java filename-extension edge cases from `AbstractRipperTest`.
-- [ ] Verify Java case-preserving existing directory behavior from
+- [x] Verify Java case-preserving existing directory behavior from
       `Utils.getOriginalDirectory`.
+  - Completed: shared working-directory setup applies exact Java sanitization
+    and 99-character truncation, then reuses an existing case-insensitive name
+    with its on-disk case on non-Windows platforms.
 - [ ] Verify Java Windows path shortening behavior from `shortenSaveAsWindows`.
 - [ ] Port or document `append-to-folder`.
 - [ ] Verify `album_titles.save` behavior.
@@ -988,7 +1001,7 @@ Parity checklist:
 
 Required tests:
 
-- [ ] Abstract ripper directory naming tests.
+- [x] Abstract ripper directory naming tests.
 - [ ] Status/progress event tests.
 - [ ] Stop semantics tests.
 - [ ] Description and URL-only tests.
