@@ -562,6 +562,12 @@ Parity checklist:
     legacy Flutter ISO `date` field for backward compatibility. Java accepts
     `dir` on import and ignores the extra `date` key, so the extended export
     remains Java-readable while avoiding Java's directory data loss.
+  - CI: commit `d3c8fdab` passed
+    [run 27345948995](https://github.com/pantelb/ripme/actions/runs/27345948995):
+    [Android](https://github.com/pantelb/ripme/actions/runs/27345948995/artifacts/7563976679),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27345948995/artifacts/7563918014),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27345948995/artifacts/7563922907),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27345948995/artifacts/7563882741).
 - [x] Import Java `history.json` without data loss.
   - Completed: strict external import requires Java's object array shape and
     mandatory string `url` plus numeric `startDate`/`modifiedDate`, preserves
@@ -569,7 +575,11 @@ Parity checklist:
     entries instead of silently filtering/defaulting them.
   - Internal preference loading remains tolerant only for pre-migration
     Flutter records that used `date` without Java's two mandatory timestamps.
-- [ ] Export history in a documented format.
+- [x] Export history in a documented format.
+  - Completed: the UI writes `history.json` as a UTF-8, two-space-indented JSON
+    array matching Java's file name and pretty-print structure. Entries contain
+    Java's written fields plus the documented Flutter `dir` and legacy `date`
+    extensions described above.
 - [ ] Support remove, clear, open folder, copy URL, and re-rip actions.
 - [ ] Support selected-entry re-rip or document why selected state is removed.
 - [ ] Support Java fallback history guessing from existing rip directories or

@@ -918,7 +918,7 @@ class HistoryView extends StatelessWidget {
     try {
       await HistoryProvider.exportToFile(
         history,
-        File('$directory/ripme_history.json'),
+        File('$directory/history.json'),
       );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

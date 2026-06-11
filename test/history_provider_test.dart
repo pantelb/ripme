@@ -189,4 +189,18 @@ void main() {
     expect(entry['dir'], '/tmp/extended');
     expect(entry['date'], '2026-06-11T00:00:00.000Z');
   });
+
+  test('exports indented Java-style history JSON', () {
+    final exported = HistoryProvider.exportHistory([
+      HistoryEntry(
+        url: 'https://example.com/pretty',
+        dir: '/tmp/pretty',
+        date: DateTime.utc(2026, 6, 11),
+      ),
+    ]);
+
+    expect(exported, startsWith('[\n  {\n'));
+    expect(exported, contains('\n    "url": "https://example.com/pretty",'));
+    expect(exported, endsWith('\n  }\n]'));
+  });
 }

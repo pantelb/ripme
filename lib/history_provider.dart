@@ -20,7 +20,8 @@ class HistoryProvider {
   }
 
   static String exportHistory(List<HistoryEntry> history) {
-    return jsonEncode(history.map((e) => e.toJson()).toList());
+    return const JsonEncoder.withIndent('  ')
+        .convert(history.map((e) => e.toJson()).toList());
   }
 
   static List<HistoryEntry> importHistory(String json) {
