@@ -239,4 +239,29 @@ void main() {
     expect(json['ok'], isTrue);
     expect(html.querySelector('h1')?.text, 'ok');
   });
+
+  test('prefers Java errors.skip404 over the Flutter legacy key', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 2,
+      'page.timeout': 1000,
+      'errors.skip404': true,
+      'error.skip404': false,
+    });
+    await Utils.init();
+
+    var attempts = 0;
+    final server = await _server((request) async {
+      attempts++;
+      request.response.statusCode = 404;
+      request.response.write('<html></html>');
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    await expectLater(
+      Http.get(Uri.parse('http://127.0.0.1:${server.port}/missing')),
+      throwsA(isA<HttpException>()),
+    );
+    expect(attempts, 1);
+  });
 }

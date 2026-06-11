@@ -2,9 +2,33 @@ import 'dart:io';
 
 import '../app_version.dart';
 import '../ripper/ripper_factory.dart';
+import '../utils/utils.dart';
 
 typedef CliUrlRipper = Future<void> Function(Uri url);
 typedef CliUrlFileReader = Future<List<String>> Function(String path);
+
+abstract class CliConfigStore {
+  Future<void> setBoolean(String key, bool value);
+  Future<void> setInteger(String key, int value);
+  Future<void> setString(String key, String value);
+}
+
+class _UtilsCliConfigStore implements CliConfigStore {
+  @override
+  Future<void> setBoolean(String key, bool value) {
+    return Utils.setConfigBoolean(key, value);
+  }
+
+  @override
+  Future<void> setInteger(String key, int value) {
+    return Utils.setConfigInteger(key, value);
+  }
+
+  @override
+  Future<void> setString(String key, String value) {
+    return Utils.setConfigString(key, value);
+  }
+}
 
 class CliResult {
   final int exitCode;
@@ -21,12 +45,15 @@ class CliResult {
 class CliController {
   final CliUrlRipper _ripUrl;
   final CliUrlFileReader _readUrlFile;
+  final CliConfigStore _config;
 
   CliController({
     CliUrlRipper? ripUrl,
     CliUrlFileReader? readUrlFile,
+    CliConfigStore? config,
   })  : _ripUrl = ripUrl ?? _ripUrlWithFactory,
-        _readUrlFile = readUrlFile ?? _readLines;
+        _readUrlFile = readUrlFile ?? _readLines,
+        _config = config ?? _UtilsCliConfigStore();
 
   static const String helpText = '''
 usage: ripme [OPTIONS]
@@ -60,6 +87,11 @@ usage: ripme [OPTIONS]
       return const CliResult(exitCode: 0, output: appVersion);
     }
 
+    final configResult = await _applyConfigOptions(args);
+    if (configResult.error != null) {
+      return configResult.error!;
+    }
+
     final urlFile = _optionValue(args, '-f', '--urls-file');
     if (urlFile != null) {
       return _ripUrlFile(urlFile);
@@ -87,6 +119,10 @@ usage: ripme [OPTIONS]
           isError: true,
         );
       }
+    }
+
+    if (configResult.applied > 0) {
+      return const CliResult(exitCode: 0, output: 'CLI settings applied');
     }
 
     return CliResult(
@@ -119,6 +155,68 @@ usage: ripme [OPTIONS]
       }
     }
     return null;
+  }
+
+  Future<({int applied, CliResult? error})> _applyConfigOptions(
+    List<String> args,
+  ) async {
+    var applied = 0;
+
+    if (_hasOption(args, '-w', '--overwrite')) {
+      await _config.setBoolean('file.overwrite', true);
+      applied++;
+    }
+
+    final threads = _optionValue(args, '-t', '--threads');
+    if (threads != null) {
+      final value = int.tryParse(threads);
+      if (value == null) {
+        return (
+          applied: applied,
+          error: CliResult(
+            exitCode: 1,
+            output: 'Invalid thread count: $threads',
+            isError: true,
+          ),
+        );
+      }
+      await _config.setInteger('threads.size', value);
+      applied++;
+    }
+
+    if (_hasOption(args, '-4', '--skip404')) {
+      await _config.setBoolean('errors.skip404', true);
+      applied++;
+    }
+
+    final ripsDirectory = _optionValue(args, '-l', '--ripsdirectory');
+    if (ripsDirectory != null) {
+      await _config.setString('rips.directory', ripsDirectory);
+      applied++;
+    }
+
+    final saveOrder = _hasOption(args, '-d', '--saveorder');
+    final noSaveOrder = _hasOption(args, '-D', '--nosaveorder');
+    if (saveOrder) {
+      await _config.setBoolean('download.save_order', true);
+      applied++;
+    }
+    if (noSaveOrder) {
+      await _config.setBoolean('download.save_order', false);
+      applied++;
+    }
+    if (saveOrder && noSaveOrder) {
+      return (
+        applied: applied,
+        error: const CliResult(
+          exitCode: 1,
+          output: "Cannot specify '-d' and '-D' simultaneously",
+          isError: true,
+        ),
+      );
+    }
+
+    return (applied: applied, error: null);
   }
 
   Future<CliResult> _ripUrlFile(String path) async {

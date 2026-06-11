@@ -241,20 +241,40 @@ Parity checklist:
   - Completed: both separated and `--url=<value>` forms validate the URL,
     resolve it through `RipperFactory`, and run `setup()` / `rip()` headlessly
     with guaranteed disposal. Invalid URLs use Java's expected-format message.
+  - CI: commit `f35de47c` passed
+    [Flutter CI run 27326311304](https://github.com/pantelb/ripme/actions/runs/27326311304).
+    Artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27326311304/artifacts/7555801256),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27326311304/artifacts/7555768155),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27326311304/artifacts/7555765455),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27326311304/artifacts/7555739398).
 - [x] Support URL-file ripping through `-f` / `--urls-file`.
   - Completed: URL files are read line-by-line and valid entries are ripped
     sequentially. Individual malformed URLs and rip failures are reported
     without stopping later entries, matching Java `ripURL(...)` handling.
+  - CI: commit `c3b8ea00` passed
+    [Flutter CI run 27326603695](https://github.com/pantelb/ripme/actions/runs/27326603695).
+    Artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27326603695/artifacts/7555909782),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27326603695/artifacts/7555887063),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27326603695/artifacts/7555863569),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27326603695/artifacts/7555855241).
 - [x] Skip URL-file lines beginning with `//` or `#`.
   - Completed: comment detection occurs before trimming, preserving Java's
     distinction between `//comment` and whitespace-prefixed `  //comment`.
-- [ ] Apply `-t` / `--threads` to `threads.size`.
-- [ ] Apply `-w` / `--overwrite` to `file.overwrite`.
-- [ ] Apply `-d` / `--saveorder` to `download.save_order=true`.
-- [ ] Apply `-D` / `--nosaveorder` to `download.save_order=false`.
-- [ ] Reject simultaneous `-d` and `-D`.
-- [ ] Apply `-4` / `--skip404` to the same config key used by Flutter HTTP.
-- [ ] Apply `-l` / `--ripsdirectory` to `rips.directory`.
+- [x] Apply `-t` / `--threads` to `threads.size`.
+- [x] Apply `-w` / `--overwrite` to `file.overwrite`.
+- [x] Apply `-d` / `--saveorder` to `download.save_order=true`.
+- [x] Apply `-D` / `--nosaveorder` to `download.save_order=false`.
+- [x] Reject simultaneous `-d` and `-D`.
+  - Completed: side effects preserve Java order, so `-D` writes `false` before
+    the conflict is reported.
+- [x] Apply `-4` / `--skip404` to the same config key used by Flutter HTTP.
+  - Completed: CLI writes Java's `errors.skip404`; Flutter HTTP now prefers
+    that key and falls back to the former `error.skip404` key for migration.
+- [x] Apply `-l` / `--ripsdirectory` to `rips.directory`.
 - [ ] Define and test `-n` / `--no-prop-file` semantics for Flutter. Java
       accepts the option and passes `!cl.hasOption("n")` into `ripURL`, but
       `ripURL(String targetURL, boolean saveConfig)` never reads `saveConfig`;
@@ -276,7 +296,10 @@ Required tests:
   - Added focused entrypoint, help, version, and unported-option tests in
     `test/cli_controller_test.dart`; option side effects remain open with their
     implementations.
-- [ ] Config side-effect tests for options that mutate settings.
+- [~] Config side-effect tests for options that mutate settings.
+  - Added coverage for threads, overwrite, save order, skip-404, rips
+    directory, and the `-d` / `-D` conflict. Proxy, history, append-folder, and
+    remaining mutating options stay open with their implementations.
 - [x] URL-file parsing tests.
   - Added exact comment, trimming, invalid-line, failure-continuation, and
     sequential callback coverage in `test/cli_controller_test.dart`.

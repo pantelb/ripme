@@ -141,7 +141,11 @@ class Http {
         }
 
         if (response.statusCode == 404 &&
-            Utils.getConfigBoolean('error.skip404', true)) {
+            Utils.getConfigBooleanWithFallback(
+              'errors.skip404',
+              'error.skip404',
+              true,
+            )) {
           return response;
         }
 

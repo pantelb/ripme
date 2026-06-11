@@ -2,6 +2,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ripme/app_version.dart';
 import 'package:ripme/cli/cli_controller.dart';
 
+class _FakeConfigStore implements CliConfigStore {
+  final values = <String, Object>{};
+
+  @override
+  Future<void> setBoolean(String key, bool value) async {
+    values[key] = value;
+  }
+
+  @override
+  Future<void> setInteger(String key, int value) async {
+    values[key] = value;
+  }
+
+  @override
+  Future<void> setString(String key, String value) async {
+    values[key] = value;
+  }
+}
+
 void main() {
   test('only non-empty argument lists select headless mode', () {
     expect(CliController.shouldRunHeadless(const []), isFalse);
@@ -116,6 +135,49 @@ void main() {
     expect(result.output, contains('Ripped 1 URL(s) from urls.txt'));
     expect(result.output, contains('Expected URL format'));
     expect(result.output, contains('first failed'));
+  });
+
+  test('CLI setting options use Java config keys and values', () async {
+    final config = _FakeConfigStore();
+    final result = await CliController(config: config).run(const [
+      '--threads',
+      '7',
+      '--overwrite',
+      '--saveorder',
+      '--skip404',
+      '--ripsdirectory',
+      'D:/rips',
+    ]);
+
+    expect(result.exitCode, 0);
+    expect(config.values, {
+      'threads.size': 7,
+      'file.overwrite': true,
+      'download.save_order': true,
+      'errors.skip404': true,
+      'rips.directory': 'D:/rips',
+    });
+  });
+
+  test('nosaveorder disables ordering', () async {
+    final config = _FakeConfigStore();
+
+    final result =
+        await CliController(config: config).run(const ['--nosaveorder']);
+
+    expect(result.exitCode, 0);
+    expect(config.values['download.save_order'], isFalse);
+  });
+
+  test('saveorder and nosaveorder are rejected after Java side effects',
+      () async {
+    final config = _FakeConfigStore();
+
+    final result = await CliController(config: config).run(const ['-d', '-D']);
+
+    expect(result.exitCode, 1);
+    expect(result.output, "Cannot specify '-d' and '-D' simultaneously");
+    expect(config.values['download.save_order'], isFalse);
   });
 
   test('unported CLI options fail without launching the GUI', () async {
