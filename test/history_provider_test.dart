@@ -58,5 +58,34 @@ void main() {
     expect(imported.single.dir, isEmpty);
     expect(imported.single.date,
         DateTime.fromMillisecondsSinceEpoch(1779321600000));
+    expect(imported.single.startDate,
+        DateTime.fromMillisecondsSinceEpoch(1779235200000));
+    expect(imported.single.modifiedDate,
+        DateTime.fromMillisecondsSinceEpoch(1779321600000));
+    expect(imported.single.title, 'Java');
+    expect(imported.single.count, 3);
+    expect(imported.single.selected, isFalse);
+  });
+
+  test('preserves Java selected state and metadata through export', () {
+    final entry = HistoryEntry(
+      url: 'https://example.com/selected',
+      dir: '/tmp/selected',
+      date: DateTime(2026, 5, 20),
+      title: 'Selected album',
+      count: 7,
+      startDate: DateTime(2026, 5, 19),
+      modifiedDate: DateTime(2026, 5, 20),
+      selected: true,
+    );
+
+    final imported =
+        HistoryProvider.importHistory(HistoryProvider.exportHistory([entry]));
+
+    expect(imported.single.title, entry.title);
+    expect(imported.single.count, entry.count);
+    expect(imported.single.startDate, entry.startDate);
+    expect(imported.single.modifiedDate, entry.modifiedDate);
+    expect(imported.single.selected, isTrue);
   });
 }

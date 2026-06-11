@@ -202,6 +202,14 @@ void main() {
       'https://example.com/two',
     ]);
 
+    await manager.setHistoryEntrySelected(1, true);
+    final restoredManager = RipManager(
+      ripperResolver: (uri) => null,
+      completionSoundPlayer: () async {},
+    );
+    await restoredManager.init();
+    expect(restoredManager.history[1].selected, isTrue);
+
     await manager.removeHistoryEntry(0);
 
     expect(manager.history.single.url, 'https://example.com/two');

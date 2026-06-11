@@ -239,6 +239,13 @@ class RipManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setHistoryEntrySelected(int index, bool selected) async {
+    if (index < 0 || index >= _history.length) return;
+    _history[index].selected = selected;
+    await HistoryProvider.saveHistory(_history);
+    notifyListeners();
+  }
+
   Future<void> _playCompletionSoundIfEnabled() async {
     if (!Utils.getConfigBoolean('play.sound', false)) return;
     try {
@@ -258,25 +265,63 @@ class HistoryEntry {
   final String url;
   final String dir;
   final DateTime date;
+  final String title;
+  final int count;
+  final DateTime startDate;
+  final DateTime modifiedDate;
+  bool selected;
 
-  HistoryEntry({required this.url, required this.dir, required this.date});
+  HistoryEntry({
+    required this.url,
+    required this.dir,
+    required this.date,
+    this.title = '',
+    this.count = 0,
+    DateTime? startDate,
+    DateTime? modifiedDate,
+    this.selected = false,
+  })  : startDate = startDate ?? date,
+        modifiedDate = modifiedDate ?? date;
 
   Map<String, dynamic> toJson() => {
         'url': url,
         'dir': dir,
         'date': date.toIso8601String(),
+        'startDate': startDate.millisecondsSinceEpoch,
+        'modifiedDate': modifiedDate.millisecondsSinceEpoch,
+        'title': title,
+        'count': count,
+        'selected': selected,
       };
 
   factory HistoryEntry.fromJson(Map<dynamic, dynamic> json) {
+    final startDate = _historyDate(json['startDate']);
+    final modifiedDate = _historyDate(json['modifiedDate']);
+    final flutterDate = _historyDate(json['date']);
+    final date = flutterDate ??
+        modifiedDate ??
+        startDate ??
+        DateTime.fromMillisecondsSinceEpoch(0);
+
     return HistoryEntry(
       url: json['url']?.toString() ?? '',
       dir: json['dir']?.toString() ?? '',
-      date: DateTime.parse(json['date']?.toString() ??
-          DateTime.fromMillisecondsSinceEpoch(
-                  (json['modifiedDate'] as num?)?.toInt() ??
-                      (json['startDate'] as num?)?.toInt() ??
-                      0)
-              .toIso8601String()),
+      date: date,
+      title: json['title']?.toString() ?? '',
+      count: (json['count'] as num?)?.toInt() ?? 0,
+      startDate: startDate ?? date,
+      modifiedDate: modifiedDate ?? date,
+      selected: json['selected'] == true,
     );
+  }
+
+  static DateTime? _historyDate(Object? value) {
+    if (value is num) {
+      return DateTime.fromMillisecondsSinceEpoch(value.toInt());
+    }
+    if (value is String) {
+      return DateTime.tryParse(value);
+    }
+    return null;
   }
 }

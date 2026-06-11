@@ -297,11 +297,55 @@ void main() {
     expect(result.output, contains('There are no history entries'));
   });
 
+  test('rerip-selected processes only checked Java history entries', () async {
+    final rippedUrls = <Uri>[];
+    final controller = CliController(
+      loadHistory: () async => [
+        HistoryEntry(
+          url: 'https://example.com/unchecked',
+          dir: '',
+          date: DateTime(2026),
+        ),
+        HistoryEntry(
+          url: 'https://example.com/checked',
+          dir: '',
+          date: DateTime(2026),
+          selected: true,
+        ),
+      ],
+      ripUrl: (url) async => rippedUrls.add(url),
+      delay: (_) async {},
+    );
+
+    final result = await controller.run(const ['--rerip-selected']);
+
+    expect(result.exitCode, 0);
+    expect(result.isError, isFalse);
+    expect(rippedUrls, [Uri.parse('https://example.com/checked')]);
+    expect(result.output, contains('Re-ripped 1 selected history entry'));
+  });
+
+  test('rerip-selected rejects history with no checked entries', () async {
+    final result = await CliController(
+      loadHistory: () async => [
+        HistoryEntry(
+          url: 'https://example.com/unchecked',
+          dir: '',
+          date: DateTime(2026),
+        ),
+      ],
+    ).run(const ['-R']);
+
+    expect(result.exitCode, 1);
+    expect(result.isError, isTrue);
+    expect(result.output, contains("No history entries have been 'Checked'"));
+  });
+
   test('unported CLI options fail without launching the GUI', () async {
-    final result = await CliController().run(const ['--rerip-selected']);
+    final result = await CliController().run(const ['--update']);
 
     expect(result.exitCode, 64);
     expect(result.isError, isTrue);
-    expect(result.output, contains('--rerip-selected'));
+    expect(result.output, contains('--update'));
   });
 }

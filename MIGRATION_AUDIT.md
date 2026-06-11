@@ -307,8 +307,11 @@ Parity checklist:
   - Completed: Flutter loads persisted album history in stored order, re-rips
     every valid URL, continues after invalid URLs or rip failures, and retains
     Java's 500 ms delay after each successful rip.
-- [ ] Support `-R` / `--rerip-selected` or document how selected history is
-      represented in Flutter.
+- [x] Support `-R` / `--rerip-selected`.
+  - Completed: Flutter history now preserves Java's selected flag, title,
+    count, and separate created/modified timestamps. The history view exposes a
+    persisted checkbox, and CLI selected rerip processes only checked entries
+    with Java-compatible empty-history and no-selection errors.
 - [ ] Replace Java `-j` updater behavior with the Flutter GitHub release
       checker or explicitly document why CLI self-update is not applicable.
 
@@ -320,6 +323,18 @@ Recent CI evidence:
   [Windows](https://github.com/pantelb/ripme/actions/runs/27328484169/artifacts/7556584421),
   [macOS](https://github.com/pantelb/ripme/actions/runs/27328484169/artifacts/7556594602),
   [Linux](https://github.com/pantelb/ripme/actions/runs/27328484169/artifacts/7556560797).
+- Downloaded-URL history location: commit `756e7c9f` passed
+  [run 27328908471](https://github.com/pantelb/ripme/actions/runs/27328908471):
+  [Android](https://github.com/pantelb/ripme/actions/runs/27328908471/artifacts/7556819032),
+  [Windows](https://github.com/pantelb/ripme/actions/runs/27328908471/artifacts/7556775471),
+  [macOS](https://github.com/pantelb/ripme/actions/runs/27328908471/artifacts/7556772659),
+  [Linux](https://github.com/pantelb/ripme/actions/runs/27328908471/artifacts/7556741634).
+- All-history rerip: commit `f3b7e6a5` passed
+  [run 27329308507](https://github.com/pantelb/ripme/actions/runs/27329308507):
+  [Android](https://github.com/pantelb/ripme/actions/runs/27329308507/artifacts/7556952466),
+  [Windows](https://github.com/pantelb/ripme/actions/runs/27329308507/artifacts/7556925808),
+  [macOS](https://github.com/pantelb/ripme/actions/runs/27329308507/artifacts/7556925904),
+  [Linux](https://github.com/pantelb/ripme/actions/runs/27329308507/artifacts/7556888261).
 - CLI configuration options: commit `ec5f63f5` passed
   [run 27326985119](https://github.com/pantelb/ripme/actions/runs/27326985119):
   [Android](https://github.com/pantelb/ripme/actions/runs/27326985119/artifacts/7556054692),

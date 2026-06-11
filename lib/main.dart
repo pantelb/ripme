@@ -809,6 +809,14 @@ class HistoryView extends StatelessWidget {
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            Checkbox(
+                              value: entry.selected,
+                              onChanged: (value) =>
+                                  ripManager.setHistoryEntrySelected(
+                                index,
+                                value ?? false,
+                              ),
+                            ),
                             Text(entry.date.toString().split(' ')[0]),
                             PopupMenuButton<String>(
                               icon: const Icon(Icons.more_horiz),

@@ -109,7 +109,10 @@ usage: ripme [OPTIONS]
     }
 
     if (_hasOption(args, '-r', '--rerip')) {
-      return _reripAllHistory();
+      return _reripHistory(selectedOnly: false);
+    }
+    if (_hasOption(args, '-R', '--rerip-selected')) {
+      return _reripHistory(selectedOnly: true);
     }
 
     final urlFile = _optionValue(args, '-f', '--urls-file');
@@ -333,7 +336,7 @@ usage: ripme [OPTIONS]
     );
   }
 
-  Future<CliResult> _reripAllHistory() async {
+  Future<CliResult> _reripHistory({required bool selectedOnly}) async {
     final history = await _loadHistory();
     if (history.isEmpty) {
       return const CliResult(
@@ -343,9 +346,21 @@ usage: ripme [OPTIONS]
       );
     }
 
+    final entries = selectedOnly
+        ? history.where((entry) => entry.selected).toList()
+        : history;
+    if (entries.isEmpty) {
+      return const CliResult(
+        exitCode: 1,
+        output: "No history entries have been 'Checked'\n"
+            'Check an entry in the history view before using --rerip-selected',
+        isError: true,
+      );
+    }
+
     final errors = <String>[];
     var ripped = 0;
-    for (final entry in history) {
+    for (final entry in entries) {
       final url = Uri.tryParse(entry.url);
       if (url == null || !url.hasScheme || url.host.isEmpty) {
         errors.add('[!] Failed to rip URL ${entry.url}: invalid URL');
@@ -363,7 +378,8 @@ usage: ripme [OPTIONS]
     return CliResult(
       exitCode: 0,
       output: [
-        'Re-ripped $ripped history entr${ripped == 1 ? 'y' : 'ies'}',
+        'Re-ripped $ripped${selectedOnly ? ' selected' : ''} '
+            'history entr${ripped == 1 ? 'y' : 'ies'}',
         ...errors
       ].join('\n'),
       isError: errors.isNotEmpty,
