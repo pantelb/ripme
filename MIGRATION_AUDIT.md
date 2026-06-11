@@ -693,7 +693,14 @@ Parity checklist:
     coverage. Java's visible `descriptions.save` checkbox is intentionally
     retired: source inspection found no reachable description support because
     the only ripper overriding the hooks, `FuraffinityRipper`, returns `false`
-    from `hasDescriptionSupport()`. Remaining Java controls are tracked below.
+    from `hasDescriptionSupport()`. Java's `auto.update` checkbox is also
+    explicitly disabled in favor of the actionable GitHub release checker.
+    Remaining Java controls are tracked below.
+  - CI artifacts for the media/history controls:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27357472965/artifacts/7568924806),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27357472965/artifacts/7568877198),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27357472965/artifacts/7568861014),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27357472965/artifacts/7568820741).
 - [ ] Reconcile hidden/runtime-only keys not exposed in UI.
 - [ ] Support Java portable config mode when `rip.properties` exists next to the
       app, or document a Flutter-native replacement.
@@ -718,8 +725,12 @@ Parity checklist:
       `enable.finish.command` and `finish.command`.
 - [ ] Support or intentionally retire history deletion warning:
       `history.warn_before_delete`.
-- [ ] Support or intentionally retire Java auto-update preference:
+- [x] Support or intentionally retire Java auto-update preference:
       `auto.update`.
+  - Completed: Flutter does not self-replace application binaries. The
+    configuration UI displays a disabled replacement notice and retains an
+    actionable GitHub latest-release check; widget and update-checker tests
+    cover both surfaces.
 - [ ] Support or intentionally retire window geometry keys:
       `window.position`, `window.x`, `window.y`, `window.w`, `window.h`.
 
@@ -1111,6 +1122,11 @@ Findings:
       implementation: `FuraffinityRipper` is the only class overriding the
       description hooks and returns `false` from `hasDescriptionSupport()`.
       Flutter intentionally retires this ineffective control.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27357574894/artifacts/7568983184),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27357574894/artifacts/7568925684),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27357574894/artifacts/7568909737),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27357574894/artifacts/7568869363).
 - [ ] Java `TwitterRipper` defaults `twitter.rip_retweets` to `true` through
       `Utils.getConfigBoolean("twitter.rip_retweets", true)`. Flutter's
       `config_defaults.dart` sets `twitter.rip_retweets` to `false`, so the

@@ -97,5 +97,27 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Filter by upvotes'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('Auto-update has been replaced by GitHub releases'),
+      500,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.pumpAndSettle();
+
+    final retiredAutoUpdate = tester.widget<SwitchListTile>(
+      find.widgetWithText(
+        SwitchListTile,
+        'Auto-update has been replaced by GitHub releases',
+      ),
+    );
+    expect(retiredAutoUpdate.value, isFalse);
+    expect(retiredAutoUpdate.onChanged, isNull);
+    expect(
+      tester
+          .widget<ListTile>(find.widgetWithText(ListTile, 'Check for updates'))
+          .onTap,
+      isNotNull,
+    );
   });
 }
