@@ -793,7 +793,16 @@ Parity checklist:
     [Windows](https://github.com/pantelb/ripme/actions/runs/27361077711/artifacts/7570351152),
     [macOS](https://github.com/pantelb/ripme/actions/runs/27361077711/artifacts/7570330134),
     [Linux](https://github.com/pantelb/ripme/actions/runs/27361077711/artifacts/7570309660).
-- [ ] Verify timeout behavior for pages and downloads.
+- [x] Verify timeout behavior for pages and downloads.
+  - Completed: page requests enforce `page.timeout`; file downloads enforce
+    `download.timeout` for the full request and do not create a destination
+    file after a timeout.
+  - Intentional Flutter behavior: settings remain live per request so the
+    immediate-persistence UI takes effect without an app restart, rather than
+    freezing Java's `Http.TIMEOUT` when the class first loads.
+  - Intentional Java bug fix: a timed-out file remains failed. Flutter does not
+    reproduce `DownloadFileThread` falling through to `downloadCompleted`
+    after catching `SocketTimeoutException`.
 - [x] Verify skip-404 config key spelling and semantics against Java.
   - Completed: shared Java-style page requests terminate immediately on 404
     regardless of configuration. File downloads alone consult the active
@@ -829,6 +838,11 @@ Parity checklist:
   - Completed: file requests preserve explicit referer/cookie maps, send Java's
     `Accept: */*` and empty-cookie defaults, and do not inject page-only
     configured-domain cookies.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27363447019/artifacts/7571378376),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27363447019/artifacts/7571376642),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27363447019/artifacts/7571310397),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27363447019/artifacts/7571299951).
 - [ ] Verify Java CLI/config proxy strings `[user:password]@host[:port]` through
       `proxy.http` and `proxy.socks`, including authenticated proxy behavior.
 - [ ] Verify HTTP proxy host/port/auth.
@@ -845,6 +859,11 @@ Parity checklist:
   - In progress: shared page requests now stop immediately with Java-compatible
     401/403 cookie guidance and 404 file-not-found messages. File-download
     status text remains tracked separately.
+  - CI artifacts for page errors:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27363974753/artifacts/7571591390),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27363974753/artifacts/7571559785),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27363974753/artifacts/7571508412),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27363974753/artifacts/7571496843).
 - [x] Verify Java retry attempt counts. `Http` now uses exactly the configured
       number of total attempts, including Java's zero-attempt edge case,
       instead of the former Flutter `attempt <= retries` behavior.
@@ -1388,13 +1407,14 @@ Findings:
 - [ ] Java `Http` retry loop attempts exactly the configured count. Flutter's
       `_getResponse` currently loops `attempt <= retries`, which is one extra
       attempt for the same setting.
-- [ ] Java `Http.TIMEOUT` is a `static final` value read once from
+- [x] Java `Http.TIMEOUT` is a `static final` value read once from
       `Utils.getConfigInteger("page.timeout", 5 * 1000)` when `Http` is loaded,
       and every default Jsoup connection then uses that frozen timeout. Flutter
       `_getResponse(...)` reads `Utils.getConfigInteger(timeoutKey,
       defaultTimeoutMs)` on every request, so changing `page.timeout` after the
       first Java `Http` class load affects Flutter requests but not Java page
-      requests.
+      requests. This is retained intentionally so Flutter's immediately
+      persisted timeout control applies without restarting the app.
 - [ ] Java CLI `-4` sets `errors.skip404`, and `DownloadFileThread` checks that
       same typo key before returning immediately on a 404; otherwise it keeps
       retrying through the Java download loop. Flutter checks
@@ -1423,12 +1443,12 @@ Findings:
       with `Cookie` present even when the per-download cookie map is empty.
       Flutter now preserves that request shape and keeps configured-domain
       cookies scoped to page requests.
-- [ ] Java `DownloadFileThread` catches `SocketTimeoutException`, logs
+- [x] Java `DownloadFileThread` catches `SocketTimeoutException`, logs
       `timedout!`, breaks out of the retry loop, and then still falls through to
       `observer.downloadCompleted(url, saveAs.toPath())`. Flutter shared
-      download/page requests surface timeout failures instead. This shipped Java
-      timeout-completion behavior needs a compatibility test or an explicit
-      intentional-fix note.
+      download/page requests intentionally surface timeout failures instead;
+      tests lock the absence of a destination file rather than reproducing the
+      shipped Java false-completion bug.
 - [x] Java `download.max_size` is only used by config validation/update
       plumbing; `DownloadFileThread` does not compare response size against that
       key before saving. Flutter now retains the property for compatibility

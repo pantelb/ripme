@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -123,6 +124,71 @@ void main() {
     );
 
     expect(await saveAs.readAsString(), 'ok');
+  });
+
+  test('page requests enforce the configured page timeout', () async {
+    SharedPreferences.setMockInitialValues({
+      'page.timeout': 20,
+      'download.timeout': 1000,
+      'download.retries': 1,
+      'download.retry.sleep': 0,
+    });
+    await Utils.init();
+
+    var attempts = 0;
+    final server = await _server((request) async {
+      attempts++;
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      try {
+        request.response.write('late');
+        await request.response.close();
+      } on HttpException {
+        // The client is expected to close the socket when its timeout expires.
+      }
+    });
+    addTearDown(server.close);
+
+    await expectLater(
+      Http.get(Uri.parse('http://127.0.0.1:${server.port}/slow-page')),
+      throwsA(isA<TimeoutException>()),
+    );
+    expect(attempts, 1);
+  });
+
+  test('file downloads enforce the configured download timeout', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.timeout': 20,
+      'page.timeout': 1000,
+      'download.retries': 1,
+      'download.retry.sleep': 0,
+    });
+    await Utils.init();
+
+    var attempts = 0;
+    final server = await _server((request) async {
+      attempts++;
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      try {
+        request.response.write('late');
+        await request.response.close();
+      } on HttpException {
+        // The client is expected to close the socket when its timeout expires.
+      }
+    });
+    addTearDown(server.close);
+    final directory = await Directory.systemTemp.createTemp('ripme_http_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final saveAs = File('${directory.path}/file.txt');
+
+    await expectLater(
+      Http.downloadFile(
+        Uri.parse('http://127.0.0.1:${server.port}/slow-file'),
+        saveAs,
+      ),
+      throwsA(isA<TimeoutException>()),
+    );
+    expect(attempts, 1);
+    expect(await saveAs.exists(), isFalse);
   });
 
   test('sends custom headers and cookies on downloads', () async {
