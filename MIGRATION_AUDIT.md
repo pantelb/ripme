@@ -526,14 +526,23 @@ Parity checklist:
     current rip-complete event carries only the directory, unlike Java's
     `RipStatusComplete(dir, count)`. Rips without resource events retain
     Java's default count of one.
+  - CI: commit `683abd02` passed
+    [run 27342560448](https://github.com/pantelb/ripme/actions/runs/27342560448):
+    [Android](https://github.com/pantelb/ripme/actions/runs/27342560448/artifacts/7562545410),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27342560448/artifacts/7562513096),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27342560448/artifacts/7562505367),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27342560448/artifacts/7562465605).
 - [x] Preserve Java table columns and display semantics: URL, created date,
       modified date, count, and selected checkbox.
   - Completed: the history view exposes Java's five data columns in order,
     formats both dates as `yyyy/MM/dd`, displays count numerically, and binds
     the final checkbox to persisted selected state. Existing folder-open and
     row action controls remain available in an additional action column.
-- [ ] Preserve Java history JSON timestamp semantics: `startDate` and
+- [x] Preserve Java history JSON timestamp semantics: `startDate` and
       `modifiedDate` are epoch milliseconds.
+  - Completed: import treats numeric values as milliseconds since the Unix
+    epoch and export writes both fields as integer epoch milliseconds, with
+    exact non-second-aligned values covered by tests.
 - [ ] Preserve Java `toJSON()` quirk: `dir` is read from imported JSON but not
       written by Java, or document a deliberate Flutter format extension.
 - [ ] Import Java `history.json` without data loss.

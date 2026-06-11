@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripme/history_provider.dart';
 import 'package:ripme/rip_manager.dart';
@@ -87,5 +89,25 @@ void main() {
     expect(imported.single.startDate, entry.startDate);
     expect(imported.single.modifiedDate, entry.modifiedDate);
     expect(imported.single.selected, isTrue);
+  });
+
+  test('writes Java history timestamps as epoch milliseconds', () {
+    final startDate = DateTime.fromMillisecondsSinceEpoch(1779235200123);
+    final modifiedDate = DateTime.fromMillisecondsSinceEpoch(1779321600456);
+    final exported = HistoryProvider.exportHistory([
+      HistoryEntry(
+        url: 'https://example.com/timestamps',
+        dir: '/tmp/timestamps',
+        date: modifiedDate,
+        startDate: startDate,
+        modifiedDate: modifiedDate,
+      ),
+    ]);
+    final entry = (jsonDecode(exported) as List).single as Map<String, dynamic>;
+
+    expect(entry['startDate'], 1779235200123);
+    expect(entry['modifiedDate'], 1779321600456);
+    expect(entry['startDate'], isA<int>());
+    expect(entry['modifiedDate'], isA<int>());
   });
 }
