@@ -217,7 +217,10 @@ class _MainWindowState extends State<MainWindow>
             Text(strings.appTitle),
           ],
         ),
-        bottom: TabControllerWidget(tabController: _tabController),
+        bottom: TabControllerWidget(
+          tabController: _tabController,
+          queueCount: ripManager.queue.length,
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -549,7 +552,13 @@ class _IconBadge extends StatelessWidget {
 class TabControllerWidget extends StatelessWidget
     implements PreferredSizeWidget {
   final TabController tabController;
-  const TabControllerWidget({super.key, required this.tabController});
+  final int queueCount;
+
+  const TabControllerWidget({
+    super.key,
+    required this.tabController,
+    required this.queueCount,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -561,7 +570,9 @@ class TabControllerWidget extends StatelessWidget
         Tab(text: strings.log, icon: const Icon(Icons.receipt_long_outlined)),
         Tab(text: strings.history, icon: const Icon(Icons.history_outlined)),
         Tab(
-            text: strings.queue,
+            text: queueCount == 0
+                ? strings.queue
+                : '${strings.queue}($queueCount)',
             icon: const Icon(Icons.pending_actions_outlined)),
         Tab(text: strings.config, icon: const Icon(Icons.tune_outlined)),
       ],

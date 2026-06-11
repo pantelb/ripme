@@ -433,7 +433,17 @@ Parity checklist:
     does not start with Java's case-sensitive `http` prefix, resolve a ripper,
     and display `<host> album detected`. Invalid or unsupported URLs display
     `Can't rip this URL: <reason>` without changing queue state.
-- [ ] Queue count is visible and updates like Java's `queue(n)` label.
+  - CI: commit `ce06595c` passed
+    [run 27339640361](https://github.com/pantelb/ripme/actions/runs/27339640361):
+    [Android](https://github.com/pantelb/ripme/actions/runs/27339640361/artifacts/7561356122),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27339640361/artifacts/7561303045),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27339640361/artifacts/7561365279),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27339640361/artifacts/7561268197).
+- [x] Queue count is visible and updates like Java's `queue(n)` label.
+  - Completed: the Queue tab displays the localized base label when no items
+    are pending and appends `(n)` with no separator when pending items exist.
+    The count follows the queue after enqueue, current-rip removal, manual
+    removal, and clear operations.
 - [ ] Queue is saved to config after updates.
 - [ ] Queue is restored from config at startup.
 - [ ] Queue clear/remove behavior matches Java context-menu actions.
@@ -443,7 +453,7 @@ Required tests:
 
 - [x] Unit tests for queue duplicate/range parsing.
 - [ ] `RipManager` tests for queue persistence/restoration.
-- [ ] Widget tests for URL validation/status display.
+- [x] Widget tests for URL validation/status display.
 
 ### Workstream 3: History And Re-Rip
 
