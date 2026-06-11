@@ -312,8 +312,13 @@ Parity checklist:
     count, and separate created/modified timestamps. The history view exposes a
     persisted checkbox, and CLI selected rerip processes only checked entries
     with Java-compatible empty-history and no-selection errors.
-- [ ] Replace Java `-j` updater behavior with the Flutter GitHub release
-      checker or explicitly document why CLI self-update is not applicable.
+- [x] Replace Java `-j` updater behavior with the Flutter GitHub release
+      checker.
+  - Completed: CLI update checks use the existing GitHub Releases API checker
+    and report current/latest versions plus the release URL. Java's downloaded
+    jar replacement is intentionally retired because Flutter outputs are
+    platform-specific signed/packaged artifacts; replacing a running binary
+    would bypass the Android, Windows, macOS, and Linux installation models.
 
 Recent CI evidence:
 

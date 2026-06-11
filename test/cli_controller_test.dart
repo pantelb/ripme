@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ripme/app_version.dart';
 import 'package:ripme/cli/cli_controller.dart';
 import 'package:ripme/rip_manager.dart';
+import 'package:ripme/update_checker.dart';
 
 class _FakeConfigStore implements CliConfigStore {
   final values = <String, Object>{};
@@ -341,11 +342,63 @@ void main() {
     expect(result.output, contains("No history entries have been 'Checked'"));
   });
 
-  test('unported CLI options fail without launching the GUI', () async {
-    final result = await CliController().run(const ['--update']);
+  test('update reports GitHub release availability without self-replacing',
+      () async {
+    final controller = CliController(
+      checkForUpdate: () async => UpdateCheckResult(
+        currentVersion: '1.0.0',
+        latestVersion: 'v1.2.0',
+        releaseUrl:
+            Uri.parse('https://github.com/pantelb/ripme/releases/tag/v1.2.0'),
+        updateAvailable: true,
+      ),
+    );
 
-    expect(result.exitCode, 64);
+    final result = await controller.run(const ['--update']);
+
+    expect(result.exitCode, 0);
+    expect(result.isError, isFalse);
+    expect(result.output, contains('Update available: v1.2.0'));
+    expect(result.output, contains('/releases/tag/v1.2.0'));
+  });
+
+  test('update runs after a URL rip like Java option ordering', () async {
+    final events = <String>[];
+    final controller = CliController(
+      ripUrl: (url) async => events.add('rip:$url'),
+      checkForUpdate: () async {
+        events.add('update');
+        return UpdateCheckResult(
+          currentVersion: '1.0.0',
+          latestVersion: '1.0.0',
+          releaseUrl:
+              Uri.parse('https://github.com/pantelb/ripme/releases/latest'),
+          updateAvailable: false,
+        );
+      },
+    );
+
+    final result = await controller.run(const [
+      '--url',
+      'https://example.com/album',
+      '--update',
+    ]);
+
+    expect(result.exitCode, 0);
+    expect(events, [
+      'rip:https://example.com/album',
+      'update',
+    ]);
+    expect(result.output, contains('is up to date'));
+  });
+
+  test('update lookup failures are reported as CLI errors', () async {
+    final result = await CliController(
+      checkForUpdate: () async => throw Exception('offline'),
+    ).run(const ['-j']);
+
+    expect(result.exitCode, 1);
     expect(result.isError, isTrue);
-    expect(result.output, contains('--update'));
+    expect(result.output, contains('offline'));
   });
 }

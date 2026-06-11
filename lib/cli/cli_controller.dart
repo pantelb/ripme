@@ -5,6 +5,7 @@ import '../history_provider.dart';
 import '../ripper/abstract_ripper.dart';
 import '../ripper/ripper_factory.dart';
 import '../rip_manager.dart';
+import '../update_checker.dart';
 import '../utils/proxy_config.dart';
 import '../utils/utils.dart';
 
@@ -13,6 +14,7 @@ typedef CliUrlFileReader = Future<List<String>> Function(String path);
 typedef CliFolderSuffixSetter = void Function(String? suffix);
 typedef CliHistoryLoader = Future<List<HistoryEntry>> Function();
 typedef CliDelay = Future<void> Function(Duration duration);
+typedef CliUpdateChecker = Future<UpdateCheckResult> Function();
 
 abstract class CliConfigStore {
   Future<void> setBoolean(String key, bool value);
@@ -56,6 +58,7 @@ class CliController {
   final CliFolderSuffixSetter _setFolderSuffix;
   final CliHistoryLoader _loadHistory;
   final CliDelay _delay;
+  final CliUpdateChecker _checkForUpdate;
 
   CliController({
     CliUrlRipper? ripUrl,
@@ -64,12 +67,14 @@ class CliController {
     CliFolderSuffixSetter? setFolderSuffix,
     CliHistoryLoader? loadHistory,
     CliDelay? delay,
+    CliUpdateChecker? checkForUpdate,
   })  : _ripUrl = ripUrl ?? _ripUrlWithFactory,
         _readUrlFile = readUrlFile ?? _readLines,
         _config = config ?? _UtilsCliConfigStore(),
         _setFolderSuffix = setFolderSuffix ?? _setDefaultFolderSuffix,
         _loadHistory = loadHistory ?? HistoryProvider.loadHistory,
-        _delay = delay ?? Future<void>.delayed;
+        _delay = delay ?? Future<void>.delayed,
+        _checkForUpdate = checkForUpdate ?? const UpdateChecker().check;
 
   static const String helpText = '''
 usage: ripme [OPTIONS]
@@ -117,31 +122,44 @@ usage: ripme [OPTIONS]
 
     final urlFile = _optionValue(args, '-f', '--urls-file');
     if (urlFile != null) {
-      return _ripUrlFile(urlFile);
+      return _withOptionalUpdate(args, await _ripUrlFile(urlFile));
     }
 
     final urlValue = _optionValue(args, '-u', '--url');
     if (urlValue != null) {
       final url = Uri.tryParse(urlValue.trim());
       if (url == null || !url.hasScheme || url.host.isEmpty) {
-        return const CliResult(
-          exitCode: 1,
-          output:
-              '[!] Given URL is not valid. Expected URL format is http://domain.com/...',
-          isError: true,
+        return _withOptionalUpdate(
+          args,
+          const CliResult(
+            exitCode: 1,
+            output:
+                '[!] Given URL is not valid. Expected URL format is http://domain.com/...',
+            isError: true,
+          ),
         );
       }
 
       try {
         await _ripUrl(url);
-        return CliResult(exitCode: 0, output: 'Rip complete: $url');
+        return _withOptionalUpdate(
+          args,
+          CliResult(exitCode: 0, output: 'Rip complete: $url'),
+        );
       } on Exception catch (error) {
-        return CliResult(
-          exitCode: 1,
-          output: '[!] Error while ripping URL $url: $error',
-          isError: true,
+        return _withOptionalUpdate(
+          args,
+          CliResult(
+            exitCode: 1,
+            output: '[!] Error while ripping URL $url: $error',
+            isError: true,
+          ),
         );
       }
+    }
+
+    if (_hasOption(args, '-j', '--update')) {
+      return _checkUpdate();
     }
 
     if (configResult.applied > 0) {
@@ -384,6 +402,40 @@ usage: ripme [OPTIONS]
       ].join('\n'),
       isError: errors.isNotEmpty,
     );
+  }
+
+  Future<CliResult> _withOptionalUpdate(
+    List<String> args,
+    CliResult primary,
+  ) async {
+    if (!_hasOption(args, '-j', '--update')) return primary;
+    final update = await _checkUpdate();
+    return CliResult(
+      exitCode: primary.exitCode != 0 ? primary.exitCode : update.exitCode,
+      output: '${primary.output}\n${update.output}',
+      isError: primary.isError || update.isError,
+    );
+  }
+
+  Future<CliResult> _checkUpdate() async {
+    try {
+      final result = await _checkForUpdate();
+      final status = result.updateAvailable
+          ? 'Update available: ${result.latestVersion} '
+              '(current ${result.currentVersion})'
+          : 'RipMe ${result.currentVersion} is up to date '
+              '(latest ${result.latestVersion})';
+      return CliResult(
+        exitCode: 0,
+        output: '$status\n${result.releaseUrl}',
+      );
+    } on Exception catch (error) {
+      return CliResult(
+        exitCode: 1,
+        output: 'Error while checking for update: $error',
+        isError: true,
+      );
+    }
   }
 
   static Iterable<String> urlValuesFromLines(Iterable<String> lines) sync* {
