@@ -1,14 +1,18 @@
 import 'dart:io';
 
 import '../app_version.dart';
+import '../history_provider.dart';
 import '../ripper/abstract_ripper.dart';
 import '../ripper/ripper_factory.dart';
+import '../rip_manager.dart';
 import '../utils/proxy_config.dart';
 import '../utils/utils.dart';
 
 typedef CliUrlRipper = Future<void> Function(Uri url);
 typedef CliUrlFileReader = Future<List<String>> Function(String path);
 typedef CliFolderSuffixSetter = void Function(String? suffix);
+typedef CliHistoryLoader = Future<List<HistoryEntry>> Function();
+typedef CliDelay = Future<void> Function(Duration duration);
 
 abstract class CliConfigStore {
   Future<void> setBoolean(String key, bool value);
@@ -50,16 +54,22 @@ class CliController {
   final CliUrlFileReader _readUrlFile;
   final CliConfigStore _config;
   final CliFolderSuffixSetter _setFolderSuffix;
+  final CliHistoryLoader _loadHistory;
+  final CliDelay _delay;
 
   CliController({
     CliUrlRipper? ripUrl,
     CliUrlFileReader? readUrlFile,
     CliConfigStore? config,
     CliFolderSuffixSetter? setFolderSuffix,
+    CliHistoryLoader? loadHistory,
+    CliDelay? delay,
   })  : _ripUrl = ripUrl ?? _ripUrlWithFactory,
         _readUrlFile = readUrlFile ?? _readLines,
         _config = config ?? _UtilsCliConfigStore(),
-        _setFolderSuffix = setFolderSuffix ?? _setDefaultFolderSuffix;
+        _setFolderSuffix = setFolderSuffix ?? _setDefaultFolderSuffix,
+        _loadHistory = loadHistory ?? HistoryProvider.loadHistory,
+        _delay = delay ?? Future<void>.delayed;
 
   static const String helpText = '''
 usage: ripme [OPTIONS]
@@ -96,6 +106,10 @@ usage: ripme [OPTIONS]
     final configResult = await _applyConfigOptions(args);
     if (configResult.error != null) {
       return configResult.error!;
+    }
+
+    if (_hasOption(args, '-r', '--rerip')) {
+      return _reripAllHistory();
     }
 
     final urlFile = _optionValue(args, '-f', '--urls-file');
@@ -315,6 +329,43 @@ usage: ripme [OPTIONS]
     return CliResult(
       exitCode: 0,
       output: ['Ripped $ripped URL(s) from $path', ...errors].join('\n'),
+      isError: errors.isNotEmpty,
+    );
+  }
+
+  Future<CliResult> _reripAllHistory() async {
+    final history = await _loadHistory();
+    if (history.isEmpty) {
+      return const CliResult(
+        exitCode: 1,
+        output: 'There are no history entries to re-rip. Rip some albums first',
+        isError: true,
+      );
+    }
+
+    final errors = <String>[];
+    var ripped = 0;
+    for (final entry in history) {
+      final url = Uri.tryParse(entry.url);
+      if (url == null || !url.hasScheme || url.host.isEmpty) {
+        errors.add('[!] Failed to rip URL ${entry.url}: invalid URL');
+        continue;
+      }
+      try {
+        await _ripUrl(url);
+        ripped++;
+        await _delay(const Duration(milliseconds: 500));
+      } on Exception catch (error) {
+        errors.add('[!] Failed to rip URL ${entry.url}: $error');
+      }
+    }
+
+    return CliResult(
+      exitCode: 0,
+      output: [
+        'Re-ripped $ripped history entr${ripped == 1 ? 'y' : 'ies'}',
+        ...errors
+      ].join('\n'),
       isError: errors.isNotEmpty,
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripme/app_version.dart';
 import 'package:ripme/cli/cli_controller.dart';
+import 'package:ripme/rip_manager.dart';
 
 class _FakeConfigStore implements CliConfigStore {
   final values = <String, Object>{};
@@ -234,11 +235,73 @@ void main() {
     expect(suffix, ' -extra ');
   });
 
+  test('rerip processes all history entries and delays after successes',
+      () async {
+    final rippedUrls = <Uri>[];
+    final delays = <Duration>[];
+    final controller = CliController(
+      loadHistory: () async => [
+        HistoryEntry(
+          url: 'https://example.com/one',
+          dir: '',
+          date: DateTime(2026),
+        ),
+        HistoryEntry(
+          url: 'not-a-url',
+          dir: '',
+          date: DateTime(2026),
+        ),
+        HistoryEntry(
+          url: 'https://example.com/fails',
+          dir: '',
+          date: DateTime(2026),
+        ),
+        HistoryEntry(
+          url: 'https://example.com/two',
+          dir: '',
+          date: DateTime(2026),
+        ),
+      ],
+      ripUrl: (url) async {
+        rippedUrls.add(url);
+        if (url.path == '/fails') throw Exception('rip failed');
+      },
+      delay: (duration) async => delays.add(duration),
+    );
+
+    final result = await controller.run(const ['--rerip']);
+
+    expect(result.exitCode, 0);
+    expect(result.isError, isTrue);
+    expect(rippedUrls, [
+      Uri.parse('https://example.com/one'),
+      Uri.parse('https://example.com/fails'),
+      Uri.parse('https://example.com/two'),
+    ]);
+    expect(delays, [
+      const Duration(milliseconds: 500),
+      const Duration(milliseconds: 500),
+    ]);
+    expect(result.output, contains('Re-ripped 2 history entries'));
+    expect(result.output, contains('not-a-url'));
+    expect(result.output, contains('rip failed'));
+  });
+
+  test('rerip rejects empty history like Java', () async {
+    final result = await CliController(
+      loadHistory: () async => [],
+    ).run(const ['-r']);
+
+    expect(result.exitCode, 1);
+    expect(result.isError, isTrue);
+    expect(result.output, contains('There are no history entries'));
+  });
+
   test('unported CLI options fail without launching the GUI', () async {
-    final result = await CliController().run(const ['--rerip']);
+    final result = await CliController().run(const ['--rerip-selected']);
 
     expect(result.exitCode, 64);
     expect(result.isError, isTrue);
-    expect(result.output, contains('--rerip'));
+    expect(result.output, contains('--rerip-selected'));
   });
 }

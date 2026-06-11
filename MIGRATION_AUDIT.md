@@ -303,7 +303,10 @@ Parity checklist:
     `Utils.getURLHistoryFile()`, not album `history.json`. Flutter now writes
     the same config key and uses the configured line file for downloaded-URL
     checks, writes, and clearing.
-- [ ] Support `-r` / `--rerip` for all history entries.
+- [x] Support `-r` / `--rerip` for all history entries.
+  - Completed: Flutter loads persisted album history in stored order, re-rips
+    every valid URL, continues after invalid URLs or rip failures, and retains
+    Java's 500 ms delay after each successful rip.
 - [ ] Support `-R` / `--rerip-selected` or document how selected history is
       represented in Flutter.
 - [ ] Replace Java `-j` updater behavior with the Flutter GitHub release
@@ -311,6 +314,12 @@ Parity checklist:
 
 Recent CI evidence:
 
+- Desktop argument plumbing: commit `6f9a93d9` passed
+  [run 27328484169](https://github.com/pantelb/ripme/actions/runs/27328484169):
+  [Android](https://github.com/pantelb/ripme/actions/runs/27328484169/artifacts/7556619588),
+  [Windows](https://github.com/pantelb/ripme/actions/runs/27328484169/artifacts/7556584421),
+  [macOS](https://github.com/pantelb/ripme/actions/runs/27328484169/artifacts/7556594602),
+  [Linux](https://github.com/pantelb/ripme/actions/runs/27328484169/artifacts/7556560797).
 - CLI configuration options: commit `ec5f63f5` passed
   [run 27326985119](https://github.com/pantelb/ripme/actions/runs/27326985119):
   [Android](https://github.com/pantelb/ripme/actions/runs/27326985119/artifacts/7556054692),
