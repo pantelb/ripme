@@ -481,6 +481,111 @@ void main() {
     expect(html.querySelector('h1')?.text, 'ok');
   });
 
+  test('Java-style request builder applies headers cookies and form data',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 1,
+      'page.timeout': 1000,
+    });
+    await Utils.init();
+
+    late String method;
+    late String? referer;
+    late String? userAgent;
+    late String? customHeader;
+    late String? cookie;
+    late String body;
+    final server = await _server((request) async {
+      method = request.method;
+      referer = request.headers.value('referer');
+      userAgent = request.headers.value('user-agent');
+      customHeader = request.headers.value('x-test');
+      cookie = request.headers.value('cookie');
+      body = await utf8.decoder.bind(request).join();
+      request.response.write('<html><body>posted</body></html>');
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final document = await Http.url(
+      'http://127.0.0.1:${server.port}/form',
+    )
+        .ignoreContentType()
+        .referrer('https://example.com/source')
+        .userAgent('custom-agent')
+        .header('X-Test', 'value')
+        .cookies({'session': 'abc'})
+        .data({'first': 'one'})
+        .data('second', 'two')
+        .method('GET')
+        .post();
+
+    expect(method, 'POST');
+    expect(referer, 'https://example.com/source');
+    expect(userAgent, 'custom-agent');
+    expect(customHeader, 'value');
+    expect(cookie, 'session=abc');
+    expect(Uri.splitQueryString(body), {
+      'first': 'one',
+      'second': 'two',
+    });
+    expect(document.body?.text, 'posted');
+  });
+
+  test('Java-style request builder supports JSON objects and arrays', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 1,
+      'page.timeout': 1000,
+    });
+    await Utils.init();
+
+    final server = await _server((request) async {
+      request.response.headers.contentType = ContentType.text;
+      request.response.write(
+        request.uri.path == '/object' ? '{"ok":true}' : '[1,2,3]',
+      );
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final object = await Http.url(
+      'http://127.0.0.1:${server.port}/object',
+    ).getJSON();
+    final array = await Http.url(
+      'http://127.0.0.1:${server.port}/array',
+    ).getJSONArray();
+
+    expect(object, {'ok': true});
+    expect(array, [1, 2, 3]);
+  });
+
+  test('Java-style request builder honors retry and timeout overrides',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 1,
+      'page.timeout': 1000,
+      'download.retry.sleep': 0,
+    });
+    await Utils.init();
+
+    var attempts = 0;
+    final server = await _server((request) async {
+      attempts++;
+      request.response.statusCode = 500;
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    await expectLater(
+      Http.url('http://127.0.0.1:${server.port}/retry')
+          .retries(2)
+          .timeout(100)
+          .response(),
+      throwsA(isA<HttpException>()),
+    );
+    expect(attempts, 2);
+  });
+
   test('page requests never retry Java 404 responses', () async {
     SharedPreferences.setMockInitialValues({
       'download.retries': 2,

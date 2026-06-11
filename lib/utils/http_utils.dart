@@ -25,6 +25,12 @@ class Http {
     }
   }
 
+  static JavaHttpRequest url(Object url) {
+    return JavaHttpRequest(
+      url is Uri ? url : Uri.parse(url.toString()),
+    );
+  }
+
   static Future<dynamic> getJSON(Uri url,
       {Map<String, String>? headers, Map<String, String>? cookies}) async {
     final response = await _getResponse(
@@ -128,12 +134,19 @@ class Http {
     int defaultTimeoutMs = 5000,
     bool honorDownloadSkip404 = false,
     bool isDownload = false,
+    String method = 'GET',
+    Map<String, String>? data,
+    int? attemptsOverride,
+    Duration? timeoutOverride,
   }) async {
     final combinedHeaders =
         _buildHeaders(url, headers, cookies, isDownload: isDownload);
-    final attempts = Utils.getConfigInteger('download.retries', 3);
-    final timeout = Duration(
-        milliseconds: Utils.getConfigInteger(timeoutKey, defaultTimeoutMs));
+    final attempts =
+        attemptsOverride ?? Utils.getConfigInteger('download.retries', 3);
+    final timeout = timeoutOverride ??
+        Duration(
+          milliseconds: Utils.getConfigInteger(timeoutKey, defaultTimeoutMs),
+        );
     final retrySleep = Duration(
         milliseconds: Utils.getConfigInteger('download.retry.sleep', 0));
     Object? lastError;
@@ -142,8 +155,13 @@ class Http {
       http.Client? client;
       try {
         client = _createClient();
-        final response =
-            await client.get(url, headers: combinedHeaders).timeout(timeout);
+        final response = await _send(
+          client,
+          method,
+          url,
+          combinedHeaders,
+          data,
+        ).timeout(timeout);
         if (response.statusCode == 200) {
           return response;
         }
@@ -196,6 +214,28 @@ class Http {
       throw lastError;
     }
     throw HttpException('Failed to load $url');
+  }
+
+  static Future<http.Response> _send(
+    http.Client client,
+    String method,
+    Uri url,
+    Map<String, String> headers,
+    Map<String, String>? data,
+  ) {
+    switch (method.toUpperCase()) {
+      case 'GET':
+        return client.get(url, headers: headers);
+      case 'POST':
+        return client.post(url, headers: headers, body: data);
+      default:
+        final request = http.Request(method.toUpperCase(), url)
+          ..headers.addAll(headers);
+        if (data != null && data.isNotEmpty) {
+          request.bodyFields = data;
+        }
+        return client.send(request).then(http.Response.fromStream);
+    }
   }
 
   static http.Client _createClient() {
@@ -315,4 +355,105 @@ class Http {
 
 class _NonRetriableHttpException extends HttpException {
   _NonRetriableHttpException(super.message);
+}
+
+class JavaHttpRequest {
+  final Uri _url;
+  final Map<String, String> _headers = {};
+  final Map<String, String> _cookies = {};
+  final Map<String, String> _data = {};
+  String _method = 'GET';
+  int? _retries;
+  Duration? _timeout;
+
+  JavaHttpRequest(this._url);
+
+  JavaHttpRequest ignoreContentType() => this;
+
+  JavaHttpRequest referrer(Object referrer) {
+    _headers['Referer'] = referrer.toString();
+    return this;
+  }
+
+  JavaHttpRequest userAgent(String userAgent) {
+    _headers['User-Agent'] = userAgent;
+    return this;
+  }
+
+  JavaHttpRequest retries(int attempts) {
+    _retries = attempts;
+    return this;
+  }
+
+  JavaHttpRequest timeout(int milliseconds) {
+    _timeout = Duration(milliseconds: milliseconds);
+    return this;
+  }
+
+  JavaHttpRequest header(String name, String value) {
+    _headers[name] = value;
+    return this;
+  }
+
+  JavaHttpRequest cookies(Map<String, String> values) {
+    _cookies.addAll(values);
+    return this;
+  }
+
+  JavaHttpRequest data(Object values, [String? value]) {
+    if (values is Map<String, String>) {
+      _data.addAll(values);
+      return this;
+    }
+    if (values is String && value != null) {
+      _data[values] = value;
+      return this;
+    }
+    throw ArgumentError('data expects Map<String, String> or name/value');
+  }
+
+  JavaHttpRequest method(String method) {
+    _method = method.toUpperCase();
+    return this;
+  }
+
+  Future<http.Response> response() {
+    return Http._getResponse(
+      _url,
+      headers: _headers,
+      cookies: _cookies,
+      method: _method,
+      data: _data,
+      attemptsOverride: _retries,
+      timeoutOverride: _timeout,
+    );
+  }
+
+  Future<Document> get() async {
+    _method = 'GET';
+    final result = await response();
+    return parse(result.body);
+  }
+
+  Future<Document> post() async {
+    _method = 'POST';
+    final result = await response();
+    return parse(result.body);
+  }
+
+  Future<dynamic> getJSON() async {
+    final value = jsonDecode((await response()).body);
+    if (value is! Map<String, dynamic>) {
+      throw const FormatException('Expected a JSON object');
+    }
+    return value;
+  }
+
+  Future<List<dynamic>> getJSONArray() async {
+    final value = jsonDecode((await response()).body);
+    if (value is! List<dynamic>) {
+      throw const FormatException('Expected a JSON array');
+    }
+    return value;
+  }
 }

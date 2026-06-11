@@ -873,9 +873,13 @@ Parity checklist:
     independently of the server's `Content-Type`, matching Java callers that
     opt into Jsoup `ignoreContentType()`. A local-server test returns both JSON
     and HTML as `text/plain`.
-- [ ] Verify Java `Http` chainable request APIs: `ignoreContentType`,
+- [x] Verify Java `Http` chainable request APIs: `ignoreContentType`,
       `referrer`, `userAgent`, `header`, `cookies`, `data`, `method`, `post`,
       `getJSON`, and `getJSONArray`.
+  - Completed: `Http.url(...)` now returns a Java-style request builder backed
+    by the shared retry/timeout/proxy/SSL implementation. Tests cover chained
+    request metadata, URL-encoded form POSTs, method override, per-request
+    retries/timeouts, JSON objects, and JSON arrays.
 - [~] Verify Java HTTP error messages: 401/403 cookie guidance, 404 file-not-found
       handling, and non-retriable/retriable status text.
   - In progress: shared page requests now stop immediately with Java-compatible
@@ -1382,9 +1386,11 @@ Flutter files checked:
 
 Findings:
 
-- [ ] Java `Http` is a chainable Jsoup wrapper supporting timeout,
+- [x] Java `Http` is a chainable Jsoup wrapper supporting timeout,
       `ignoreContentType`, referrer, user agent, retry count, headers, cookies,
       form data, method override, `post`, JSON object, and JSON array helpers.
+      Flutter now exposes the equivalent surface through `Http.url(...)` while
+      retaining its existing static convenience methods.
       Flutter has focused helpers but not the full API surface.
 - [ ] Java configured cookies use `cookies.<domain>` and check parent domains;
       values are parsed as semicolon-delimited `key=value` pairs. Flutter does
