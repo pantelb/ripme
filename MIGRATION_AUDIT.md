@@ -472,7 +472,18 @@ Parity checklist:
   - Completed: per-entry removal immediately removes the selected pending URL,
     and clear-all requires confirmation with Java's localized
     `queue.validation` prompt before mutating the queue.
-- [ ] Stop interrupts current rip and leaves remaining queue behavior documented.
+  - CI: commit `83f70f7e` passed
+    [run 27341625795](https://github.com/pantelb/ripme/actions/runs/27341625795):
+    [Android](https://github.com/pantelb/ripme/actions/runs/27341625795/artifacts/7562164251),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27341625795/artifacts/7562127290),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27341625795/artifacts/7562108748),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27341625795/artifacts/7562087339).
+- [x] Stop interrupts current rip and leaves remaining queue behavior documented.
+  - Completed: stop signals only the active ripper, resets active progress,
+    reports Java's `Download interrupted` status/log entry, and leaves all
+    pending URLs in order. The stopped run cannot advance the queue from its
+    completion path. As in Java, adding another URL while idle resumes from the
+    oldest pending entry.
 
 Required tests:
 

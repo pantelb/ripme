@@ -35,6 +35,8 @@ class RipManager extends ChangeNotifier {
   final CompletionSoundPlayer _completionSoundPlayer;
 
   bool _isRipping = false;
+  bool _stopRequested = false;
+  int _ripRunId = 0;
   AbstractRipper? _currentRipper;
   String _statusText = 'Inactive';
   int _currentRipTotal = 0;
@@ -84,6 +86,7 @@ class RipManager extends ChangeNotifier {
     _saveNonEmptyQueue();
     notifyListeners();
     if (!_isRipping) {
+      _stopRequested = false;
       _ripNext();
     }
     return true;
@@ -228,12 +231,15 @@ class RipManager extends ChangeNotifier {
   }
 
   void stop() {
+    _stopRequested = true;
     _currentRipper?.stop();
     _isRipping = false;
     _statusText = 'Download interrupted';
     _currentRipTotal = 0;
     _currentRipFinished = 0;
-    notifyListeners();
+    _addLog(
+      RipStatusMessage(RipStatus.ripErrored, 'Download interrupted'),
+    );
   }
 
   Future<void> _ripNext() async {
@@ -262,17 +268,19 @@ class RipManager extends ChangeNotifier {
       return;
     }
 
-    _currentRipper = _ripperResolver(uri);
-    if (_currentRipper == null) {
+    final activeRipper = _ripperResolver(uri);
+    if (activeRipper == null) {
       _statusText = 'Error: No ripper found for $urlText';
       _addLog(RipStatusMessage(
           RipStatus.ripErrored, "No ripper found for $urlText"));
       _ripNext();
       return;
     }
+    final runId = ++_ripRunId;
+    _currentRipper = activeRipper;
 
-    await _currentRipper!.setup();
-    _currentRipper!.statusStream.listen((event) {
+    await activeRipper.setup();
+    activeRipper.statusStream.listen((event) {
       if (event.status == RipStatus.queueAdd) {
         _queue.add(event.object.toString());
         _saveNonEmptyQueue();
@@ -286,13 +294,18 @@ class RipManager extends ChangeNotifier {
     });
 
     try {
-      await _currentRipper!.rip();
+      await activeRipper.rip();
     } catch (e) {
       _statusText = 'Error: $e';
       _addLog(RipStatusMessage(RipStatus.ripErrored, e.toString()));
     } finally {
-      _currentRipper!.dispose();
-      _ripNext();
+      activeRipper.dispose();
+      if (identical(_currentRipper, activeRipper)) {
+        _currentRipper = null;
+      }
+      if (!_stopRequested && runId == _ripRunId) {
+        _ripNext();
+      }
     }
   }
 

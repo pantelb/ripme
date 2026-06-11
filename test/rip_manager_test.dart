@@ -59,6 +59,41 @@ class BlockingRipper extends AbstractRipper {
   }
 }
 
+class StopAwareRipper extends AbstractRipper {
+  StopAwareRipper(super.url, this.directory, this.onStarted) {
+    onStarted(url.toString());
+  }
+
+  final Directory directory;
+  final void Function(String url) onStarted;
+  final Completer<void> _stopped = Completer<void>();
+
+  @override
+  Future<void> setup() async {
+    workingDir = directory;
+  }
+
+  @override
+  bool canRip(Uri url) => true;
+
+  @override
+  Future<String> getGID(Uri url) async => 'stoppable';
+
+  @override
+  String getHost() => 'test';
+
+  @override
+  Future<void> rip() => _stopped.future;
+
+  @override
+  void stop() {
+    super.stop();
+    if (!_stopped.isCompleted) {
+      _stopped.complete();
+    }
+  }
+}
+
 class QueueingRipper extends AbstractRipper {
   QueueingRipper(super.url, this.directory);
 
@@ -254,6 +289,50 @@ void main() {
 
     manager.clearLogs();
     expect(manager.logs, isEmpty);
+  });
+
+  test('stop leaves pending queue entries until a new submission resumes it',
+      () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_manager_stop_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final started = <String>[];
+    final manager = RipManager(
+      ripperResolver: (uri) => StopAwareRipper(uri, directory, started.add),
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+
+    manager.addUrlToQueue('https://example.com/current');
+    manager.addUrlToQueue('https://example.com/two');
+    manager.addUrlToQueue('https://example.com/three');
+    await _waitFor(() => manager.isRipping && manager.queue.length == 2);
+
+    manager.stop();
+    await _waitFor(() => !manager.isRipping);
+    await Future<void>.delayed(const Duration(milliseconds: 25));
+
+    expect(started, ['https://example.com/current']);
+    expect(manager.queue, [
+      'https://example.com/two',
+      'https://example.com/three',
+    ]);
+    expect(manager.statusText, 'Download interrupted');
+    expect(
+      manager.logs.last.object,
+      'Download interrupted',
+    );
+
+    manager.addUrlToQueue('https://example.com/four');
+    await _waitFor(() => started.length == 2);
+    expect(started.last, 'https://example.com/two');
+    expect(manager.queue, [
+      'https://example.com/three',
+      'https://example.com/four',
+    ]);
+    manager.stop();
   });
 
   test('restores the persisted queue without starting it', () async {
