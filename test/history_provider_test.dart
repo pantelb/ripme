@@ -1,11 +1,18 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripme/history_provider.dart';
 import 'package:ripme/rip_manager.dart';
+import 'package:ripme/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+  });
+
   test('clears persisted rip history', () async {
     SharedPreferences.setMockInitialValues({});
 
@@ -202,5 +209,94 @@ void main() {
     expect(exported, startsWith('[\n  {\n'));
     expect(exported, contains('\n    "url": "https://example.com/pretty",'));
     expect(exported, endsWith('\n  }\n]'));
+  });
+
+  test('reconstructs Java URLs from supported bare directory names', () {
+    const cases = {
+      'imgur_abcde': 'http://imgur.com/a/abcde',
+      'imgur_one-two': 'http://imgur.com/one,two',
+      'imgur_username_favorites': 'http://username.imgur.com/favorites',
+      'imagefap_123': 'http://www.imagefap.com/gallery.php?gid=123',
+      'imagefap_slug': 'http://www.imagefap.com/gallery.php?pgid=slug',
+      'deviantart_artist': 'http://artist.deviantart.com/',
+      'deviantart_artist_42':
+          'http://artist.deviantart.com/gallery/42',
+      'bfcakes_actor': 'http://www.bcfakes.com/celebritylist/actor',
+      'drawcrowd_artist': 'http://drawcrowd.com/artist',
+      'ehentai_123-abc': 'http://g.e-hentai.org/g/123/abc',
+      'vinebox_user': 'http://finebox.co/u/user',
+      'imgbox_gallery': 'http://imgbox.com/g/gallery',
+      'modelmayhem_123': 'http://www.modelmayhem.com/123',
+    };
+
+    for (final entry in cases.entries) {
+      expect(
+        HistoryDirectoryGuesser.urlFromDirectoryName(entry.key),
+        entry.value,
+        reason: entry.key,
+      );
+    }
+  });
+
+  test('preserves Java full-path and Reddit fallback limitations', () {
+    expect(
+      HistoryDirectoryGuesser.urlFromDirectoryName('/rips/imgur_abcde'),
+      isNull,
+    );
+    expect(
+      HistoryDirectoryGuesser.urlFromDirectoryName(r'C:\rips\imgur_abcde'),
+      isNull,
+    );
+    expect(
+      HistoryDirectoryGuesser.urlFromDirectoryName('reddit_sub_flutter'),
+      isNull,
+    );
+  });
+
+  test('loads legacy download.history before guessing directories', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.history': ['https://example.com/legacy'],
+    });
+    await Utils.init();
+    final directory = await Directory.systemTemp.createTemp('ripme-history-');
+    addTearDown(() => directory.delete(recursive: true));
+    await Directory('${directory.path}/imgur_abcde').create();
+
+    final history =
+        await HistoryProvider.loadHistory(workingDirectory: directory);
+
+    expect(history.map((entry) => entry.url), [
+      'https://example.com/legacy',
+    ]);
+  });
+
+  test('does not guess when persisted album history exists', () async {
+    SharedPreferences.setMockInitialValues({'rip_history': '[]'});
+    await Utils.init();
+    final directory = await Directory.systemTemp.createTemp('ripme-history-');
+    addTearDown(() => directory.delete(recursive: true));
+    await Directory('${directory.path}/imgur_abcde').create();
+
+    expect(
+      await HistoryProvider.loadHistory(workingDirectory: directory),
+      isEmpty,
+    );
+  });
+
+  test('ignores malformed Java fallback candidates without crashing', () {
+    expect(
+      () => HistoryDirectoryGuesser.urlFromDirectoryName('imgur_'),
+      throwsRangeError,
+    );
+    expect(
+      () => HistoryDirectoryGuesser.urlFromDirectoryName(
+        'imgur_flutter_top_week',
+      ),
+      throwsUnsupportedError,
+    );
+    expect(
+      () => HistoryDirectoryGuesser.urlFromDirectoryName('deviantart'),
+      throwsRangeError,
+    );
   });
 }

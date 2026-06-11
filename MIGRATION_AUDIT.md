@@ -586,24 +586,42 @@ Parity checklist:
     array matching Java's file name and pretty-print structure. Entries contain
     Java's written fields plus the documented Flutter `dir` and legacy `date`
     extensions described above.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27347041762/artifacts/7564436319),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27347041762/artifacts/7564390585),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27347041762/artifacts/7564376857),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27347041762/artifacts/7564349235).
 - [x] Support remove, clear, open folder, copy URL, and re-rip actions.
   - Completed: each history row exposes folder-open from its URL cell plus copy
     URL, re-rip, and remove actions. Clear removes both album history and the
     distinct downloaded-URL history like Java, and honors
     `history.warn_before_delete` with Java's literal confirmation controls.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27348354800/artifacts/7565027633),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27348354800/artifacts/7564982994),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27348354800/artifacts/7564959396),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27348354800/artifacts/7564922827).
 - [x] Support selected-entry re-rip or document why selected state is removed.
   - Completed: `Re-rip Checked` queues every selected history URL in table
     order, including duplicate URLs like Java's direct queue-model additions.
     Empty history and history with no checked rows produce Java's distinct
     localized messages in a `RipMe Error` dialog.
-- [ ] Support Java fallback history guessing from existing rip directories or
+- [x] Support Java fallback history guessing from existing rip directories or
       document why Flutter does not.
+  - Completed: Flutter ports `RipUtils.urlFromDirectoryName(...)` mapping order
+    and invokes it only when album history is absent and legacy
+    `download.history` is empty. Explicit working directories pass each full
+    directory path like Java, preserving the shipped limitation that normal
+    absolute paths do not match bare prefixes; Flutter skips the equivalent
+    no-op scan for its default absolute documents path. Reddit's unreachable
+    switch and the Imgur fixed-list failure are preserved as non-candidates;
+    malformed names are ignored instead of aborting Flutter startup.
 - [ ] Support configurable history location or document replacement behavior.
 - [ ] Keep downloaded-URL history behavior distinct from album history.
 
 Required tests:
 
-- [ ] Java history fixture import tests.
+- [x] Java history fixture import tests.
 - [x] History selected-state tests.
 - [x] Re-rip queueing tests.
 - [ ] Configured history location tests if supported.
@@ -1115,37 +1133,34 @@ Findings:
       parity.
 - [ ] Java CLI `-r` re-rips all history entries and `-R` re-rips selected
       entries. Flutter needs equivalent behavior or a documented replacement.
-- [ ] Java can reconstruct history candidates from existing rip directories via
-      `RipUtils.urlFromDirectoryName`; Flutter has no verified equivalent.
-- [ ] Java fallback history guessing is narrower than its intent: `App.loadHistory`
+- [x] Java can reconstruct history candidates from existing rip directories via
+      `RipUtils.urlFromDirectoryName`; Flutter now ports and tests the mapping.
+- [x] Java fallback history guessing is narrower than its intent: `App.loadHistory`
       only scans the working directory when both `history.json` and legacy
       `download.history` are empty, and it passes each `Path.toString()` into
       `RipUtils.urlFromDirectoryName`, whose helpers mostly check for bare
       directory-name prefixes such as `imgur_`, `imagefap_`, and `deviantart_`.
-      Flutter must preserve, intentionally fix, or document this current-source
-      behavior.
-- [ ] Java `RipUtils.urlFromRedditDirectoryName(...)` appears unreachable for
+      Flutter preserves and documents this current-source behavior.
+- [x] Java `RipUtils.urlFromRedditDirectoryName(...)` appears unreachable for
       the intended `reddit_sub_*`, `reddit_user_*`, and `reddit_post_*`
       directory names: after confirming `dir.startsWith("reddit_")`, it splits
       on `_` and switches on `fields[0]`, which is still `reddit`, not `sub`,
-      `user`, or `post`. Flutter has no history-folder reconstruction, so any
-      future replacement must decide whether to preserve this shipped Reddit
-      reconstruction bug.
-- [ ] Java `RipUtils.urlFromImgurDirectoryName(...)` also has current-source
+      `user`, or `post`. Flutter preserves this shipped Reddit reconstruction
+      bug and tests that these names remain non-candidates.
+- [x] Java `RipUtils.urlFromImgurDirectoryName(...)` also has current-source
       edge cases that must not be silently smoothed over: it builds
       `List<String> fields = Arrays.asList(dir.split("_"))`, then the subreddit
       branch calls `fields.remove(...)`, which throws
       `UnsupportedOperationException` on the fixed-size list; short names such
-      as `imgur_` can also fail at `fields.get(1)`. Flutter has no equivalent
-      fallback history guessing, so an implementation must choose bug parity or
-      an intentional migration fix.
-- [ ] Java `RipUtils.urlFromDeviantartDirectoryName(...)` accepts any directory
+      as `imgur_` can also fail at `fields.get(1)`. Flutter treats both as
+      non-candidates rather than allowing malformed folders to abort startup.
+- [x] Java `RipUtils.urlFromDeviantartDirectoryName(...)` accepts any directory
       starting with `deviantart`, then immediately calls
       `dir.substring("deviantart_".length())`; a bare `deviantart` directory can
       therefore throw before returning `null` or a URL. Directory names with a
       trailing underscore can also reach `fields[1]` after Java's split drops
-      trailing empty fields. Flutter has no equivalent fallback history
-      guessing, so this malformed-directory behavior needs a parity decision.
+      trailing empty fields. Flutter preserves Java splitting for valid names
+      but ignores malformed candidates instead of aborting startup.
 - [ ] Java history clear deletes both album history and downloaded-URL history
       through `Utils.clearURLHistory()`, optionally after
       `history.warn_before_delete` confirmation. Flutter clear behavior needs to
@@ -4985,8 +5000,8 @@ Initial status:
 - [~] HTTP proxy support exists; SOCKS proxy parity is not yet verified.
 - [ ] Java `history.location` / `-H` behavior is source-audited and still needs
       porting/tests.
-- [ ] Java fallback history guessing from existing rip folders is source-audited
-      and still needs porting/tests.
+- [x] Java fallback history guessing from existing rip folders is ported and
+      tested, including the shipped full-path and parser edge-case limitations.
 
 ### 5. Resources, Localization, And Platform Integration
 
