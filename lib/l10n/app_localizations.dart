@@ -58,6 +58,15 @@ class AppLocalizations {
   String get export => 'Export';
   String get copyUrl => 'Copy URL';
   String get ripAgain => 'Rip again';
+  String get reripChecked => _label('re-rip.checked', 'Re-rip Checked');
+  String get noHistoryToRerip => _label(
+      'history.load.none',
+      'There are no history entries to re-rip. Rip some albums first');
+  String get noCheckedHistoryToRerip => _label(
+      'history.load.none.checked',
+      "No history entries have been 'Checked' Check an entry by clicking the "
+          'checkbox to the right of the URL or Right-click a URL to '
+          'check/uncheck all items');
   String get remove => _label('remove', 'Remove');
   String get historyImported => 'History imported';
   String historyImportFailed(Object error) => 'History import failed: $error';

@@ -591,7 +591,11 @@ Parity checklist:
     URL, re-rip, and remove actions. Clear removes both album history and the
     distinct downloaded-URL history like Java, and honors
     `history.warn_before_delete` with Java's literal confirmation controls.
-- [ ] Support selected-entry re-rip or document why selected state is removed.
+- [x] Support selected-entry re-rip or document why selected state is removed.
+  - Completed: `Re-rip Checked` queues every selected history URL in table
+    order, including duplicate URLs like Java's direct queue-model additions.
+    Empty history and history with no checked rows produce Java's distinct
+    localized messages in a `RipMe Error` dialog.
 - [ ] Support Java fallback history guessing from existing rip directories or
       document why Flutter does not.
 - [ ] Support configurable history location or document replacement behavior.
@@ -600,8 +604,8 @@ Parity checklist:
 Required tests:
 
 - [ ] Java history fixture import tests.
-- [ ] History selected-state tests.
-- [ ] Re-rip queueing tests.
+- [x] History selected-state tests.
+- [x] Re-rip queueing tests.
 - [ ] Configured history location tests if supported.
 
 ### Workstream 4: Configuration And Preferences

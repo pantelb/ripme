@@ -21,6 +21,12 @@ class QueueSubmissionResult {
   final List<String> errors;
 }
 
+enum HistoryReripResult {
+  queued,
+  emptyHistory,
+  noneSelected,
+}
+
 class RipManager extends ChangeNotifier {
   RipManager({
     RipperResolver? ripperResolver,
@@ -446,6 +452,24 @@ class RipManager extends ChangeNotifier {
     _history[index].selected = selected;
     await HistoryProvider.saveHistory(_history);
     notifyListeners();
+  }
+
+  HistoryReripResult reripSelectedHistory() {
+    if (_history.isEmpty) return HistoryReripResult.emptyHistory;
+    final selectedUrls = _history
+        .where((entry) => entry.selected)
+        .map((entry) => entry.url)
+        .toList();
+    if (selectedUrls.isEmpty) return HistoryReripResult.noneSelected;
+
+    _queue.addAll(selectedUrls);
+    _saveNonEmptyQueue();
+    notifyListeners();
+    if (!_isRipping) {
+      _stopRequested = false;
+      _ripNext();
+    }
+    return HistoryReripResult.queued;
   }
 
   Future<void> _playCompletionSoundIfEnabled() async {

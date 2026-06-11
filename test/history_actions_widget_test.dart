@@ -37,6 +37,16 @@ void main() {
     await tester.tap(find.text('History'));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.text('Re-rip Checked'));
+    await tester.pumpAndSettle();
+    expect(find.text('RipMe Error'), findsOneWidget);
+    expect(
+      find.textContaining("No history entries have been 'Checked'"),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+
     await tester.tap(find.byIcon(Icons.more_horiz));
     await tester.pumpAndSettle();
     expect(find.text('Copy URL'), findsOneWidget);

@@ -764,6 +764,11 @@ class HistoryView extends StatelessWidget {
               alignment: WrapAlignment.end,
               children: [
                 OutlinedButton.icon(
+                  onPressed: () => _reripSelected(context),
+                  icon: const Icon(Icons.replay_outlined),
+                  label: Text(strings.reripChecked),
+                ),
+                OutlinedButton.icon(
                   onPressed: history.isEmpty ? null : () => _clearHistory(
                         context,
                       ),
@@ -907,6 +912,29 @@ class HistoryView extends StatelessWidget {
       if (confirmed != true) return;
     }
     await ripManager.clearHistory();
+  }
+
+  Future<void> _reripSelected(BuildContext context) async {
+    final result = ripManager.reripSelectedHistory();
+    if (result == HistoryReripResult.queued || !context.mounted) return;
+    final strings = AppLocalizations.of(context);
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('RipMe Error'),
+        content: Text(
+          result == HistoryReripResult.emptyHistory
+              ? strings.noHistoryToRerip
+              : strings.noCheckedHistoryToRerip,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _importHistory(BuildContext context) async {

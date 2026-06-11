@@ -318,6 +318,73 @@ void main() {
     expect(await DownloadHistoryProvider.hasDownloaded(downloaded), isFalse);
   });
 
+  test('re-rips every selected history row in order including duplicates',
+      () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_selected_history_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final release = Completer<void>();
+    addTearDown(() {
+      if (!release.isCompleted) release.complete();
+    });
+    final manager = RipManager(
+      ripperResolver: (uri) => BlockingRipper(uri, directory, release.future),
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+    await manager.replaceHistory([
+      HistoryEntry(
+        url: 'https://example.com/selected',
+        dir: '/tmp/one',
+        date: DateTime(2026),
+        selected: true,
+      ),
+      HistoryEntry(
+        url: 'https://example.com/skipped',
+        dir: '/tmp/two',
+        date: DateTime(2026),
+      ),
+      HistoryEntry(
+        url: 'https://example.com/selected',
+        dir: '/tmp/three',
+        date: DateTime(2026),
+        selected: true,
+      ),
+    ]);
+
+    expect(manager.reripSelectedHistory(), HistoryReripResult.queued);
+    await _waitFor(() => manager.isRipping);
+
+    expect(manager.queue, ['https://example.com/selected']);
+    manager.stop();
+  });
+
+  test('selected history re-rip distinguishes empty and unchecked history',
+      () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+    final manager = RipManager(ripperResolver: (uri) => null);
+    await manager.init();
+
+    expect(
+      manager.reripSelectedHistory(),
+      HistoryReripResult.emptyHistory,
+    );
+    await manager.replaceHistory([
+      HistoryEntry(
+        url: 'https://example.com/unchecked',
+        dir: '/tmp/unchecked',
+        date: DateTime(2026),
+      ),
+    ]);
+    expect(
+      manager.reripSelectedHistory(),
+      HistoryReripResult.noneSelected,
+    );
+  });
+
   test('tracks status counters and queue controls', () async {
     SharedPreferences.setMockInitialValues({});
     await Utils.init();
