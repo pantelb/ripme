@@ -297,7 +297,12 @@ Parity checklist:
     download path resolution redirects files from `<workingDir>/...` to the
     Java-compatible sibling `<workingDir><suffix>/...` without changing the
     ripper's reported working directory.
-- [ ] Support `-H` / `--history` or document a replacement.
+- [x] Support `-H` / `--history`.
+  - Completed: Java's option name is misleading: `history.location` controls
+    the newline-delimited downloaded-URL history file returned by
+    `Utils.getURLHistoryFile()`, not album `history.json`. Flutter now writes
+    the same config key and uses the configured line file for downloaded-URL
+    checks, writes, and clearing.
 - [ ] Support `-r` / `--rerip` for all history entries.
 - [ ] Support `-R` / `--rerip-selected` or document how selected history is
       represented in Flutter.

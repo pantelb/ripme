@@ -3,10 +3,20 @@ import 'dart:io';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'utils/utils.dart';
+
 class DownloadHistoryProvider {
   static const String _key = 'downloaded_urls';
 
   static Future<Set<String>> loadDownloadedUrls() async {
+    final configuredFile = _configuredFile();
+    if (configuredFile != null) {
+      if (!await configuredFile.exists()) return <String>{};
+      return (await configuredFile.readAsLines())
+          .where((line) => line.isNotEmpty)
+          .toSet();
+    }
+
     final prefs = await SharedPreferences.getInstance();
     final json = prefs.getString(_key);
     if (json == null || json.isEmpty) return <String>{};
@@ -29,6 +39,18 @@ class DownloadHistoryProvider {
   }
 
   static Future<void> saveDownloadedUrls(Set<String> urls) async {
+    final configuredFile = _configuredFile();
+    if (configuredFile != null) {
+      if (!await configuredFile.parent.exists()) {
+        await configuredFile.parent.create(recursive: true);
+      }
+      final sorted = urls.toList()..sort();
+      await configuredFile.writeAsString(
+        sorted.isEmpty ? '' : '${sorted.join('\n')}\n',
+      );
+      return;
+    }
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_key, exportDownloadedUrls(urls));
   }
@@ -50,15 +72,27 @@ class DownloadHistoryProvider {
   }
 
   static Future<void> markDownloaded(Uri url) async {
-    final prefs = await SharedPreferences.getInstance();
     final urls = await loadDownloadedUrls();
     urls.add(_normalize(url));
-    await prefs.setString(_key, jsonEncode(urls.toList()..sort()));
+    await saveDownloadedUrls(urls);
   }
 
   static Future<void> clear() async {
+    final configuredFile = _configuredFile();
+    if (configuredFile != null) {
+      if (await configuredFile.exists()) {
+        await configuredFile.delete();
+      }
+      return;
+    }
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_key);
+  }
+
+  static File? _configuredFile() {
+    final path = Utils.getConfigString('history.location', null);
+    return path == null || path.isEmpty ? null : File(path);
   }
 
   static String _normalize(Uri url) {

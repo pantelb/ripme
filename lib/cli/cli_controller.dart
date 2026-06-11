@@ -206,6 +206,12 @@ usage: ripme [OPTIONS]
       applied++;
     }
 
+    final historyLocation = _optionValue(args, '-H', '--history');
+    if (historyLocation != null) {
+      await _config.setString('history.location', historyLocation);
+      applied++;
+    }
+
     final folderSuffix = _optionValue(args, '-a', '--append-to-folder');
     if (folderSuffix != null) {
       _setFolderSuffix(folderSuffix);

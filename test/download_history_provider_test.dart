@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripme/download_history_provider.dart';
+import 'package:ripme/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -38,5 +41,38 @@ void main() {
       'https://example.com/one.jpg',
       'https://example.com/two.jpg',
     });
+  });
+
+  test('uses Java newline history file when history.location is configured',
+      () async {
+    final tempDirectory =
+        await Directory.systemTemp.createTemp('ripme-history');
+    addTearDown(() => tempDirectory.delete(recursive: true));
+    final historyFile = File('${tempDirectory.path}/nested/url_history.txt');
+    SharedPreferences.setMockInitialValues({
+      'history.location': historyFile.path,
+    });
+    await Utils.init();
+
+    await DownloadHistoryProvider.markDownloaded(
+      Uri.parse('https://example.com/two.jpg#fragment'),
+    );
+    await DownloadHistoryProvider.markDownloaded(
+      Uri.parse('https://example.com/one.jpg'),
+    );
+
+    expect(await historyFile.readAsLines(), [
+      'https://example.com/one.jpg',
+      'https://example.com/two.jpg',
+    ]);
+    expect(
+      await DownloadHistoryProvider.hasDownloaded(
+        Uri.parse('https://example.com/two.jpg'),
+      ),
+      isTrue,
+    );
+
+    await DownloadHistoryProvider.clear();
+    expect(await historyFile.exists(), isFalse);
   });
 }

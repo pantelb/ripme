@@ -147,6 +147,8 @@ void main() {
       '--skip404',
       '--ripsdirectory',
       'D:/rips',
+      '--history',
+      'D:/ripme/url_history.txt',
     ]);
 
     expect(result.exitCode, 0);
@@ -156,6 +158,7 @@ void main() {
       'download.save_order': true,
       'errors.skip404': true,
       'rips.directory': 'D:/rips',
+      'history.location': 'D:/ripme/url_history.txt',
     });
   });
 
