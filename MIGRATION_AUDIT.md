@@ -690,7 +690,10 @@ Parity checklist:
 - [~] Reconcile every Java configuration control with Flutter UI.
   - In progress: Flutter now exposes Java's `prefer.mp4` and
     `history.warn_before_delete` controls with immediate persistence and widget
-    coverage. Remaining Java controls are tracked below.
+    coverage. Java's visible `descriptions.save` checkbox is intentionally
+    retired: source inspection found no reachable description support because
+    the only ripper overriding the hooks, `FuraffinityRipper`, returns `false`
+    from `hasDescriptionSupport()`. Remaining Java controls are tracked below.
 - [ ] Reconcile hidden/runtime-only keys not exposed in UI.
 - [ ] Support Java portable config mode when `rip.properties` exists next to the
       app, or document a Flutter-native replacement.
@@ -1101,6 +1104,10 @@ Findings:
       `AbstractRipper.setup()` always calls each Dart ripper's
       `getAlbumTitle(...)`, so JSON rippers do not honor Java's no-album-title
       fallback and HTML rippers are not distinguished from JSON rippers.
+- [x] Java exposes `descriptions.save`, but current source has no reachable
+      implementation: `FuraffinityRipper` is the only class overriding the
+      description hooks and returns `false` from `hasDescriptionSupport()`.
+      Flutter intentionally retires this ineffective control.
 - [ ] Java `TwitterRipper` defaults `twitter.rip_retweets` to `true` through
       `Utils.getConfigBoolean("twitter.rip_retweets", true)`. Flutter's
       `config_defaults.dart` sets `twitter.rip_retweets` to `false`, so the
