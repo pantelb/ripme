@@ -783,8 +783,17 @@ Parity checklist:
     value is the total attempt count and, matching Java `Http.response()`,
     positive `download.retry.sleep` is applied after every failed attempt,
     including the final failure.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27361077711/artifacts/7570398801),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27361077711/artifacts/7570351152),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27361077711/artifacts/7570330134),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27361077711/artifacts/7570309660).
 - [ ] Verify timeout behavior for pages and downloads.
-- [ ] Verify skip-404 config key spelling and semantics against Java.
+- [x] Verify skip-404 config key spelling and semantics against Java.
+  - Completed: shared Java-style page requests terminate immediately on 404
+    regardless of configuration. File downloads alone consult the active
+    plural `errors.skip404` key with Java's false default; the bundled singular
+    `error.skip404=true` remains inventoried as an inactive legacy key.
 - [ ] Verify max download size behavior.
 - [ ] Verify configured domain cookies.
 - [ ] Verify Java configured-cookie lookup and parsing exactly: `cookies.<host>`

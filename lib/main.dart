@@ -1289,8 +1289,8 @@ class _ConfigurationViewState extends State<ConfigurationView> {
             _ConfigSwitch(
               title: strings.skipRetriesAfter404,
               icon: Icons.error_outline,
-              keyName: 'error.skip404',
-              defaultValue: true,
+              keyName: 'errors.skip404',
+              defaultValue: false,
               onChanged: _refresh,
             ),
             _ConfigStringTile(

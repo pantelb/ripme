@@ -313,11 +313,11 @@ void main() {
     expect(html.querySelector('h1')?.text, 'ok');
   });
 
-  test('prefers Java errors.skip404 over the Flutter legacy key', () async {
+  test('page requests never retry Java 404 responses', () async {
     SharedPreferences.setMockInitialValues({
       'download.retries': 2,
       'page.timeout': 1000,
-      'errors.skip404': true,
+      'errors.skip404': false,
       'error.skip404': false,
     });
     await Utils.init();
@@ -333,6 +333,48 @@ void main() {
 
     await expectLater(
       Http.get(Uri.parse('http://127.0.0.1:${server.port}/missing')),
+      throwsA(isA<HttpException>()),
+    );
+    expect(attempts, 1);
+  });
+
+  test('download 404 retries use only Java plural skip key', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 2,
+      'download.retry.sleep': 0,
+      'download.timeout': 1000,
+      'errors.skip404': false,
+      'error.skip404': true,
+    });
+    await Utils.init();
+
+    var attempts = 0;
+    final server = await _server((request) async {
+      attempts++;
+      request.response.statusCode = 404;
+      await request.response.close();
+    });
+    addTearDown(server.close);
+    final directory = await Directory.systemTemp.createTemp('ripme_http_test');
+    addTearDown(() => directory.delete(recursive: true));
+
+    await expectLater(
+      Http.downloadFile(
+        Uri.parse('http://127.0.0.1:${server.port}/missing'),
+        File('${directory.path}/missing.jpg'),
+      ),
+      throwsA(isA<HttpException>()),
+    );
+    expect(attempts, 2);
+
+    await Utils.setConfigBoolean('errors.skip404', true);
+    attempts = 0;
+
+    await expectLater(
+      Http.downloadFile(
+        Uri.parse('http://127.0.0.1:${server.port}/missing'),
+        File('${directory.path}/missing.jpg'),
+      ),
       throwsA(isA<HttpException>()),
     );
     expect(attempts, 1);

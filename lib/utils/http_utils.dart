@@ -77,6 +77,7 @@ class Http {
       cookies: cookies,
       timeoutKey: 'download.timeout',
       defaultTimeoutMs: 60000,
+      honorDownloadSkip404: true,
     );
 
     if (response.statusCode == 200) {
@@ -121,6 +122,7 @@ class Http {
     Map<String, String>? cookies,
     String timeoutKey = 'page.timeout',
     int defaultTimeoutMs = 5000,
+    bool honorDownloadSkip404 = false,
   }) async {
     final combinedHeaders = _buildHeaders(url, headers, cookies);
     final attempts = Utils.getConfigInteger('download.retries', 3);
@@ -141,11 +143,8 @@ class Http {
         }
 
         if (response.statusCode == 404 &&
-            Utils.getConfigBooleanWithFallback(
-              'errors.skip404',
-              'error.skip404',
-              true,
-            )) {
+            (!honorDownloadSkip404 ||
+                Utils.getConfigBoolean('errors.skip404', false))) {
           return response;
         }
 

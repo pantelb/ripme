@@ -86,6 +86,7 @@ class ConfigDefaults {
   static const Map<String, bool> booleans = {
     'file.overwrite': false,
     'error.skip404': true,
+    'errors.skip404': false,
     'download.save_order': true,
     'album_titles.save': true,
     'twitter.rip_retweets': false,

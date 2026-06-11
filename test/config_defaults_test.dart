@@ -61,6 +61,7 @@ void main() {
     expect(Utils.getConfigInteger('download.retry.sleep', 0), 5000);
     expect(Utils.getConfigInteger('proxy.port', 0), 8080);
     expect(Utils.getConfigBoolean('file.overwrite', true), isFalse);
+    expect(Utils.getConfigBoolean('errors.skip404', true), isFalse);
     expect(Utils.getConfigBoolean('download.save_order', false), isTrue);
     expect(Utils.getConfigBoolean('album_titles.save', false), isTrue);
     expect(Utils.getConfigBoolean('remember.url_history', false), isTrue);
