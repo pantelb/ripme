@@ -799,14 +799,22 @@ Parity checklist:
     regardless of configuration. File downloads alone consult the active
     plural `errors.skip404` key with Java's false default; the bundled singular
     `error.skip404=true` remains inventoried as an inactive legacy key.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27362122787/artifacts/7570838538),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27362122787/artifacts/7570798660),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27362122787/artifacts/7570757479),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27362122787/artifacts/7570736941).
 - [x] Verify max download size behavior.
   - Completed: `download.max_size` remains available for Java old-config
     validation compatibility but is intentionally not exposed or enforced,
     matching `DownloadFileThread`.
-- [ ] Verify configured domain cookies.
-- [ ] Verify Java configured-cookie lookup and parsing exactly: `cookies.<host>`
+- [x] Verify configured domain cookies.
+- [x] Verify Java configured-cookie lookup and parsing exactly: `cookies.<host>`
       lookup checks parent domains and parses semicolon-delimited key/value
       pairs through `RipUtils.getCookiesFromString`.
+  - Completed: Flutter now selects the first non-empty exact/parent-domain
+    property and preserves Java parser behavior for whitespace, extra equals
+    signs, duplicate keys, trailing delimiters, and malformed pairs.
 - [ ] Verify per-download cookies and referer headers.
 - [ ] Verify Java CLI/config proxy strings `[user:password]@host[:port]` through
       `proxy.http` and `proxy.socks`, including authenticated proxy behavior.

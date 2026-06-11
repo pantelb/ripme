@@ -179,6 +179,38 @@ void main() {
     expect(cookie, contains('pref=dark'));
   });
 
+  test('configured cookies use Java parent lookup and parser edge cases',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'cookies.www.example.com': '',
+      'cookies.example.com': ' token=abc==; spaced= value ;',
+      'cookies.com': 'ignored=tld',
+    });
+    await Utils.init();
+
+    expect(
+      Http.configuredCookiesForUrl(
+        Uri.parse('https://www.example.com/gallery'),
+      ),
+      {
+        'token': 'abc',
+        'spaced': ' value ',
+      },
+    );
+  });
+
+  test('configured cookie parser fails on malformed Java pairs', () async {
+    SharedPreferences.setMockInitialValues({
+      'cookies.example.com': 'session=abc; malformed',
+    });
+    await Utils.init();
+
+    expect(
+      () => Http.configuredCookiesForUrl(Uri.parse('https://example.com')),
+      throwsRangeError,
+    );
+  });
+
   test('routes requests through configured HTTP proxy', () async {
     SharedPreferences.setMockInitialValues({
       'download.retries': 1,

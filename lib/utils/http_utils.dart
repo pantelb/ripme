@@ -93,7 +93,7 @@ class Http {
 
   static Map<String, String> _buildHeaders(
       Uri url, Map<String, String>? headers, Map<String, String>? cookies) {
-    final configuredCookies = _configuredCookiesForUrl(url);
+    final configuredCookies = configuredCookiesForUrl(url);
     final allCookies = <String, String>{
       ...configuredCookies,
       if (cookies != null) ...cookies,
@@ -203,30 +203,29 @@ class Http {
             : null;
   }
 
-  static Map<String, String> _configuredCookiesForUrl(Uri? url) {
+  static Map<String, String> configuredCookiesForUrl(Uri? url) {
     if (url == null || url.host.isEmpty) return const {};
     var parts = url.host.toLowerCase().split('.');
     while (parts.length > 1) {
       final domain = parts.join('.');
       final cookieText = Utils.getConfigString('cookies.$domain', '') ?? '';
       if (cookieText.trim().isNotEmpty) {
-        return _parseCookieHeader(cookieText);
+        return _parseConfiguredCookies(cookieText);
       }
       parts = parts.sublist(1);
     }
     return const {};
   }
 
-  static Map<String, String> _parseCookieHeader(String cookieText) {
+  static Map<String, String> _parseConfiguredCookies(String cookieText) {
     final cookies = <String, String>{};
-    for (final rawPart in cookieText.split(';')) {
-      final part = rawPart.trim();
-      if (part.isEmpty) continue;
-      final separator = part.indexOf('=');
-      if (separator <= 0) continue;
-      final name = part.substring(0, separator).trim();
-      final value = part.substring(separator + 1).trim();
-      if (name.isNotEmpty) cookies[name] = value;
+    final pairs = cookieText.trim().split(';');
+    while (pairs.isNotEmpty && pairs.last.isEmpty) {
+      pairs.removeLast();
+    }
+    for (final pair in pairs) {
+      final keyValue = pair.split('=');
+      cookies[keyValue[0].trim()] = keyValue[1];
     }
     return cookies;
   }
