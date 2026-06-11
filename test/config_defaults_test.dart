@@ -1,8 +1,44 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ripme/config_defaults.dart';
 import 'package:ripme/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  test('reconciles every active Java rip.properties default', () {
+    final javaDefaults = <String, String>{};
+    for (final rawLine in File(
+      'test/fixtures/java_rip_properties.properties',
+    ).readAsLinesSync()) {
+      final line = rawLine.trim();
+      if (line.isEmpty || line.startsWith('#')) continue;
+      final separator = line.indexOf('=');
+      javaDefaults[line.substring(0, separator).trim()] =
+          line.substring(separator + 1).trim();
+    }
+
+    final flutterDefaults = <String, Object>{
+      ...ConfigDefaults.integers,
+      ...ConfigDefaults.booleans,
+      ...ConfigDefaults.strings,
+    };
+
+    expect(javaDefaults.keys, hasLength(15));
+    for (final entry in javaDefaults.entries) {
+      expect(
+        flutterDefaults,
+        contains(entry.key),
+        reason: 'Missing Java default ${entry.key}',
+      );
+      expect(
+        flutterDefaults[entry.key].toString(),
+        entry.value,
+        reason: 'Default mismatch for ${entry.key}',
+      );
+    }
+  });
+
   test('uses Java rip.properties defaults when preferences are unset',
       () async {
     SharedPreferences.setMockInitialValues({});

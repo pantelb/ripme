@@ -622,6 +622,11 @@ Parity checklist:
     no-op scan for its default absolute documents path. Reddit's unreachable
     switch and the Imgur fixed-list failure are preserved as non-candidates;
     malformed names are ignored instead of aborting Flutter startup.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27351233433/artifacts/7566332445),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27351233433/artifacts/7566290613),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27351233433/artifacts/7566235400),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27351233433/artifacts/7566210134).
 - [x] Support configurable history location or document replacement behavior.
   - Completed: `history.location` redirects only runtime downloaded-URL checks,
     appends, and clearing to the configured file. Java's separator-free append
@@ -657,7 +662,10 @@ Flutter targets:
 
 Parity checklist:
 
-- [ ] Reconcile every key in Java `rip.properties` with Flutter defaults.
+- [x] Reconcile every key in Java `rip.properties` with Flutter defaults.
+  - Completed: all 15 active Java resource defaults match Flutter by key, type,
+    and value. A checked-in source fixture and parser-based test fail when a
+    Java default is missing or diverges.
 - [ ] Reconcile every Java config key used anywhere in `src/main/java`, not
       only keys present in `rip.properties`.
 - [ ] Reconcile every Java configuration control with Flutter UI.
@@ -689,7 +697,7 @@ Parity checklist:
 
 Required tests:
 
-- [ ] Defaults reconciliation test against Java `rip.properties`.
+- [x] Defaults reconciliation test against Java `rip.properties`.
 - [ ] Config UI widget tests for every exposed setting.
 - [ ] Persistence tests for settings changed in UI and CLI.
 
