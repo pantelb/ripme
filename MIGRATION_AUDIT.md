@@ -526,8 +526,12 @@ Parity checklist:
     current rip-complete event carries only the directory, unlike Java's
     `RipStatusComplete(dir, count)`. Rips without resource events retain
     Java's default count of one.
-- [ ] Preserve Java table columns and display semantics: URL, created date,
+- [x] Preserve Java table columns and display semantics: URL, created date,
       modified date, count, and selected checkbox.
+  - Completed: the history view exposes Java's five data columns in order,
+    formats both dates as `yyyy/MM/dd`, displays count numerically, and binds
+    the final checkbox to persisted selected state. Existing folder-open and
+    row action controls remain available in an additional action column.
 - [ ] Preserve Java history JSON timestamp semantics: `startDate` and
       `modifiedDate` are epoch milliseconds.
 - [ ] Preserve Java `toJSON()` quirk: `dir` is read from imported JSON but not

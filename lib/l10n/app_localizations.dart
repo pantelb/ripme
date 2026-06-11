@@ -46,6 +46,8 @@ class AppLocalizations {
   String get failed => 'Failed';
   String get log => _label('Log', 'Log');
   String get history => _label('History', 'History');
+  String get created => _label('created', 'Created');
+  String get modified => _label('modified', 'Modified');
   String get config => _label('Configuration', 'Config');
   String get filterLog => 'Filter log';
   String get copy => 'Copy';

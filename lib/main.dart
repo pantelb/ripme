@@ -752,7 +752,6 @@ class HistoryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
-    final scheme = Theme.of(context).colorScheme;
     return Column(
       children: [
         Padding(
@@ -788,96 +787,102 @@ class HistoryView extends StatelessWidget {
         Expanded(
           child: history.isEmpty
               ? const _EmptyState(icon: Icons.history_outlined)
-              : ListView.separated(
+              : SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  itemCount: history.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
-                  itemBuilder: (context, index) {
-                    final entry = history[index];
-                    return Material(
-                      color: scheme.surfaceContainerLow,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(color: scheme.outlineVariant),
-                      ),
-                      child: ListTile(
-                        leading: _IconBadge(
-                          icon: Icons.folder_copy_outlined,
-                          color: scheme.primary,
-                          compact: true,
-                        ),
-                        title: Text(
-                          entry.url,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: Text(
-                          entry.dir,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Checkbox(
-                              value: entry.selected,
-                              onChanged: (value) =>
-                                  ripManager.setHistoryEntrySelected(
-                                index,
-                                value ?? false,
-                              ),
-                            ),
-                            Text(entry.date.toString().split(' ')[0]),
-                            PopupMenuButton<String>(
-                              icon: const Icon(Icons.more_horiz),
-                              onSelected: (value) {
-                                switch (value) {
-                                  case 'copy':
-                                    Clipboard.setData(
-                                      ClipboardData(text: entry.url),
-                                    );
-                                    break;
-                                  case 'rerip':
-                                    ripManager.addUrlToQueue(entry.url);
-                                    break;
-                                  case 'remove':
-                                    ripManager.removeHistoryEntry(index);
-                                    break;
-                                }
-                              },
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  value: 'copy',
-                                  child: Text(strings.copyUrl),
-                                ),
-                                PopupMenuItem(
-                                  value: 'rerip',
-                                  child: Text(strings.ripAgain),
-                                ),
-                                PopupMenuItem(
-                                  value: 'remove',
-                                  child: Text(strings.remove),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        onTap: () async {
-                          final Uri uri = Uri.file(entry.dir);
-                          if (await canLaunchUrl(uri)) {
-                            await launchUrl(uri);
-                          }
-                        },
-                        onLongPress: () {
-                          ripManager.addUrlToQueue(entry.url);
-                        },
-                      ),
-                    );
-                  },
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      columns: [
+                        const DataColumn(label: Text('URL')),
+                        DataColumn(label: Text(strings.created)),
+                        DataColumn(label: Text(strings.modified)),
+                        const DataColumn(label: Text('#'), numeric: true),
+                        const DataColumn(label: SizedBox.shrink()),
+                        const DataColumn(label: SizedBox.shrink()),
+                      ],
+                      rows: [
+                        for (var index = 0; index < history.length; index++)
+                          _historyRow(context, history[index], index),
+                      ],
+                    ),
+                  ),
                 ),
         ),
       ],
     );
+  }
+
+  DataRow _historyRow(
+    BuildContext context,
+    HistoryEntry entry,
+    int index,
+  ) {
+    final strings = AppLocalizations.of(context);
+    return DataRow(
+      cells: [
+        DataCell(
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Tooltip(
+              message: entry.dir,
+              child: Text(
+                entry.url,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          onTap: () => _openHistoryDirectory(entry),
+        ),
+        DataCell(Text(_formatHistoryDate(entry.startDate))),
+        DataCell(Text(_formatHistoryDate(entry.modifiedDate))),
+        DataCell(Text(entry.count.toString())),
+        DataCell(
+          Checkbox(
+            value: entry.selected,
+            onChanged: (value) =>
+                ripManager.setHistoryEntrySelected(index, value ?? false),
+          ),
+        ),
+        DataCell(
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_horiz),
+            onSelected: (value) {
+              switch (value) {
+                case 'copy':
+                  Clipboard.setData(ClipboardData(text: entry.url));
+                  break;
+                case 'rerip':
+                  ripManager.addUrlToQueue(entry.url);
+                  break;
+                case 'remove':
+                  ripManager.removeHistoryEntry(index);
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(value: 'copy', child: Text(strings.copyUrl)),
+              PopupMenuItem(value: 'rerip', child: Text(strings.ripAgain)),
+              PopupMenuItem(value: 'remove', child: Text(strings.remove)),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _openHistoryDirectory(HistoryEntry entry) async {
+    final uri = Uri.file(entry.dir);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
+  }
+
+  String _formatHistoryDate(DateTime date) {
+    final year = date.year.toString().padLeft(4, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    final day = date.day.toString().padLeft(2, '0');
+    return '$year/$month/$day';
   }
 
   Future<void> _importHistory(BuildContext context) async {
