@@ -543,8 +543,13 @@ Parity checklist:
   - Completed: import treats numeric values as milliseconds since the Unix
     epoch and export writes both fields as integer epoch milliseconds, with
     exact non-second-aligned values covered by tests.
-- [ ] Preserve Java `toJSON()` quirk: `dir` is read from imported JSON but not
+- [x] Preserve Java `toJSON()` quirk: `dir` is read from imported JSON but not
       written by Java, or document a deliberate Flutter format extension.
+  - Deliberate extension: Flutter exports Java's six written fields and also
+    writes `dir` so folder-open behavior survives export/import, plus the
+    legacy Flutter ISO `date` field for backward compatibility. Java accepts
+    `dir` on import and ignores the extra `date` key, so the extended export
+    remains Java-readable while avoiding Java's directory data loss.
 - [ ] Import Java `history.json` without data loss.
 - [ ] Export history in a documented format.
 - [ ] Support remove, clear, open folder, copy URL, and re-rip actions.

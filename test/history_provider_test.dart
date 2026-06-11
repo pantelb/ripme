@@ -110,4 +110,29 @@ void main() {
     expect(entry['startDate'], isA<int>());
     expect(entry['modifiedDate'], isA<int>());
   });
+
+  test('documents the Java-compatible Flutter history format extension', () {
+    final exported = HistoryProvider.exportHistory([
+      HistoryEntry(
+        url: 'https://example.com/extended',
+        dir: '/tmp/extended',
+        date: DateTime.utc(2026, 6, 11),
+        title: 'Extended',
+        count: 4,
+        selected: true,
+      ),
+    ]);
+    final entry = (jsonDecode(exported) as List).single as Map<String, dynamic>;
+
+    expect(entry.keys, containsAll([
+      'url',
+      'startDate',
+      'modifiedDate',
+      'title',
+      'count',
+      'selected',
+    ]));
+    expect(entry['dir'], '/tmp/extended');
+    expect(entry['date'], '2026-06-11T00:00:00.000Z');
+  });
 }
