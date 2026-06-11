@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ripme/download_history_provider.dart';
+import 'package:ripme/history_provider.dart';
 import 'package:ripme/rip_manager.dart';
 import 'package:ripme/ripper/abstract_ripper.dart';
 import 'package:ripme/ui/rip_status_message.dart';
@@ -289,6 +291,31 @@ void main() {
     await manager.removeHistoryEntry(0);
 
     expect(manager.history.single.url, 'https://example.com/two');
+  });
+
+  test('clears album and downloaded URL history together like Java', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+    final manager = RipManager(
+      ripperResolver: (uri) => null,
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+    await manager.replaceHistory([
+      HistoryEntry(
+        url: 'https://example.com/album',
+        dir: '/tmp/album',
+        date: DateTime(2026),
+      ),
+    ]);
+    final downloaded = Uri.parse('https://example.com/image.jpg');
+    await DownloadHistoryProvider.markDownloaded(downloaded);
+
+    await manager.clearHistory();
+
+    expect(manager.history, isEmpty);
+    expect(await HistoryProvider.loadHistory(), isEmpty);
+    expect(await DownloadHistoryProvider.hasDownloaded(downloaded), isFalse);
   });
 
   test('tracks status counters and queue controls', () async {

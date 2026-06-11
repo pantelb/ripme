@@ -575,12 +575,22 @@ Parity checklist:
     entries instead of silently filtering/defaulting them.
   - Internal preference loading remains tolerant only for pre-migration
     Flutter records that used `date` without Java's two mandatory timestamps.
+  - CI: commit `59a231f1` passed
+    [run 27346555325](https://github.com/pantelb/ripme/actions/runs/27346555325):
+    [Android](https://github.com/pantelb/ripme/actions/runs/27346555325/artifacts/7564246369),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27346555325/artifacts/7564201769),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27346555325/artifacts/7564184387),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27346555325/artifacts/7564157791).
 - [x] Export history in a documented format.
   - Completed: the UI writes `history.json` as a UTF-8, two-space-indented JSON
     array matching Java's file name and pretty-print structure. Entries contain
     Java's written fields plus the documented Flutter `dir` and legacy `date`
     extensions described above.
-- [ ] Support remove, clear, open folder, copy URL, and re-rip actions.
+- [x] Support remove, clear, open folder, copy URL, and re-rip actions.
+  - Completed: each history row exposes folder-open from its URL cell plus copy
+    URL, re-rip, and remove actions. Clear removes both album history and the
+    distinct downloaded-URL history like Java, and honors
+    `history.warn_before_delete` with Java's literal confirmation controls.
 - [ ] Support selected-entry re-rip or document why selected state is removed.
 - [ ] Support Java fallback history guessing from existing rip directories or
       document why Flutter does not.

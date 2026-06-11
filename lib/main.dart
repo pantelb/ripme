@@ -764,8 +764,9 @@ class HistoryView extends StatelessWidget {
               alignment: WrapAlignment.end,
               children: [
                 OutlinedButton.icon(
-                  onPressed:
-                      history.isEmpty ? null : () => ripManager.clearHistory(),
+                  onPressed: history.isEmpty ? null : () => _clearHistory(
+                        context,
+                      ),
                   icon: const Icon(Icons.delete_sweep_outlined),
                   label: Text(strings.clearHistory),
                 ),
@@ -883,6 +884,29 @@ class HistoryView extends StatelessWidget {
     final month = date.month.toString().padLeft(2, '0');
     final day = date.day.toString().padLeft(2, '0');
     return '$year/$month/$day';
+  }
+
+  Future<void> _clearHistory(BuildContext context) async {
+    if (Utils.getConfigBoolean('history.warn_before_delete', true)) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Are you sure?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('YES'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('NO'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+    }
+    await ripManager.clearHistory();
   }
 
   Future<void> _importHistory(BuildContext context) async {

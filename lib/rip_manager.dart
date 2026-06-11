@@ -5,6 +5,7 @@ import 'ripper/abstract_ripper.dart';
 import 'ripper/ripper_factory.dart';
 import 'ui/rip_status_message.dart';
 import 'history_provider.dart';
+import 'download_history_provider.dart';
 import 'utils/utils.dart';
 
 typedef RipperResolver = AbstractRipper? Function(Uri uri);
@@ -420,7 +421,10 @@ class RipManager extends ChangeNotifier {
 
   Future<void> clearHistory() async {
     _history = [];
-    await HistoryProvider.clearHistory();
+    await Future.wait([
+      HistoryProvider.clearHistory(),
+      DownloadHistoryProvider.clear(),
+    ]);
     notifyListeners();
   }
 
