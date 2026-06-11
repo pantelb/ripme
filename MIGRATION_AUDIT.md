@@ -444,6 +444,12 @@ Parity checklist:
     are pending and appends `(n)` with no separator when pending items exist.
     The count follows the queue after enqueue, current-rip removal, manual
     removal, and clear operations.
+  - CI: commit `6003d563` passed
+    [run 27340488328](https://github.com/pantelb/ripme/actions/runs/27340488328):
+    [Android](https://github.com/pantelb/ripme/actions/runs/27340488328/artifacts/7561671564),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27340488328/artifacts/7561642147),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27340488328/artifacts/7561616181),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27340488328/artifacts/7561600170).
 - [x] Queue is saved to config after updates.
   - Completed: ordered pending entries are saved under Java's `queue` key
     after additions, active-item removal, reordering, manual removal, and
@@ -456,7 +462,16 @@ Parity checklist:
   - Completed: `RipManager.init` restores the ordered `queue` list without
     starting a rip, matching Java loading entries before its list listener is
     attached.
-- [ ] Queue clear/remove behavior matches Java context-menu actions.
+  - CI: commit `78399dde` passed
+    [run 27340948343](https://github.com/pantelb/ripme/actions/runs/27340948343):
+    [Android](https://github.com/pantelb/ripme/actions/runs/27340948343/artifacts/7561890928),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27340948343/artifacts/7561843809),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27340948343/artifacts/7561837699),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27340948343/artifacts/7561803682).
+- [x] Queue clear/remove behavior matches Java context-menu actions.
+  - Completed: per-entry removal immediately removes the selected pending URL,
+    and clear-all requires confirmation with Java's localized
+    `queue.validation` prompt before mutating the queue.
 - [ ] Stop interrupts current rip and leaves remaining queue behavior documented.
 
 Required tests:

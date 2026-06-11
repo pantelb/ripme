@@ -948,7 +948,7 @@ class QueueView extends StatelessWidget {
           child: Align(
             alignment: Alignment.centerRight,
             child: OutlinedButton.icon(
-              onPressed: queue.isEmpty ? null : ripManager.clearQueue,
+              onPressed: queue.isEmpty ? null : () => _confirmClear(context),
               icon: const Icon(Icons.delete_sweep_outlined),
               label: Text(strings.clearQueue),
             ),
@@ -1028,6 +1028,30 @@ class QueueView extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _confirmClear(BuildContext context) async {
+    final strings = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(strings.appTitle),
+        content: Text(strings.clearQueueConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      ripManager.clearQueue();
+    }
   }
 }
 
