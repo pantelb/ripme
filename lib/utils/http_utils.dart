@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
+import '../utils/proxy_config.dart';
 import '../utils/utils.dart';
 
 class Http {
@@ -200,25 +201,7 @@ class Http {
   static http.Client _createClient() {
     final client = HttpClient();
     configureCertificateVerification(client);
-
-    if (Utils.getConfigBoolean('proxy.enabled', false)) {
-      final host = Utils.getConfigString('proxy.host', '')?.trim() ?? '';
-      if (host.isNotEmpty) {
-        final port = Utils.getConfigInteger('proxy.port', 8080);
-        client.findProxy = (_) => 'PROXY $host:$port';
-
-        final username = Utils.getConfigString('proxy.username', '') ?? '';
-        final password = Utils.getConfigString('proxy.password', '') ?? '';
-        if (username.isNotEmpty || password.isNotEmpty) {
-          client.addProxyCredentials(
-            host,
-            port,
-            '',
-            HttpClientBasicCredentials(username, password),
-          );
-        }
-      }
-    }
+    configureProxy(client);
 
     return IOClient(client);
   }
@@ -228,6 +211,55 @@ class Http {
         Utils.getConfigBoolean('ssl.verify.off', false)
             ? (_, __, ___) => true
             : null;
+  }
+
+  static void configureProxy(HttpClient client) {
+    final javaHttpProxy = Utils.getConfigString('proxy.http', null);
+    if (javaHttpProxy != null) {
+      _applyProxy(client, ProxyConfig.parseJavaServer(javaHttpProxy));
+      return;
+    }
+
+    final javaSocksProxy = Utils.getConfigString('proxy.socks', null);
+    if (javaSocksProxy != null) {
+      ProxyConfig.parseJavaServer(javaSocksProxy);
+      throw UnsupportedError(
+        'SOCKS proxy is not supported by the dart:io HttpClient backend',
+      );
+    }
+
+    if (!Utils.getConfigBoolean('proxy.enabled', false)) {
+      return;
+    }
+
+    final host = Utils.getConfigString('proxy.host', '')?.trim() ?? '';
+    if (host.isEmpty) {
+      return;
+    }
+
+    _applyProxy(
+      client,
+      ProxyConfig(
+        server: host,
+        port: Utils.getConfigInteger('proxy.port', 8080),
+        user: Utils.getConfigString('proxy.username', ''),
+        password: Utils.getConfigString('proxy.password', ''),
+      ),
+    );
+  }
+
+  static void _applyProxy(HttpClient client, ProxyConfig proxy) {
+    final port = proxy.port ?? 80;
+    client.findProxy = (_) => 'PROXY ${proxy.server}:$port';
+
+    if (proxy.user != null && proxy.password != null) {
+      client.addProxyCredentials(
+        proxy.server,
+        port,
+        '',
+        HttpClientBasicCredentials(proxy.user!, proxy.password!),
+      );
+    }
   }
 
   static Map<String, String> configuredCookiesForUrl(Uri? url) {

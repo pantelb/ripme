@@ -843,10 +843,18 @@ Parity checklist:
     [Windows](https://github.com/pantelb/ripme/actions/runs/27363447019/artifacts/7571376642),
     [macOS](https://github.com/pantelb/ripme/actions/runs/27363447019/artifacts/7571310397),
     [Linux](https://github.com/pantelb/ripme/actions/runs/27363447019/artifacts/7571299951).
-- [ ] Verify Java CLI/config proxy strings `[user:password]@host[:port]` through
+- [x] Verify Java CLI/config proxy strings `[user:password]@host[:port]` through
       `proxy.http` and `proxy.socks`, including authenticated proxy behavior.
-- [ ] Verify HTTP proxy host/port/auth.
-- [ ] Port SOCKS proxy support or explicitly mark not applicable.
+  - Completed: persisted `proxy.http` now has Java startup precedence over
+    `proxy.socks` and Flutter UI fields, routes every shared page/download
+    client, and installs optional basic credentials.
+  - SOCKS strings use the same parser but fail explicitly because `dart:io`
+    exposes no SOCKS proxy transport API.
+- [x] Verify HTTP proxy host/port/auth.
+- [x] Port SOCKS proxy support or explicitly mark not applicable.
+  - Decision: not applicable to the current `dart:io` backend. Both CLI and
+    persisted `proxy.socks` settings report an unsupported error rather than
+    silently bypassing the requested proxy.
 - [ ] Verify SSL verification toggle behavior.
 - [ ] Verify Java SSL verification toggle actually disables/enables certificate
       and hostname verification for Jsoup calls.
@@ -1374,18 +1382,21 @@ Findings:
       `Http._parseCookieHeader(...)` preserves extra `=` characters and ignores
       malformed segments; per-ripper parsers such as Furaffinity currently test
       the Flutter behavior, not the Java quirk.
-- [ ] Java proxy CLI/config accepts single strings such as
+- [x] Java proxy CLI/config accepts single strings such as
       `[user:password]@host[:port]` for HTTP and SOCKS. Flutter currently uses
       `proxy.enabled`, `proxy.host`, `proxy.port`, `proxy.username`, and
-      `proxy.password`; `proxy.http` and `proxy.socks` compatibility is missing.
-- [ ] Java SOCKS proxy support sets `socksProxyHost`, `socksProxyPort`, and
-      optional credentials globally. Flutter has no verified SOCKS equivalent.
-- [ ] Java proxy support mutates process-wide networking through
+      `proxy.password`; persisted Java `proxy.http` is now mapped into the
+      shared client and takes precedence, while `proxy.socks` is parsed and
+      rejected explicitly as unsupported.
+- [x] Java SOCKS proxy support sets `socksProxyHost`, `socksProxyPort`, and
+      optional credentials globally. Flutter has no native SOCKS equivalent in
+      `dart:io`, so this is an explicit unsupported platform capability.
+- [x] Java proxy support mutates process-wide networking through
       `Authenticator.setDefault`, `http.proxyHost`, `http.proxyPort`,
       `http.proxyUser`, `http.proxyPassword`, `https.proxyHost`, and HTTPS
-      equivalents. Flutter proxy support must either match the global effect for
-      all page, download, and ripper-specific HTTP clients or document a scoped
-      replacement.
+      equivalents. Flutter intentionally scopes proxy configuration to every
+      client created by the shared HTTP layer; Dart does not expose Java-style
+      process-global proxy system properties.
 - [ ] Java 401/403 page requests throw a cookie-oriented error message; 404 page
       requests throw file-not-found style messaging. Flutter currently raises
       generic `HttpException` text in several paths.
@@ -2147,7 +2158,7 @@ Findings:
       `bytesToHumanReadable`, `getByteStatusText`, `between`,
       `shortenSaveAsWindows`, and `sanitizeSaveAs`; current Flutter utility
       tests cover only `filesystemSafe` and one `sanitizeSaveAs` case.
-- [ ] Add Dart tests for Java proxy string parsing for HTTP and SOCKS, even if
+- [x] Add Dart tests for Java proxy string parsing for HTTP and SOCKS, even if
       SOCKS execution is later marked unsupported on a platform.
 - [ ] Add Dart tests for Java label-bundle key rules and status-message string
       formatting.

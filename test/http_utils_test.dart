@@ -331,6 +331,46 @@ void main() {
     expect(proxyRequestUri.toString(), 'http://example.invalid/proxied');
   });
 
+  test('uses Java proxy.http config with credentials and key precedence',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'proxy.http': 'user:secret@proxy.example:3128',
+      'proxy.socks': 'socks.example:1080',
+      'proxy.enabled': false,
+    });
+    await Utils.init();
+    final client = _RecordingHttpClient();
+
+    Http.configureProxy(client);
+
+    expect(
+      client.recordedFindProxy?.call(Uri.parse('https://example.com')),
+      'PROXY proxy.example:3128',
+    );
+    expect(client.proxyCredentialHost, 'proxy.example');
+    expect(client.proxyCredentialPort, 3128);
+    expect(client.proxyCredentialRealm, '');
+    expect(client.proxyCredentials, isA<HttpClientBasicCredentials>());
+  });
+
+  test('rejects configured Java SOCKS proxy explicitly', () async {
+    SharedPreferences.setMockInitialValues({
+      'proxy.socks': 'user:secret@socks.example:1080',
+    });
+    await Utils.init();
+
+    expect(
+      () => Http.configureProxy(_RecordingHttpClient()),
+      throwsA(
+        isA<UnsupportedError>().having(
+          (error) => error.message,
+          'message',
+          contains('SOCKS proxy is not supported'),
+        ),
+      ),
+    );
+  });
+
   test('disables certificate verification only when Java setting is enabled',
       () async {
     SharedPreferences.setMockInitialValues({'ssl.verify.off': false});
@@ -579,12 +619,35 @@ void main() {
 class _RecordingHttpClient implements HttpClient {
   bool Function(X509Certificate certificate, String host, int port)?
       recordedBadCertificateCallback;
+  String Function(Uri url)? recordedFindProxy;
+  String? proxyCredentialHost;
+  int? proxyCredentialPort;
+  String? proxyCredentialRealm;
+  HttpClientCredentials? proxyCredentials;
 
   @override
   set badCertificateCallback(
     bool Function(X509Certificate certificate, String host, int port)? callback,
   ) {
     recordedBadCertificateCallback = callback;
+  }
+
+  @override
+  set findProxy(String Function(Uri url)? callback) {
+    recordedFindProxy = callback;
+  }
+
+  @override
+  void addProxyCredentials(
+    String host,
+    int port,
+    String realm,
+    HttpClientCredentials credentials,
+  ) {
+    proxyCredentialHost = host;
+    proxyCredentialPort = port;
+    proxyCredentialRealm = realm;
+    proxyCredentials = credentials;
   }
 
   @override

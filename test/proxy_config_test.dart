@@ -23,6 +23,25 @@ void main() {
     expect(config.port, 8080);
   });
 
+  test('uses the same Java parser for HTTP and SOCKS config strings', () {
+    const values = [
+      'proxy.example',
+      'proxy.example:3128',
+      'user:password@proxy.example',
+      'user:password@proxy.example:1080',
+    ];
+
+    for (final value in values) {
+      final http = ProxyConfig.parseJavaServer(value);
+      final socks = ProxyConfig.parseJavaServer(value);
+
+      expect(socks.server, http.server);
+      expect(socks.port, http.port);
+      expect(socks.user, http.user);
+      expect(socks.password, http.password);
+    }
+  });
+
   test('rejects malformed Java proxy credentials and ports', () {
     expect(
       () => ProxyConfig.parseJavaServer('user@proxy.example'),
