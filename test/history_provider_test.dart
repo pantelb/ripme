@@ -69,6 +69,60 @@ void main() {
     expect(imported.single.selected, isFalse);
   });
 
+  test('imports every Java history field without data loss', () {
+    final imported = HistoryProvider.importHistory('''
+      [
+        {
+          "url": "https://example.com/full-java-entry",
+          "startDate": 1779235200123,
+          "modifiedDate": 1779321600456,
+          "title": "Full Java entry",
+          "count": 9,
+          "dir": "/tmp/full-java-entry",
+          "selected": true
+        }
+      ]
+    ''').single;
+
+    expect(imported.url, 'https://example.com/full-java-entry');
+    expect(imported.startDate.millisecondsSinceEpoch, 1779235200123);
+    expect(imported.modifiedDate.millisecondsSinceEpoch, 1779321600456);
+    expect(imported.title, 'Full Java entry');
+    expect(imported.count, 9);
+    expect(imported.dir, '/tmp/full-java-entry');
+    expect(imported.selected, isTrue);
+  });
+
+  test('rejects malformed Java history entries like Java fromFile', () {
+    for (final json in const [
+      '[null]',
+      '[{"startDate": 1, "modifiedDate": 2}]',
+      '[{"url": "x", "modifiedDate": 2}]',
+      '[{"url": "x", "startDate": 1}]',
+      '[{"url": "x", "startDate": "1", "modifiedDate": 2}]',
+    ]) {
+      expect(
+        () => HistoryProvider.importHistory(json),
+        throwsA(isA<FormatException>()),
+        reason: json,
+      );
+    }
+  });
+
+  test('keeps tolerant loading for legacy Flutter preference history',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'rip_history':
+          '[{"url":"https://example.com/legacy","dir":"/tmp/legacy",'
+              '"date":"2026-06-11T00:00:00.000Z"}]',
+    });
+
+    final loaded = await HistoryProvider.loadHistory();
+
+    expect(loaded.single.url, 'https://example.com/legacy');
+    expect(loaded.single.date, DateTime.utc(2026, 6, 11));
+  });
+
   test('preserves Java selected state and metadata through export', () {
     final entry = HistoryEntry(
       url: 'https://example.com/selected',

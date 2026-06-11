@@ -538,11 +538,23 @@ Parity checklist:
     formats both dates as `yyyy/MM/dd`, displays count numerically, and binds
     the final checkbox to persisted selected state. Existing folder-open and
     row action controls remain available in an additional action column.
+  - CI: commit `dbe66468` passed
+    [run 27343169058](https://github.com/pantelb/ripme/actions/runs/27343169058):
+    [Android](https://github.com/pantelb/ripme/actions/runs/27343169058/artifacts/7562798341),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27343169058/artifacts/7562792859),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27343169058/artifacts/7562736478),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27343169058/artifacts/7562726722).
 - [x] Preserve Java history JSON timestamp semantics: `startDate` and
       `modifiedDate` are epoch milliseconds.
   - Completed: import treats numeric values as milliseconds since the Unix
     epoch and export writes both fields as integer epoch milliseconds, with
     exact non-second-aligned values covered by tests.
+  - CI: commit `d1a64aea` passed
+    [run 27343485825](https://github.com/pantelb/ripme/actions/runs/27343485825):
+    [Android](https://github.com/pantelb/ripme/actions/runs/27343485825/artifacts/7562914852),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27343485825/artifacts/7562884299),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27343485825/artifacts/7562893046),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27343485825/artifacts/7562847726).
 - [x] Preserve Java `toJSON()` quirk: `dir` is read from imported JSON but not
       written by Java, or document a deliberate Flutter format extension.
   - Deliberate extension: Flutter exports Java's six written fields and also
@@ -550,7 +562,13 @@ Parity checklist:
     legacy Flutter ISO `date` field for backward compatibility. Java accepts
     `dir` on import and ignores the extra `date` key, so the extended export
     remains Java-readable while avoiding Java's directory data loss.
-- [ ] Import Java `history.json` without data loss.
+- [x] Import Java `history.json` without data loss.
+  - Completed: strict external import requires Java's object array shape and
+    mandatory string `url` plus numeric `startDate`/`modifiedDate`, preserves
+    every optional Java field including imported `dir`, and rejects malformed
+    entries instead of silently filtering/defaulting them.
+  - Internal preference loading remains tolerant only for pre-migration
+    Flutter records that used `date` without Java's two mandatory timestamps.
 - [ ] Export history in a documented format.
 - [ ] Support remove, clear, open folder, copy URL, and re-rip actions.
 - [ ] Support selected-entry re-rip or document why selected state is removed.
