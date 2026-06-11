@@ -129,6 +129,42 @@ void main() {
     expect(await ripper.workingDir.exists(), isTrue);
   });
 
+  test('shared filename helper preserves Java extension edge cases', () {
+    final objectUrl = Uri.parse(
+      'http://www.tsumino.com/Image/Object?name=U1EieteEGwm6N1dGszqCpA%3D%3D',
+    );
+
+    expect(
+      AbstractRipper.getFileName(
+        objectUrl,
+        fileName: 'test',
+        extension: 'test',
+      ),
+      'test.test',
+    );
+    expect(
+      AbstractRipper.getFileName(objectUrl, fileName: 'test'),
+      'test',
+    );
+    expect(
+      AbstractRipper.getFileName(
+        objectUrl,
+        fileName: 'test',
+        extension: '',
+      ),
+      'test.',
+    );
+    expect(AbstractRipper.getFileName(objectUrl), 'Object');
+    expect(
+      AbstractRipper.getFileName(Uri.parse('http://www.test.com/file.png')),
+      'file.png',
+    );
+    expect(
+      AbstractRipper.getFileName(Uri.parse('http://www.test.com/file.')),
+      'file.',
+    );
+  });
+
   test('append-to-folder redirects file paths to a sibling album root',
       () async {
     final parent = await Directory.systemTemp.createTemp('ripme_append_test');

@@ -71,6 +71,38 @@ abstract class AbstractRipper {
     return "${getHost()}_${await getGID(url)}";
   }
 
+  static String getFileName(
+    Uri url, {
+    String? prefix,
+    String? fileName,
+    String? extension,
+  }) {
+    var resolvedName = fileName ?? '';
+    if (resolvedName.trim().isEmpty) {
+      final external = url.toString();
+      resolvedName = external.substring(external.lastIndexOf('/') + 1);
+    }
+
+    for (final delimiter in ['?', '#', '&', ':']) {
+      final index = resolvedName.indexOf(delimiter);
+      if (index >= 0) {
+        resolvedName = resolvedName.substring(0, index);
+      }
+    }
+
+    if (prefix != null && prefix.trim().isNotEmpty) {
+      resolvedName = '$prefix$resolvedName';
+    }
+
+    // Java uses String.split(".") here. Since "." is a regex wildcard, the
+    // shipped implementation never derives an extension from the URL.
+    if (extension != null) {
+      resolvedName = '$resolvedName.$extension';
+    }
+
+    return Utils.sanitizeSaveAs(resolvedName);
+  }
+
   void sendUpdate(RipStatus status, dynamic message) {
     _statusController.add(RipStatusMessage(status, message));
   }

@@ -971,8 +971,12 @@ Parity checklist:
       to 99.
 - [x] Verify Java `Utils.filesystemSanitized`: replace characters outside
       `[a-zA-Z0-9.-]` with `_`.
-- [ ] Verify Java `Utils.sanitizeSaveAs`: replace `\\:*?"<>|` with `_` and
+- [x] Verify Java `Utils.sanitizeSaveAs`: replace `\\:*?"<>|` with `_` and
       preserve the Java filename-extension edge cases from `AbstractRipperTest`.
+  - Completed: punctuation replacement matches Java `UtilsTest`, and
+    `AbstractRipper.getFileName(...)` preserves the shipped `split(".")`
+    regex behavior: URL extensions are not re-appended, while explicit
+    extensions are.
 - [x] Verify Java case-preserving existing directory behavior from
       `Utils.getOriginalDirectory`.
   - Completed: shared working-directory setup applies exact Java sanitization

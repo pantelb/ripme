@@ -38,5 +38,9 @@ void main() {
 
   test('Utils sanitizeSaveAs', () {
     expect(Utils.sanitizeSaveAs('file*name.jpg'), equals('file_name.jpg'));
+    expect(
+      Utils.sanitizeSaveAs('This is a " !<? test'),
+      equals('This is a _ !__ test'),
+    );
   });
 }
