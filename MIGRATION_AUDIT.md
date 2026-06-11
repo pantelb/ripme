@@ -173,8 +173,14 @@ blocked by platform constraints or missing user input.
 - [~] Reconcile all Java production files with this inventory.
 - [~] Reconcile all Java resources with this inventory.
 - [~] Reconcile all Java tests with Dart tests.
-- [ ] Add a script or test that fails when a Java ripper exists without a
+- [x] Add a script or test that fails when a Java ripper exists without a
       catalog entry.
+  - Completed: `tool/check_legacy_ripper_catalog.dart` compares the unique
+    `*Ripper.java` class names in `origin/main` with
+    `RipperMigrationCatalog.legacyRipperClasses`. Flutter CI fetches the Java
+    baseline and runs the guard before analysis. Focused extraction coverage is
+    in `test/legacy_ripper_inventory_test.dart`, including duplicate class
+    names shared by base and video packages.
 - [ ] Add a script or test that fails when a Java-used config key has no Flutter
       default, migration alias, or documented intentional removal.
 - [ ] Add a script or test that fails when a Java localized key has no Flutter

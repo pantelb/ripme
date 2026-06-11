@@ -27,6 +27,12 @@ jobs:
     - name: Install dependencies
       run: flutter pub get
 
+    - name: Fetch Java source baseline
+      run: git fetch origin main:refs/remotes/origin/main --depth=1
+
+    - name: Verify legacy ripper catalog
+      run: dart run tool/check_legacy_ripper_catalog.dart
+
     - name: Analyze
       run: flutter analyze
 
