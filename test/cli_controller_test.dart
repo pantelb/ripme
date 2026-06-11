@@ -191,6 +191,35 @@ void main() {
     expect(config.values['download.save_order'], isFalse);
   });
 
+  test('HTTP proxy maps Java CLI syntax to active Flutter settings', () async {
+    final config = _FakeConfigStore();
+
+    final result = await CliController(config: config).run(const [
+      '--proxy-server',
+      ' user:secret@proxy.example:3128 ',
+    ]);
+
+    expect(result.exitCode, 0);
+    expect(config.values, {
+      'proxy.http': 'user:secret@proxy.example:3128',
+      'proxy.enabled': true,
+      'proxy.host': 'proxy.example',
+      'proxy.port': 3128,
+      'proxy.username': 'user',
+      'proxy.password': 'secret',
+    });
+  });
+
+  test('SOCKS proxy is rejected explicitly', () async {
+    final result = await CliController().run(
+      const ['--socks-server', 'proxy.example:1080'],
+    );
+
+    expect(result.exitCode, 64);
+    expect(result.isError, isTrue);
+    expect(result.output, contains('SOCKS proxy is not supported'));
+  });
+
   test('unported CLI options fail without launching the GUI', () async {
     final result = await CliController().run(const ['--rerip']);
 

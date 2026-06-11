@@ -2,6 +2,7 @@ import 'dart:io';
 
 import '../app_version.dart';
 import '../ripper/ripper_factory.dart';
+import '../utils/proxy_config.dart';
 import '../utils/utils.dart';
 
 typedef CliUrlRipper = Future<void> Function(Uri url);
@@ -198,6 +199,45 @@ usage: ripme [OPTIONS]
     if (ripsDirectory != null) {
       await _config.setString('rips.directory', ripsDirectory);
       applied++;
+    }
+
+    final httpProxy = _optionValue(args, '-p', '--proxy-server');
+    if (httpProxy != null) {
+      try {
+        final trimmed = httpProxy.trim();
+        final proxy = ProxyConfig.parseJavaServer(trimmed);
+        await _config.setString('proxy.http', trimmed);
+        await _config.setBoolean('proxy.enabled', true);
+        await _config.setString('proxy.host', proxy.server);
+        if (proxy.port != null) {
+          await _config.setInteger('proxy.port', proxy.port!);
+        }
+        await _config.setString('proxy.username', proxy.user ?? '');
+        await _config.setString('proxy.password', proxy.password ?? '');
+        applied++;
+      } on FormatException catch (error) {
+        return (
+          applied: applied,
+          error: CliResult(
+            exitCode: 1,
+            output: 'Invalid HTTP proxy: ${error.message}',
+            isError: true,
+          ),
+        );
+      }
+    }
+
+    final socksProxy = _optionValue(args, '-s', '--socks-server');
+    if (socksProxy != null) {
+      return (
+        applied: applied,
+        error: const CliResult(
+          exitCode: 64,
+          output:
+              'SOCKS proxy is not supported by the dart:io HttpClient backend',
+          isError: true,
+        ),
+      );
     }
 
     final saveOrder = _hasOption(args, '-d', '--saveorder');

@@ -282,9 +282,15 @@ Parity checklist:
   - Completed: Flutter recognizes both forms as an explicit no-op and exits
     successfully when no rip target is provided. The behavior is locked by a
     config-store test proving no setting is written.
-- [ ] Support `-p` / `--proxy-server` for HTTP proxy strings.
-- [ ] Support or explicitly reject `-s` / `--socks-server` with a documented
+- [x] Support `-p` / `--proxy-server` for HTTP proxy strings.
+  - Completed: Java `[user:password]@host[:port]` syntax is parsed using the
+    same last-`@` and colon rules, stored under `proxy.http`, and mapped to the
+    active Flutter HTTP proxy fields.
+- [x] Support or explicitly reject `-s` / `--socks-server` with a documented
       platform reason.
+  - Decision: explicitly rejected with exit code 64 because Flutter's current
+    `dart:io` `HttpClient` backend exposes HTTP proxy routing but no SOCKS proxy
+    API. The option is not silently accepted.
 - [ ] Support `-a` / `--append-to-folder` or document a replacement.
 - [ ] Support `-H` / `--history` or document a replacement.
 - [ ] Support `-r` / `--rerip` for all history entries.
