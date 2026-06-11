@@ -107,8 +107,7 @@ class AppLocalizations {
   String get copyUrl => 'Copy URL';
   String get ripAgain => 'Rip again';
   String get reripChecked => _label('re-rip.checked', 'Re-rip Checked');
-  String get noHistoryToRerip => _label(
-      'history.load.none',
+  String get noHistoryToRerip => _label('history.load.none',
       'There are no history entries to re-rip. Rip some albums first');
   String get noCheckedHistoryToRerip => _label(
       'history.load.none.checked',
@@ -121,8 +120,7 @@ class AppLocalizations {
   String get historyExported => 'History exported';
   String historyExportFailed(Object error) => 'History export failed: $error';
   String get clearQueue => _label('queue.remove.all', 'Clear queue');
-  String get clearQueueConfirmation => _label(
-      'queue.validation',
+  String get clearQueueConfirmation => _label('queue.validation',
       'Are you sure you want to remove all elements from the queue?');
   String get moveUp => 'Move up';
   String get moveDown => 'Move down';
@@ -167,6 +165,8 @@ class AppLocalizations {
   String get soundgasmCookies => 'Soundgasm cookies';
   String get vidbleCookies => 'Vidble cookies';
   String get cookieHint => 'key=value; other=value';
+  String get disableSslVerification =>
+      _label('ssl.verify.off', 'Disable SSL verification');
   String get skipAlreadyDownloadedUrls => 'Skip already downloaded URLs';
   String get apiKeys => 'API Keys';
   String get twitterAuth => 'Twitter auth';

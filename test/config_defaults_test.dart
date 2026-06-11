@@ -65,6 +65,7 @@ void main() {
     expect(Utils.getConfigBoolean('album_titles.save', false), isTrue);
     expect(Utils.getConfigBoolean('remember.url_history', false), isTrue);
     expect(Utils.getConfigBoolean('history.warn_before_delete', false), isTrue);
+    expect(Utils.getConfigBoolean('ssl.verify.off', true), isFalse);
     expect(Utils.getConfigBoolean('urls_only.save', true), isFalse);
     expect(Utils.getConfigBoolean('prefer.mp4', true), isFalse);
     expect(Utils.getConfigBoolean('proxy.enabled', true), isFalse);

@@ -178,6 +178,24 @@ void main() {
     expect(proxyRequestUri.toString(), 'http://example.invalid/proxied');
   });
 
+  test('disables certificate verification only when Java setting is enabled',
+      () async {
+    SharedPreferences.setMockInitialValues({'ssl.verify.off': false});
+    await Utils.init();
+    final verifiedClient = _RecordingHttpClient();
+
+    Http.configureCertificateVerification(verifiedClient);
+
+    expect(verifiedClient.recordedBadCertificateCallback, isNull);
+
+    await Utils.setConfigBoolean('ssl.verify.off', true);
+    final unverifiedClient = _RecordingHttpClient();
+
+    Http.configureCertificateVerification(unverifiedClient);
+
+    expect(unverifiedClient.recordedBadCertificateCallback, isNotNull);
+  });
+
   test('waits for retry-after before retrying rate-limited responses',
       () async {
     SharedPreferences.setMockInitialValues({
@@ -264,4 +282,19 @@ void main() {
     );
     expect(attempts, 1);
   });
+}
+
+class _RecordingHttpClient implements HttpClient {
+  bool Function(X509Certificate certificate, String host, int port)?
+      recordedBadCertificateCallback;
+
+  @override
+  set badCertificateCallback(
+    bool Function(X509Certificate certificate, String host, int port)? callback,
+  ) {
+    recordedBadCertificateCallback = callback;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

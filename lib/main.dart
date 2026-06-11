@@ -794,9 +794,11 @@ class HistoryView extends StatelessWidget {
                   label: Text(strings.reripChecked),
                 ),
                 OutlinedButton.icon(
-                  onPressed: history.isEmpty ? null : () => _clearHistory(
-                        context,
-                      ),
+                  onPressed: history.isEmpty
+                      ? null
+                      : () => _clearHistory(
+                            context,
+                          ),
                   icon: const Icon(Icons.delete_sweep_outlined),
                   label: Text(strings.clearHistory),
                 ),
@@ -1383,6 +1385,13 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               keyName: 'cookies.vidble.com',
               defaultValue: '',
               helperText: strings.cookieHint,
+              onChanged: _refresh,
+            ),
+            _ConfigSwitch(
+              title: strings.disableSslVerification,
+              icon: Icons.gpp_bad_outlined,
+              keyName: 'ssl.verify.off',
+              defaultValue: false,
               onChanged: _refresh,
             ),
           ],

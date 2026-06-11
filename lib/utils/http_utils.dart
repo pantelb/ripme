@@ -177,30 +177,36 @@ class Http {
   }
 
   static http.Client _createClient() {
-    if (!Utils.getConfigBoolean('proxy.enabled', false)) {
-      return http.Client();
-    }
+    final client = HttpClient();
+    configureCertificateVerification(client);
 
-    final host = Utils.getConfigString('proxy.host', '')?.trim() ?? '';
-    if (host.isEmpty) {
-      return http.Client();
-    }
+    if (Utils.getConfigBoolean('proxy.enabled', false)) {
+      final host = Utils.getConfigString('proxy.host', '')?.trim() ?? '';
+      if (host.isNotEmpty) {
+        final port = Utils.getConfigInteger('proxy.port', 8080);
+        client.findProxy = (_) => 'PROXY $host:$port';
 
-    final port = Utils.getConfigInteger('proxy.port', 8080);
-    final client = HttpClient()..findProxy = (_) => 'PROXY $host:$port';
-
-    final username = Utils.getConfigString('proxy.username', '') ?? '';
-    final password = Utils.getConfigString('proxy.password', '') ?? '';
-    if (username.isNotEmpty || password.isNotEmpty) {
-      client.addProxyCredentials(
-        host,
-        port,
-        '',
-        HttpClientBasicCredentials(username, password),
-      );
+        final username = Utils.getConfigString('proxy.username', '') ?? '';
+        final password = Utils.getConfigString('proxy.password', '') ?? '';
+        if (username.isNotEmpty || password.isNotEmpty) {
+          client.addProxyCredentials(
+            host,
+            port,
+            '',
+            HttpClientBasicCredentials(username, password),
+          );
+        }
+      }
     }
 
     return IOClient(client);
+  }
+
+  static void configureCertificateVerification(HttpClient client) {
+    client.badCertificateCallback =
+        Utils.getConfigBoolean('ssl.verify.off', false)
+            ? (_, __, ___) => true
+            : null;
   }
 
   static Map<String, String> _configuredCookiesForUrl(Uri? url) {

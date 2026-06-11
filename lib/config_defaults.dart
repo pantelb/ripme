@@ -96,6 +96,7 @@ class ConfigDefaults {
     'remember.url_history': true,
     'history.skip_downloaded_urls': true,
     'history.warn_before_delete': true,
+    'ssl.verify.off': false,
     'urls_only.save': false,
     'play.sound': false,
     'prefer.mp4': false,

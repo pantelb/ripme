@@ -716,11 +716,19 @@ Parity checklist:
   - Completed: the configuration view exposes every Java bundle language tag,
     persists `lang`, translates Java's legacy `in-ID`/`kr-KR` tags to Flutter
     locale codes, and immediately rebuilds the localized UI.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27358136986/artifacts/7569217681),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27358136986/artifacts/7569156958),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27358136986/artifacts/7569155864),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27358136986/artifacts/7569106595).
 - [ ] Support save directory selection across desktop and Android.
 - [ ] Support window position persistence or explicitly mark not applicable.
 - [ ] Support log level, log save, popup, sound, URLs-only, album-title folders,
       descriptions, prefer MP4, SSL verification, URL history, retries, timeout,
       retry sleep, thread count, overwrite, and save order.
+  - In progress: `ssl.verify.off` now has Java's false default, persists
+    immediately from the network configuration UI, and controls
+    `HttpClient.badCertificateCallback` for the shared page/download client.
 - [ ] Support or intentionally retire finish commands:
       `enable.finish.command` and `finish.command`.
 - [ ] Support or intentionally retire history deletion warning:
@@ -731,6 +739,11 @@ Parity checklist:
     configuration UI displays a disabled replacement notice and retains an
     actionable GitHub latest-release check; widget and update-checker tests
     cover both surfaces.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27358697881/artifacts/7569453251),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27358697881/artifacts/7569402980),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27358697881/artifacts/7569406272),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27358697881/artifacts/7569355209).
 - [ ] Support or intentionally retire window geometry keys:
       `window.position`, `window.x`, `window.y`, `window.w`, `window.h`.
 
