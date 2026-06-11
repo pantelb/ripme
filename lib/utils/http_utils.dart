@@ -123,14 +123,14 @@ class Http {
     int defaultTimeoutMs = 5000,
   }) async {
     final combinedHeaders = _buildHeaders(url, headers, cookies);
-    final retries = Utils.getConfigInteger('download.retries', 3);
+    final attempts = Utils.getConfigInteger('download.retries', 3);
     final timeout = Duration(
         milliseconds: Utils.getConfigInteger(timeoutKey, defaultTimeoutMs));
     final retrySleep = Duration(
         milliseconds: Utils.getConfigInteger('download.retry.sleep', 0));
     Object? lastError;
 
-    for (var attempt = 0; attempt <= retries; attempt++) {
+    for (var attempt = 0; attempt < attempts; attempt++) {
       http.Client? client;
       try {
         client = _createClient();
@@ -150,7 +150,7 @@ class Http {
         }
 
         final rateLimitDelay = _retryAfterDelay(response);
-        if (rateLimitDelay != null && attempt < retries) {
+        if (rateLimitDelay != null && attempt + 1 < attempts) {
           await delay(rateLimitDelay);
           continue;
         }
@@ -165,7 +165,7 @@ class Http {
         client?.close();
       }
 
-      if (attempt < retries && retrySleep.inMilliseconds > 0) {
+      if (attempt + 1 < attempts && retrySleep.inMilliseconds > 0) {
         await delay(retrySleep);
       }
     }

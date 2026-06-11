@@ -18,9 +18,10 @@ void main() {
     Http.delay = Future.delayed;
   });
 
-  test('retries failed JSON requests', () async {
+  test('uses Java configured value as the total request attempt count',
+      () async {
     SharedPreferences.setMockInitialValues({
-      'download.retries': 1,
+      'download.retries': 2,
       'download.retry.sleep': 0,
       'page.timeout': 1000,
     });
@@ -50,7 +51,7 @@ void main() {
   test('enforces max download size', () async {
     SharedPreferences.setMockInitialValues({
       'download.max_size': 3,
-      'download.retries': 0,
+      'download.retries': 1,
       'page.timeout': 1000,
     });
     await Utils.init();
@@ -77,7 +78,7 @@ void main() {
     SharedPreferences.setMockInitialValues({
       'download.timeout': 1000,
       'page.timeout': 1,
-      'download.retries': 0,
+      'download.retries': 1,
     });
     await Utils.init();
 
@@ -102,7 +103,7 @@ void main() {
 
   test('sends custom headers and cookies on downloads', () async {
     SharedPreferences.setMockInitialValues({
-      'download.retries': 0,
+      'download.retries': 1,
       'download.timeout': 1000,
     });
     await Utils.init();
@@ -134,7 +135,7 @@ void main() {
 
   test('adds configured domain cookies to requests', () async {
     SharedPreferences.setMockInitialValues({
-      'download.retries': 0,
+      'download.retries': 1,
       'page.timeout': 1000,
       'cookies.127.0.0.1': 'session=abc; pref=dark',
     });
@@ -156,7 +157,7 @@ void main() {
 
   test('routes requests through configured HTTP proxy', () async {
     SharedPreferences.setMockInitialValues({
-      'download.retries': 0,
+      'download.retries': 1,
       'page.timeout': 1000,
       'proxy.enabled': true,
     });
@@ -199,7 +200,7 @@ void main() {
   test('waits for retry-after before retrying rate-limited responses',
       () async {
     SharedPreferences.setMockInitialValues({
-      'download.retries': 1,
+      'download.retries': 2,
       'download.retry.sleep': 0,
       'page.timeout': 1000,
     });
@@ -233,7 +234,7 @@ void main() {
 
   test('parses JSON and HTML without relying on content type', () async {
     SharedPreferences.setMockInitialValues({
-      'download.retries': 0,
+      'download.retries': 1,
       'page.timeout': 1000,
     });
     await Utils.init();
@@ -281,6 +282,28 @@ void main() {
       throwsA(isA<HttpException>()),
     );
     expect(attempts, 1);
+  });
+
+  test('performs no request when Java attempt count is zero', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 0,
+      'page.timeout': 1000,
+    });
+    await Utils.init();
+
+    var attempts = 0;
+    final server = await _server((request) async {
+      attempts++;
+      request.response.write('<html></html>');
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    await expectLater(
+      Http.get(Uri.parse('http://127.0.0.1:${server.port}/unused')),
+      throwsA(isA<HttpException>()),
+    );
+    expect(attempts, 0);
   });
 }
 

@@ -792,8 +792,9 @@ Parity checklist:
       `getJSON`, and `getJSONArray`.
 - [ ] Verify Java HTTP error messages: 401/403 cookie guidance, 404 file-not-found
       handling, and non-retriable/retriable status text.
-- [ ] Verify Java retry attempt counts. `Http` uses exactly the configured
-      number of attempts, while Flutter currently loops `attempt <= retries`.
+- [x] Verify Java retry attempt counts. `Http` now uses exactly the configured
+      number of total attempts, including Java's zero-attempt edge case,
+      instead of the former Flutter `attempt <= retries` behavior.
 - [ ] Verify rate-limit `Retry-After` handling.
 
 Required tests:

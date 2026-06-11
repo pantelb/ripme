@@ -69,7 +69,7 @@ void main() {
 
   test('loads comic pages, waits 500ms, and returns full-size URLs', () async {
     SharedPreferences.setMockInitialValues({
-      'download.retries': 0,
+      'download.retries': 1,
       'page.timeout': 1000,
     });
     await Utils.init();
