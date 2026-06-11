@@ -55,11 +55,16 @@ abstract class AbstractRipper {
 
   Future<Directory> _getWorkingDir(Uri url) async {
     Directory baseDir = await Utils.getWorkingDirectory();
-    String title = await getAlbumTitle(url);
+    final saveAlbumTitles = Utils.getConfigBoolean('album_titles.save', true);
+    String title = usesAlbumTitleSetting && !saveAlbumTitles
+        ? await _getDefaultAlbumTitle(url)
+        : await getAlbumTitle(url);
     title = Utils.filesystemSafe(title);
     final path = await Utils.getOriginalDirectory(p.join(baseDir.path, title));
     return Directory(path);
   }
+
+  bool get usesAlbumTitleSetting => false;
 
   Future<void> rip();
 
@@ -68,6 +73,10 @@ abstract class AbstractRipper {
   Future<String> getGID(Uri url);
 
   Future<String> getAlbumTitle(Uri url) async {
+    return _getDefaultAlbumTitle(url);
+  }
+
+  Future<String> _getDefaultAlbumTitle(Uri url) async {
     return "${getHost()}_${await getGID(url)}";
   }
 

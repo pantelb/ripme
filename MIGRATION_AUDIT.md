@@ -977,6 +977,8 @@ Parity checklist:
     `AbstractRipper.getFileName(...)` preserves the shipped `split(".")`
     regex behavior: URL extensions are not re-appended, while explicit
     extensions are.
+  - CI: workflow `27384535469` succeeded. Artifacts: Android `7579670551`,
+    Windows `7579663669`, macOS `7579637580`, Linux `7579623705`.
 - [x] Verify Java case-preserving existing directory behavior from
       `Utils.getOriginalDirectory`.
   - Completed: shared working-directory setup applies exact Java sanitization
@@ -994,7 +996,12 @@ Parity checklist:
     files beneath the working directory into the sibling
     `<workingDirName><suffix>` before preserving their relative subdirectory
     and filename. CLI parsing and shared path shaping have focused tests.
-- [ ] Verify `album_titles.save` behavior.
+- [x] Verify `album_titles.save` behavior.
+  - Completed: Flutter matches Java's class-specific behavior. JSON and legacy
+    album-style rippers fall back to `<host>_<gid>` when disabled, while HTML
+    rippers continue using their concrete album title. Direct Flutter ports of
+    Java JSON rippers (`InstagramRipper` and `ScrolllerRipper`) explicitly opt
+    into the JSON behavior.
 - [ ] Verify `descriptions.save` behavior.
 - [ ] Verify URL-only output path and append behavior.
 - [ ] Verify duplicate URL suppression scope.
@@ -1281,13 +1288,14 @@ Findings:
       blank values. Callers that distinguish `null` from empty lists, including
       Java `RipUtils.checkTags(...)` and ignored-extension plumbing, need exact
       compatibility tests or a deliberate replacement decision.
-- [ ] Java `album_titles.save=false` only changes `AbstractJSONRipper`
+- [x] Java `album_titles.save=false` changes `AbstractJSONRipper` and the
+      deprecated `AlbumRipper`
       directory naming: `AbstractJSONRipper.setWorkingDir(...)` falls back to
       `super.getAlbumTitle(this.url)`, while `AbstractHTMLRipper.setWorkingDir(...)`
-      always calls the concrete `getAlbumTitle(...)`. Flutter
-      `AbstractRipper.setup()` always calls each Dart ripper's
-      `getAlbumTitle(...)`, so JSON rippers do not honor Java's no-album-title
-      fallback and HTML rippers are not distinguished from JSON rippers.
+      always calls the concrete `getAlbumTitle(...)`.
+  - Completed: shared setup now uses a class-level opt-in for the setting and a
+    non-polymorphic `<host>_<gid>` fallback. JSON/album and HTML behavior is
+    covered separately.
 - [x] Java exposes `descriptions.save`, but current source has no reachable
       implementation: `FuraffinityRipper` is the only class overriding the
       description hooks and returns `false` from `hasDescriptionSupport()`.

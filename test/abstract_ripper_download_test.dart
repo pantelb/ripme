@@ -1,7 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:html/dom.dart';
 import 'package:ripme/download_history_provider.dart';
+import 'package:ripme/ripper/abstract_html_ripper.dart';
+import 'package:ripme/ripper/abstract_json_ripper.dart';
 import 'package:ripme/ripper/abstract_ripper.dart';
 import 'package:ripme/ui/rip_status_message.dart';
 import 'package:ripme/utils/utils.dart';
@@ -105,13 +108,59 @@ class WorkingDirectoryTestRipper extends AbstractRipper {
   Future<void> rip() async {}
 }
 
+class JsonWorkingDirectoryTestRipper extends AbstractJSONRipper {
+  JsonWorkingDirectoryTestRipper(super.url, this.title);
+
+  final String title;
+
+  @override
+  bool canRip(Uri url) => true;
+
+  @override
+  Future<String> getAlbumTitle(Uri url) async => title;
+
+  @override
+  Future<String> getGID(Uri url) async => 'gid';
+
+  @override
+  String getHost() => 'json';
+
+  @override
+  Future<void> parseJSON(Uri url) async {}
+}
+
+class HtmlWorkingDirectoryTestRipper extends AbstractHTMLRipper {
+  HtmlWorkingDirectoryTestRipper(super.url, this.title);
+
+  final String title;
+
+  @override
+  bool canRip(Uri url) => true;
+
+  @override
+  Future<String> getAlbumTitle(Uri url) async => title;
+
+  @override
+  Future<String> getGID(Uri url) async => 'gid';
+
+  @override
+  String getHost() => 'html';
+
+  @override
+  Future<Uri?> getNextPage(Document page) async => null;
+
+  @override
+  Future<List<String>> getURLsFromPage(Document page) async => const [];
+}
+
 void main() {
   tearDown(() {
     AbstractRipper.folderNameSuffix = null;
   });
 
   test('setup uses Java-safe truncated working directory names', () async {
-    final base = await Directory.systemTemp.createTemp('ripme_working_dir_test');
+    final base =
+        await Directory.systemTemp.createTemp('ripme_working_dir_test');
     addTearDown(() => base.delete(recursive: true));
     SharedPreferences.setMockInitialValues({
       'rips.directory': base.path,
@@ -127,6 +176,60 @@ void main() {
 
     expect(p.basename(ripper.workingDir.path), List.filled(99, 'a').join());
     expect(await ripper.workingDir.exists(), isTrue);
+  });
+
+  test('album_titles.save false uses Java JSON fallback directory', () async {
+    final base = await Directory.systemTemp.createTemp('ripme_json_title_test');
+    addTearDown(() => base.delete(recursive: true));
+    SharedPreferences.setMockInitialValues({
+      'rips.directory': base.path,
+      'album_titles.save': false,
+    });
+    await Utils.init();
+
+    final ripper = JsonWorkingDirectoryTestRipper(
+      Uri.parse('https://example.com/album'),
+      'custom title',
+    );
+    await ripper.setup();
+
+    expect(p.basename(ripper.workingDir.path), 'json_gid');
+  });
+
+  test('album_titles.save true keeps Java JSON custom directory', () async {
+    final base = await Directory.systemTemp.createTemp('ripme_json_title_test');
+    addTearDown(() => base.delete(recursive: true));
+    SharedPreferences.setMockInitialValues({
+      'rips.directory': base.path,
+      'album_titles.save': true,
+    });
+    await Utils.init();
+
+    final ripper = JsonWorkingDirectoryTestRipper(
+      Uri.parse('https://example.com/album'),
+      'custom title',
+    );
+    await ripper.setup();
+
+    expect(p.basename(ripper.workingDir.path), 'custom title');
+  });
+
+  test('album_titles.save false does not change Java HTML directory', () async {
+    final base = await Directory.systemTemp.createTemp('ripme_html_title_test');
+    addTearDown(() => base.delete(recursive: true));
+    SharedPreferences.setMockInitialValues({
+      'rips.directory': base.path,
+      'album_titles.save': false,
+    });
+    await Utils.init();
+
+    final ripper = HtmlWorkingDirectoryTestRipper(
+      Uri.parse('https://example.com/album'),
+      'custom title',
+    );
+    await ripper.setup();
+
+    expect(p.basename(ripper.workingDir.path), 'custom title');
   });
 
   test('shared filename helper preserves Java extension edge cases', () {

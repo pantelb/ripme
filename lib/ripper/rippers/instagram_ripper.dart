@@ -40,6 +40,9 @@ class InstagramRipper extends AbstractRipper {
   InstagramRipper(super.url);
 
   @override
+  bool get usesAlbumTitleSetting => true;
+
+  @override
   String getHost() => 'instagram';
 
   @override

@@ -5,6 +5,9 @@ abstract class AbstractJSONRipper extends AbstractRipper {
   AbstractJSONRipper(super.url);
 
   @override
+  bool get usesAlbumTitleSetting => true;
+
+  @override
   Future<void> rip() async {
     sendUpdate(RipStatus.loadingResource, url.toString());
     try {

@@ -39,6 +39,9 @@ class ScrolllerRipper extends AbstractRipper {
         _apiClient = apiClient;
 
   @override
+  bool get usesAlbumTitleSetting => true;
+
+  @override
   String getHost() => 'scrolller';
 
   String getDomain() => 'scrolller.com';
