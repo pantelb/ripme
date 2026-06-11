@@ -84,7 +84,6 @@ class Http {
       cookies: cookies,
       timeoutKey: 'download.timeout',
       defaultTimeoutMs: 60000,
-      honorDownloadSkip404: true,
       isDownload: true,
     );
 
@@ -132,7 +131,6 @@ class Http {
     Map<String, String>? cookies,
     String timeoutKey = 'page.timeout',
     int defaultTimeoutMs = 5000,
-    bool honorDownloadSkip404 = false,
     bool isDownload = false,
     String method = 'GET',
     Map<String, String>? data,
@@ -141,8 +139,11 @@ class Http {
   }) async {
     final combinedHeaders =
         _buildHeaders(url, headers, cookies, isDownload: isDownload);
-    final attempts =
+    final configuredAttempts =
         attemptsOverride ?? Utils.getConfigInteger('download.retries', 3);
+    final attempts = isDownload && attemptsOverride == null
+        ? configuredAttempts + 1
+        : configuredAttempts;
     final timeout = timeoutOverride ??
         Duration(
           milliseconds: Utils.getConfigInteger(timeoutKey, defaultTimeoutMs),
@@ -181,23 +182,34 @@ class Http {
           );
         }
 
-        if (response.statusCode == 404 &&
-            (!honorDownloadSkip404 ||
-                Utils.getConfigBoolean('errors.skip404', false))) {
-          return response;
+        if (isDownload && response.statusCode ~/ 100 == 4) {
+          throw _NonRetriableHttpException(
+            'Non-retriable status code ${response.statusCode} '
+            'while downloading $url',
+          );
         }
 
-        final rateLimitDelay = _retryAfterDelay(response);
-        if (rateLimitDelay != null && attempt + 1 < attempts) {
-          await delay(rateLimitDelay);
-          continue;
-        }
+        if (isDownload && response.statusCode ~/ 100 == 5) {
+          lastError = HttpException(
+            'Retriable status code ${response.statusCode} '
+            'while downloading $url',
+          );
+        } else {
+          final rateLimitDelay = _retryAfterDelay(response);
+          if (rateLimitDelay != null && attempt + 1 < attempts) {
+            await delay(rateLimitDelay);
+            continue;
+          }
 
-        lastError =
-            HttpException('Failed to load $url: Status ${response.statusCode}');
+          lastError =
+              HttpException('Failed to load $url: Status ${response.statusCode}');
+        }
       } on _NonRetriableHttpException {
         rethrow;
       } on TimeoutException catch (e) {
+        if (isDownload) {
+          rethrow;
+        }
         lastError = e;
       } on IOException catch (e) {
         lastError = e;

@@ -656,7 +656,7 @@ void main() {
     });
   }
 
-  test('download 404 retries use only Java plural skip key', () async {
+  test('download 404 is non-retriable before Java skip key branch', () async {
     SharedPreferences.setMockInitialValues({
       'download.retries': 2,
       'download.retry.sleep': 0,
@@ -681,9 +681,16 @@ void main() {
         Uri.parse('http://127.0.0.1:${server.port}/missing'),
         File('${directory.path}/missing.jpg'),
       ),
-      throwsA(isA<HttpException>()),
+      throwsA(
+        isA<HttpException>().having(
+          (error) => error.message,
+          'message',
+          'Non-retriable status code 404 while downloading '
+              'http://127.0.0.1:${server.port}/missing',
+        ),
+      ),
     );
-    expect(attempts, 2);
+    expect(attempts, 1);
 
     await Utils.setConfigBoolean('errors.skip404', true);
     attempts = 0;
@@ -696,6 +703,39 @@ void main() {
       throwsA(isA<HttpException>()),
     );
     expect(attempts, 1);
+  });
+
+  test('download 5xx uses Java initial attempt plus configured retries',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 2,
+      'download.retry.sleep': 0,
+      'download.timeout': 1000,
+    });
+    await Utils.init();
+
+    var attempts = 0;
+    final server = await _server((request) async {
+      attempts++;
+      request.response.statusCode = 503;
+      await request.response.close();
+    });
+    addTearDown(server.close);
+    final directory = await Directory.systemTemp.createTemp('ripme_http_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final url = Uri.parse('http://127.0.0.1:${server.port}/unavailable');
+
+    await expectLater(
+      Http.downloadFile(url, File('${directory.path}/file.jpg')),
+      throwsA(
+        isA<HttpException>().having(
+          (error) => error.message,
+          'message',
+          'Retriable status code 503 while downloading $url',
+        ),
+      ),
+    );
+    expect(attempts, 3);
   });
 
   test('performs no request when Java attempt count is zero', () async {

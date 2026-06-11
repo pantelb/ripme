@@ -810,9 +810,11 @@ Parity checklist:
     [Linux](https://github.com/pantelb/ripme/actions/runs/27364533194/artifacts/7571717528).
 - [x] Verify skip-404 config key spelling and semantics against Java.
   - Completed: shared Java-style page requests terminate immediately on 404
-    regardless of configuration. File downloads alone consult the active
-    plural `errors.skip404` key with Java's false default; the bundled singular
-    `error.skip404=true` remains inventoried as an inactive legacy key.
+    regardless of configuration. Source verification corrected the earlier
+    audit assumption for files: `DownloadFileThread` returns from its general
+    4xx branch before the later `HttpStatusException`/`errors.skip404` check,
+    making that config branch unreachable for a normal 404 response. Both
+    plural and singular keys are therefore inactive for shared downloads.
   - CI artifacts:
     [Android](https://github.com/pantelb/ripme/actions/runs/27362122787/artifacts/7570838538),
     [Windows](https://github.com/pantelb/ripme/actions/runs/27362122787/artifacts/7570798660),
@@ -855,6 +857,11 @@ Parity checklist:
     client, and installs optional basic credentials.
   - SOCKS strings use the same parser but fail explicitly because `dart:io`
     exposes no SOCKS proxy transport API.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27365151437/artifacts/7572067553),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27365151437/artifacts/7572018895),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27365151437/artifacts/7571992043),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27365151437/artifacts/7571966442).
 - [x] Verify HTTP proxy host/port/auth.
 - [x] Port SOCKS proxy support or explicitly mark not applicable.
   - Decision: not applicable to the current `dart:io` backend. Both CLI and
@@ -868,11 +875,21 @@ Parity checklist:
     including hostname mismatch failures, for every shared page/download
     client. The setting and network UI are covered by unit/widget tests.
   - CI artifacts are recorded under the configuration-control checklist.
+  - Audit reconciliation CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27365231955/artifacts/7572130733),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27365231955/artifacts/7572043580),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27365231955/artifacts/7572034108),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27365231955/artifacts/7572014113).
 - [x] Verify content-type-tolerant JSON/HTML parsing.
   - Completed: shared JSON decoding and HTML parsing consume response bodies
     independently of the server's `Content-Type`, matching Java callers that
     opt into Jsoup `ignoreContentType()`. A local-server test returns both JSON
     and HTML as `text/plain`.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27365330404/artifacts/7572166281),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27365330404/artifacts/7572138221),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27365330404/artifacts/7572113807),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27365330404/artifacts/7572054717).
 - [x] Verify Java `Http` chainable request APIs: `ignoreContentType`,
       `referrer`, `userAgent`, `header`, `cookies`, `data`, `method`, `post`,
       `getJSON`, and `getJSONArray`.
@@ -880,19 +897,21 @@ Parity checklist:
     by the shared retry/timeout/proxy/SSL implementation. Tests cover chained
     request metadata, URL-encoded form POSTs, method override, per-request
     retries/timeouts, JSON objects, and JSON arrays.
-- [~] Verify Java HTTP error messages: 401/403 cookie guidance, 404 file-not-found
+- [x] Verify Java HTTP error messages: 401/403 cookie guidance, 404 file-not-found
       handling, and non-retriable/retriable status text.
-  - In progress: shared page requests now stop immediately with Java-compatible
-    401/403 cookie guidance and 404 file-not-found messages. File-download
-    status text remains tracked separately.
+  - Completed: shared page requests stop immediately with Java-compatible
+    401/403 cookie guidance and 404 file-not-found messages. File downloads
+    stop on 4xx with `Non-retriable status code ... while downloading ...`;
+    5xx failures retain Java's `Retriable status code` text across retries.
   - CI artifacts for page errors:
     [Android](https://github.com/pantelb/ripme/actions/runs/27363974753/artifacts/7571591390),
     [Windows](https://github.com/pantelb/ripme/actions/runs/27363974753/artifacts/7571559785),
     [macOS](https://github.com/pantelb/ripme/actions/runs/27363974753/artifacts/7571508412),
     [Linux](https://github.com/pantelb/ripme/actions/runs/27363974753/artifacts/7571496843).
-- [x] Verify Java retry attempt counts. `Http` now uses exactly the configured
-      number of total attempts, including Java's zero-attempt edge case,
-      instead of the former Flutter `attempt <= retries` behavior.
+- [x] Verify Java retry attempt counts. Page requests use exactly the configured
+      number of total attempts, including Java's zero-attempt edge case. File
+      downloads use one initial attempt plus `download.retries`, matching
+      `DownloadFileThread`'s `tries > retries` boundary.
   - CI artifacts:
     [Android](https://github.com/pantelb/ripme/actions/runs/27360595539/artifacts/7570234747),
     [Windows](https://github.com/pantelb/ripme/actions/runs/27360595539/artifacts/7570201084),
@@ -1417,9 +1436,9 @@ Findings:
       equivalents. Flutter intentionally scopes proxy configuration to every
       client created by the shared HTTP layer; Dart does not expose Java-style
       process-global proxy system properties.
-- [ ] Java 401/403 page requests throw a cookie-oriented error message; 404 page
+- [x] Java 401/403 page requests throw a cookie-oriented error message; 404 page
       requests throw file-not-found style messaging. Flutter currently raises
-      generic `HttpException` text in several paths.
+      matching `HttpException` text from the shared page path.
 - [ ] Per-ripper malformed URL/GID exception messages are not fully
       Java-compatible or test-locked. Java rippers throw exact
       `MalformedURLException` strings, including source typos such as
@@ -1435,9 +1454,8 @@ Findings:
       `MrCongRipper` says `Expected misskon.com URL format`,
       `ReadcomicRipper` says `Expected view-comic URL format`, and
       `JabArchivesRipper` says `Expected javarchives.com URL format`.
-- [ ] Java `Http` retry loop attempts exactly the configured count. Flutter's
-      `_getResponse` currently loops `attempt <= retries`, which is one extra
-      attempt for the same setting.
+- [x] Java `Http` retry loop attempts exactly the configured count. Flutter's
+      shared page path now uses the same total-attempt boundary.
 - [x] Java `Http.TIMEOUT` is a `static final` value read once from
       `Utils.getConfigInteger("page.timeout", 5 * 1000)` when `Http` is loaded,
       and every default Jsoup connection then uses that frozen timeout. Flutter
@@ -1446,29 +1464,27 @@ Findings:
       first Java `Http` class load affects Flutter requests but not Java page
       requests. This is retained intentionally so Flutter's immediately
       persisted timeout control applies without restarting the app.
-- [ ] Java CLI `-4` sets `errors.skip404`, and `DownloadFileThread` checks that
-      same typo key before returning immediately on a 404; otherwise it keeps
-      retrying through the Java download loop. Flutter checks
-      `error.skip404` in `_getResponse(...)`; when true it returns the 404
-      response early, but `Http.get(...)`, `Http.getJSON(...)`, and
-      `Http.downloadFile(...)` still throw because the response status is not
-      200. Therefore the Dart flag changes retry timing rather than producing a
-      Java-compatible skip/error path, and the `error.skip404` versus
-      `errors.skip404` alias is not just a defaults mismatch.
+- [x] Java CLI `-4` sets `errors.skip404`, but source-order verification shows
+      `DownloadFileThread` handles and returns for every 4xx before reaching
+      the later `HttpStatusException` check that reads this key. Flutter now
+      matches the observable behavior: normal page/file 404 responses are
+      non-retriable regardless of either skip-404 key.
 - [ ] Java `Http.response()` does not inspect `Retry-After` on 429 or 503; it
       applies the configured `download.retry.sleep` delay between retries or
       retries immediately when that value is zero. Flutter `_getResponse(...)`
       parses `Retry-After` for 429/503 and waits for that header-specific delay,
       so rate-limited pages can pause differently from Java even with the same
       retry config.
-- [ ] Java file download retry loop increments `tries` and fails when
+- [x] Java file download retry loop increments `tries` and fails when
       `tries > retries`; redirect handling can avoid counting the first redirect.
-      Flutter's bulk-response download path needs retry-count parity tests.
-- [ ] Java `DownloadFileThread` supports resume with Range headers when a ripper
+      Flutter now uses one initial file attempt plus the configured retry count;
+      status tests lock the boundary. Redirect-resume behavior remains tracked
+      with the broader download-engine item.
+- [~] Java `DownloadFileThread` supports resume with Range headers when a ripper
       opts in, MIME/magic extension detection when requested, explicit
       non-retriable 4xx handling, retriable 5xx handling, and an Imgur
-      503-byte-as-404 special case. Flutter needs shared tests or documented
-      replacement behavior.
+      503-byte-as-404 special case. The 4xx/5xx status handling is now matched;
+      resume, extension detection, and the Imgur special case remain.
 - [x] Java file downloads always set request properties `accept: */*`,
       `User-agent: <AbstractRipper.USER_AGENT>`, and `Cookie: <serialized map>`,
       with `Cookie` present even when the per-download cookie map is empty.
