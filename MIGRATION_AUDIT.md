@@ -181,6 +181,14 @@ blocked by platform constraints or missing user input.
     baseline and runs the guard before analysis. Focused extraction coverage is
     in `test/legacy_ripper_inventory_test.dart`, including duplicate class
     names shared by base and video packages.
+  - CI: commit `56057d53` passed
+    [Flutter CI run 27325422672](https://github.com/pantelb/ripme/actions/runs/27325422672).
+    Artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27325422672/artifacts/7555452945),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27325422672/artifacts/7555428847),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27325422672/artifacts/7555413445),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27325422672/artifacts/7555404037).
 - [ ] Add a script or test that fails when a Java-used config key has no Flutter
       default, migration alias, or documented intentional removal.
 - [ ] Add a script or test that fails when a Java localized key has no Flutter
@@ -221,7 +229,18 @@ Parity checklist:
     and descriptions declared by Java `App.getOptions()`.
 - [x] Print Flutter app version for `-v` / `--version`.
   - Completed: both forms print `appVersion` and exit successfully.
-- [ ] Support single URL ripping through `-u` / `--url`.
+  - CI: commit `e4bbf119` passed
+    [Flutter CI run 27325776867](https://github.com/pantelb/ripme/actions/runs/27325776867).
+    Artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27325776867/artifacts/7555586171),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27325776867/artifacts/7555560948),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27325776867/artifacts/7555540263),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27325776867/artifacts/7555529614).
+- [x] Support single URL ripping through `-u` / `--url`.
+  - Completed: both separated and `--url=<value>` forms validate the URL,
+    resolve it through `RipperFactory`, and run `setup()` / `rip()` headlessly
+    with guaranteed disposal. Invalid URLs use Java's expected-format message.
 - [ ] Support URL-file ripping through `-f` / `--urls-file`.
 - [ ] Skip URL-file lines beginning with `//` or `#`.
 - [ ] Apply `-t` / `--threads` to `threads.size`.
@@ -254,7 +273,9 @@ Required tests:
     implementations.
 - [ ] Config side-effect tests for options that mutate settings.
 - [ ] URL-file parsing tests.
-- [ ] Headless single-URL smoke test using a fake ripper resolver.
+- [x] Headless single-URL smoke test using a fake ripper resolver.
+  - Completed: `test/cli_controller_test.dart` injects an offline URL rip
+    callback and verifies both short and long option forms.
 - [ ] History re-rip tests.
 
 ### Workstream 2: Main Window Input And Queue

@@ -10,12 +10,13 @@ void main() {
         isTrue);
   });
 
-  test('short and long help options print the Java CLI option surface', () {
+  test('short and long help options print the Java CLI option surface',
+      () async {
     for (final args in const [
       ['-h'],
       ['--help'],
     ]) {
-      final result = CliController().run(args);
+      final result = await CliController().run(args);
 
       expect(result.exitCode, 0);
       expect(result.isError, isFalse);
@@ -27,12 +28,13 @@ void main() {
     }
   });
 
-  test('short and long version options print the Flutter app version', () {
+  test('short and long version options print the Flutter app version',
+      () async {
     for (final args in const [
       ['-v'],
       ['--version'],
     ]) {
-      final result = CliController().run(args);
+      final result = await CliController().run(args);
 
       expect(result.exitCode, 0);
       expect(result.output, appVersion);
@@ -40,13 +42,41 @@ void main() {
     }
   });
 
-  test('unported CLI options fail without launching the GUI', () {
-    final result = CliController().run(
-      const ['--url', 'https://example.com/album'],
+  test('single URL options run through the injected headless ripper', () async {
+    final rippedUrls = <Uri>[];
+    final controller = CliController(
+      ripUrl: (url) async => rippedUrls.add(url),
     );
+
+    for (final args in const [
+      ['-u', 'https://example.com/album'],
+      ['--url=https://example.com/second'],
+    ]) {
+      final result = await controller.run(args);
+
+      expect(result.exitCode, 0);
+      expect(result.isError, isFalse);
+    }
+    expect(rippedUrls, [
+      Uri.parse('https://example.com/album'),
+      Uri.parse('https://example.com/second'),
+    ]);
+  });
+
+  test('single URL mode rejects malformed URLs like Java', () async {
+    final result = await CliController().run(const ['--url', 'not-a-url']);
+
+    expect(result.exitCode, 1);
+    expect(result.isError, isTrue);
+    expect(
+        result.output, contains('Expected URL format is http://domain.com/'));
+  });
+
+  test('unported CLI options fail without launching the GUI', () async {
+    final result = await CliController().run(const ['--rerip']);
 
     expect(result.exitCode, 64);
     expect(result.isError, isTrue);
-    expect(result.output, contains('--url https://example.com/album'));
+    expect(result.output, contains('--rerip'));
   });
 }

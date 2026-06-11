@@ -19,7 +19,9 @@ import 'utils/utils.dart';
 
 Future<void> main(List<String> args) async {
   if (CliController.shouldRunHeadless(args)) {
-    final result = CliController().run(args);
+    WidgetsFlutterBinding.ensureInitialized();
+    await Utils.init();
+    final result = await CliController().run(args);
     final sink = result.isError ? stderr : stdout;
     sink.writeln(result.output);
     exitCode = result.exitCode;
