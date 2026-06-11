@@ -803,6 +803,11 @@ Parity checklist:
   - Intentional Java bug fix: a timed-out file remains failed. Flutter does not
     reproduce `DownloadFileThread` falling through to `downloadCompleted`
     after catching `SocketTimeoutException`.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27364533194/artifacts/7571809225),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27364533194/artifacts/7571764591),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27364533194/artifacts/7571750926),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27364533194/artifacts/7571717528).
 - [x] Verify skip-404 config key spelling and semantics against Java.
   - Completed: shared Java-style page requests terminate immediately on 404
     regardless of configuration. File downloads alone consult the active
@@ -855,9 +860,14 @@ Parity checklist:
   - Decision: not applicable to the current `dart:io` backend. Both CLI and
     persisted `proxy.socks` settings report an unsupported error rather than
     silently bypassing the requested proxy.
-- [ ] Verify SSL verification toggle behavior.
-- [ ] Verify Java SSL verification toggle actually disables/enables certificate
+- [x] Verify SSL verification toggle behavior.
+- [x] Verify Java SSL verification toggle actually disables/enables certificate
       and hostname verification for Jsoup calls.
+  - Completed: `ssl.verify.off=false` leaves Dart's default certificate and
+    hostname validation intact; `true` accepts bad-certificate callbacks,
+    including hostname mismatch failures, for every shared page/download
+    client. The setting and network UI are covered by unit/widget tests.
+  - CI artifacts are recorded under the configuration-control checklist.
 - [ ] Verify content-type-tolerant JSON/HTML parsing.
 - [ ] Verify Java `Http` chainable request APIs: `ignoreContentType`,
       `referrer`, `userAgent`, `header`, `cookies`, `data`, `method`, `post`,
