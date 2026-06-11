@@ -163,6 +163,14 @@ abstract class AbstractRipper {
       }
 
       saveAs = _sanitizeSaveAs(resolveSavePath(saveAs));
+      if (Platform.isWindows && saveAs.absolute.path.length > 259) {
+        saveAs = File(
+          Utils.shortenSaveAsWindows(
+            p.dirname(saveAs.path),
+            p.basename(saveAs.path),
+          ),
+        );
+      }
 
       if (!Utils.getConfigBoolean('file.overwrite', false) &&
           await saveAs.exists()) {

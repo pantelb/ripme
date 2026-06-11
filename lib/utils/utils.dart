@@ -139,6 +139,22 @@ class Utils {
     return fileName.replaceAll(RegExp(r'[\\:*?"<>|]'), '_');
   }
 
+  static String shortenSaveAsWindows(String ripsDirPath, String fileName) {
+    final pathLength = ripsDirPath.length;
+    if (pathLength == 260) {
+      throw FileSystemException(
+        'File path is too long for this OS',
+        ripsDirPath,
+      );
+    }
+
+    final fullPath = p.windows.join(ripsDirPath, fileName);
+    final fileNameParts = fileName.split('.');
+    final extension = fileNameParts.last;
+    final end = 260 - pathLength - extension.length;
+    return '${fullPath.substring(0, end)}.$extension';
+  }
+
   static Map<String, String> parseUrlQuery(String query) {
     final result = <String, String>{};
     if (query.isEmpty) return result;

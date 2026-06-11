@@ -43,4 +43,30 @@ void main() {
       equals('This is a _ !__ test'),
     );
   });
+
+  test('Utils shortenSaveAsWindows matches Java path fixture', () {
+    final filename = '${List.filled(254, 'f').join()}.png';
+
+    final shortened = Utils.shortenSaveAsWindows(
+      'D:/rips/test/reddit/deep',
+      filename,
+    );
+
+    expect(
+      shortened.replaceAll(r'\', '/'),
+      'D:/rips/test/reddit/deep/'
+          '${List.filled(208, 'f').join()}.png',
+    );
+    expect(shortened.length, 237);
+  });
+
+  test('Utils shortenSaveAsWindows rejects an exhausted parent path', () {
+    expect(
+      () => Utils.shortenSaveAsWindows(
+        List.filled(260, 'x').join(),
+        'file.png',
+      ),
+      throwsA(isA<FileSystemException>()),
+    );
+  });
 }

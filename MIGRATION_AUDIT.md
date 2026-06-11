@@ -982,7 +982,11 @@ Parity checklist:
   - Completed: shared working-directory setup applies exact Java sanitization
     and 99-character truncation, then reuses an existing case-insensitive name
     with its on-disk case on non-Windows platforms.
-- [ ] Verify Java Windows path shortening behavior from `shortenSaveAsWindows`.
+- [x] Verify Java Windows path shortening behavior from `shortenSaveAsWindows`.
+  - Completed: Flutter ports Java's path-length arithmetic and extension
+    preservation, rejects a 260-character parent path, and applies shortening
+    to shared Windows downloads whose absolute destination exceeds 259
+    characters.
 - [ ] Port or document `append-to-folder`.
 - [ ] Verify `album_titles.save` behavior.
 - [ ] Verify `descriptions.save` behavior.
