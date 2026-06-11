@@ -278,6 +278,7 @@ class RipManager extends ChangeNotifier {
     }
     final runId = ++_ripRunId;
     _currentRipper = activeRipper;
+    var runItemCount = 0;
 
     await activeRipper.setup();
     activeRipper.statusStream.listen((event) {
@@ -285,11 +286,20 @@ class RipManager extends ChangeNotifier {
         _queue.add(event.object.toString());
         _saveNonEmptyQueue();
       }
+      if (event.status == RipStatus.downloadStarted ||
+          event.status == RipStatus.downloadSkip) {
+        runItemCount++;
+      }
       _updateProgressFromEvent(event);
       _addLog(event);
       if (event.status == RipStatus.ripComplete) {
         unawaited(_playCompletionSoundIfEnabled());
-        _addToHistory(urlText, event.object.toString());
+        _addToHistory(
+          activeRipper.url.toString(),
+          event.object.toString(),
+          activeRipper,
+          runItemCount == 0 ? 1 : runItemCount,
+        );
       }
     });
 
@@ -369,10 +379,43 @@ class RipManager extends ChangeNotifier {
     }
   }
 
-  void _addToHistory(String url, String dir) {
-    _history.insert(0, HistoryEntry(url: url, dir: dir, date: DateTime.now()));
-    HistoryProvider.saveHistory(_history);
+  void _addToHistory(
+    String url,
+    String dir,
+    AbstractRipper ripper,
+    int count,
+  ) {
+    final now = DateTime.now();
+    final existingIndex = _history.indexWhere((entry) => entry.url == url);
+    if (existingIndex >= 0) {
+      final existing = _history[existingIndex];
+      existing.count = count;
+      existing.modifiedDate = now;
+    } else {
+      final entry = HistoryEntry(
+        url: url,
+        dir: dir,
+        date: now,
+        count: count,
+      );
+      _history.add(entry);
+      unawaited(_populateHistoryTitle(entry, ripper));
+    }
+    unawaited(HistoryProvider.saveHistory(_history));
     notifyListeners();
+  }
+
+  Future<void> _populateHistoryTitle(
+    HistoryEntry entry,
+    AbstractRipper ripper,
+  ) async {
+    try {
+      entry.title = await ripper.getAlbumTitle(ripper.url);
+      await HistoryProvider.saveHistory(_history);
+      notifyListeners();
+    } on Exception {
+      // Java leaves the title empty when album-title resolution fails.
+    }
   }
 
   Future<void> clearHistory() async {
@@ -420,10 +463,10 @@ class HistoryEntry {
   final String url;
   final String dir;
   final DateTime date;
-  final String title;
-  final int count;
+  String title;
+  int count;
   final DateTime startDate;
-  final DateTime modifiedDate;
+  DateTime modifiedDate;
   bool selected;
 
   HistoryEntry({

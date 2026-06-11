@@ -209,6 +209,47 @@ void main() {
     expect(soundCount, 0);
   });
 
+  test('preserves Java history fields and updates repeat rip metadata',
+      () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_manager_metadata_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final manager = RipManager(
+      ripperResolver: (uri) => ProgressRipper(
+        uri,
+        directory,
+        Future<void>.value(),
+      ),
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+
+    manager.addUrlToQueue('https://example.com/metadata');
+    await _waitFor(
+      () => manager.history.length == 1 && manager.history.single.title != '',
+    );
+    final first = manager.history.single;
+
+    expect(first.url, 'https://example.com/metadata');
+    expect(first.dir, directory.path);
+    expect(first.title, 'test_progress');
+    expect(first.count, 2);
+    expect(first.startDate, first.date);
+    expect(first.modifiedDate, first.startDate);
+    expect(first.selected, isFalse);
+
+    final created = first.startDate;
+    await Future<void>.delayed(const Duration(milliseconds: 5));
+    manager.addUrlToQueue('https://example.com/metadata');
+    await _waitFor(() => first.modifiedDate.isAfter(created));
+
+    expect(manager.history, hasLength(1));
+    expect(first.startDate, created);
+    expect(first.count, 2);
+  });
+
   test('replaces and removes persisted history entries', () async {
     SharedPreferences.setMockInitialValues({});
     await Utils.init();

@@ -484,6 +484,12 @@ Parity checklist:
     pending URLs in order. The stopped run cannot advance the queue from its
     completion path. As in Java, adding another URL while idle resumes from the
     oldest pending entry.
+  - CI: commit `36249312` passed
+    [run 27342057234](https://github.com/pantelb/ripme/actions/runs/27342057234):
+    [Android](https://github.com/pantelb/ripme/actions/runs/27342057234/artifacts/7562343382),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27342057234/artifacts/7562342297),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27342057234/artifacts/7562292069),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27342057234/artifacts/7562262915).
 
 Required tests:
 
@@ -510,8 +516,16 @@ Flutter targets:
 
 Parity checklist:
 
-- [ ] Preserve Java history fields: URL, directory, title, created/modified
+- [x] Preserve Java history fields: URL, directory, title, created/modified
       dates, and selected state where applicable.
+  - Completed: `HistoryEntry` retains URL, directory, title, count, start date,
+    modified date, and selected state. New rip completions populate all fields;
+    repeat rips retain the original row/start date and update count plus
+    modified date like Java.
+  - Flutter derives completion count from per-run resource events because its
+    current rip-complete event carries only the directory, unlike Java's
+    `RipStatusComplete(dir, count)`. Rips without resource events retain
+    Java's default count of one.
 - [ ] Preserve Java table columns and display semantics: URL, created date,
       modified date, count, and selected checkbox.
 - [ ] Preserve Java history JSON timestamp semantics: `startDate` and
