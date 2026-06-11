@@ -291,7 +291,11 @@ Parity checklist:
   - Decision: explicitly rejected with exit code 64 because Flutter's current
     `dart:io` `HttpClient` backend exposes HTTP proxy routing but no SOCKS proxy
     API. The option is not silently accepted.
-- [ ] Support `-a` / `--append-to-folder` or document a replacement.
+- [x] Support `-a` / `--append-to-folder` or document a replacement.
+  - Completed: the exact CLI suffix is retained for the process. Shared
+    download path resolution redirects files from `<workingDir>/...` to the
+    Java-compatible sibling `<workingDir><suffix>/...` without changing the
+    ripper's reported working directory.
 - [ ] Support `-H` / `--history` or document a replacement.
 - [ ] Support `-r` / `--rerip` for all history entries.
 - [ ] Support `-R` / `--rerip-selected` or document how selected history is

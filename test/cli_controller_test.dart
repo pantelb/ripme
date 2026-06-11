@@ -220,6 +220,17 @@ void main() {
     expect(result.output, contains('SOCKS proxy is not supported'));
   });
 
+  test('append-to-folder preserves the exact Java suffix value', () async {
+    String? suffix;
+
+    final result = await CliController(
+      setFolderSuffix: (value) => suffix = value,
+    ).run(const ['--append-to-folder', ' -extra ']);
+
+    expect(result.exitCode, 0);
+    expect(suffix, ' -extra ');
+  });
+
   test('unported CLI options fail without launching the GUI', () async {
     final result = await CliController().run(const ['--rerip']);
 

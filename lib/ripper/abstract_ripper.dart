@@ -26,6 +26,7 @@ class RipperDownload {
 
 abstract class AbstractRipper {
   static final Logger logger = Logger();
+  static String? folderNameSuffix;
   final Uri url;
   late Directory workingDir;
   bool _shouldStop = false;
@@ -128,7 +129,7 @@ abstract class AbstractRipper {
         return;
       }
 
-      saveAs = _sanitizeSaveAs(saveAs);
+      saveAs = _sanitizeSaveAs(resolveSavePath(saveAs));
 
       if (!Utils.getConfigBoolean('file.overwrite', false) &&
           await saveAs.exists()) {
@@ -155,6 +156,21 @@ abstract class AbstractRipper {
     final sanitizedName = Utils.sanitizeSaveAs(p.basename(saveAs.path));
     if (sanitizedName == p.basename(saveAs.path)) return saveAs;
     return File(p.join(p.dirname(saveAs.path), sanitizedName));
+  }
+
+  File resolveSavePath(File saveAs) {
+    final suffix = folderNameSuffix;
+    if (suffix == null || suffix.isEmpty) return saveAs;
+    if (!p.isWithin(workingDir.path, saveAs.path)) return saveAs;
+
+    final siblingRoot = p.join(
+      p.dirname(workingDir.path),
+      '${p.basename(workingDir.path)}$suffix',
+    );
+    return File(p.join(
+      siblingRoot,
+      p.relative(saveAs.path, from: workingDir.path),
+    ));
   }
 
   bool _shouldRememberUrlHistory() {

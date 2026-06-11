@@ -85,6 +85,31 @@ class StopAfterFirstDownloadRipper extends TestRipper {
 }
 
 void main() {
+  tearDown(() {
+    AbstractRipper.folderNameSuffix = null;
+  });
+
+  test('append-to-folder redirects file paths to a sibling album root',
+      () async {
+    final parent = await Directory.systemTemp.createTemp('ripme_append_test');
+    addTearDown(() => parent.delete(recursive: true));
+    final workingDir = Directory(p.join(parent.path, 'album'));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), workingDir);
+    await ripper.setup();
+    AbstractRipper.folderNameSuffix = '-extra';
+
+    final resolved = ripper.resolveSavePath(
+      File(p.join(workingDir.path, 'subdir', 'image.jpg')),
+    );
+
+    expect(
+      resolved.path,
+      p.join(parent.path, 'album-extra', 'subdir', 'image.jpg'),
+    );
+    expect(ripper.workingDir.path, workingDir.path);
+  });
+
   test('skips existing files when overwrite is disabled', () async {
     SharedPreferences.setMockInitialValues({
       'file.overwrite': false,

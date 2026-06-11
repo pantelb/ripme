@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import '../app_version.dart';
+import '../ripper/abstract_ripper.dart';
 import '../ripper/ripper_factory.dart';
 import '../utils/proxy_config.dart';
 import '../utils/utils.dart';
 
 typedef CliUrlRipper = Future<void> Function(Uri url);
 typedef CliUrlFileReader = Future<List<String>> Function(String path);
+typedef CliFolderSuffixSetter = void Function(String? suffix);
 
 abstract class CliConfigStore {
   Future<void> setBoolean(String key, bool value);
@@ -47,14 +49,17 @@ class CliController {
   final CliUrlRipper _ripUrl;
   final CliUrlFileReader _readUrlFile;
   final CliConfigStore _config;
+  final CliFolderSuffixSetter _setFolderSuffix;
 
   CliController({
     CliUrlRipper? ripUrl,
     CliUrlFileReader? readUrlFile,
     CliConfigStore? config,
+    CliFolderSuffixSetter? setFolderSuffix,
   })  : _ripUrl = ripUrl ?? _ripUrlWithFactory,
         _readUrlFile = readUrlFile ?? _readLines,
-        _config = config ?? _UtilsCliConfigStore();
+        _config = config ?? _UtilsCliConfigStore(),
+        _setFolderSuffix = setFolderSuffix ?? _setDefaultFolderSuffix;
 
   static const String helpText = '''
 usage: ripme [OPTIONS]
@@ -201,6 +206,12 @@ usage: ripme [OPTIONS]
       applied++;
     }
 
+    final folderSuffix = _optionValue(args, '-a', '--append-to-folder');
+    if (folderSuffix != null) {
+      _setFolderSuffix(folderSuffix);
+      applied++;
+    }
+
     final httpProxy = _optionValue(args, '-p', '--proxy-server');
     if (httpProxy != null) {
       try {
@@ -313,6 +324,10 @@ usage: ripme [OPTIONS]
 
   static Future<List<String>> _readLines(String path) {
     return File(path).readAsLines();
+  }
+
+  static void _setDefaultFolderSuffix(String? suffix) {
+    AbstractRipper.folderNameSuffix = suffix;
   }
 
   static Future<void> _ripUrlWithFactory(Uri url) async {
