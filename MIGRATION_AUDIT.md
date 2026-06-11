@@ -982,12 +982,18 @@ Parity checklist:
   - Completed: shared working-directory setup applies exact Java sanitization
     and 99-character truncation, then reuses an existing case-insensitive name
     with its on-disk case on non-Windows platforms.
+  - CI: workflow `27384277001` succeeded. Artifacts: Android `7579597902`,
+    Windows `7579591011`, macOS `7579572130`, Linux `7579546510`.
 - [x] Verify Java Windows path shortening behavior from `shortenSaveAsWindows`.
   - Completed: Flutter ports Java's path-length arithmetic and extension
     preservation, rejects a 260-character parent path, and applies shortening
     to shared Windows downloads whose absolute destination exceeds 259
     characters.
-- [ ] Port or document `append-to-folder`.
+- [x] Port or document `append-to-folder`.
+  - Completed: Flutter retains Java's exact, untrimmed CLI suffix and resolves
+    files beneath the working directory into the sibling
+    `<workingDirName><suffix>` before preserving their relative subdirectory
+    and filename. CLI parsing and shared path shaping have focused tests.
 - [ ] Verify `album_titles.save` behavior.
 - [ ] Verify `descriptions.save` behavior.
 - [ ] Verify URL-only output path and append behavior.
@@ -1770,11 +1776,14 @@ Findings:
       implements description helpers and an overridden `saveText`, yet returns
       false, so current-source parity must preserve or intentionally retire this
       disabled feature path rather than assuming active description downloads.
-- [ ] Java `-a` / `--append-to-folder` stores
+- [x] Java `-a` / `--append-to-folder` stores
       `App.stringToAppendToFoldername`, and `AbstractRipper.getFilePath`
       applies it by resolving the working directory to a sibling named
       `<workingDirName><appendString>` before adding subdirectories and file
-      names. Flutter has no verified equivalent for this path-shaping behavior.
+      names.
+  - Reconciled: `AbstractRipper.folderNameSuffix` and `resolveSavePath(...)`
+    provide the equivalent path shaping, while `CliController` preserves the
+    exact option value. Both behaviors have focused tests.
 - [ ] Java `AbstractSingleFileRipper` provides byte-progress status text and
       byte-progress percentage behavior for its subclasses: `RulePornRipper`,
       `SpankbangRipper`, `XvideosRipper`, and `YoupornRipper`. The Flutter
@@ -5197,8 +5206,8 @@ Initial status:
 - [x] Download history skip behavior exists.
 - [x] Download headers and cookies can flow through scheduled downloads.
 - [x] Video helper behavior has shared manifest selection coverage.
-- [ ] Java `append-to-folder` behavior is source-audited and still needs
-      porting/tests.
+- [x] Java `append-to-folder` behavior is ported and tested through exact CLI
+      suffix preservation and sibling working-directory path resolution.
 - [ ] Java description saving behavior is source-audited and still needs a
       Flutter shared equivalent or documented retirement.
 - [ ] Java popup/tray notification behavior is source-audited and still needs
