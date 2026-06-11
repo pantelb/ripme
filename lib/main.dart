@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'app_version.dart';
+import 'cli/cli_controller.dart';
 import 'download_history_provider.dart';
 import 'history_provider.dart';
 import 'l10n/app_localizations.dart';
@@ -16,7 +17,15 @@ import 'ui/rip_status_message.dart';
 import 'update_checker.dart';
 import 'utils/utils.dart';
 
-void main() async {
+Future<void> main(List<String> args) async {
+  if (CliController.shouldRunHeadless(args)) {
+    final result = CliController().run(args);
+    final sink = result.isError ? stderr : stdout;
+    sink.writeln(result.output);
+    exitCode = result.exitCode;
+    return;
+  }
+
   WidgetsFlutterBinding.ensureInitialized();
   await Utils.init();
   runApp(

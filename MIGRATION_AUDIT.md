@@ -205,15 +205,22 @@ Flutter targets:
 
 Parity checklist:
 
-- [ ] Detect CLI/headless invocation before launching `MaterialApp`.
+- [x] Detect CLI/headless invocation before launching `MaterialApp`.
+  - Completed: `lib/main.dart` now accepts Dart entrypoint arguments and routes
+    every non-empty argument list through `CliController` before initializing
+    Flutter bindings or constructing the GUI. Unported options currently fail
+    explicitly instead of launching `MaterialApp`.
 - [ ] Verify desktop runner argument plumbing on every platform before CLI
       parity is claimed. Windows `main.cpp` and Linux `my_application.cc` pass
       command-line arguments into Dart, but macOS `MainFlutterWindow.swift`
       creates a default `FlutterViewController` with no Dart entrypoint
       arguments, and `lib/main.dart` currently accepts no `List<String> args`
       and always launches `MaterialApp`.
-- [ ] Print Java-compatible help text for `-h` / `--help`.
-- [ ] Print Flutter app version for `-v` / `--version`.
+- [x] Print Java-compatible help text for `-h` / `--help`.
+  - Completed: the help output mirrors the option names, value requirements,
+    and descriptions declared by Java `App.getOptions()`.
+- [x] Print Flutter app version for `-v` / `--version`.
+  - Completed: both forms print `appVersion` and exit successfully.
 - [ ] Support single URL ripping through `-u` / `--url`.
 - [ ] Support URL-file ripping through `-f` / `--urls-file`.
 - [ ] Skip URL-file lines beginning with `//` or `#`.
@@ -241,7 +248,10 @@ Parity checklist:
 
 Required tests:
 
-- [ ] CLI parser unit tests for every option.
+- [~] CLI parser unit tests for every option.
+  - Added focused entrypoint, help, version, and unported-option tests in
+    `test/cli_controller_test.dart`; option side effects remain open with their
+    implementations.
 - [ ] Config side-effect tests for options that mutate settings.
 - [ ] URL-file parsing tests.
 - [ ] Headless single-URL smoke test using a fake ripper resolver.
