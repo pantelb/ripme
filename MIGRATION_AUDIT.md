@@ -275,10 +275,13 @@ Parity checklist:
   - Completed: CLI writes Java's `errors.skip404`; Flutter HTTP now prefers
     that key and falls back to the former `error.skip404` key for migration.
 - [x] Apply `-l` / `--ripsdirectory` to `rips.directory`.
-- [ ] Define and test `-n` / `--no-prop-file` semantics for Flutter. Java
+- [x] Define and test `-n` / `--no-prop-file` semantics for Flutter. Java
       accepts the option and passes `!cl.hasOption("n")` into `ripURL`, but
       `ripURL(String targetURL, boolean saveConfig)` never reads `saveConfig`;
       the current Java behavior is effectively a no-op despite the help text.
+  - Completed: Flutter recognizes both forms as an explicit no-op and exits
+    successfully when no rip target is provided. The behavior is locked by a
+    config-store test proving no setting is written.
 - [ ] Support `-p` / `--proxy-server` for HTTP proxy strings.
 - [ ] Support or explicitly reject `-s` / `--socks-server` with a documented
       platform reason.

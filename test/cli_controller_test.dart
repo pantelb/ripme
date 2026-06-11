@@ -169,6 +169,17 @@ void main() {
     expect(config.values['download.save_order'], isFalse);
   });
 
+  test('no-prop-file is the same no-op as current Java behavior', () async {
+    final config = _FakeConfigStore();
+
+    final result =
+        await CliController(config: config).run(const ['--no-prop-file']);
+
+    expect(result.exitCode, 0);
+    expect(result.isError, isFalse);
+    expect(config.values, isEmpty);
+  });
+
   test('saveorder and nosaveorder are rejected after Java side effects',
       () async {
     final config = _FakeConfigStore();

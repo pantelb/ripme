@@ -167,6 +167,11 @@ usage: ripme [OPTIONS]
       applied++;
     }
 
+    if (_hasOption(args, '-n', '--no-prop-file')) {
+      // Java passes this through to ripURL, where the value is never read.
+      applied++;
+    }
+
     final threads = _optionValue(args, '-t', '--threads');
     if (threads != null) {
       final value = int.tryParse(threads);
