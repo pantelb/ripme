@@ -868,7 +868,11 @@ Parity checklist:
     including hostname mismatch failures, for every shared page/download
     client. The setting and network UI are covered by unit/widget tests.
   - CI artifacts are recorded under the configuration-control checklist.
-- [ ] Verify content-type-tolerant JSON/HTML parsing.
+- [x] Verify content-type-tolerant JSON/HTML parsing.
+  - Completed: shared JSON decoding and HTML parsing consume response bodies
+    independently of the server's `Content-Type`, matching Java callers that
+    opt into Jsoup `ignoreContentType()`. A local-server test returns both JSON
+    and HTML as `text/plain`.
 - [ ] Verify Java `Http` chainable request APIs: `ignoreContentType`,
       `referrer`, `userAgent`, `header`, `cookies`, `data`, `method`, `post`,
       `getJSON`, and `getJSONArray`.
