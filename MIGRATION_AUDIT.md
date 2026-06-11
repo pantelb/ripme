@@ -808,6 +808,11 @@ Parity checklist:
   - Completed: `download.max_size` remains available for Java old-config
     validation compatibility but is intentionally not exposed or enforced,
     matching `DownloadFileThread`.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27362570203/artifacts/7571021966),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27362570203/artifacts/7570979490),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27362570203/artifacts/7570973388),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27362570203/artifacts/7570922222).
 - [x] Verify configured domain cookies.
 - [x] Verify Java configured-cookie lookup and parsing exactly: `cookies.<host>`
       lookup checks parent domains and parses semicolon-delimited key/value
@@ -815,7 +820,10 @@ Parity checklist:
   - Completed: Flutter now selects the first non-empty exact/parent-domain
     property and preserves Java parser behavior for whitespace, extra equals
     signs, duplicate keys, trailing delimiters, and malformed pairs.
-- [ ] Verify per-download cookies and referer headers.
+- [x] Verify per-download cookies and referer headers.
+  - Completed: file requests preserve explicit referer/cookie maps, send Java's
+    `Accept: */*` and empty-cookie defaults, and do not inject page-only
+    configured-domain cookies.
 - [ ] Verify Java CLI/config proxy strings `[user:password]@host[:port]` through
       `proxy.http` and `proxy.socks`, including authenticated proxy behavior.
 - [ ] Verify HTTP proxy host/port/auth.
@@ -1402,14 +1410,11 @@ Findings:
       non-retriable 4xx handling, retriable 5xx handling, and an Imgur
       503-byte-as-404 special case. Flutter needs shared tests or documented
       replacement behavior.
-- [ ] Java file downloads always set request properties `accept: */*`,
+- [x] Java file downloads always set request properties `accept: */*`,
       `User-agent: <AbstractRipper.USER_AGENT>`, and `Cookie: <serialized map>`,
       with `Cookie` present even when the per-download cookie map is empty.
-      Flutter `Http._buildHeaders(...)` sets `User-Agent`, does not add
-      `Accept: */*` for downloads, and omits `Cookie` entirely when no configured
-      or per-download cookies exist. Header names are normally case-insensitive,
-      but the Java-visible request shape and empty-cookie behavior still need
-      parity tests before claiming compatibility.
+      Flutter now preserves that request shape and keeps configured-domain
+      cookies scoped to page requests.
 - [ ] Java `DownloadFileThread` catches `SocketTimeoutException`, logs
       `timedout!`, breaks out of the retry loop, and then still falls through to
       `observer.downloadCompleted(url, saveAs.toPath())`. Flutter shared

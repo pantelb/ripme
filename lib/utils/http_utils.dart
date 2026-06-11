@@ -78,6 +78,7 @@ class Http {
       timeoutKey: 'download.timeout',
       defaultTimeoutMs: 60000,
       honorDownloadSkip404: true,
+      isDownload: true,
     );
 
     if (response.statusCode == 200) {
@@ -92,18 +93,25 @@ class Http {
   }
 
   static Map<String, String> _buildHeaders(
-      Uri url, Map<String, String>? headers, Map<String, String>? cookies) {
-    final configuredCookies = configuredCookiesForUrl(url);
+    Uri url,
+    Map<String, String>? headers,
+    Map<String, String>? cookies, {
+    bool isDownload = false,
+  }) {
+    final configuredCookies =
+        isDownload ? const <String, String>{} : configuredCookiesForUrl(url);
     final allCookies = <String, String>{
       ...configuredCookies,
       if (cookies != null) ...cookies,
     };
     final Map<String, String> combined = {
       'User-Agent': userAgent,
+      if (isDownload) 'Accept': '*/*',
       if (headers != null) ...headers,
     };
 
-    if (allCookies.isNotEmpty && !combined.containsKey('Cookie')) {
+    if ((isDownload || allCookies.isNotEmpty) &&
+        !combined.containsKey('Cookie')) {
       combined['Cookie'] =
           allCookies.entries.map((e) => '${e.key}=${e.value}').join('; ');
     }
@@ -118,8 +126,10 @@ class Http {
     String timeoutKey = 'page.timeout',
     int defaultTimeoutMs = 5000,
     bool honorDownloadSkip404 = false,
+    bool isDownload = false,
   }) async {
-    final combinedHeaders = _buildHeaders(url, headers, cookies);
+    final combinedHeaders =
+        _buildHeaders(url, headers, cookies, isDownload: isDownload);
     final attempts = Utils.getConfigInteger('download.retries', 3);
     final timeout = Duration(
         milliseconds: Utils.getConfigInteger(timeoutKey, defaultTimeoutMs));

@@ -157,6 +157,36 @@ void main() {
     expect(cookie, contains('pref=dark'));
   });
 
+  test('download headers match Java defaults and exclude configured cookies',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 1,
+      'download.timeout': 1000,
+      'cookies.127.0.0.1': 'configured=ignored',
+    });
+    await Utils.init();
+
+    late String? accept;
+    late String? cookie;
+    final server = await _server((request) async {
+      accept = request.headers.value('accept');
+      cookie = request.headers.value('cookie');
+      request.response.write('ok');
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final directory = await Directory.systemTemp.createTemp('ripme_http_test');
+    addTearDown(() => directory.delete(recursive: true));
+    await Http.downloadFile(
+      Uri.parse('http://127.0.0.1:${server.port}/file'),
+      File('${directory.path}/file.txt'),
+    );
+
+    expect(accept, '*/*');
+    expect(cookie, '');
+  });
+
   test('adds configured domain cookies to requests', () async {
     SharedPreferences.setMockInitialValues({
       'download.retries': 1,
