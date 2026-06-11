@@ -48,6 +48,30 @@ void main() {
     expect(attempts, 2);
   });
 
+  test('sends the exact Java AbstractRipper user agent', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 1,
+      'page.timeout': 1000,
+    });
+    await Utils.init();
+
+    String? userAgent;
+    final server = await _server((request) async {
+      userAgent = request.headers.value('user-agent');
+      request.response.write('<html></html>');
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    await Http.get(Uri.parse('http://127.0.0.1:${server.port}/page'));
+
+    const javaUserAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+        'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 '
+        'Safari/537.36';
+    expect(Http.userAgent, javaUserAgent);
+    expect(userAgent, javaUserAgent);
+  });
+
   test('enforces max download size', () async {
     SharedPreferences.setMockInitialValues({
       'download.max_size': 3,

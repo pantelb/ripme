@@ -774,7 +774,10 @@ Flutter targets:
 
 Parity checklist:
 
-- [ ] Verify user-agent parity.
+- [x] Verify user-agent parity.
+  - Verified: shared Flutter requests send the exact
+    `AbstractRipper.USER_AGENT` string from Java, with request-level regression
+    coverage.
 - [x] Verify retry count and retry sleep behavior.
   - Completed for shared page/download HTTP requests: the configured retry
     value is the total attempt count and, matching Java `Http.response()`,
@@ -804,6 +807,11 @@ Parity checklist:
 - [x] Verify Java retry attempt counts. `Http` now uses exactly the configured
       number of total attempts, including Java's zero-attempt edge case,
       instead of the former Flutter `attempt <= retries` behavior.
+  - CI artifacts:
+    [Android](https://github.com/pantelb/ripme/actions/runs/27360595539/artifacts/7570234747),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27360595539/artifacts/7570201084),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27360595539/artifacts/7570177253),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27360595539/artifacts/7570136070).
 - [ ] Verify rate-limit `Retry-After` handling.
 
 Required tests:
