@@ -51,6 +51,10 @@ class Utils {
         .toList(growable: false);
   }
 
+  static List<String> getConfigList(String key) {
+    return List<String>.of(_prefs?.getStringList(key) ?? const []);
+  }
+
   static int getConfigInteger(String key, int defaultValue) {
     return _prefs?.getInt(key) ?? ConfigDefaults.integers[key] ?? defaultValue;
   }
@@ -78,6 +82,10 @@ class Utils {
 
   static Future<void> setConfigBoolean(String key, bool value) async {
     await _prefs?.setBool(key, value);
+  }
+
+  static Future<void> setConfigList(String key, Iterable<String> value) async {
+    await _prefs?.setStringList(key, List<String>.of(value));
   }
 
   static Future<bool> ensureStorageAccess() async {

@@ -444,15 +444,25 @@ Parity checklist:
     are pending and appends `(n)` with no separator when pending items exist.
     The count follows the queue after enqueue, current-rip removal, manual
     removal, and clear operations.
-- [ ] Queue is saved to config after updates.
-- [ ] Queue is restored from config at startup.
+- [x] Queue is saved to config after updates.
+  - Completed: ordered pending entries are saved under Java's `queue` key
+    after additions, active-item removal, reordering, manual removal, and
+    ripper-emitted child additions.
+  - Java discrepancy: `MainWindow.updateQueue` only writes non-empty models.
+    Clearing or removing the last pending entry therefore leaves the previous
+    persisted value until `ripNextAlbum` runs with an empty queue. Flutter
+    preserves this behavior and covers it with a regression test.
+- [x] Queue is restored from config at startup.
+  - Completed: `RipManager.init` restores the ordered `queue` list without
+    starting a rip, matching Java loading entries before its list listener is
+    attached.
 - [ ] Queue clear/remove behavior matches Java context-menu actions.
 - [ ] Stop interrupts current rip and leaves remaining queue behavior documented.
 
 Required tests:
 
 - [x] Unit tests for queue duplicate/range parsing.
-- [ ] `RipManager` tests for queue persistence/restoration.
+- [x] `RipManager` tests for queue persistence/restoration.
 - [x] Widget tests for URL validation/status display.
 
 ### Workstream 3: History And Re-Rip

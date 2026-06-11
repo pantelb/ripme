@@ -256,6 +256,97 @@ void main() {
     expect(manager.logs, isEmpty);
   });
 
+  test('restores the persisted queue without starting it', () async {
+    SharedPreferences.setMockInitialValues({
+      'queue': <String>[
+        'https://example.com/one',
+        'https://example.com/two',
+      ],
+    });
+    await Utils.init();
+    var resolvedRippers = 0;
+    final manager = RipManager(
+      ripperResolver: (uri) {
+        resolvedRippers++;
+        return null;
+      },
+      completionSoundPlayer: () async {},
+    );
+
+    await manager.init();
+
+    expect(manager.queue, [
+      'https://example.com/one',
+      'https://example.com/two',
+    ]);
+    expect(manager.isRipping, isFalse);
+    expect(resolvedRippers, 0);
+  });
+
+  test('persists pending queue updates in order like Java', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_manager_persist_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final release = Completer<void>();
+    addTearDown(() {
+      if (!release.isCompleted) release.complete();
+    });
+    final manager = RipManager(
+      ripperResolver: (uri) => BlockingRipper(uri, directory, release.future),
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+
+    manager.addUrlToQueue('https://example.com/current');
+    manager.addUrlToQueue('https://example.com/two');
+    manager.addUrlToQueue('https://example.com/three');
+    await _waitFor(() => manager.queue.length == 2);
+    await _waitFor(
+      () => Utils.getConfigList('queue').length == 2,
+    );
+    expect(Utils.getConfigList('queue'), [
+      'https://example.com/two',
+      'https://example.com/three',
+    ]);
+
+    manager.moveQueueItem(1, 0);
+    await _waitFor(
+      () => Utils.getConfigList('queue').first ==
+          'https://example.com/three',
+    );
+    expect(Utils.getConfigList('queue'), [
+      'https://example.com/three',
+      'https://example.com/two',
+    ]);
+
+    manager.removeFromQueue(1);
+    await _waitFor(() => Utils.getConfigList('queue').length == 1);
+    expect(Utils.getConfigList('queue'), ['https://example.com/three']);
+  });
+
+  test('matches Java non-empty update behavior when clearing a queue',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'queue': <String>['https://example.com/persisted'],
+    });
+    await Utils.init();
+    final manager = RipManager(
+      ripperResolver: (uri) => null,
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+
+    manager.clearQueue();
+
+    expect(manager.queue, isEmpty);
+    expect(
+      Utils.getConfigList('queue'),
+      ['https://example.com/persisted'],
+    );
+  });
+
   test('rejects exact duplicate URLs already in the pending queue', () async {
     SharedPreferences.setMockInitialValues({});
     await Utils.init();

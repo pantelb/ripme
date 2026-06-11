@@ -68,6 +68,9 @@ class RipManager extends ChangeNotifier {
 
   Future<void> init() async {
     _history = await HistoryProvider.loadHistory();
+    _queue
+      ..clear()
+      ..addAll(Utils.getConfigList('queue'));
     notifyListeners();
   }
 
@@ -78,6 +81,7 @@ class RipManager extends ChangeNotifier {
     }
 
     _queue.add(url);
+    _saveNonEmptyQueue();
     notifyListeners();
     if (!_isRipping) {
       _ripNext();
@@ -198,6 +202,7 @@ class RipManager extends ChangeNotifier {
   void removeFromQueue(int index) {
     if (index >= 0 && index < _queue.length) {
       _queue.removeAt(index);
+      _saveNonEmptyQueue();
       notifyListeners();
     }
   }
@@ -207,11 +212,13 @@ class RipManager extends ChangeNotifier {
     if (toIndex < 0 || toIndex >= _queue.length) return;
     final item = _queue.removeAt(fromIndex);
     _queue.insert(toIndex, item);
+    _saveNonEmptyQueue();
     notifyListeners();
   }
 
   void clearQueue() {
     _queue.clear();
+    _saveNonEmptyQueue();
     notifyListeners();
   }
 
@@ -230,6 +237,7 @@ class RipManager extends ChangeNotifier {
   }
 
   Future<void> _ripNext() async {
+    unawaited(Utils.setConfigList('queue', _queue));
     if (_queue.isEmpty) {
       _isRipping = false;
       _currentRipTotal = 0;
@@ -243,6 +251,7 @@ class RipManager extends ChangeNotifier {
     _currentRipTotal = 0;
     _currentRipFinished = 0;
     String urlText = _queue.removeAt(0);
+    _saveNonEmptyQueue();
     notifyListeners();
 
     Uri? uri = Uri.tryParse(urlText);
@@ -266,6 +275,7 @@ class RipManager extends ChangeNotifier {
     _currentRipper!.statusStream.listen((event) {
       if (event.status == RipStatus.queueAdd) {
         _queue.add(event.object.toString());
+        _saveNonEmptyQueue();
       }
       _updateProgressFromEvent(event);
       _addLog(event);
@@ -289,6 +299,12 @@ class RipManager extends ChangeNotifier {
   void _addLog(RipStatusMessage msg) {
     _logs.add(msg);
     notifyListeners();
+  }
+
+  void _saveNonEmptyQueue() {
+    if (_queue.isNotEmpty) {
+      unawaited(Utils.setConfigList('queue', _queue));
+    }
   }
 
   void _updateProgressFromEvent(RipStatusMessage msg) {
