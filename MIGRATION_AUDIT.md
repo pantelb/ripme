@@ -241,8 +241,13 @@ Parity checklist:
   - Completed: both separated and `--url=<value>` forms validate the URL,
     resolve it through `RipperFactory`, and run `setup()` / `rip()` headlessly
     with guaranteed disposal. Invalid URLs use Java's expected-format message.
-- [ ] Support URL-file ripping through `-f` / `--urls-file`.
-- [ ] Skip URL-file lines beginning with `//` or `#`.
+- [x] Support URL-file ripping through `-f` / `--urls-file`.
+  - Completed: URL files are read line-by-line and valid entries are ripped
+    sequentially. Individual malformed URLs and rip failures are reported
+    without stopping later entries, matching Java `ripURL(...)` handling.
+- [x] Skip URL-file lines beginning with `//` or `#`.
+  - Completed: comment detection occurs before trimming, preserving Java's
+    distinction between `//comment` and whitespace-prefixed `  //comment`.
 - [ ] Apply `-t` / `--threads` to `threads.size`.
 - [ ] Apply `-w` / `--overwrite` to `file.overwrite`.
 - [ ] Apply `-d` / `--saveorder` to `download.save_order=true`.
@@ -272,7 +277,9 @@ Required tests:
     `test/cli_controller_test.dart`; option side effects remain open with their
     implementations.
 - [ ] Config side-effect tests for options that mutate settings.
-- [ ] URL-file parsing tests.
+- [x] URL-file parsing tests.
+  - Added exact comment, trimming, invalid-line, failure-continuation, and
+    sequential callback coverage in `test/cli_controller_test.dart`.
 - [x] Headless single-URL smoke test using a fake ripper resolver.
   - Completed: `test/cli_controller_test.dart` injects an offline URL rip
     callback and verifies both short and long option forms.

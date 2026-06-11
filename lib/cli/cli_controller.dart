@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import '../app_version.dart';
 import '../ripper/ripper_factory.dart';
 
 typedef CliUrlRipper = Future<void> Function(Uri url);
+typedef CliUrlFileReader = Future<List<String>> Function(String path);
 
 class CliResult {
   final int exitCode;
@@ -17,9 +20,13 @@ class CliResult {
 
 class CliController {
   final CliUrlRipper _ripUrl;
+  final CliUrlFileReader _readUrlFile;
 
-  CliController({CliUrlRipper? ripUrl})
-      : _ripUrl = ripUrl ?? _ripUrlWithFactory;
+  CliController({
+    CliUrlRipper? ripUrl,
+    CliUrlFileReader? readUrlFile,
+  })  : _ripUrl = ripUrl ?? _ripUrlWithFactory,
+        _readUrlFile = readUrlFile ?? _readLines;
 
   static const String helpText = '''
 usage: ripme [OPTIONS]
@@ -51,6 +58,11 @@ usage: ripme [OPTIONS]
     }
     if (_hasOption(args, '-v', '--version')) {
       return const CliResult(exitCode: 0, output: appVersion);
+    }
+
+    final urlFile = _optionValue(args, '-f', '--urls-file');
+    if (urlFile != null) {
+      return _ripUrlFile(urlFile);
     }
 
     final urlValue = _optionValue(args, '-u', '--url');
@@ -107,6 +119,57 @@ usage: ripme [OPTIONS]
       }
     }
     return null;
+  }
+
+  Future<CliResult> _ripUrlFile(String path) async {
+    List<String> lines;
+    try {
+      lines = await _readUrlFile(path);
+    } on FileSystemException {
+      return const CliResult(
+        exitCode: 0,
+        output: '[!] File containing list of URLs not found. Cannot continue.',
+        isError: true,
+      );
+    }
+
+    final errors = <String>[];
+    var ripped = 0;
+    for (final value in urlValuesFromLines(lines)) {
+      final url = Uri.tryParse(value);
+      if (url == null || !url.hasScheme || url.host.isEmpty) {
+        errors.add(
+          '[!] Given URL is not valid. '
+          'Expected URL format is http://domain.com/...',
+        );
+        continue;
+      }
+      try {
+        await _ripUrl(url);
+        ripped++;
+      } on Exception catch (error) {
+        errors.add('[!] Error while ripping URL $url: $error');
+      }
+    }
+
+    return CliResult(
+      exitCode: 0,
+      output: ['Ripped $ripped URL(s) from $path', ...errors].join('\n'),
+      isError: errors.isNotEmpty,
+    );
+  }
+
+  static Iterable<String> urlValuesFromLines(Iterable<String> lines) sync* {
+    for (final line in lines) {
+      if (line.startsWith('//') || line.startsWith('#')) {
+        continue;
+      }
+      yield line.trim();
+    }
+  }
+
+  static Future<List<String>> _readLines(String path) {
+    return File(path).readAsLines();
   }
 
   static Future<void> _ripUrlWithFactory(Uri url) async {
