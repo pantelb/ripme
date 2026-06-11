@@ -251,9 +251,7 @@ class _MainWindowState extends State<MainWindow>
   }
 
   void _enqueueUrl(RipManager ripManager, String url) {
-    final trimmed = url.trim();
-    if (trimmed.isEmpty) return;
-    ripManager.addUrlToQueue(trimmed);
+    ripManager.submitManualUrl(url);
   }
 
   Future<void> _checkClipboardAutorip() async {

@@ -285,6 +285,58 @@ void main() {
     );
   });
 
+  test('expands inclusive manual URL ranges before queueing', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_manager_range_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final release = Completer<void>();
+    addTearDown(() {
+      if (!release.isCompleted) release.complete();
+    });
+    final manager = RipManager(
+      ripperResolver: (uri) => BlockingRipper(uri, directory, release.future),
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+
+    final result = manager.submitManualUrl(
+      'https://example.com/album/{2-4}/page/{ignored}',
+    );
+    await _waitFor(() => manager.isRipping);
+
+    expect(result.accepted, 3);
+    expect(result.errors, isEmpty);
+    expect(manager.queue, [
+      'https://example.com/album/3/page/3',
+      'https://example.com/album/4/page/4',
+    ]);
+  });
+
+  test('invalid manual URL ranges report errors without queueing', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+    final manager = RipManager(
+      ripperResolver: (uri) => null,
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+
+    for (final url in const [
+      'https://example.com/{1-x}',
+      'https://example.com/{4-2}',
+      'https://example.com/{1-3',
+    ]) {
+      final result = manager.submitManualUrl(url);
+      expect(result.accepted, 0);
+      expect(result.errors.single, 'Invalid URL range: $url');
+    }
+
+    expect(manager.queue, isEmpty);
+  });
+
   test('adds child URLs emitted by queue-capable rippers', () async {
     SharedPreferences.setMockInitialValues({});
     await Utils.init();

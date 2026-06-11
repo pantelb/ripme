@@ -346,6 +346,12 @@ Recent CI evidence:
   [Windows](https://github.com/pantelb/ripme/actions/runs/27329758516/artifacts/7557106373),
   [macOS](https://github.com/pantelb/ripme/actions/runs/27329758516/artifacts/7557076825),
   [Linux](https://github.com/pantelb/ripme/actions/runs/27329758516/artifacts/7557073975).
+- CLI release check: commit `3adb2fed` passed
+  [run 27330134771](https://github.com/pantelb/ripme/actions/runs/27330134771):
+  [Android](https://github.com/pantelb/ripme/actions/runs/27330134771/artifacts/7557290787),
+  [Windows](https://github.com/pantelb/ripme/actions/runs/27330134771/artifacts/7557255728),
+  [macOS](https://github.com/pantelb/ripme/actions/runs/27330134771/artifacts/7557247426),
+  [Linux](https://github.com/pantelb/ripme/actions/runs/27330134771/artifacts/7557219103).
 - CLI configuration options: commit `ec5f63f5` passed
   [run 27326985119](https://github.com/pantelb/ripme/actions/runs/27326985119):
   [Android](https://github.com/pantelb/ripme/actions/runs/27326985119/artifacts/7556054692),
@@ -408,8 +414,19 @@ Parity checklist:
     is already present in the pending queue and reports Java's duplicate URL
     status. Current/history URLs and ripper-emitted child URLs remain outside
     this manual pending-queue check.
-- [ ] Manual URL submission expands `{start-end}` numeric ranges like Java.
-- [ ] Invalid range syntax reports an error without queueing garbage.
+  - CI: commit `df040d0b` passed
+    [run 27330528640](https://github.com/pantelb/ripme/actions/runs/27330528640):
+    [Android](https://github.com/pantelb/ripme/actions/runs/27330528640/artifacts/7557427635),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27330528640/artifacts/7557408578),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27330528640/artifacts/7557392341),
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27330528640/artifacts/7557380394).
+- [x] Manual URL submission expands `{start-end}` numeric ranges like Java.
+  - Completed: the first numeric range defines an inclusive loop and every
+    brace group is replaced with the current number, preserving Java's unusual
+    same-value substitution when a URL contains multiple brace groups.
+- [x] Invalid range syntax reports an error without queueing garbage.
+  - Completed: missing/unbalanced braces, non-numeric bounds, and descending
+    ranges produce an `Invalid URL range` status before any URL is queued.
 - [ ] URL text-field validation detects ripper host and unrippable URLs.
 - [ ] Queue count is visible and updates like Java's `queue(n)` label.
 - [ ] Queue is saved to config after updates.

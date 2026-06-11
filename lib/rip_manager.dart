@@ -10,6 +10,16 @@ import 'utils/utils.dart';
 typedef RipperResolver = AbstractRipper? Function(Uri uri);
 typedef CompletionSoundPlayer = Future<void> Function();
 
+class QueueSubmissionResult {
+  const QueueSubmissionResult({
+    required this.accepted,
+    this.errors = const [],
+  });
+
+  final int accepted;
+  final List<String> errors;
+}
+
 class RipManager extends ChangeNotifier {
   RipManager({
     RipperResolver? ripperResolver,
@@ -63,11 +73,7 @@ class RipManager extends ChangeNotifier {
 
   bool addUrlToQueue(String url) {
     if (_queue.contains(url)) {
-      _statusText = 'This URL is already in queue: $url';
-      _addLog(RipStatusMessage(
-        RipStatus.ripErrored,
-        'This URL is already in queue: $url',
-      ));
+      _reportQueueError('This URL is already in queue: $url');
       return false;
     }
 
@@ -77,6 +83,80 @@ class RipManager extends ChangeNotifier {
       _ripNext();
     }
     return true;
+  }
+
+  QueueSubmissionResult submitManualUrl(String input) {
+    final url = input.trim();
+    if (url.isEmpty) {
+      return const QueueSubmissionResult(accepted: 0);
+    }
+    if (!url.contains('{')) {
+      final accepted = addUrlToQueue(url);
+      return QueueSubmissionResult(
+        accepted: accepted ? 1 : 0,
+        errors: accepted ? const [] : [_statusText],
+      );
+    }
+
+    final bracePattern = RegExp(r'\{[^{}]*\}');
+    final braceMatches = bracePattern.allMatches(url).toList();
+    final withoutGroups = url.replaceAll(bracePattern, '');
+    if (braceMatches.isEmpty ||
+        withoutGroups.contains('{') ||
+        withoutGroups.contains('}')) {
+      return _invalidRange(url);
+    }
+
+    final rangeParts = braceMatches.first
+        .group(0)!
+        .substring(1, braceMatches.first.group(0)!.length - 1)
+        .split('-');
+    if (rangeParts.length != 2) {
+      return _invalidRange(url);
+    }
+    final rangeStart = int.tryParse(rangeParts[0]);
+    final rangeEnd = int.tryParse(rangeParts[1]);
+    if (rangeStart == null || rangeEnd == null || rangeStart > rangeEnd) {
+      return _invalidRange(url);
+    }
+
+    var accepted = 0;
+    final errors = <String>[];
+    for (var value = rangeStart; value <= rangeEnd; value++) {
+      final expanded = url.replaceAll(bracePattern, value.toString());
+      if (!_canRip(expanded)) {
+        final error = "Can't find ripper for $expanded";
+        _reportQueueError(error);
+        errors.add(error);
+        continue;
+      }
+      if (addUrlToQueue(expanded)) {
+        accepted++;
+      } else {
+        errors.add(_statusText);
+      }
+    }
+    return QueueSubmissionResult(accepted: accepted, errors: errors);
+  }
+
+  QueueSubmissionResult _invalidRange(String url) {
+    final error = 'Invalid URL range: $url';
+    _reportQueueError(error);
+    return QueueSubmissionResult(accepted: 0, errors: [error]);
+  }
+
+  bool _canRip(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null || !uri.hasScheme || uri.host.isEmpty) return false;
+    final ripper = _ripperResolver(uri);
+    if (ripper == null) return false;
+    ripper.dispose();
+    return true;
+  }
+
+  void _reportQueueError(String error) {
+    _statusText = error;
+    _addLog(RipStatusMessage(RipStatus.ripErrored, error));
   }
 
   void removeFromQueue(int index) {
