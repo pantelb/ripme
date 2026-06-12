@@ -76,26 +76,87 @@ class Http {
     );
   }
 
-  static Future<void> downloadFile(Uri url, File saveAs,
-      {Map<String, String>? headers, Map<String, String>? cookies}) async {
-    final response = await _getResponse(
-      url,
-      headers: headers,
-      cookies: cookies,
-      timeoutKey: 'download.timeout',
-      defaultTimeoutMs: 60000,
-      isDownload: true,
+  static Future<void> downloadFile(
+    Uri url,
+    File saveAs, {
+    Map<String, String>? headers,
+    Map<String, String>? cookies,
+    bool Function()? shouldStop,
+  }) async {
+    final combinedHeaders =
+        _buildHeaders(url, headers, cookies, isDownload: true);
+    final attempts = Utils.getConfigInteger('download.retries', 3) + 1;
+    final timeout = Duration(
+      milliseconds: Utils.getConfigInteger('download.timeout', 60000),
     );
+    final retrySleep = Duration(
+      milliseconds: Utils.getConfigInteger('download.retry.sleep', 0),
+    );
+    Object? lastError;
 
-    if (response.statusCode == 200) {
-      if (!await saveAs.parent.exists()) {
-        await saveAs.parent.create(recursive: true);
+    for (var attempt = 0; attempt < attempts; attempt++) {
+      http.Client? client;
+      IOSink? sink;
+      try {
+        if (shouldStop?.call() ?? false) {
+          throw const DownloadInterruptedException();
+        }
+        client = _createClient();
+        final request = http.Request('GET', url)
+          ..headers.addAll(combinedHeaders);
+        final response = await client.send(request).timeout(timeout);
+
+        if (response.statusCode ~/ 100 == 4) {
+          throw _NonRetriableHttpException(
+            'Non-retriable status code ${response.statusCode} '
+            'while downloading $url',
+          );
+        }
+        if (response.statusCode ~/ 100 == 5) {
+          lastError = HttpException(
+            'Retriable status code ${response.statusCode} '
+            'while downloading $url',
+          );
+        } else if (response.statusCode != 200) {
+          lastError = HttpException(
+              'Failed to load $url: Status ${response.statusCode}');
+        } else {
+          if (!await saveAs.parent.exists()) {
+            await saveAs.parent.create(recursive: true);
+          }
+          sink = saveAs.openWrite();
+          await for (final chunk in response.stream.timeout(timeout)) {
+            if (shouldStop?.call() ?? false) {
+              throw const DownloadInterruptedException();
+            }
+            sink.add(chunk);
+          }
+          await sink.close();
+          sink = null;
+          return;
+        }
+      } on DownloadInterruptedException {
+        rethrow;
+      } on _NonRetriableHttpException {
+        rethrow;
+      } on TimeoutException {
+        rethrow;
+      } on IOException catch (e) {
+        lastError = e;
+      } finally {
+        await sink?.close();
+        client?.close();
       }
-      await saveAs.writeAsBytes(response.bodyBytes);
-    } else {
-      throw HttpException(
-          'Failed to download $url: Status ${response.statusCode}');
+
+      if (retrySleep.inMilliseconds > 0) {
+        await delay(retrySleep);
+      }
     }
+
+    if (lastError is Exception) {
+      throw lastError;
+    }
+    throw HttpException('Failed to download $url');
   }
 
   static Map<String, String> _buildHeaders(
@@ -195,8 +256,8 @@ class Http {
             'while downloading $url',
           );
         } else {
-          lastError =
-              HttpException('Failed to load $url: Status ${response.statusCode}');
+          lastError = HttpException(
+              'Failed to load $url: Status ${response.statusCode}');
         }
       } on _NonRetriableHttpException {
         rethrow;
@@ -334,11 +395,17 @@ class Http {
     }
     return cookies;
   }
-
 }
 
 class _NonRetriableHttpException extends HttpException {
   _NonRetriableHttpException(super.message);
+}
+
+class DownloadInterruptedException implements IOException {
+  const DownloadInterruptedException();
+
+  @override
+  String toString() => 'Download interrupted';
 }
 
 class JavaHttpRequest {

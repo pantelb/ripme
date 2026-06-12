@@ -199,8 +199,16 @@ abstract class AbstractRipper {
       }
 
       sendUpdate(RipStatus.downloadStarted, url.toString());
-      await Http.downloadFile(url, saveAs, headers: headers, cookies: cookies);
+      await Http.downloadFile(
+        url,
+        saveAs,
+        headers: headers,
+        cookies: cookies,
+        shouldStop: () => isStopped,
+      );
       sendUpdate(RipStatus.downloadComplete, saveAs.path);
+    } on DownloadInterruptedException {
+      sendUpdate(RipStatus.downloadErrored, 'Download interrupted');
     } catch (e) {
       sendUpdate(RipStatus.downloadErrored, "$url : ${e.toString()}");
     }

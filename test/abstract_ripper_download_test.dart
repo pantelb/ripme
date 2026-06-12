@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -537,6 +538,53 @@ void main() {
     ]);
 
     expect(ripper.startedUrls, [Uri.parse('https://example.com/one.jpg')]);
+  });
+
+  test('interrupts an active download and reports Java status text', () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': false,
+      'download.timeout': 1000,
+      'download.retries': 0,
+      'download.retry.sleep': 0,
+    });
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_active_stop_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+    final statuses = <RipStatusMessage>[];
+    final sub = ripper.statusStream.listen(statuses.add);
+    addTearDown(sub.cancel);
+
+    final firstChunkSent = Completer<void>();
+    final releaseSecondChunk = Completer<void>();
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen((request) async {
+      request.response.bufferOutput = false;
+      request.response.add([1, 2, 3]);
+      await request.response.flush();
+      firstChunkSent.complete();
+      await releaseSecondChunk.future;
+      request.response.add([4, 5, 6]);
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final download = ripper.downloadFile(
+      Uri.parse('http://127.0.0.1:${server.port}/image.jpg'),
+      File('${directory.path}/image.jpg'),
+    );
+    await firstChunkSent.future;
+    ripper.stop();
+    releaseSecondChunk.complete();
+    await download;
+    await Future<void>.delayed(Duration.zero);
+
+    expect(statuses.last.status, RipStatus.downloadErrored);
+    expect(statuses.last.object, 'Download interrupted');
   });
 
   test('does not start downloads when already stopped', () async {

@@ -126,6 +126,50 @@ void main() {
     expect(await saveAs.readAsString(), 'ok');
   });
 
+  test('interrupts a streamed file download between chunks', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.timeout': 1000,
+      'download.retries': 0,
+      'download.retry.sleep': 0,
+    });
+    await Utils.init();
+
+    final firstChunkSent = Completer<void>();
+    final releaseSecondChunk = Completer<void>();
+    final server = await _server((request) async {
+      request.response.bufferOutput = false;
+      request.response.add([1, 2, 3]);
+      await request.response.flush();
+      firstChunkSent.complete();
+      await releaseSecondChunk.future;
+      request.response.add([4, 5, 6]);
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final directory = await Directory.systemTemp.createTemp('ripme_http_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final saveAs = File('${directory.path}/file.bin');
+    var stopChecks = 0;
+
+    final download = Http.downloadFile(
+      Uri.parse('http://127.0.0.1:${server.port}/file'),
+      saveAs,
+      shouldStop: () {
+        stopChecks++;
+        return stopChecks >= 3;
+      },
+    );
+    await firstChunkSent.future;
+    releaseSecondChunk.complete();
+
+    await expectLater(
+      download,
+      throwsA(isA<DownloadInterruptedException>()),
+    );
+    expect(await saveAs.readAsBytes(), [1, 2, 3]);
+  });
+
   test('page requests enforce the configured page timeout', () async {
     SharedPreferences.setMockInitialValues({
       'page.timeout': 20,
@@ -389,8 +433,7 @@ void main() {
     expect(unverifiedClient.recordedBadCertificateCallback, isNotNull);
   });
 
-  test('ignores retry-after and uses Java configured retry sleep',
-      () async {
+  test('ignores retry-after and uses Java configured retry sleep', () async {
     SharedPreferences.setMockInitialValues({
       'download.retries': 2,
       'download.retry.sleep': 25,

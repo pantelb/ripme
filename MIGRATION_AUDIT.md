@@ -1037,12 +1037,21 @@ Parity checklist:
     increment it. Flutter finishes the current scheduled page batch, then stops
     future work with `downloadCompleteHistory` for HTML rippers and
     `downloadComplete` for JSON/other rippers using Java's message text.
+  - CI: workflow `27386357944` succeeded. Artifacts: Android `7580304774`,
+    Windows `7580272544`, macOS `7580269885`, Linux `7580242670`.
 - [x] Verify Java writes downloaded URL history before queueing a download and
       skips URL-history writes while `urls_only.save=true`.
   - Completed: Flutter serializes per-ripper history writes before existing-file
     checks and HTTP transfer, so failed and skipped downloads remain remembered
     like Java. URL-only mode still exits before the history write.
-- [ ] Verify stop/interruption semantics.
+  - CI: workflow `27386074664` succeeded. Artifacts: Android `7580190715`,
+    Windows `7580165001`, macOS `7580156080`, Linux `7580142423`.
+- [x] Verify stop/interruption semantics.
+  - Completed: Flutter prevents queued downloads from starting after stop and
+    checks the ripper stop flag between streamed response chunks, matching
+    Java's `DownloadFileThread` and `DownloadVideoThread` byte-loop checks.
+    Interrupted active transfers emit `DOWNLOAD_ERRORED` with exact text
+    `Download interrupted`.
 - [ ] Verify progress percentage semantics.
 - [ ] Verify Java byte-progress semantics for `AbstractSingleFileRipper` and
       `VideoRipper`, including human-readable text.
@@ -2087,9 +2096,13 @@ Findings:
       and collapse the lower panel when hidden. Flutter tab/navigation behavior
       should be verified against this workflow or documented as a native
       replacement.
-- [ ] Java stop action calls `ripper.stop()`, clears progress, disables stop,
+- [x] Java stop action calls `ripper.stop()`, clears progress, disables stop,
       sets localized interrupted status, and appends `Download interrupted` to
-      the log. Flutter stop semantics need this full UI/status comparison.
+      the log.
+  - Completed: `RipManager.stop()` stops the active ripper, marks ripping false
+    (disabling the bound stop control), clears progress counters, sets
+    `Download interrupted`, and appends the same text to the log. Active
+    streamed transfers also terminate between chunks with that error text.
 - [ ] Java completion can run a user finish command when
       `enable.finish.command=true`, substituting `%url%` and `%path%`. Flutter
       has no verified equivalent.
