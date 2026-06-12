@@ -216,6 +216,7 @@ class _DownloadRecordingMangadexRipper extends MangadexRipper {
     Map<String, String>? headers,
     Map<String, String>? cookies,
     bool allowDuplicate = false,
+    bool getFileExtFromMIME = false,
   }) async {
     downloaded.add(saveAs);
   }

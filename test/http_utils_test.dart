@@ -19,6 +19,31 @@ void main() {
     Http.delay = Future.delayed;
   });
 
+  test('detects Java image extensions from stream signatures', () {
+    expect(Http.fileExtensionFromBytes([0xff, 0xd8, 0xff, 0xe0]), 'jpeg');
+    expect(
+      Http.fileExtensionFromBytes([0xff, 0xd8, 0xff, 0xdb, 0]),
+      'jpeg',
+    );
+    expect(
+      Http.fileExtensionFromBytes(
+        [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
+      ),
+      'png',
+    );
+    expect(
+      Http.fileExtensionFromBytes([0x47, 0x49, 0x46, 0x38, 0x39, 0x61]),
+      'gif',
+    );
+    expect(
+      Http.fileExtensionFromBytes([0x89, 0x50, 0x4e, 0x47, 0x0d]),
+      'png',
+    );
+    expect(Http.fileExtensionFromBytes([0x49, 0x49, 0x2a, 0]), 'tiff');
+    expect(Http.fileExtensionFromBytes([0xff, 0xd8, 0xff, 0xd9]), isNull);
+    expect(Http.fileExtensionFromBytes([1, 2, 3, 4, 5]), isNull);
+  });
+
   test('uses Java configured value as the total request attempt count',
       () async {
     SharedPreferences.setMockInitialValues({

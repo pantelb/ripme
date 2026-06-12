@@ -15,6 +15,7 @@ class RipperDownload {
   final Map<String, String>? headers;
   final Map<String, String>? cookies;
   final bool allowDuplicate;
+  final bool getFileExtFromMIME;
 
   const RipperDownload({
     required this.url,
@@ -22,6 +23,7 @@ class RipperDownload {
     this.headers,
     this.cookies,
     this.allowDuplicate = false,
+    this.getFileExtFromMIME = false,
   });
 }
 
@@ -223,6 +225,7 @@ abstract class AbstractRipper {
           headers: item.headers,
           cookies: item.cookies,
           allowDuplicate: item.allowDuplicate,
+          getFileExtFromMIME: item.getFileExtFromMIME,
         );
       }
     }
@@ -234,7 +237,8 @@ abstract class AbstractRipper {
   Future<void> downloadFile(Uri url, File saveAs,
       {Map<String, String>? headers,
       Map<String, String>? cookies,
-      bool allowDuplicate = false}) async {
+      bool allowDuplicate = false,
+      bool getFileExtFromMIME = false}) async {
     if (isStopped) return;
     try {
       if (_shouldIgnoreUrl(url)) {
@@ -315,7 +319,7 @@ abstract class AbstractRipper {
         updateTotalBytes(totalBytes);
       }
       sendUpdate(RipStatus.downloadStarted, url.toString());
-      await Http.downloadFile(
+      saveAs = await Http.downloadFile(
         url,
         saveAs,
         headers: effectiveHeaders,
@@ -326,6 +330,7 @@ abstract class AbstractRipper {
             : null,
         onBytesCompleted: usesByteProgress ? updateCompletedBytes : null,
         includeCookieHeader: includesDownloadCookieHeader,
+        getFileExtFromMIME: getFileExtFromMIME,
       );
       _completeDownload(url);
       sendUpdate(RipStatus.downloadComplete, saveAs.path);

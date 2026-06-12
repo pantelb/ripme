@@ -76,7 +76,7 @@ class Http {
     );
   }
 
-  static Future<void> downloadFile(
+  static Future<File> downloadFile(
     Uri url,
     File saveAs, {
     Map<String, String>? headers,
@@ -85,6 +85,7 @@ class Http {
     void Function(int totalBytes)? onTotalBytes,
     void Function(int completedBytes)? onBytesCompleted,
     bool includeCookieHeader = true,
+    bool getFileExtFromMIME = false,
   }) async {
     final combinedHeaders = _buildHeaders(
       url,
@@ -131,21 +132,59 @@ class Http {
               'Failed to load $url: Status ${response.statusCode}');
         } else {
           onTotalBytes?.call(_javaInt32(response.contentLength ?? -1));
-          if (!await saveAs.parent.exists()) {
-            await saveAs.parent.create(recursive: true);
-          }
-          sink = saveAs.openWrite();
-          await for (final chunk in response.stream.timeout(timeout)) {
-            if (shouldStop?.call() ?? false) {
-              throw const DownloadInterruptedException();
+          if (getFileExtFromMIME) {
+            final iterator = StreamIterator<List<int>>(
+              response.stream.timeout(timeout),
+            );
+            final bufferedChunks = <List<int>>[];
+            final probe = <int>[];
+            while (probe.length < 16 && await iterator.moveNext()) {
+              final chunk = iterator.current;
+              bufferedChunks.add(chunk);
+              probe.addAll(chunk.take(16 - probe.length));
             }
-            sink.add(chunk);
-            completedBytes = _javaInt32(completedBytes + chunk.length);
-            onBytesCompleted?.call(completedBytes);
+            final extension = fileExtensionFromBytes(probe);
+            if (extension != null) {
+              saveAs = File('${saveAs.path}.$extension');
+            }
+            if (!await saveAs.parent.exists()) {
+              await saveAs.parent.create(recursive: true);
+            }
+            sink = saveAs.openWrite();
+            for (final chunk in bufferedChunks) {
+              if (shouldStop?.call() ?? false) {
+                throw const DownloadInterruptedException();
+              }
+              sink.add(chunk);
+              completedBytes = _javaInt32(completedBytes + chunk.length);
+              onBytesCompleted?.call(completedBytes);
+            }
+            while (await iterator.moveNext()) {
+              if (shouldStop?.call() ?? false) {
+                throw const DownloadInterruptedException();
+              }
+              final chunk = iterator.current;
+              sink.add(chunk);
+              completedBytes = _javaInt32(completedBytes + chunk.length);
+              onBytesCompleted?.call(completedBytes);
+            }
+          } else {
+            if (!await saveAs.parent.exists()) {
+              await saveAs.parent.create(recursive: true);
+            }
+            sink = saveAs.openWrite();
+            await for (final chunk in response.stream.timeout(timeout)) {
+              if (shouldStop?.call() ?? false) {
+                throw const DownloadInterruptedException();
+              }
+              sink.add(chunk);
+              completedBytes = _javaInt32(completedBytes + chunk.length);
+              onBytesCompleted?.call(completedBytes);
+            }
           }
           await sink.close();
           sink = null;
-          return;
+          return saveAs;
         }
       } on DownloadInterruptedException {
         rethrow;
@@ -169,6 +208,90 @@ class Http {
       throw lastError;
     }
     throw HttpException('Failed to download $url');
+  }
+
+  static String? fileExtensionFromBytes(List<int> bytes) {
+    if (bytes.length >= 4 &&
+        bytes[0] == 0xff &&
+        bytes[1] == 0xd8 &&
+        bytes[2] == 0xff &&
+        (bytes[3] == 0xe0 || bytes[3] == 0xee)) {
+      return 'jpeg';
+    }
+    if (bytes.length >= 11 &&
+        bytes[0] == 0xff &&
+        bytes[1] == 0xd8 &&
+        bytes[2] == 0xff &&
+        bytes[3] == 0xe1 &&
+        bytes[6] == 0x45 &&
+        bytes[7] == 0x78 &&
+        bytes[8] == 0x69 &&
+        bytes[9] == 0x66 &&
+        bytes[10] == 0) {
+      return 'jpeg';
+    }
+    if (bytes.length >= 8 &&
+        bytes[0] == 0x89 &&
+        bytes[1] == 0x50 &&
+        bytes[2] == 0x4e &&
+        bytes[3] == 0x47 &&
+        bytes[4] == 0x0d &&
+        bytes[5] == 0x0a &&
+        bytes[6] == 0x1a &&
+        bytes[7] == 0x0a) {
+      return 'png';
+    }
+    if (bytes.length >= 4 &&
+        bytes[0] == 0x47 &&
+        bytes[1] == 0x49 &&
+        bytes[2] == 0x46 &&
+        bytes[3] == 0x38) {
+      return 'gif';
+    }
+    if (bytes.length >= 4 &&
+        bytes[0] == 0x23 &&
+        bytes[1] == 0x64 &&
+        bytes[2] == 0x65 &&
+        bytes[3] == 0x66) {
+      return 'x-bitmap';
+    }
+    if (bytes.length >= 6 &&
+        bytes[0] == 0x21 &&
+        bytes[1] == 0x20 &&
+        bytes[2] == 0x58 &&
+        bytes[3] == 0x50 &&
+        bytes[4] == 0x4d &&
+        bytes[5] == 0x32) {
+      return 'x-pixmap';
+    }
+    if (bytes.length >= 4 &&
+        ((bytes[0] == 0x49 &&
+                bytes[1] == 0x49 &&
+                bytes[2] == 0x2a &&
+                bytes[3] == 0) ||
+            (bytes[0] == 0x4d &&
+                bytes[1] == 0x4d &&
+                bytes[2] == 0 &&
+                bytes[3] == 0x2a))) {
+      return 'tiff';
+    }
+    if (bytes.length >= 5 &&
+        bytes[0] == 0xff &&
+        bytes[1] == 0xd8 &&
+        bytes[2] == 0xff &&
+        bytes[3] == 0xdb &&
+        bytes[4] == 0) {
+      return 'jpeg';
+    }
+    if (bytes.length >= 5 &&
+        bytes[0] == 0x89 &&
+        bytes[1] == 0x50 &&
+        bytes[2] == 0x4e &&
+        bytes[3] == 0x47 &&
+        bytes[4] == 0x0d) {
+      return 'png';
+    }
+    return null;
   }
 
   static Future<int> getDownloadContentLength(

@@ -160,6 +160,7 @@ class EightmusesRipper extends AbstractHTMLRipper {
       saveAs: saveAs,
       headers: {'Referer': url.toString()},
       cookies: _cookies,
+      getFileExtFromMIME: true,
     );
   }
 

@@ -47,7 +47,8 @@ class TestVideoRipper extends AbstractVideoRipper {
   Future<void> downloadFile(Uri url, File saveAs,
       {Map<String, String>? headers,
       Map<String, String>? cookies,
-      bool allowDuplicate = false}) async {
+      bool allowDuplicate = false,
+      bool getFileExtFromMIME = false}) async {
     if (!captureDownload) {
       return super.downloadFile(
         url,

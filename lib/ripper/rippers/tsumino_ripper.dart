@@ -72,6 +72,7 @@ class TsuminoRipper extends AbstractHTMLRipper {
     for (final imageUrl in await getURLsFromPage(page)) {
       if (isStopped) break;
       index++;
+      await sleepWithGaussianJitter(1000);
       final imageUri = Uri.parse(imageUrl);
       downloads.add(downloadForUrl(imageUri, index));
     }
@@ -84,6 +85,9 @@ class TsuminoRipper extends AbstractHTMLRipper {
     return RipperDownload(
       url: imageUri,
       saveAs: File(p.join(workingDir.path, fileNameForUrl(imageUri, index))),
+      headers: {'Referer': url.toString()},
+      cookies: _cookies,
+      getFileExtFromMIME: true,
     );
   }
 

@@ -87,6 +87,7 @@ void main() {
     expect(downloads.single.headers,
         {'Referer': 'https://www.8muses.com/comics/album/example'});
     expect(downloads.single.allowDuplicate, isFalse);
+    expect(downloads.single.getFileExtFromMIME, isTrue);
   });
 
   test('EightmusesRipper parses response cookies for follow-up downloads', () {

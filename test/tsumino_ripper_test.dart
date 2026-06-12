@@ -130,5 +130,10 @@ void main() {
     );
 
     expect(download.allowDuplicate, isFalse);
+    expect(download.getFileExtFromMIME, isTrue);
+    expect(
+      download.headers,
+      {'Referer': 'https://www.tsumino.com/Book/Info/123'},
+    );
   });
 }

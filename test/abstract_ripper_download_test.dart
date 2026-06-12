@@ -101,7 +101,8 @@ class ParallelTestRipper extends TestRipper {
   Future<void> downloadFile(Uri url, File saveAs,
       {Map<String, String>? headers,
       Map<String, String>? cookies,
-      bool allowDuplicate = false}) async {
+      bool allowDuplicate = false,
+      bool getFileExtFromMIME = false}) async {
     startedUrls.add(url);
     activeDownloads++;
     if (activeDownloads > maxActiveDownloads) {
@@ -122,7 +123,8 @@ class HeaderCookieTestRipper extends TestRipper {
   Future<void> downloadFile(Uri url, File saveAs,
       {Map<String, String>? headers,
       Map<String, String>? cookies,
-      bool allowDuplicate = false}) async {
+      bool allowDuplicate = false,
+      bool getFileExtFromMIME = false}) async {
     receivedHeaders = headers;
     receivedCookies = cookies;
   }
@@ -137,7 +139,8 @@ class StopAfterFirstDownloadRipper extends TestRipper {
   Future<void> downloadFile(Uri url, File saveAs,
       {Map<String, String>? headers,
       Map<String, String>? cookies,
-      bool allowDuplicate = false}) async {
+      bool allowDuplicate = false,
+      bool getFileExtFromMIME = false}) async {
     startedUrls.add(url);
     stop();
   }
@@ -1202,5 +1205,47 @@ void main() {
     expect(await savedFile.readAsString(), 'ok');
     expect(statuses.last.status, RipStatus.downloadComplete);
     expect(statuses.last.object, savedFile.path);
+  });
+
+  test('MIME extension detection appends the resolved Java image extension',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': false,
+    });
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_mime_extension_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen((request) async {
+      request.response.add(
+        [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3],
+      );
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final statuses = <RipStatusMessage>[];
+    final sub = ripper.statusStream.listen(statuses.add);
+    addTearDown(sub.cancel);
+
+    final saveAs = File(p.join(directory.path, 'image'));
+    await ripper.downloadFile(
+      Uri.parse('http://127.0.0.1:${server.port}/object'),
+      saveAs,
+      getFileExtFromMIME: true,
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    final resolved = File('${saveAs.path}.png');
+    expect(await saveAs.exists(), isFalse);
+    expect(await resolved.readAsBytes(), hasLength(11));
+    expect(statuses.last.status, RipStatus.downloadComplete);
+    expect(statuses.last.object, resolved.path);
   });
 }

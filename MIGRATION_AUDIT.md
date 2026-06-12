@@ -1113,8 +1113,14 @@ Parity checklist:
     direct Java `Thread.sleep(...)` counterparts remain unjittered. Tsumino's
     absent download sleep remains part of its separately documented missing
     object-file/download behavior.
-- [ ] Verify Java MIME/magic-number extension detection for
+- [x] Verify Java MIME/magic-number extension detection for
       `getFileExtFromMIME`.
+  - Completed: opt-in downloads inspect the response stream before opening the
+    output file, apply the JDK image signatures used by
+    `URLConnection.guessContentTypeFromStream`, and fall back to RipMe's exact
+    five-byte JPEG/PNG magic table. The detected extension is appended to the
+    requested path and the resolved path is emitted on completion. Eightmuses
+    and Tsumino now set the flag at the same call sites as Java.
 
 Required tests:
 
@@ -1622,7 +1628,8 @@ Findings:
       opts in, MIME/magic extension detection when requested, explicit
       non-retriable 4xx handling, retriable 5xx handling, and an Imgur
       503-byte-as-404 special case. The 4xx/5xx status handling is now matched;
-      resume, extension detection, and the Imgur special case remain.
+      MIME/magic extension detection is also matched. Resume and the Imgur
+      special case remain.
 - [x] Java file downloads always set request properties `accept: */*`,
       `User-agent: <AbstractRipper.USER_AGENT>`, and `Cookie: <serialized map>`,
       with `Cookie` present even when the per-download cookie map is empty.
@@ -3852,13 +3859,13 @@ Findings:
       and `getURLsFromPage(...)` converts that into an empty list. That changes
       both Java's malformed JSON failure and Java's post-warning null
       dereference into clean completion.
-- [ ] Java `TsuminoRipper.downloadURL(...)` sleeps, then schedules each
+- [x] Java `TsuminoRipper.downloadURL(...)` sleeps, then schedules each
       `Image/Object?name=...` URL with `getPrefix(index)` and
       `getFileExtFromMIME=true`, explicitly relying on the downloader to choose
       the saved extension because Tsumino object URLs do not contain one.
-      Flutter `TsuminoRipper.fileNameForUrl(...)` names the same URL
-      `NNN_Object` / `Object` from the path segment and has no MIME-derived
-      extension path, so the saved filename contract is not Java-compatible.
+  - Reconciled: Flutter applies the Java gaussian one-second sleep, keeps the
+    `NNN_Object` / `Object` base name, passes the page referrer and cookies, and
+    opts into shared stream-signature extension detection.
 - [ ] Java `TsuminoRipper.getFirstPage(...)` stores jsoup
       `Connection.Response.cookies()` from the album page before loading reader
       URLs. Flutter reconstructs cookies by splitting the raw `set-cookie`
@@ -3927,14 +3934,13 @@ Findings:
       after the prior `LOADING_RESOURCE` update. Flutter `_downloadsFromPage(...)`
       converts those failures into `RipStatus.downloadWarn`, changing the
       visible status feed and warning counters for broken 8muses subalbums.
-- [ ] Java `EightmusesRipper.getURLsFromPage(...)` schedules discovered picture
+- [x] Java `EightmusesRipper.getURLsFromPage(...)` schedules discovered picture
       tiles immediately through `addURLToDownload(..., getPrefixShort(i), "",
       null, true)`, so the downloader uses `getFileExtFromMIME=true` and can
       replace the saved extension from response content/magic-number detection.
-      Flutter `_downloadForImage(...)` derives the saved name from the URL path
-      with `fileNameForUrl(...)`, so 8muses full-image URLs whose path lacks or
-      misstates the extension do not follow Java's MIME-derived filename
-      behavior.
+  - Reconciled: Eightmuses download metadata now opts into the shared
+    stream-signature detector while preserving its Java referrer, cookies,
+    subdirectory, and short prefix.
 - [ ] Java `EightmusesRipper` inherits `AbstractHTMLRipper.canRip(...)`, so any
       host ending in `8muses.com` is accepted before `getGID(...)` validates the
       `/comix|comics/album/...` path. Flutter `EightmusesRipper.canRip(...)`
