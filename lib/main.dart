@@ -771,7 +771,11 @@ class TabControllerWidget extends StatelessWidget
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       tabs: [
         Tab(text: strings.log, icon: const Icon(Icons.receipt_long_outlined)),
-        Tab(text: strings.history, icon: const Icon(Icons.history_outlined)),
+        Tab(
+          key: const Key('history_tab'),
+          text: strings.history,
+          icon: const Icon(Icons.history_outlined),
+        ),
         Tab(
             text: queueCount == 0
                 ? strings.queue

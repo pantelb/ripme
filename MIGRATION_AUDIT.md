@@ -855,8 +855,13 @@ Parity checklist:
     disabled by default and defaults to `ls`, matching Java call-site defaults.
     Process execution is injected in tests so substitution, tokenization,
     output reporting, and queue ordering are deterministic.
-- [ ] Support or intentionally retire history deletion warning:
+- [x] Support or intentionally retire history deletion warning:
       `history.warn_before_delete`.
+  - Completed: the setting defaults to true and is exposed in Configuration.
+    Clearing all history uses Java's exact `Are you sure?`, `YES`, and `NO`
+    confirmation text when enabled; disabling it clears immediately. Both paths
+    clear album history and downloaded-URL history together like Java. Widget
+    tests cover cancellation, confirmation, and the disabled-warning path.
 - [x] Support or intentionally retire Java auto-update preference:
       `auto.update`.
   - Completed: Flutter does not self-replace application binaries. The

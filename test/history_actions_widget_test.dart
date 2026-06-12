@@ -39,7 +39,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('History'));
+    await tester.tap(find.byKey(const Key('history_tab')));
     await tester.pumpAndSettle();
 
     Future<void> selectCheckAction(String label) async {
@@ -97,6 +97,21 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('YES'));
     await tester.pumpAndSettle();
+    expect(manager.history, isEmpty);
+
+    await manager.replaceHistory([
+      HistoryEntry(
+        url: 'https://example.com/clear-without-warning',
+        dir: '/tmp/clear-without-warning',
+        date: DateTime(2026),
+      ),
+    ]);
+    await Utils.setConfigBoolean('history.warn_before_delete', false);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Clear history'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Are you sure?'), findsNothing);
     expect(manager.history, isEmpty);
   });
 }
