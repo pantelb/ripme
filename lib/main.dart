@@ -797,6 +797,53 @@ class HistoryView extends StatelessWidget {
               alignment: WrapAlignment.end,
               children: [
                 OutlinedButton.icon(
+                  key: const Key('history_remove_selected'),
+                  onPressed: ripManager.selectedHistoryRows.isEmpty
+                      ? null
+                      : ripManager.removeSelectedHistoryRows,
+                  icon: const Icon(Icons.remove_circle_outline),
+                  label: Text(strings.remove),
+                ),
+                PopupMenuButton<String>(
+                  key: const Key('history_check_actions'),
+                  tooltip: strings.historyCheckAll,
+                  icon: const Icon(Icons.checklist_outlined),
+                  onSelected: (value) {
+                    switch (value) {
+                      case 'all':
+                        ripManager.setAllHistoryEntriesSelected(true);
+                        break;
+                      case 'none':
+                        ripManager.setAllHistoryEntriesSelected(false);
+                        break;
+                      case 'selected':
+                        ripManager.setSelectedHistoryEntriesChecked(true);
+                        break;
+                      case 'unselected':
+                        ripManager.setSelectedHistoryEntriesChecked(false);
+                        break;
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'all',
+                      child: Text(strings.historyCheckAll),
+                    ),
+                    PopupMenuItem(
+                      value: 'none',
+                      child: Text(strings.historyCheckNone),
+                    ),
+                    PopupMenuItem(
+                      value: 'selected',
+                      child: Text(strings.historyCheckSelected),
+                    ),
+                    PopupMenuItem(
+                      value: 'unselected',
+                      child: Text(strings.historyUncheckSelected),
+                    ),
+                  ],
+                ),
+                OutlinedButton.icon(
                   onPressed: () => _reripSelected(context),
                   icon: const Icon(Icons.replay_outlined),
                   label: Text(strings.reripChecked),
@@ -840,6 +887,7 @@ class HistoryView extends StatelessWidget {
                         const DataColumn(label: Text('#'), numeric: true),
                         const DataColumn(label: SizedBox.shrink()),
                         const DataColumn(label: SizedBox.shrink()),
+                        const DataColumn(label: SizedBox.shrink()),
                       ],
                       rows: [
                         for (var index = 0; index < history.length; index++)
@@ -880,6 +928,15 @@ class HistoryView extends StatelessWidget {
         DataCell(Text(entry.count.toString())),
         DataCell(
           Checkbox(
+            key: Key('history_row_select_$index'),
+            value: ripManager.selectedHistoryRows.contains(index),
+            onChanged: (value) =>
+                ripManager.setHistoryRowSelected(index, value ?? false),
+          ),
+        ),
+        DataCell(
+          Checkbox(
+            key: Key('history_entry_checked_$index'),
             value: entry.selected,
             onChanged: (value) =>
                 ripManager.setHistoryEntrySelected(index, value ?? false),

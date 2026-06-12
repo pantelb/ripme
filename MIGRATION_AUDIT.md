@@ -1125,6 +1125,8 @@ Parity checklist:
     five-byte JPEG/PNG magic table. The detected extension is appended to the
     requested path and the resolved path is emitted on completion. Eightmuses
     and Tsumino now set the flag at the same call sites as Java.
+  - CI: workflow `27395477474` succeeded. Artifacts: Android `7583518914`,
+    Windows `7583508584`, macOS `7583501179`, Linux `7583484102`.
 
 Required tests:
 
@@ -1163,7 +1165,12 @@ Parity checklist:
     plain-text order and intentionally extends the panel with case-insensitive
     filtering, copy-visible-lines, and manager-backed clear actions, all covered
     by widget tests.
-- [ ] Verify history context actions.
+- [x] Verify history context actions.
+  - Completed: Flutter now distinguishes transient table-row selection from the
+    persisted checked-for-re-rip flag, matching Java. Bulk actions check all,
+    check none, check selected rows, uncheck selected rows, and remove selected
+    rows in descending index order. Warned clear and re-rip-checked dialogs are
+    retained; Flutter's per-row copy/re-rip/remove menu remains an extension.
 - [ ] Verify queue context actions.
 - [ ] Verify text-field context action protections or Flutter equivalent.
 - [ ] Verify clipboard autorip duplicate handling.
@@ -1534,7 +1541,7 @@ Findings:
       through `Utils.clearURLHistory()`, optionally after
       `history.warn_before_delete` confirmation. Flutter's UI clear action and
       focused provider tests now cover both stores.
-- [ ] Java history button behavior is selection-centric and dialog-backed, not
+- [x] Java history button behavior is selection-centric and dialog-backed, not
       per-entry only: `historyButtonRemove` removes the table's selected view
       rows after `convertRowIndexToModel`, `historyButtonClear` honors
       `history.warn_before_delete` by opening a separate `"Are you sure?"`
@@ -1542,10 +1549,10 @@ Findings:
       `Utils.clearURLHistory()` and `HISTORY`, and `historyButtonRerip` queues
       only `HistoryEntry.selected` rows while showing `RipMe Error` dialogs for
       empty history (`history.load.none`) or no checked rows
-      (`history.load.none.checked`). Flutter `HistoryView` currently exposes
-      clear without this warning dialog, per-entry remove/rerip popup actions,
-      no selected checkbox state, and no bulk checked re-rip/error-dialog
-      contract.
+      (`history.load.none.checked`).
+  - Reconciled: Flutter has independent transient row selection and persisted
+    checked state, descending bulk removal, all four Java check/uncheck actions,
+    warned clear of both history stores, and the two Java error-dialog cases.
 
 ### D. HTTP, Cookies, Proxy, And Network Semantics
 

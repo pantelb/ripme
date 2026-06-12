@@ -107,6 +107,12 @@ class AppLocalizations {
   String get copyUrl => 'Copy URL';
   String get ripAgain => 'Rip again';
   String get reripChecked => _label('re-rip.checked', 'Re-rip Checked');
+  String get historyCheckAll => _label('history.check.all', 'Check All');
+  String get historyCheckNone => _label('history.check.none', 'Check None');
+  String get historyCheckSelected =>
+      _label('history.check.selected', 'Check Selected');
+  String get historyUncheckSelected =>
+      _label('history.uncheck.selected', 'Uncheck Selected');
   String get noHistoryToRerip => _label('history.load.none',
       'There are no history entries to re-rip. Rip some albums first');
   String get noCheckedHistoryToRerip => _label(

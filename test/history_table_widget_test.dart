@@ -43,15 +43,13 @@ void main() {
     expect(find.text('2026/05/09'), findsOneWidget);
     expect(find.text('2026/06/10'), findsOneWidget);
     expect(find.text('7'), findsOneWidget);
-    final selectedCheckbox = find.descendant(
-      of: find.byType(DataTable),
-      matching: find.byType(Checkbox),
+    final selectedCheckbox = tester.widget<Checkbox>(
+      find.byKey(const Key('history_entry_checked_0')),
     );
-    expect(
-      tester.widgetList<Checkbox>(selectedCheckbox).every(
-            (checkbox) => checkbox.value == true,
-          ),
-      isTrue,
+    expect(selectedCheckbox.value, isTrue);
+    final rowSelectionCheckbox = tester.widget<Checkbox>(
+      find.byKey(const Key('history_row_select_0')),
     );
+    expect(rowSelectionCheckbox.value, isFalse);
   });
 }

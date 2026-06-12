@@ -38,6 +38,7 @@ class RipManager extends ChangeNotifier {
   final List<String> _queue = [];
   final List<RipStatusMessage> _logs = [];
   List<HistoryEntry> _history = [];
+  final Set<int> _selectedHistoryRows = <int>{};
   final RipperResolver _ripperResolver;
   final CompletionSoundPlayer _completionSoundPlayer;
 
@@ -51,6 +52,8 @@ class RipManager extends ChangeNotifier {
   List<String> get queue => _queue;
   List<RipStatusMessage> get logs => _logs;
   List<HistoryEntry> get history => _history;
+  Set<int> get selectedHistoryRows =>
+      Set<int>.unmodifiable(_selectedHistoryRows);
   bool get isRipping => _isRipping;
   String get statusText => _statusText;
   double get progressValue {
@@ -407,6 +410,7 @@ class RipManager extends ChangeNotifier {
 
   Future<void> clearHistory() async {
     _history = [];
+    _selectedHistoryRows.clear();
     await Future.wait([
       HistoryProvider.clearHistory(),
       DownloadHistoryProvider.clear(),
@@ -416,6 +420,7 @@ class RipManager extends ChangeNotifier {
 
   Future<void> replaceHistory(List<HistoryEntry> history) async {
     _history = List<HistoryEntry>.of(history);
+    _selectedHistoryRows.clear();
     await HistoryProvider.saveHistory(_history);
     notifyListeners();
   }
@@ -423,6 +428,29 @@ class RipManager extends ChangeNotifier {
   Future<void> removeHistoryEntry(int index) async {
     if (index < 0 || index >= _history.length) return;
     _history.removeAt(index);
+    _selectedHistoryRows.clear();
+    await HistoryProvider.saveHistory(_history);
+    notifyListeners();
+  }
+
+  void setHistoryRowSelected(int index, bool selected) {
+    if (index < 0 || index >= _history.length) return;
+    if (selected) {
+      _selectedHistoryRows.add(index);
+    } else {
+      _selectedHistoryRows.remove(index);
+    }
+    notifyListeners();
+  }
+
+  Future<void> removeSelectedHistoryRows() async {
+    final indices = _selectedHistoryRows.toList()..sort();
+    for (final index in indices.reversed) {
+      if (index >= 0 && index < _history.length) {
+        _history.removeAt(index);
+      }
+    }
+    _selectedHistoryRows.clear();
     await HistoryProvider.saveHistory(_history);
     notifyListeners();
   }
@@ -430,6 +458,24 @@ class RipManager extends ChangeNotifier {
   Future<void> setHistoryEntrySelected(int index, bool selected) async {
     if (index < 0 || index >= _history.length) return;
     _history[index].selected = selected;
+    await HistoryProvider.saveHistory(_history);
+    notifyListeners();
+  }
+
+  Future<void> setAllHistoryEntriesSelected(bool selected) async {
+    for (final entry in _history) {
+      entry.selected = selected;
+    }
+    await HistoryProvider.saveHistory(_history);
+    notifyListeners();
+  }
+
+  Future<void> setSelectedHistoryEntriesChecked(bool selected) async {
+    for (final index in _selectedHistoryRows) {
+      if (index >= 0 && index < _history.length) {
+        _history[index].selected = selected;
+      }
+    }
     await HistoryProvider.saveHistory(_history);
     notifyListeners();
   }

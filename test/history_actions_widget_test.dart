@@ -25,6 +25,11 @@ void main() {
         dir: '/tmp/actions',
         date: DateTime(2026),
       ),
+      HistoryEntry(
+        url: 'https://example.com/keep',
+        dir: '/tmp/keep',
+        date: DateTime(2026),
+      ),
     ]);
 
     await tester.pumpWidget(
@@ -36,6 +41,31 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('History'));
     await tester.pumpAndSettle();
+
+    Future<void> selectCheckAction(String label) async {
+      await tester.tap(find.byKey(const Key('history_check_actions')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(label).last);
+      await tester.pumpAndSettle();
+    }
+
+    await selectCheckAction('Check All');
+    expect(manager.history.every((entry) => entry.selected), isTrue);
+    await selectCheckAction('Check None');
+    expect(manager.history.every((entry) => !entry.selected), isTrue);
+
+    await tester.tap(find.byKey(const Key('history_row_select_0')));
+    await tester.pumpAndSettle();
+    await selectCheckAction('Check Selected');
+    expect(manager.history[0].selected, isTrue);
+    expect(manager.history[1].selected, isFalse);
+    await selectCheckAction('Uncheck Selected');
+    expect(manager.history.every((entry) => !entry.selected), isTrue);
+
+    await tester.tap(find.byKey(const Key('history_remove_selected')));
+    await tester.pumpAndSettle();
+    expect(manager.history, hasLength(1));
+    expect(manager.history.single.url, 'https://example.com/keep');
 
     await tester.tap(find.text('Re-rip Checked'));
     await tester.pumpAndSettle();
@@ -51,7 +81,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Copy URL'), findsOneWidget);
     expect(find.text('Rip again'), findsOneWidget);
-    expect(find.text('Remove'), findsOneWidget);
+    expect(find.text('Remove'), findsNWidgets(2));
 
     await tester.tap(find.text('Copy URL'));
     await tester.pumpAndSettle();
