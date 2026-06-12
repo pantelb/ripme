@@ -1435,6 +1435,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
           title: strings.files,
           children: [
             ListTile(
+              key: const Key('config.rips.directory'),
               title: Text(strings.saveDirectory),
               subtitle: Text(Utils.getConfigString(
                   'rips.directory', strings.defaultSaveDirectory)!),
@@ -1846,6 +1847,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               ),
               title: Text(strings.language),
               trailing: DropdownButton<String>(
+                key: const Key('config.lang'),
                 value: AppLocalizations.languageTagForLocale(
                   Localizations.localeOf(context),
                 ),
@@ -1942,6 +1944,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               ),
               title: Text(strings.logLevel),
               trailing: DropdownButton<String>(
+                key: const Key('config.log.level'),
                 value: Utils.getConfigString(
                   'log.level',
                   AppLogLevel.debug.configValue,
@@ -2125,6 +2128,7 @@ class _ConfigSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SwitchListTile(
+      key: Key('config.$keyName'),
       title: Text(title),
       secondary: _IconBadge(
         icon: icon,
@@ -2163,6 +2167,7 @@ class _ConfigIntegerTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final value = Utils.getConfigInteger(keyName, defaultValue);
     return ListTile(
+      key: Key('config.$keyName'),
       leading: _IconBadge(
         icon: icon,
         color: Theme.of(context).colorScheme.primary,
@@ -2238,6 +2243,7 @@ class _ConfigStringTile extends StatelessWidget {
     final strings = AppLocalizations.of(context);
     final value = Utils.getConfigString(keyName, defaultValue) ?? defaultValue;
     return ListTile(
+      key: Key('config.$keyName'),
       leading: _IconBadge(
         icon: icon,
         color: Theme.of(context).colorScheme.primary,

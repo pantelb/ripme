@@ -883,7 +883,12 @@ Parity checklist:
 Required tests:
 
 - [x] Defaults reconciliation test against Java `rip.properties`.
-- [ ] Config UI widget tests for every exposed setting.
+- [x] Config UI widget tests for every exposed setting.
+  - Completed: every generic boolean, integer, and string control has a stable
+    `config.<java-key>` widget key and is edited by the table-driven
+    `configuration_controls_widget_test.dart`. Focused widget tests cover the
+    save-directory picker, language reload, log-level dropdown, SSL toggle,
+    history warning branches, and disabled auto-update replacement.
 - [ ] Persistence tests for settings changed in UI and CLI.
 
 ### Workstream 5: HTTP, Proxy, Cookies, And Networking
