@@ -910,7 +910,7 @@ void main() {
     expect(manager.isRipping, isTrue);
 
     release.complete();
-    await _waitFor(() => manager.history.length == 1);
+    await _waitFor(() => manager.history.length == 1 && !manager.isRipping);
 
     expect(manager.statusText, '100% progress');
     expect(manager.progressValue, 0);

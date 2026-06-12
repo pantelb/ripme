@@ -782,7 +782,15 @@ Parity checklist:
     intentionally sparse and resolves missing keys individually, so it does
     not require destructive whole-file migration. Tests remove each sentinel
     independently and verify deletion/default reload behavior.
-- [ ] Persist settings on exit or immediately in a documented Flutter-native way.
+- [x] Persist settings on exit or immediately in a documented Flutter-native way.
+  - Completed by Flutter-native immediate persistence. Java mutates an
+    in-memory `PropertiesConfiguration` and calls `saveConfig()` during window
+    shutdown; Flutter's string, integer, boolean, and list setters instead await
+    each write to either the platform preference backend or portable
+    `rip.properties`. UI and CLI setting changes await those setters, avoiding
+    dependence on a desktop-only exit callback and providing the same behavior
+    on Android. Tests verify every setter type is visible in the backend as
+    soon as its future completes and that values survive reinitialization.
 - [x] Support language selection and reload behavior.
   - Completed: the configuration view exposes every Java bundle language tag,
     persists `lang`, translates Java's legacy `in-ID`/`kr-KR` tags to Flutter

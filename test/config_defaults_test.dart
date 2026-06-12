@@ -117,6 +117,23 @@ void main() {
     expect(Utils.getConfigList('queue'), ['https://one', 'https://two']);
   });
 
+  test('all non-portable config setters complete backend writes immediately',
+      () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+
+    await Utils.setConfigString('rips.directory', '/tmp/rips');
+    await Utils.setConfigInteger('threads.size', 12);
+    await Utils.setConfigBoolean('file.overwrite', true);
+    await Utils.setConfigList('queue', ['one', 'two']);
+
+    final preferences = await SharedPreferences.getInstance();
+    expect(preferences.getString('rips.directory'), '/tmp/rips');
+    expect(preferences.getInt('threads.size'), 12);
+    expect(preferences.getBool('file.overwrite'), isTrue);
+    expect(preferences.getStringList('queue'), ['one', 'two']);
+  });
+
   test('parses comma-separated string list config values', () async {
     SharedPreferences.setMockInitialValues({
       'download.ignore_extensions': 'mp4, gif, , webm',
