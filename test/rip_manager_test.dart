@@ -650,8 +650,12 @@ void main() {
     addTearDown(() {
       if (!release.isCompleted) release.complete();
     });
+    final started = Completer<String>();
     final manager = RipManager(
-      ripperResolver: (uri) => BlockingRipper(uri, directory, release.future),
+      ripperResolver: (uri) {
+        if (!started.isCompleted) started.complete(uri.toString());
+        return BlockingRipper(uri, directory, release.future);
+      },
       completionSoundPlayer: () async {},
     );
     await manager.init();
@@ -659,7 +663,10 @@ void main() {
     final result = manager.submitManualUrl(
       'https://example.com/album/{2-4}/page/{ignored}',
     );
-    await _waitFor(() => manager.queue.length == 2);
+    expect(
+      await started.future,
+      'https://example.com/album/2/page/2',
+    );
 
     expect(result.accepted, 3);
     expect(result.errors, isEmpty);
