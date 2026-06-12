@@ -991,18 +991,27 @@ Parity checklist:
     preservation, rejects a 260-character parent path, and applies shortening
     to shared Windows downloads whose absolute destination exceeds 259
     characters.
+  - CI: workflow `27384794460` succeeded. Artifacts: Android `7579758072`,
+    Windows `7579761782`, macOS `7579737660`, Linux `7579708950`.
 - [x] Port or document `append-to-folder`.
   - Completed: Flutter retains Java's exact, untrimmed CLI suffix and resolves
     files beneath the working directory into the sibling
     `<workingDirName><suffix>` before preserving their relative subdirectory
     and filename. CLI parsing and shared path shaping have focused tests.
+  - CI: workflow `27384846082` succeeded. Artifacts: Android `7579779942`,
+    Windows `7579753290`, macOS `7579745619`, Linux `7579732614`.
 - [x] Verify `album_titles.save` behavior.
   - Completed: Flutter matches Java's class-specific behavior. JSON and legacy
     album-style rippers fall back to `<host>_<gid>` when disabled, while HTML
     rippers continue using their concrete album title. Direct Flutter ports of
     Java JSON rippers (`InstagramRipper` and `ScrolllerRipper`) explicitly opt
     into the JSON behavior.
-- [ ] Verify `descriptions.save` behavior.
+- [x] Verify `descriptions.save` behavior.
+  - Decision: intentionally retired. Java gates the shared description
+    pipeline behind `hasDescriptionSupport()`, and no concrete ripper returns
+    `true`; the only helper implementation, `FuraffinityRipper`, explicitly
+    returns `false`. Flutter therefore matches the shipped no-output behavior
+    without exposing an ineffective control.
 - [ ] Verify URL-only output path and append behavior.
 - [ ] Verify duplicate URL suppression scope.
 - [ ] Verify already-downloaded URL skip counter and stopping threshold.
@@ -1025,7 +1034,9 @@ Required tests:
 - [x] Abstract ripper directory naming tests.
 - [ ] Status/progress event tests.
 - [ ] Stop semantics tests.
-- [ ] Description and URL-only tests.
+- [x] Description support reachability audit; Java has no active runtime path
+      requiring a Dart output test.
+- [ ] URL-only tests.
 
 ### Workstream 7: UI Details, Context Actions, Tray, And Desktop Integration
 
@@ -1776,14 +1787,15 @@ Findings:
       `hasQueueSupport`, `pageContainsAlbums`, and `getAlbumsToQueue`, adding
       discovered album URLs to `MainWindow` queue. Flutter needs verification
       for rippers that depend on this pattern.
-- [ ] Java exposes dormant `descriptions.save` machinery in
+- [x] Java exposes dormant `descriptions.save` machinery in
       `AbstractHTMLRipper` through `hasDescriptionSupport`,
       `getDescriptionsFromPage`, `getDescription`, `saveText`, and
       `descSleepTime`, but the source scan found no current concrete ripper
       returning `hasDescriptionSupport() == true`. `FuraffinityRipper`
       implements description helpers and an overridden `saveText`, yet returns
-      false, so current-source parity must preserve or intentionally retire this
-      disabled feature path rather than assuming active description downloads.
+      false.
+  - Decision: Flutter intentionally retires this disabled path and preserves
+    Java's effective behavior of producing no description files.
 - [x] Java `-a` / `--append-to-folder` stores
       `App.stringToAppendToFoldername`, and `AbstractRipper.getFilePath`
       applies it by resolving the working directory to a sibling named
@@ -2684,14 +2696,13 @@ Findings:
       in `FuraffinityRipper.parseCookies(...)`, so it needs proof that malformed
       cookie strings, repeated keys, whitespace, and empty values match the
       Java helper exactly before login/cookie parity can be claimed.
-- [ ] Java `FuraffinityRipper` overrides `hasDescriptionSupport()` to `false`
+- [x] Java `FuraffinityRipper` overrides `hasDescriptionSupport()` to `false`
       but still implements `getDescriptionsFromPage(...)`, `getDescription(...)`,
       `descSleepTime()`, and `saveText(...)` with FurAffinity-specific title
-      rewriting and text cleanup. Flutter has no corresponding description/text
-      pipeline in `furaffinity_ripper.dart`. Because the Java support flag is
-      false, this may be intentionally dormant, but the migration audit needs a
-      decision and test evidence before treating FurAffinity description parity
-      as closed.
+      rewriting and text cleanup.
+  - Decision: no Dart pipeline is added because the Java support flag makes
+    every helper unreachable. Source scan evidence and the retired UI control
+    lock this as intentional parity.
 - [ ] Java `ImagefapRipper.getNextPage(...)` throws
       `IOException("No next page found")` when no `a.link3` text contains
       `next`. Flutter `ImagefapRipper.getNextPage(...)` returns `null` for the
@@ -5216,8 +5227,8 @@ Initial status:
 - [x] Video helper behavior has shared manifest selection coverage.
 - [x] Java `append-to-folder` behavior is ported and tested through exact CLI
       suffix preservation and sibling working-directory path resolution.
-- [ ] Java description saving behavior is source-audited and still needs a
-      Flutter shared equivalent or documented retirement.
+- [x] Java description saving behavior is source-audited and intentionally
+      retired because no concrete Java ripper enables the shared pipeline.
 - [ ] Java popup/tray notification behavior is source-audited and still needs
       per-platform Flutter replacement decisions.
 
