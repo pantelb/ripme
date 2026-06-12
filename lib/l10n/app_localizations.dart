@@ -140,6 +140,8 @@ class AppLocalizations {
   String get saveDirectory => _label('select.save.dir', 'Save directory');
   String get defaultSaveDirectory => 'Default application rips directory';
   String get storageAccessWasNotGranted => 'Storage access was not granted';
+  String get restoreWindowPosition =>
+      _label('restore.window.position', 'Restore window position');
   String get overwriteExistingFiles =>
       _label('overwrite.existing.files', 'Overwrite existing files');
   String get preserveDownloadOrder =>

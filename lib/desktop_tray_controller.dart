@@ -93,6 +93,7 @@ class DesktopTrayController with TrayListener, WindowListener {
     if (!isSupportedDesktop) return;
     trayManager.addListener(this);
     windowManager.addListener(this);
+    await windowManager.setPreventClose(true);
     await trayManager.setIcon('assets/icon.png');
     await trayManager.setToolTip('RipMe');
     await _updateMenu();
@@ -147,6 +148,11 @@ class DesktopTrayController with TrayListener, WindowListener {
     unawaited(_updateMenu());
   }
 
+  @override
+  void onWindowClose() {
+    unawaited(actionHandler.handle(DesktopTrayAction.exit));
+  }
+
   Future<void> _updateMenu() {
     return trayManager.setContextMenu(
       Menu(
@@ -171,10 +177,16 @@ class DesktopTrayController with TrayListener, WindowListener {
 }
 
 class WindowManagerOperations implements DesktopWindowOperations {
-  const WindowManagerOperations();
+  const WindowManagerOperations({this.beforeExit});
+
+  final Future<void> Function()? beforeExit;
 
   @override
-  Future<void> exit() => windowManager.destroy();
+  Future<void> exit() async {
+    await beforeExit?.call();
+    await windowManager.setPreventClose(false);
+    await windowManager.destroy();
+  }
 
   @override
   Future<void> hide() => windowManager.hide();

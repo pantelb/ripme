@@ -13,6 +13,7 @@ import 'app_version.dart';
 import 'cli/cli_controller.dart';
 import 'clipboard_autorip.dart';
 import 'desktop_tray_controller.dart';
+import 'desktop_window_geometry.dart';
 import 'desktop_rip_start_notifier.dart';
 import 'download_history_provider.dart';
 import 'history_provider.dart';
@@ -36,8 +37,12 @@ Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   await Utils.init(detectPortableConfig: true);
   DesktopRipStartNotifier? ripStartNotifier;
+  DesktopWindowOperations? desktopWindow;
   if (DesktopTrayController.isSupportedDesktop) {
     await windowManager.ensureInitialized();
+    final geometry = DesktopWindowGeometryController.platform();
+    await geometry.restore();
+    desktopWindow = WindowManagerOperations(beforeExit: geometry.save);
     try {
       await localNotifier.setup(
         appName: 'RipMe',
@@ -47,7 +52,7 @@ Future<void> main(List<String> args) async {
       // Java treats unavailable desktop notifications as non-fatal.
     }
     ripStartNotifier = DesktopRipStartNotifier(
-      window: const WindowManagerOperations(),
+      window: desktopWindow,
     );
   }
   runApp(
@@ -60,13 +65,18 @@ Future<void> main(List<String> args) async {
                   enabled: Utils.getConfigBoolean('download.show_popup', false),
                 ),
       )..init(),
-      child: const RipMeApp(),
+      child: RipMeApp(desktopWindow: desktopWindow),
     ),
   );
 }
 
 class RipMeApp extends StatefulWidget {
-  const RipMeApp({super.key});
+  const RipMeApp({
+    super.key,
+    this.desktopWindow,
+  });
+
+  final DesktopWindowOperations? desktopWindow;
 
   @override
   State<RipMeApp> createState() => _RipMeAppState();
@@ -109,6 +119,7 @@ class _RipMeAppState extends State<RipMeApp> {
       darkTheme: _buildTheme(darkScheme),
       home: MainWindow(
         onLocaleChanged: (locale) => setState(() => _locale = locale),
+        desktopWindow: widget.desktopWindow,
       ),
     );
   }
@@ -214,9 +225,11 @@ class MainWindow extends StatefulWidget {
   const MainWindow({
     super.key,
     this.onLocaleChanged,
+    this.desktopWindow,
   });
 
   final ValueChanged<Locale>? onLocaleChanged;
+  final DesktopWindowOperations? desktopWindow;
 
   @override
   State<MainWindow> createState() => _MainWindowState();
@@ -328,7 +341,7 @@ class _MainWindowState extends State<MainWindow>
       ),
       autoripEnabled: Utils.getConfigBoolean('clipboard.autorip', false),
       actionHandler: DesktopTrayActionHandler(
-        window: const WindowManagerOperations(),
+        window: widget.desktopWindow ?? const WindowManagerOperations(),
         onAbout: () {
           if (!mounted) return;
           showAboutDialog(
@@ -1913,6 +1926,14 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               defaultValue: false,
               onChanged: _refresh,
             ),
+            if (DesktopTrayController.isSupportedDesktop)
+              _ConfigSwitch(
+                title: strings.restoreWindowPosition,
+                icon: Icons.web_asset_outlined,
+                keyName: 'window.position',
+                defaultValue: true,
+                onChanged: _refresh,
+              ),
           ],
         ),
       ],

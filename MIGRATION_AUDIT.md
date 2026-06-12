@@ -809,7 +809,17 @@ Parity checklist:
     `Documents/rips` default label was corrected after desktop defaults moved
     to Java's application-adjacent directory. Widget tests cover successful
     selection, cancellation, and denied Android-style access.
-- [ ] Support window position persistence or explicitly mark not applicable.
+- [x] Support window position persistence or explicitly mark not applicable.
+  - Completed with Java platform semantics: Linux and macOS restore valid
+    `window.x`, `window.y`, `window.w`, and `window.h` bounds when
+    `window.position` is enabled, center on disabled/invalid geometry, and save
+    integer bounds before controlled window destruction. Java explicitly
+    disables positioning on Windows because of its `javaw.exe` shutdown bug;
+    Flutter preserves that source behavior by centering and not writing bounds.
+    Android has no desktop window and is a no-op. Native close and tray Exit
+    share the save-before-destroy path, and the desktop configuration UI exposes
+    the Java toggle. Unit tests cover restore, centering, save/truncation,
+    Windows exclusion, and Android no-op behavior.
 - [ ] Support log level, log save, popup, sound, URLs-only, album-title folders,
       descriptions, prefer MP4, SSL verification, URL history, retries, timeout,
       retry sleep, thread count, overwrite, and save order.
