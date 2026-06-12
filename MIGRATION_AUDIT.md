@@ -1006,13 +1006,20 @@ Parity checklist:
     rippers continue using their concrete album title. Direct Flutter ports of
     Java JSON rippers (`InstagramRipper` and `ScrolllerRipper`) explicitly opt
     into the JSON behavior.
+  - CI: workflow `27385130402` succeeded. Artifacts: Android `7579894984`,
+    Windows `7579863420`, macOS `7579872892`, Linux `7579845113`.
 - [x] Verify `descriptions.save` behavior.
   - Decision: intentionally retired. Java gates the shared description
     pipeline behind `hasDescriptionSupport()`, and no concrete ripper returns
     `true`; the only helper implementation, `FuraffinityRipper`, explicitly
     returns `false`. Flutter therefore matches the shipped no-output behavior
     without exposing an ineffective control.
-- [ ] Verify URL-only output path and append behavior.
+- [x] Verify URL-only output path and append behavior.
+  - Completed: Flutter appends URLs with a platform line ending to the original
+    `<workingDir>/urls.txt`, emits download-complete status, and skips URL
+    history writes. Like Java, append-to-folder still resolves and creates the
+    normal sibling/subdirectory parent as a side effect but does not relocate
+    `urls.txt`.
 - [ ] Verify duplicate URL suppression scope.
 - [ ] Verify already-downloaded URL skip counter and stopping threshold.
 - [ ] Verify Java writes downloaded URL history before queueing a download and
@@ -1036,7 +1043,7 @@ Required tests:
 - [ ] Stop semantics tests.
 - [x] Description support reachability audit; Java has no active runtime path
       requiring a Dart output test.
-- [ ] URL-only tests.
+- [x] URL-only tests.
 
 ### Workstream 7: UI Details, Context Actions, Tray, And Desktop Integration
 
@@ -1653,9 +1660,13 @@ Findings:
       `%20` before save-path creation, history checks/writes, and queueing.
       Flutter shared download scheduling does not have an equivalent
       Java-compatible preflight guard.
-- [ ] Java `urls_only.save=true` writes `urls.txt`, counts it as completed, and
-      opens `urls.txt` after rip completion. Flutter writes `urls.txt` but open
-      behavior and completion details need verification.
+- [x] Java `urls_only.save=true` writes `urls.txt`, counts it as completed, and
+      attempts to open `urls.txt` after rip completion.
+  - Completed: Flutter writes and reports each URL as completed, preserves the
+    original working-directory output path, and matches Java's path-creation
+    side effects. Automatic opening is intentionally not copied: Java already
+    catches the unreliable desktop-open failure, and a file URI is not a
+    portable launch contract across Android and desktop targets.
 - [ ] Java duplicate suppression is per ripper pending/completed/errored maps
       unless `allowDuplicates()` is overridden. Flutter has a per-ripper
       attempted URL set; override coverage needs verification.

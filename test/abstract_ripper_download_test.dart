@@ -614,6 +614,43 @@ void main() {
         isFalse);
   });
 
+  test('URL-only mode keeps Java append-to-folder path side effects', () async {
+    SharedPreferences.setMockInitialValues({
+      'urls_only.save': true,
+      'remember.url_history': true,
+    });
+    await Utils.init();
+
+    final parent =
+        await Directory.systemTemp.createTemp('ripme_urls_only_append_test');
+    addTearDown(() => parent.delete(recursive: true));
+    final workingDir = Directory(p.join(parent.path, 'album'));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), workingDir);
+    await ripper.setup();
+    AbstractRipper.folderNameSuffix = '-extra';
+
+    final url = Uri.parse('https://example.com/one.jpg');
+    await ripper.downloadFile(
+      url,
+      File(p.join(workingDir.path, 'subdir', 'one.jpg')),
+    );
+
+    final urlsFile = File(p.join(workingDir.path, 'urls.txt'));
+    expect(await urlsFile.readAsLines(), ['https://example.com/one.jpg']);
+    expect(
+      await Directory(
+        p.join(parent.path, 'album-extra', 'subdir'),
+      ).exists(),
+      isTrue,
+    );
+    expect(
+      await File(p.join(parent.path, 'album-extra', 'urls.txt')).exists(),
+      isFalse,
+    );
+    expect(await DownloadHistoryProvider.hasDownloaded(url), isFalse);
+  });
+
   test('legacy Flutter history key remains a fallback for URL history',
       () async {
     SharedPreferences.setMockInitialValues({

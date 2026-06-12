@@ -166,6 +166,10 @@ abstract class AbstractRipper {
       }
 
       if (Utils.getConfigBoolean('urls_only.save', false)) {
+        final resolvedSaveAs = _sanitizeSaveAs(resolveSavePath(saveAs));
+        if (!await resolvedSaveAs.parent.exists()) {
+          await resolvedSaveAs.parent.create(recursive: true);
+        }
         await _saveUrlOnly(url);
         alreadyDownloadedUrls = 0;
         return;
