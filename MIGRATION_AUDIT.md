@@ -1014,6 +1014,8 @@ Parity checklist:
     `true`; the only helper implementation, `FuraffinityRipper`, explicitly
     returns `false`. Flutter therefore matches the shipped no-output behavior
     without exposing an ineffective control.
+  - CI: workflow `27385362429` succeeded. Artifacts: Android `7579971467`,
+    Windows `7579935716`, macOS `7579953314`, Linux `7579909291`.
 - [x] Verify URL-only output path and append behavior.
   - Completed: Flutter appends URLs with a platform line ending to the original
     `<workingDir>/urls.txt`, emits download-complete status, and skips URL
@@ -1026,8 +1028,11 @@ Parity checklist:
     `allowDuplicates()` override; Eightmuses and Tsumino no longer mistake
     Java's `getFileExtFromMIME=true` argument for a duplicate bypass.
 - [ ] Verify already-downloaded URL skip counter and stopping threshold.
-- [ ] Verify Java writes downloaded URL history before queueing a download and
+- [x] Verify Java writes downloaded URL history before queueing a download and
       skips URL-history writes while `urls_only.save=true`.
+  - Completed: Flutter serializes per-ripper history writes before existing-file
+    checks and HTTP transfer, so failed and skipped downloads remain remembered
+    like Java. URL-only mode still exits before the history write.
 - [ ] Verify stop/interruption semantics.
 - [ ] Verify progress percentage semantics.
 - [ ] Verify Java byte-progress semantics for `AbstractSingleFileRipper` and

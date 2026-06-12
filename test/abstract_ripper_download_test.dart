@@ -292,7 +292,7 @@ void main() {
   test('skips existing files when overwrite is disabled', () async {
     SharedPreferences.setMockInitialValues({
       'file.overwrite': false,
-      'remember.url_history': false,
+      'remember.url_history': true,
     });
     await Utils.init();
 
@@ -310,11 +310,41 @@ void main() {
     final sub = ripper.statusStream.listen(statuses.add);
     addTearDown(sub.cancel);
 
-    await ripper.downloadFile(Uri.parse('https://example.com/image.jpg'), file);
+    final url = Uri.parse('https://example.com/image.jpg');
+    await ripper.downloadFile(url, file);
     await Future<void>.delayed(Duration.zero);
 
     expect(statuses.single.status, RipStatus.downloadSkip);
     expect(ripper.alreadyDownloadedUrls, 1);
+    expect(await DownloadHistoryProvider.hasDownloaded(url), isTrue);
+  });
+
+  test('records Java URL history before a failed download', () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': true,
+      'download.retries': 0,
+    });
+    await Utils.init();
+
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    addTearDown(server.close);
+    server.listen((request) async {
+      request.response.statusCode = HttpStatus.notFound;
+      await request.response.close();
+    });
+    final url = Uri.parse(
+      'http://${server.address.host}:${server.port}/missing.jpg',
+    );
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_history_failure_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+
+    await ripper.downloadFile(url, File(p.join(directory.path, 'missing.jpg')));
+
+    expect(await DownloadHistoryProvider.hasDownloaded(url), isTrue);
   });
 
   test('skips URLs already present in persisted download history', () async {

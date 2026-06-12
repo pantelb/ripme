@@ -33,6 +33,7 @@ abstract class AbstractRipper {
   int alreadyDownloadedUrls = 0;
   final Set<String> _attemptedDownloadUrls = <String>{};
   Future<void> _urlOnlyWrite = Future<void>.value();
+  Future<void> _historyWrite = Future<void>.value();
 
   final StreamController<RipStatusMessage> _statusController =
       StreamController<RipStatusMessage>.broadcast();
@@ -185,6 +186,10 @@ abstract class AbstractRipper {
         );
       }
 
+      if (_shouldRememberUrlHistory()) {
+        await _rememberDownloadUrl(url);
+      }
+
       if (!Utils.getConfigBoolean('file.overwrite', false) &&
           await saveAs.exists()) {
         alreadyDownloadedUrls++;
@@ -196,9 +201,6 @@ abstract class AbstractRipper {
 
       sendUpdate(RipStatus.downloadStarted, url.toString());
       await Http.downloadFile(url, saveAs, headers: headers, cookies: cookies);
-      if (_shouldRememberUrlHistory()) {
-        await DownloadHistoryProvider.markDownloaded(url);
-      }
       alreadyDownloadedUrls = 0;
       sendUpdate(RipStatus.downloadComplete, saveAs.path);
     } catch (e) {
@@ -247,6 +249,14 @@ abstract class AbstractRipper {
     });
     await _urlOnlyWrite;
     sendUpdate(RipStatus.downloadComplete, urlFile.path);
+  }
+
+  Future<void> _rememberDownloadUrl(Uri url) async {
+    final previousWrite = _historyWrite;
+    _historyWrite = previousWrite.then(
+      (_) => DownloadHistoryProvider.markDownloaded(url),
+    );
+    await _historyWrite;
   }
 
   bool _shouldIgnoreUrl(Uri url) {
