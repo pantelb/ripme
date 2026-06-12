@@ -659,7 +659,7 @@ void main() {
     final result = manager.submitManualUrl(
       'https://example.com/album/{2-4}/page/{ignored}',
     );
-    await _waitFor(() => manager.isRipping);
+    await _waitFor(() => manager.queue.length == 2);
 
     expect(result.accepted, 3);
     expect(result.errors, isEmpty);
