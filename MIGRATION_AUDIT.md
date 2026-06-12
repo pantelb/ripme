@@ -1020,7 +1020,11 @@ Parity checklist:
     history writes. Like Java, append-to-folder still resolves and creates the
     normal sibling/subdirectory parent as a side effect but does not relocate
     `urls.txt`.
-- [ ] Verify duplicate URL suppression scope.
+- [x] Verify duplicate URL suppression scope.
+  - Completed: suppression remains per ripper across attempted URLs and covers
+    pending, completed, and failed attempts. Imgur user mode is the only Java
+    `allowDuplicates()` override; Eightmuses and Tsumino no longer mistake
+    Java's `getFileExtFromMIME=true` argument for a duplicate bypass.
 - [ ] Verify already-downloaded URL skip counter and stopping threshold.
 - [ ] Verify Java writes downloaded URL history before queueing a download and
       skips URL-history writes while `urls_only.save=true`.
@@ -1667,9 +1671,11 @@ Findings:
     side effects. Automatic opening is intentionally not copied: Java already
     catches the unreliable desktop-open failure, and a file URI is not a
     portable launch contract across Android and desktop targets.
-- [ ] Java duplicate suppression is per ripper pending/completed/errored maps
+- [x] Java duplicate suppression is per ripper pending/completed/errored maps
       unless `allowDuplicates()` is overridden. Flutter has a per-ripper
-      attempted URL set; override coverage needs verification.
+      attempted URL set.
+  - Completed: the attempted set is retained across download outcomes, and the
+    only Java override, Imgur user mode, passes the explicit duplicate opt-out.
 - [ ] Java shared download paths surface prior downloads and existing files as
       warning statuses: URL-history hits send `DOWNLOAD_WARN` with
       `Already downloaded <url>`, and `downloadExists(...)` sends
@@ -2345,14 +2351,14 @@ Findings:
       `ArtStationRipper.normalizeUrl` and `DeviantartRipper.normalizeUrl`.
       These affect already-downloaded detection and are separate from URL
       factory matching.
-- [ ] Java duplicate-download override must be verified:
+- [x] Java duplicate-download override is verified:
       `ImgurRipper.allowDuplicates` permits duplicate media URLs for user rips.
-- [ ] Java duplicate suppression is not disabled for `EightmusesRipper` or
+- [x] Java duplicate suppression is not disabled for `EightmusesRipper` or
       `TsuminoRipper`: neither class overrides `allowDuplicates()`, so their
       `addURLToDownload(...)` calls still use the shared pending/completed/
-      errored URL maps. Flutter marks Eightmuses ASAP downloads and Tsumino
-      image-object downloads with `allowDuplicate: true`, permitting duplicate
-      URLs that Java would skip.
+      errored URL maps.
+  - Corrected: Flutter no longer treats Java's final
+    `getFileExtFromMIME=true` call argument as `allowDuplicate=true`.
 - [ ] Java byte-progress/resume overrides must be verified:
       `HqpornerRipper.tryResumeDownload` and
       `HqpornerRipper.useByteProgessBar`.

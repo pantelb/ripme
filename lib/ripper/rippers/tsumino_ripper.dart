@@ -73,18 +73,18 @@ class TsuminoRipper extends AbstractHTMLRipper {
       if (isStopped) break;
       index++;
       final imageUri = Uri.parse(imageUrl);
-      downloads.add(
-        RipperDownload(
-          url: imageUri,
-          saveAs:
-              File(p.join(workingDir.path, fileNameForUrl(imageUri, index))),
-          allowDuplicate: true,
-        ),
-      );
+      downloads.add(downloadForUrl(imageUri, index));
     }
 
     await downloadFiles(downloads);
     sendUpdate(RipStatus.ripComplete, workingDir.path);
+  }
+
+  RipperDownload downloadForUrl(Uri imageUri, int index) {
+    return RipperDownload(
+      url: imageUri,
+      saveAs: File(p.join(workingDir.path, fileNameForUrl(imageUri, index))),
+    );
   }
 
   Future<Document?> getFirstPage() async {

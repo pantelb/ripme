@@ -118,7 +118,6 @@ class EightmusesRipper extends AbstractHTMLRipper {
         Uri.parse(imageUrl),
         subdirectory: subdirFromTitle(page.querySelector('title')?.text ?? ''),
         prefix: getPrefixShort(index),
-        allowDuplicate: true,
       ));
     }
 
@@ -150,7 +149,6 @@ class EightmusesRipper extends AbstractHTMLRipper {
     Uri imageUri, {
     required String subdirectory,
     required String prefix,
-    required bool allowDuplicate,
   }) {
     final fileName = fileNameForUrl(imageUri, prefix: prefix);
     final safeSubdir = Utils.filesystemSafe(subdirectory);
@@ -162,7 +160,6 @@ class EightmusesRipper extends AbstractHTMLRipper {
       saveAs: saveAs,
       headers: {'Referer': url.toString()},
       cookies: _cookies,
-      allowDuplicate: allowDuplicate,
     );
   }
 

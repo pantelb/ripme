@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart' as html;
 import 'package:ripme/ripper/rippers/tsumino_ripper.dart';
@@ -110,5 +112,23 @@ void main() {
       ),
       'Object',
     );
+  });
+
+  test('TsuminoRipper keeps Java duplicate suppression', () async {
+    SharedPreferences.setMockInitialValues({'download.save_order': true});
+    await Utils.init();
+    final tempDir = await Directory.systemTemp.createTemp('tsumino_test_');
+    addTearDown(() => tempDir.delete(recursive: true));
+    final ripper = TsuminoRipper(
+      Uri.parse('https://www.tsumino.com/Book/Info/123'),
+    );
+    ripper.workingDir = tempDir;
+
+    final download = ripper.downloadForUrl(
+      Uri.parse('http://www.tsumino.com/Image/Object?name=one.jpg'),
+      1,
+    );
+
+    expect(download.allowDuplicate, isFalse);
   });
 }
