@@ -1416,7 +1416,15 @@ Required tests:
   - Log filtering, copy, clear, and order are covered. History and queue tests
     cover Java bulk selection/removal and confirmation behavior.
 - [x] Clipboard autorip tests.
-- [ ] Platform integration tests where practical.
+- [x] Platform integration tests where practical.
+  - Generated Flutter plugin metadata is tested to require `tray_manager`,
+    `local_notifier`, `window_manager`, and the platform URL launcher on
+    Windows, Linux, and macOS. Android is tested to retain its URL launcher
+    without the Java desktop-only tray, notification, or window integrations.
+  - Native tray and notification UI cannot be exercised reliably by headless
+    unit tests. GitHub Actions release builds on Windows, Linux, macOS, and
+    Android provide the native plugin registration and linkage integration
+    boundary; focused Dart tests cover behavior before those native calls.
 
 ### Workstream 8: Localization And Resources
 
