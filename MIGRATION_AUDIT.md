@@ -726,6 +726,9 @@ Parity checklist:
 - [ ] Support log level, log save, popup, sound, URLs-only, album-title folders,
       descriptions, prefer MP4, SSL verification, URL history, retries, timeout,
       retry sleep, thread count, overwrite, and save order.
+  - Completed for popup: the App settings persist Java's
+    `download.show_popup` false-by-default preference and desktop rip starts
+    use it to gate native notifications.
   - In progress: `ssl.verify.off` now has Java's false default, persists
     immediately from the network configuration UI, and controls
     `HttpClient.badCertificateCallback` for the shared page/download client.
@@ -1209,6 +1212,10 @@ Parity checklist:
     Workflow `27408110876` succeeded after requiring active-rip state and
     consumed-first-item state. Artifacts: Android `7588505546`, Windows
     `7588462405`, macOS `7588449892`, Linux `7588423916`.
+  - Follow-up CI: workflow `27409160339` showed the queue-listener assertion
+    could still time out under Linux load. The test now holds a seed rip active
+    and validates all range expansions in the pending queue without racing the
+    consumer.
 - [x] Verify tray icon/menu support or document platform-native replacement.
   - Completed: Windows, Linux, and macOS initialize a native tray icon on a
     best-effort basis. The menu mirrors Java's Show/Hide, About, Clipboard
@@ -1219,7 +1226,16 @@ Parity checklist:
     `clipboard.autorip`. Android intentionally has no system-tray surface.
   - Validation: unit tests cover active-window hiding, inactive-window
     restoration/focus, About dispatch, autorip state dispatch, and Exit.
-- [ ] Verify popup notification behavior or document replacement.
+- [x] Verify popup notification behavior or document replacement.
+  - Completed: Windows, Linux, and macOS display a native notification only
+    when `download.show_popup` is enabled and the main window is hidden or
+    inactive. The title is `Ripping - RipMe v<version>` and the body is
+    `Started ripping <url>`, matching Java.
+  - Notification setup and delivery failures are non-fatal. Android does not
+    expose this Java desktop-only preference as an operating-system tray
+    notification.
+  - Validation: tests cover disabled, active-window, and inactive-window
+    branches plus the exact notification text and the setup-notify-run order.
 - [ ] Verify open-folder button behavior after completion.
 - [ ] Verify keyboard interactions.
 - [ ] Verify responsive layout across desktop and Android.
@@ -2201,8 +2217,8 @@ Findings:
       replacements. The Java implementation uses `SystemTray`, `TrayIcon`,
       `TrayIcon.displayMessage`, tray About/Hide/Show/Exit/Autorip menu items,
       and `Desktop.getDesktop().open(...)` / `.browse(...)`.
-  - Tray icon/menu parity is implemented for Windows, Linux, and macOS.
-    Popup notifications and open-folder behavior remain incomplete.
+  - Tray icon/menu and popup notification parity are implemented for Windows,
+    Linux, and macOS. Open-folder behavior remains incomplete.
 - [ ] Java main window lifecycle uses `JFrame.EXIT_ON_CLOSE`, a `WindowListener`
       to toggle tray labels and icon visibility on activate/deactivate,
       `setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)`, and explicit
@@ -5401,8 +5417,9 @@ Initial status:
       suffix preservation and sibling working-directory path resolution.
 - [x] Java description saving behavior is source-audited and intentionally
       retired because no concrete Java ripper enables the shared pipeline.
-- [ ] Java popup/tray notification behavior is source-audited and still needs
-      per-platform Flutter replacement decisions.
+- [x] Java popup/tray notification behavior is implemented for Windows, Linux,
+      and macOS with Java-equivalent config, window-state, text, and lifecycle
+      gating. Android intentionally has no desktop tray replacement.
 
 ### 4. Configuration, History, And Utilities
 
@@ -5516,8 +5533,8 @@ Open work:
       expansion are source-audited and still need implementation/tests.
 - [ ] Selected-history re-rip behavior is source-audited and still needs a
       Flutter selected-history model or documented replacement.
-- [ ] Open-folder and tray/popup behavior is source-audited and still needs
-      platform-specific Flutter replacement decisions.
+- [~] Open-folder and tray/popup behavior is source-audited. Tray and popup
+      parity are implemented for desktop; open-folder behavior remains.
 
 ### Pass 2: Low-Mention Rippers And Runtime Hooks
 

@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:local_notifier/local_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -12,6 +13,7 @@ import 'app_version.dart';
 import 'cli/cli_controller.dart';
 import 'clipboard_autorip.dart';
 import 'desktop_tray_controller.dart';
+import 'desktop_rip_start_notifier.dart';
 import 'download_history_provider.dart';
 import 'history_provider.dart';
 import 'l10n/app_localizations.dart';
@@ -33,12 +35,31 @@ Future<void> main(List<String> args) async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await Utils.init();
+  DesktopRipStartNotifier? ripStartNotifier;
   if (DesktopTrayController.isSupportedDesktop) {
     await windowManager.ensureInitialized();
+    try {
+      await localNotifier.setup(
+        appName: 'RipMe',
+        shortcutPolicy: ShortcutPolicy.requireCreate,
+      );
+    } catch (_) {
+      // Java treats unavailable desktop notifications as non-fatal.
+    }
+    ripStartNotifier = DesktopRipStartNotifier(
+      window: const WindowManagerOperations(),
+    );
   }
   runApp(
     ChangeNotifierProvider(
-      create: (context) => RipManager()..init(),
+      create: (context) => RipManager(
+        ripStartNotifier: ripStartNotifier == null
+            ? null
+            : (url) => ripStartNotifier!.notify(
+                  url,
+                  enabled: Utils.getConfigBoolean('download.show_popup', false),
+                ),
+      )..init(),
       child: const RipMeApp(),
     ),
   );
@@ -1804,6 +1825,13 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               title: strings.playSoundWhenRipCompletes,
               icon: Icons.volume_up_outlined,
               keyName: 'play.sound',
+              defaultValue: false,
+              onChanged: _refresh,
+            ),
+            _ConfigSwitch(
+              title: strings.notificationWhenRipStarts,
+              icon: Icons.notifications_active_outlined,
+              keyName: 'download.show_popup',
               defaultValue: false,
               onChanged: _refresh,
             ),

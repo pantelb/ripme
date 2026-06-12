@@ -88,6 +88,7 @@ class ConfigDefaults {
     'error.skip404': true,
     'errors.skip404': false,
     'download.save_order': true,
+    'download.show_popup': false,
     'album_titles.save': true,
     'twitter.rip_retweets': false,
     'twitter.exclude_replies': true,

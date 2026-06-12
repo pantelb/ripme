@@ -10,6 +10,7 @@ import 'utils/utils.dart';
 
 typedef RipperResolver = AbstractRipper? Function(Uri uri);
 typedef CompletionSoundPlayer = Future<void> Function();
+typedef RipStartNotifier = Future<void> Function(String url);
 
 class QueueSubmissionResult {
   const QueueSubmissionResult({
@@ -31,9 +32,11 @@ class RipManager extends ChangeNotifier {
   RipManager({
     RipperResolver? ripperResolver,
     CompletionSoundPlayer? completionSoundPlayer,
+    RipStartNotifier? ripStartNotifier,
   })  : _ripperResolver = ripperResolver ?? RipperFactory.getRipper,
         _completionSoundPlayer =
-            completionSoundPlayer ?? _playDefaultCompletionSound;
+            completionSoundPlayer ?? _playDefaultCompletionSound,
+        _ripStartNotifier = ripStartNotifier;
 
   final List<String> _queue = [];
   final List<RipStatusMessage> _logs = [];
@@ -42,6 +45,7 @@ class RipManager extends ChangeNotifier {
   final Set<int> _selectedHistoryRows = <int>{};
   final RipperResolver _ripperResolver;
   final CompletionSoundPlayer _completionSoundPlayer;
+  final RipStartNotifier? _ripStartNotifier;
 
   bool _isRipping = false;
   bool _stopRequested = false;
@@ -343,6 +347,11 @@ class RipManager extends ChangeNotifier {
     });
 
     try {
+      try {
+        await _ripStartNotifier?.call(urlText);
+      } catch (_) {
+        // Desktop notification failures do not prevent the rip from starting.
+      }
       await activeRipper.run();
     } catch (e) {
       _statusText = 'Error: $e';

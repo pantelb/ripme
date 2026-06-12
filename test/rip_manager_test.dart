@@ -163,6 +163,34 @@ class ProgressRipper extends AbstractRipper {
   }
 }
 
+class LifecycleRipper extends AbstractRipper {
+  LifecycleRipper(super.url, this.directory, this.events);
+
+  final Directory directory;
+  final List<String> events;
+
+  @override
+  Future<void> setup() async {
+    workingDir = directory;
+    events.add('setup');
+  }
+
+  @override
+  bool canRip(Uri url) => true;
+
+  @override
+  Future<String> getGID(Uri url) async => 'lifecycle';
+
+  @override
+  String getHost() => 'test';
+
+  @override
+  Future<void> rip() async {
+    events.add('run');
+    sendUpdate(RipStatus.ripComplete, workingDir.path);
+  }
+}
+
 Future<void> _waitFor(bool Function() condition) async {
   final deadline = DateTime.now().add(const Duration(seconds: 2));
   while (!condition()) {
@@ -650,37 +678,22 @@ void main() {
     addTearDown(() {
       if (!release.isCompleted) release.complete();
     });
-    final started = Completer<String>();
     final manager = RipManager(
-      ripperResolver: (uri) {
-        if (!started.isCompleted) started.complete(uri.toString());
-        return BlockingRipper(uri, directory, release.future);
-      },
+      ripperResolver: (uri) => BlockingRipper(uri, directory, release.future),
       completionSoundPlayer: () async {},
     );
     await manager.init();
-    final twoPending = Completer<void>();
-    manager.addListener(() {
-      if (manager.isRipping &&
-          manager.queue.length == 2 &&
-          !manager.queue.contains('https://example.com/album/2/page/2') &&
-          !twoPending.isCompleted) {
-        twoPending.complete();
-      }
-    });
+    manager.addUrlToQueue('https://example.com/active');
+    await _waitFor(() => manager.isRipping);
 
     final result = manager.submitManualUrl(
       'https://example.com/album/{2-4}/page/{ignored}',
     );
-    expect(
-      await started.future,
-      'https://example.com/album/2/page/2',
-    );
-    await twoPending.future;
 
     expect(result.accepted, 3);
     expect(result.errors, isEmpty);
     expect(manager.queue, [
+      'https://example.com/album/2/page/2',
       'https://example.com/album/3/page/3',
       'https://example.com/album/4/page/4',
     ]);
@@ -779,6 +792,30 @@ void main() {
     manager.stop();
 
     expect(manager.logs.any((msg) => msg.status == RipStatus.queueAdd), isTrue);
+  });
+
+  test('notifies after setup and before starting the ripper', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_manager_notify_test');
+    addTearDown(() => _deleteIfExists(directory));
+    final events = <String>[];
+    final manager = RipManager(
+      ripperResolver: (uri) => LifecycleRipper(uri, directory, events),
+      completionSoundPlayer: () async {},
+      ripStartNotifier: (url) async => events.add('notify:$url'),
+    );
+    await manager.init();
+
+    manager.addUrlToQueue('https://example.com/notify');
+    await _waitFor(() => manager.history.isNotEmpty);
+
+    expect(events, [
+      'setup',
+      'notify:https://example.com/notify',
+      'run',
+    ]);
   });
 
   test('tracks current rip status text and determinate progress', () async {
