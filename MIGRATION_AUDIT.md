@@ -1205,7 +1205,20 @@ Parity checklist:
     `http`, `https`, `ftp`, and `file` schemes, remembers each matched URL for
     the app autorip session, and polls every 1000 ms. New matches enter
     `RipManager.addUrlToQueue`, which starts immediately when idle.
-- [ ] Verify tray icon/menu support or document platform-native replacement.
+  - CI: workflow `27407479399` exposed a remaining manual-range test race.
+    Workflow `27408110876` succeeded after requiring active-rip state and
+    consumed-first-item state. Artifacts: Android `7588505546`, Windows
+    `7588462405`, macOS `7588449892`, Linux `7588423916`.
+- [x] Verify tray icon/menu support or document platform-native replacement.
+  - Completed: Windows, Linux, and macOS initialize a native tray icon on a
+    best-effort basis. The menu mirrors Java's Show/Hide, About, Clipboard
+    Autorip checkbox, separators, and Exit actions. Tray clicks restore and
+    focus an inactive/hidden window or hide an active visible window.
+  - Java parity: initialization failures remain non-fatal, localized tray
+    labels come from `LabelsBundle*.properties`, and the autorip item persists
+    `clipboard.autorip`. Android intentionally has no system-tray surface.
+  - Validation: unit tests cover active-window hiding, inactive-window
+    restoration/focus, About dispatch, autorip state dispatch, and Exit.
 - [ ] Verify popup notification behavior or document replacement.
 - [ ] Verify open-folder button behavior after completion.
 - [ ] Verify keyboard interactions.
@@ -2183,11 +2196,13 @@ Findings:
       showing the shifted popup. Flutter currently relies on native/context
       controls and queue/history widgets without verified parity for these
       exact trigger, focus, action-availability, and saved-string semantics.
-- [ ] Java tray icon, popup notifications, and open-folder button are desktop
+- [~] Java tray icon, popup notifications, and open-folder button are desktop
       behaviors that need per-platform Flutter verification or documented
       replacements. The Java implementation uses `SystemTray`, `TrayIcon`,
       `TrayIcon.displayMessage`, tray About/Hide/Show/Exit/Autorip menu items,
       and `Desktop.getDesktop().open(...)` / `.browse(...)`.
+  - Tray icon/menu parity is implemented for Windows, Linux, and macOS.
+    Popup notifications and open-folder behavior remain incomplete.
 - [ ] Java main window lifecycle uses `JFrame.EXIT_ON_CLOSE`, a `WindowListener`
       to toggle tray labels and icon visibility on activate/deactivate,
       `setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)`, and explicit

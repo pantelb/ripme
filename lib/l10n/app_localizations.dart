@@ -209,6 +209,11 @@ class AppLocalizations {
   String get app => 'App';
   String get language => 'Language';
   String get clipboardAutorip => 'Clipboard autorip';
+  String get trayShow => _label('tray.show', 'Show');
+  String get trayHide => _label('tray.hide', 'Hide');
+  String get trayAbout => 'About $appTitle';
+  String get trayAutorip => _label('tray.autorip', 'Clipboard Autorip');
+  String get trayExit => _label('tray.exit', 'Exit');
   String get playSoundWhenRipCompletes =>
       _label('sound.when.rip.completes', 'Play sound when rip completes');
   String get currentVersion => _label('current.version', 'Current version');

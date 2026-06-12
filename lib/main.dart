@@ -7,9 +7,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:window_manager/window_manager.dart';
 import 'app_version.dart';
 import 'cli/cli_controller.dart';
 import 'clipboard_autorip.dart';
+import 'desktop_tray_controller.dart';
 import 'download_history_provider.dart';
 import 'history_provider.dart';
 import 'l10n/app_localizations.dart';
@@ -31,6 +33,9 @@ Future<void> main(List<String> args) async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await Utils.init();
+  if (DesktopTrayController.isSupportedDesktop) {
+    await windowManager.ensureInitialized();
+  }
   runApp(
     ChangeNotifierProvider(
       create: (context) => RipManager()..init(),
@@ -203,6 +208,7 @@ class _MainWindowState extends State<MainWindow>
   final UndoHistoryController _urlUndoController = UndoHistoryController();
   final ClipboardAutoripTracker _clipboardAutorip = ClipboardAutoripTracker();
   Timer? _clipboardTimer;
+  DesktopTrayController? _trayController;
 
   @override
   void initState() {
@@ -212,11 +218,13 @@ class _MainWindowState extends State<MainWindow>
       ClipboardAutoripTracker.pollInterval,
       (_) => _checkClipboardAutorip(),
     );
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initializeTray());
   }
 
   @override
   void dispose() {
     _clipboardTimer?.cancel();
+    unawaited(_trayController?.dispose());
     _tabController.dispose();
     _urlController.dispose();
     _urlUndoController.dispose();
@@ -284,6 +292,47 @@ class _MainWindowState extends State<MainWindow>
 
   void _enqueueUrl(RipManager ripManager, String url) {
     ripManager.submitManualUrl(url);
+  }
+
+  Future<void> _initializeTray() async {
+    if (!mounted || !DesktopTrayController.isSupportedDesktop) return;
+    final strings = AppLocalizations.of(context);
+    final controller = DesktopTrayController(
+      labels: DesktopTrayLabels(
+        show: strings.trayShow,
+        hide: strings.trayHide,
+        about: strings.trayAbout,
+        autorip: strings.trayAutorip,
+        exit: strings.trayExit,
+      ),
+      autoripEnabled: Utils.getConfigBoolean('clipboard.autorip', false),
+      actionHandler: DesktopTrayActionHandler(
+        window: const WindowManagerOperations(),
+        onAbout: () {
+          if (!mounted) return;
+          showAboutDialog(
+            context: context,
+            applicationName: strings.appTitle,
+            applicationVersion: appVersion,
+          );
+        },
+        onAutoripChanged: (enabled) async {
+          await Utils.setConfigBoolean('clipboard.autorip', enabled);
+          if (mounted) setState(() {});
+        },
+      ),
+    );
+    _trayController = controller;
+    try {
+      await controller.initialize();
+    } catch (_) {
+      try {
+        await controller.dispose();
+      } catch (_) {
+        // Java treats unsupported or failed tray setup as non-fatal.
+      }
+      _trayController = null;
+    }
   }
 
   Future<void> _checkClipboardAutorip() async {
