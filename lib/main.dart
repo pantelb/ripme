@@ -509,6 +509,38 @@ class _StatusSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
+    final chips = [
+      _StatusChip(
+        icon: Icons.playlist_add_check_circle_outlined,
+        label: strings.queue,
+        value: ripManager.queue.length.toString(),
+        color: scheme.primary,
+      ),
+      _StatusChip(
+        icon: Icons.bolt_outlined,
+        label: strings.active,
+        value: ripManager.activeDownloads.toString(),
+        color: const Color(0xFF0EA5E9),
+      ),
+      _StatusChip(
+        icon: Icons.verified_outlined,
+        label: strings.done,
+        value: ripManager.completedDownloads.toString(),
+        color: const Color(0xFF059669),
+      ),
+      _StatusChip(
+        icon: Icons.low_priority_outlined,
+        label: strings.skipped,
+        value: ripManager.skippedDownloads.toString(),
+        color: const Color(0xFFD97706),
+      ),
+      _StatusChip(
+        icon: Icons.error_outline,
+        label: strings.failed,
+        value: ripManager.failedDownloads.toString(),
+        color: scheme.error,
+      ),
+    ];
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
       child: DecoratedBox(
@@ -519,41 +551,27 @@ class _StatusSummary extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _StatusChip(
-                icon: Icons.playlist_add_check_circle_outlined,
-                label: strings.queue,
-                value: ripManager.queue.length.toString(),
-                color: scheme.primary,
-              ),
-              _StatusChip(
-                icon: Icons.bolt_outlined,
-                label: strings.active,
-                value: ripManager.activeDownloads.toString(),
-                color: const Color(0xFF0EA5E9),
-              ),
-              _StatusChip(
-                icon: Icons.verified_outlined,
-                label: strings.done,
-                value: ripManager.completedDownloads.toString(),
-                color: const Color(0xFF059669),
-              ),
-              _StatusChip(
-                icon: Icons.low_priority_outlined,
-                label: strings.skipped,
-                value: ripManager.skippedDownloads.toString(),
-                color: const Color(0xFFD97706),
-              ),
-              _StatusChip(
-                icon: Icons.error_outline,
-                label: strings.failed,
-                value: ripManager.failedDownloads.toString(),
-                color: scheme.error,
-              ),
-            ],
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < 600) {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      for (var index = 0; index < chips.length; index++) ...[
+                        if (index > 0) const SizedBox(width: 8),
+                        chips[index],
+                      ],
+                    ],
+                  ),
+                );
+              }
+              return Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: chips,
+              );
+            },
           ),
         ),
       ),

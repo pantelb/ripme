@@ -1257,7 +1257,13 @@ Parity checklist:
     accelerator, Enter, or Escape binding to reproduce.
   - Validation: widget tests exercise Ctrl+A/C/X and Ctrl+V without selecting
     the existing URL, proving full-field replacement.
-- [ ] Verify responsive layout across desktop and Android.
+- [x] Verify responsive layout across desktop and Android.
+  - Flutter intentionally replaces Java's packed Swing window with adaptive
+    Material layout: the command bar stacks below 720 px, status chips wrap,
+    tables scroll horizontally, and configuration content scrolls vertically.
+  - Validation: widget tests render and navigate Log, History, Queue, and
+    Configuration at 360x800 Android and 1280x800 Windows viewport sizes with
+    no framework or overflow exceptions.
 
 Required tests:
 
