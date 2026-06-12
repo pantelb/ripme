@@ -77,7 +77,6 @@ void main() {
 
     clipboardText = 'https://example.com/replacement';
     await tester.enterText(fieldFinder, 'https://example.com/original');
-    await _sendControlShortcut(tester, LogicalKeyboardKey.keyA);
     await _sendControlShortcut(tester, LogicalKeyboardKey.keyV);
     expect(fieldText(), 'https://example.com/replacement');
   });

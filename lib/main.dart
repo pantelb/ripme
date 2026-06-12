@@ -398,36 +398,47 @@ class _CommandBar extends StatelessWidget {
           child: LayoutBuilder(
             builder: (context, constraints) {
               final isNarrow = constraints.maxWidth < 720;
-              final field = TextField(
-                controller: controller,
-                undoController: undoController,
-                contextMenuBuilder: (context, editableTextState) {
-                  final buttonItems = <ContextMenuButtonItem>[
-                    ContextMenuButtonItem(
-                      label: 'Undo',
-                      onPressed: undoController.value.canUndo
-                          ? () {
-                              undoController.undo();
-                              editableTextState.hideToolbar();
-                            }
-                          : null,
-                    ),
-                    ...editableTextState.contextMenuButtonItems,
-                  ];
-                  return AdaptiveTextSelectionToolbar.buttonItems(
-                    anchors: editableTextState.contextMenuAnchors,
-                    buttonItems: buttonItems,
-                  );
+              final field = Focus(
+                onKeyEvent: (node, event) {
+                  if (event is KeyDownEvent &&
+                      event.logicalKey == LogicalKeyboardKey.keyV &&
+                      HardwareKeyboard.instance.isControlPressed) {
+                    unawaited(_replaceUrlFromClipboard());
+                    return KeyEventResult.handled;
+                  }
+                  return KeyEventResult.ignored;
                 },
-                decoration: InputDecoration(
-                  hintText: strings.enterUrlToRip,
-                  prefixIcon: const Icon(Icons.link_outlined),
-                  isDense: true,
+                child: TextField(
+                  controller: controller,
+                  undoController: undoController,
+                  contextMenuBuilder: (context, editableTextState) {
+                    final buttonItems = <ContextMenuButtonItem>[
+                      ContextMenuButtonItem(
+                        label: 'Undo',
+                        onPressed: undoController.value.canUndo
+                            ? () {
+                                undoController.undo();
+                                editableTextState.hideToolbar();
+                              }
+                            : null,
+                      ),
+                      ...editableTextState.contextMenuButtonItems,
+                    ];
+                    return AdaptiveTextSelectionToolbar.buttonItems(
+                      anchors: editableTextState.contextMenuAnchors,
+                      buttonItems: buttonItems,
+                    );
+                  },
+                  decoration: InputDecoration(
+                    hintText: strings.enterUrlToRip,
+                    prefixIcon: const Icon(Icons.link_outlined),
+                    isDense: true,
+                  ),
+                  onChanged: ripManager.validateUrlInput,
+                  onSubmitted: (value) {
+                    if (value.trim().isNotEmpty) onSubmit(value);
+                  },
                 ),
-                onChanged: ripManager.validateUrlInput,
-                onSubmitted: (value) {
-                  if (value.trim().isNotEmpty) onSubmit(value);
-                },
               );
               final actions = Row(
                 mainAxisSize: MainAxisSize.min,
@@ -475,6 +486,17 @@ class _CommandBar extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _replaceUrlFromClipboard() async {
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    final text = data?.text;
+    if (text == null) return;
+    controller.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+    ripManager.validateUrlInput(text);
   }
 }
 

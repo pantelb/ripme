@@ -1247,7 +1247,16 @@ Parity checklist:
   - Validation: manager tests cover the completed directory state; widget
     tests cover button visibility, label text, next-rip hiding, and path
     shortening.
-- [ ] Verify keyboard interactions.
+- [x] Verify keyboard interactions.
+  - Java registers only a URL-field Ctrl+V `KeyAdapter`; it replaces the whole
+    field with the string clipboard flavor. Flutter now intercepts that exact
+    chord, replaces the complete URL value, moves the caret to the end, and
+    re-runs live URL validation.
+  - Flutter retains native cut/copy/select-all/undo shortcuts and native
+    Command-key behavior on macOS. Java has no registered mnemonic,
+    accelerator, Enter, or Escape binding to reproduce.
+  - Validation: widget tests exercise Ctrl+A/C/X and Ctrl+V without selecting
+    the existing URL, proving full-field replacement.
 - [ ] Verify responsive layout across desktop and Android.
 
 Required tests:
