@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'ripper/abstract_ripper.dart';
@@ -11,6 +12,22 @@ import 'utils/utils.dart';
 typedef RipperResolver = AbstractRipper? Function(Uri uri);
 typedef CompletionSoundPlayer = Future<void> Function();
 typedef RipStartNotifier = Future<void> Function(String url);
+typedef FinishCommandRunner = Future<FinishCommandResult> Function(
+  String executable,
+  List<String> arguments,
+);
+
+class FinishCommandResult {
+  const FinishCommandResult({
+    required this.exitCode,
+    this.stdout = '',
+    this.stderr = '',
+  });
+
+  final int exitCode;
+  final String stdout;
+  final String stderr;
+}
 
 class QueueSubmissionResult {
   const QueueSubmissionResult({
@@ -33,10 +50,12 @@ class RipManager extends ChangeNotifier {
     RipperResolver? ripperResolver,
     CompletionSoundPlayer? completionSoundPlayer,
     RipStartNotifier? ripStartNotifier,
+    FinishCommandRunner? finishCommandRunner,
   })  : _ripperResolver = ripperResolver ?? RipperFactory.getRipper,
         _completionSoundPlayer =
             completionSoundPlayer ?? _playDefaultCompletionSound,
-        _ripStartNotifier = ripStartNotifier;
+        _ripStartNotifier = ripStartNotifier,
+        _finishCommandRunner = finishCommandRunner ?? _runProcess;
 
   final List<String> _queue = [];
   final List<RipStatusMessage> _logs = [];
@@ -46,6 +65,7 @@ class RipManager extends ChangeNotifier {
   final RipperResolver _ripperResolver;
   final CompletionSoundPlayer _completionSoundPlayer;
   final RipStartNotifier? _ripStartNotifier;
+  final FinishCommandRunner _finishCommandRunner;
 
   bool _isRipping = false;
   bool _stopRequested = false;
@@ -319,6 +339,7 @@ class RipManager extends ChangeNotifier {
     final runId = ++_ripRunId;
     _currentRipper = activeRipper;
     var runItemCount = 0;
+    Future<void>? finishCommand;
 
     await activeRipper.setup();
     activeRipper.statusStream.listen((event) {
@@ -340,6 +361,10 @@ class RipManager extends ChangeNotifier {
       }
       if (event.status == RipStatus.ripComplete) {
         unawaited(_playCompletionSoundIfEnabled());
+        finishCommand = _runFinishCommandIfEnabled(
+          activeRipper.url.toString(),
+          event.object.toString(),
+        );
         _addToHistory(
           activeRipper.url.toString(),
           event.object.toString(),
@@ -356,6 +381,7 @@ class RipManager extends ChangeNotifier {
         // Desktop notification failures do not prevent the rip from starting.
       }
       await activeRipper.run();
+      await finishCommand;
     } catch (e) {
       _statusText = 'Error: $e';
       _addLog(RipStatusMessage(RipStatus.ripErrored, e.toString()));
@@ -553,6 +579,64 @@ class RipManager extends ChangeNotifier {
 
   static Future<void> _playDefaultCompletionSound() async {
     await SystemSound.play(SystemSoundType.alert);
+  }
+
+  Future<void> _runFinishCommandIfEnabled(String url, String path) async {
+    if (!Utils.getConfigBoolean('enable.finish.command', false)) return;
+
+    final command = (Utils.getConfigString('finish.command', 'ls') ?? 'ls')
+        .replaceAll('%url%', url)
+        .replaceAll('%path%', Directory(path).absolute.path);
+    final parts = javaCommandParts(command);
+    try {
+      final result = await _finishCommandRunner(
+        parts.first,
+        parts.skip(1).toList(),
+      );
+      for (final line in _outputLines(result.stdout)) {
+        _addLog(RipStatusMessage(RipStatus.loadingResource, line));
+      }
+      for (final line in _outputLines(result.stderr)) {
+        _addLog(RipStatusMessage(RipStatus.downloadWarn, line));
+      }
+      if (result.exitCode != 0 && result.stderr.trim().isEmpty) {
+        _addLog(RipStatusMessage(
+          RipStatus.downloadWarn,
+          'Finish command exited with code ${result.exitCode}',
+        ));
+      }
+    } catch (error) {
+      _addLog(RipStatusMessage(
+        RipStatus.downloadWarn,
+        'Was unable to run command "$command": $error',
+      ));
+    }
+  }
+
+  static List<String> javaCommandParts(String command) {
+    final parts = command.split(' ');
+    while (parts.length > 1 && parts.last.isEmpty) {
+      parts.removeLast();
+    }
+    return parts;
+  }
+
+  static Iterable<String> _outputLines(String output) sync* {
+    for (final line in output.split(RegExp(r'\r?\n'))) {
+      if (line.isNotEmpty) yield line;
+    }
+  }
+
+  static Future<FinishCommandResult> _runProcess(
+    String executable,
+    List<String> arguments,
+  ) async {
+    final result = await Process.run(executable, arguments);
+    return FinishCommandResult(
+      exitCode: result.exitCode,
+      stdout: result.stdout.toString(),
+      stderr: result.stderr.toString(),
+    );
   }
 }
 

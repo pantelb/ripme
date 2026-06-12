@@ -63,6 +63,7 @@ void main() {
     expect(Utils.getConfigBoolean('file.overwrite', true), isFalse);
     expect(Utils.getConfigBoolean('errors.skip404', true), isFalse);
     expect(Utils.getConfigBoolean('download.save_order', false), isTrue);
+    expect(Utils.getConfigBoolean('enable.finish.command', true), isFalse);
     expect(Utils.getConfigBoolean('album_titles.save', false), isTrue);
     expect(Utils.getConfigBoolean('remember.url_history', false), isTrue);
     expect(Utils.getConfigBoolean('history.warn_before_delete', false), isTrue);
@@ -76,6 +77,7 @@ void main() {
     expect(Utils.getConfigString('tumblr.auth', null), isNotEmpty);
     expect(Utils.getConfigString('gw.api', null), 'gonewild');
     expect(Utils.getConfigString('erome.laravel_session', 'fallback'), '');
+    expect(Utils.getConfigString('finish.command', 'fallback'), 'ls');
     expect(Utils.getConfigString('proxy.host', 'fallback'), '');
     expect(Utils.getConfigString('proxy.username', 'fallback'), '');
     expect(Utils.getConfigString('proxy.password', 'fallback'), '');

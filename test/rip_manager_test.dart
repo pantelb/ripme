@@ -485,6 +485,64 @@ void main() {
     expect(manager.logs, isEmpty);
   });
 
+  test('runs Java finish command before advancing the queue', () async {
+    SharedPreferences.setMockInitialValues({
+      'enable.finish.command': true,
+      'finish.command': 'notify --url=%url% --path=%path%',
+    });
+    await Utils.init();
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_finish_command_test');
+    addTearDown(() => _deleteIfExists(directory));
+    final calls = <(String, List<String>)>[];
+    final release = Completer<void>();
+    final manager = RipManager(
+      ripperResolver: (uri) => CompletingRipper(uri, directory),
+      completionSoundPlayer: () async {},
+      finishCommandRunner: (executable, arguments) async {
+        calls.add((executable, arguments));
+        await release.future;
+        return const FinishCommandResult(
+          exitCode: 0,
+          stdout: 'command output\n',
+          stderr: 'command warning\n',
+        );
+      },
+    );
+    await manager.init();
+
+    manager.addUrlToQueue('https://example.com/one');
+    manager.addUrlToQueue('https://example.com/two');
+    await _waitFor(() => calls.isNotEmpty);
+
+    expect(manager.isRipping, isTrue);
+    expect(manager.queue, ['https://example.com/two']);
+    expect(calls.single.$1, 'notify');
+    expect(calls.single.$2, [
+      '--url=https://example.com/one',
+      '--path=${directory.absolute.path}',
+    ]);
+
+    release.complete();
+    await _waitFor(() => calls.length == 2);
+    expect(
+      manager.logs.any((message) => message.object == 'command output'),
+      isTrue,
+    );
+    expect(
+      manager.logs.any((message) => message.object == 'command warning'),
+      isTrue,
+    );
+  });
+
+  test('matches Java finish command single-space tokenization', () {
+    expect(
+      RipManager.javaCommandParts('tool  middle trailing  '),
+      ['tool', '', 'middle', 'trailing'],
+    );
+    expect(RipManager.javaCommandParts(''), ['']);
+  });
+
   test('stop leaves pending queue entries until a new submission resumes it',
       () async {
     SharedPreferences.setMockInitialValues({});

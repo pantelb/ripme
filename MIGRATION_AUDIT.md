@@ -759,8 +759,15 @@ Parity checklist:
     [Windows](https://github.com/pantelb/ripme/actions/runs/27359734247/artifacts/7569824709),
     [macOS](https://github.com/pantelb/ripme/actions/runs/27359734247/artifacts/7569814295),
     [Linux](https://github.com/pantelb/ripme/actions/runs/27359734247/artifacts/7569775867).
-- [ ] Support or intentionally retire finish commands:
+- [x] Support or intentionally retire finish commands:
       `enable.finish.command` and `finish.command`.
+  - Completed: after `RIP_COMPLETE`, Flutter substitutes every `%url%` and
+    `%path%` occurrence, splits the configured command on literal single
+    spaces like Java, runs it without a shell, captures output/errors, and
+    waits for it before advancing to the next queued album. The command is
+    disabled by default and defaults to `ls`, matching Java call-site defaults.
+    Process execution is injected in tests so substitution, tokenization,
+    output reporting, and queue ordering are deterministic.
 - [ ] Support or intentionally retire history deletion warning:
       `history.warn_before_delete`.
 - [x] Support or intentionally retire Java auto-update preference:
