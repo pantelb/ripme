@@ -1075,9 +1075,20 @@ Parity checklist:
 
 Required tests:
 
-- [ ] HTTP unit tests for each checklist item.
-- [ ] Proxy parsing tests for Java CLI strings.
-- [ ] Cookie precedence tests.
+- [x] HTTP unit tests for each checklist item.
+  - Completed in `http_utils_test.dart`: user agent, request/file attempt counts,
+    retry sleep, timeouts, inactive max size, interruption, headers/cookies,
+    proxy/SSL behavior, content-type tolerance, request-builder APIs, Java
+    status messages, zero attempts, and ignored `Retry-After` are all covered.
+- [x] Proxy parsing tests for Java CLI strings.
+  - Completed in `proxy_config_test.dart`: host-only, optional port,
+    authenticated forms, last-`@` behavior, shared HTTP/SOCKS parsing, and
+    malformed credentials/ports are covered.
+- [x] Cookie precedence tests.
+  - Completed in `http_utils_test.dart`: exact hosts win over parent domains,
+    empty exact values fall back to parents, parser edge cases match Java,
+    malformed pairs fail, and configured page cookies are not injected into
+    Java-style download defaults.
 
 ### Workstream 6: Download Engine And Status Semantics
 
