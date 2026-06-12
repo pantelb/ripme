@@ -190,8 +190,16 @@ blocked by platform constraints or missing user input.
     [macOS](https://github.com/pantelb/ripme/actions/runs/27325422672/artifacts/7555413445),
     and
     [Linux](https://github.com/pantelb/ripme/actions/runs/27325422672/artifacts/7555404037).
-- [ ] Add a script or test that fails when a Java-used config key has no Flutter
+- [x] Add a script or test that fails when a Java-used config key has no Flutter
       default, migration alias, or documented intentional removal.
+  - Completed: `tool/check_java_config_keys.dart` reads every Java production
+    source file and `rip.properties` from `origin/main`, extracts literal,
+    constant-backed, dynamic-prefix, and required config keys, and compares the
+    result with `ConfigDefaults.javaRuntimeKeys`. Flutter CI runs the guard
+    before analysis.
+  - Source discrepancy fixed: the previous hand-maintained inventory omitted
+    `DeviantartLogin.cookies`, `download.ignore_extensions`, `gw.api`, and
+    `tsumino.blacklist.tags`; all four are now recorded.
 - [ ] Add a script or test that fails when a Java localized key has no Flutter
       lookup, generated localization mapping, or documented intentional removal.
 - [ ] Add a script or test that fails when a Java test class has no Dart test,
