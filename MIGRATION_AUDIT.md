@@ -761,8 +761,16 @@ Parity checklist:
     explicit file-backed exception. A persistence test verifies that
     non-portable writes are committed to the preference backend and survive
     utility reinitialization.
-- [ ] Reconcile Java default rip directory (`<jar directory>/rips`) with
+- [x] Reconcile Java default rip directory (`<jar directory>/rips`) with
       Flutter's current app-documents default.
+  - Completed: desktop defaults now resolve to `rips` beside the executable,
+    matching Java's application-directory behavior. Both configured and
+    default paths use Java's leaf-directory creation behavior and fall back to
+    the user home directory when creation fails. Android intentionally retains
+    its writable external-storage/application-documents base because packaged
+    application binaries are not a writable download location. Tests cover
+    Windows and POSIX path resolution, creation, configured paths, failure
+    fallback, and the Android replacement.
 - [ ] Reconcile Java old-config deletion/reload behavior when required keys are
       missing.
 - [ ] Persist settings on exit or immediately in a documented Flutter-native way.

@@ -30,10 +30,19 @@ class Utils {
   }
 
   static String portableConfigPath(String executablePath) {
-    final isWindowsPath = RegExp(r'^[A-Za-z]:[\\/]').hasMatch(executablePath) ||
-        executablePath.startsWith(r'\\');
-    final context = isWindowsPath ? p.windows : p.posix;
+    final context = _pathContext(executablePath);
     return context.join(context.dirname(executablePath), 'rip.properties');
+  }
+
+  static String defaultRipDirectoryPath(String executablePath) {
+    final context = _pathContext(executablePath);
+    return context.join(context.dirname(executablePath), ripDirectory);
+  }
+
+  static p.Context _pathContext(String path) {
+    final isWindowsPath =
+        RegExp(r'^[A-Za-z]:[\\/]').hasMatch(path) || path.startsWith(r'\\');
+    return isWindowsPath ? p.windows : p.posix;
   }
 
   static String bytesToHumanReadable(int bytes) {
@@ -57,27 +66,40 @@ class Utils {
         '${bytesToHumanReadable(bytesTotal)}';
   }
 
-  static Future<Directory> getWorkingDirectory() async {
-    String? customPath = getConfigString("rips.directory", null);
+  static Future<Directory> getWorkingDirectory({
+    String? executablePath,
+    bool? android,
+    Directory? androidBaseDirectory,
+    Directory? fallbackHomeDirectory,
+  }) async {
+    final customPath = getConfigString("rips.directory", null);
+    final isAndroid = android ?? Platform.isAndroid;
+    late Directory workingDir;
     if (customPath != null) {
-      return Directory(customPath);
-    }
-
-    Directory baseDir;
-    if (Platform.isAndroid) {
-      baseDir = (await getExternalStorageDirectory()) ??
-          (await getApplicationDocumentsDirectory());
+      workingDir = Directory(customPath);
+    } else if (isAndroid) {
+      final baseDir = androidBaseDirectory ??
+          await getExternalStorageDirectory() ??
+          await getApplicationDocumentsDirectory();
+      workingDir = Directory(p.join(baseDir.path, ripDirectory));
     } else {
-      // For desktop, use a folder next to the executable or in documents
-      baseDir = await getApplicationDocumentsDirectory();
+      workingDir = Directory(
+        defaultRipDirectoryPath(executablePath ?? Platform.resolvedExecutable),
+      );
     }
 
-    Directory workingDir = Directory(p.join(baseDir.path, ripDirectory));
-    if (!await workingDir.exists()) {
-      await workingDir.create(recursive: true);
+    if (await workingDir.exists()) return workingDir;
+    try {
+      return await workingDir.create();
+    } on FileSystemException {
+      return fallbackHomeDirectory ?? Directory(_userHomePath());
     }
-    return workingDir;
   }
+
+  static String _userHomePath() =>
+      Platform.environment['HOME'] ??
+      Platform.environment['USERPROFILE'] ??
+      Directory.current.path;
 
   static String? getConfigString(String key, String? defaultValue) {
     return _portableConfig?[key] ??
