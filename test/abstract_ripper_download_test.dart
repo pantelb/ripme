@@ -864,9 +864,13 @@ void main() {
         isNotEmpty);
   });
 
-  test('skips configured ignored file extensions', () async {
+  test('matches Java ignored extensions from the final URL path suffix',
+      () async {
     SharedPreferences.setMockInitialValues({
-      'download.ignore_extensions': 'mp4, gif',
+      'download.ignore_extensions': ' mp4, GIF ',
+      'remember.url_history': false,
+      'download.retries': 0,
+      'download.timeout': 1000,
     });
     await Utils.init();
 
@@ -881,16 +885,49 @@ void main() {
     final sub = ripper.statusStream.listen(statuses.add);
     addTearDown(sub.cancel);
 
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    var requests = 0;
+    server.listen((request) async {
+      requests++;
+      request.response.write('ok');
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
     await ripper.downloadFiles([
       RipperDownload(
-        url: Uri.parse('https://example.com/video.MP4?token=1'),
+        url: Uri.parse(
+            'http://127.0.0.1:${server.port}/archive.tar.GIF?token=1'),
+        saveAs: File('${directory.path}/archive.gif'),
+      ),
+      RipperDownload(
+        url: Uri.parse('http://127.0.0.1:${server.port}/.MP4#fragment'),
         saveAs: File('${directory.path}/video.mp4'),
+      ),
+      RipperDownload(
+        url: Uri.parse('http://127.0.0.1:${server.port}/video.mp4/segment'),
+        saveAs: File('${directory.path}/segment'),
+      ),
+      RipperDownload(
+        url: Uri.parse('http://127.0.0.1:${server.port}/folder.with.dot/file'),
+        saveAs: File('${directory.path}/file'),
+      ),
+      RipperDownload(
+        url: Uri.parse('http://127.0.0.1:${server.port}/plain'),
+        saveAs: File('${directory.path}/plain'),
       ),
     ]);
     await Future<void>.delayed(Duration.zero);
 
-    expect(statuses.single.status, RipStatus.downloadSkip);
-    expect(statuses.single.object.toString(), contains('ignored extension'));
+    final skipped =
+        statuses.where((message) => message.status == RipStatus.downloadSkip);
+    expect(skipped, hasLength(2));
+    expect(
+      skipped.every(
+          (message) => message.object.toString().contains('ignored extension')),
+      isTrue,
+    );
+    expect(requests, 3);
   });
 
   test('saves URLs to urls.txt instead of downloading when configured',

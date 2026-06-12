@@ -1086,7 +1086,13 @@ Parity checklist:
     filenames. Shared video transport ignores requested referrers/cookies,
     sends `Referer: <media-url>` for HEAD and GET, and omits the `Cookie`
     header, matching `VideoRipper` / `DownloadVideoThread`.
-- [ ] Verify ignored extension behavior.
+- [x] Verify ignored extension behavior.
+  - Completed: Flutter reads the comma-separated extension list, compares
+    case-insensitively against only the final dot-delimited URL path suffix,
+    ignores query/fragment text, and emits Java's exact
+    `Skipping <url> - ignored extension` `DOWNLOAD_SKIP` message. Dots in
+    parent path segments and extensions followed by another path segment do not
+    match.
 - [ ] Verify Java empty working-directory cleanup after a failed or empty rip.
 - [ ] Verify Java gaussian jitter applied to ripper sleeps.
 - [ ] Verify Java MIME/magic-number extension detection for
@@ -1971,8 +1977,8 @@ Findings:
       constructors during the first album-ripper pass before the explicit video
       pass. Flutter `RipperFactory` has one fixed hand-written order, so
       overlap/precedence parity for packaged Java dispatch is unproven.
-- [ ] Java `download.ignore_extensions` suppresses extension-matched URLs with
-      `DOWNLOAD_SKIP`; Flutter has a similar check but needs exact tests.
+- [x] Java `download.ignore_extensions` suppresses extension-matched URLs with
+      `DOWNLOAD_SKIP`; exact match and nonmatch path cases are covered.
 - [ ] Java `sleep(milliseconds)` applies gaussian jitter with a minimum of 47%
       of requested time. Flutter delay behavior is not equivalent.
 - [ ] Java `RipperInterface` contract includes `rip`, `canRip`, `sanitizeURL`,
