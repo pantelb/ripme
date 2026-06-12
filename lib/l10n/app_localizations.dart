@@ -126,6 +126,8 @@ class AppLocalizations {
   String get historyExported => 'History exported';
   String historyExportFailed(Object error) => 'History export failed: $error';
   String get clearQueue => _label('queue.remove.all', 'Clear queue');
+  String get removeSelectedFromQueue =>
+      _label('queue.remove.selected', 'Remove selected');
   String get clearQueueConfirmation => _label('queue.validation',
       'Are you sure you want to remove all elements from the queue?');
   String get moveUp => 'Move up';

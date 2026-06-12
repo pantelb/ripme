@@ -38,6 +38,7 @@ class RipManager extends ChangeNotifier {
   final List<String> _queue = [];
   final List<RipStatusMessage> _logs = [];
   List<HistoryEntry> _history = [];
+  final Set<int> _selectedQueueRows = <int>{};
   final Set<int> _selectedHistoryRows = <int>{};
   final RipperResolver _ripperResolver;
   final CompletionSoundPlayer _completionSoundPlayer;
@@ -52,6 +53,7 @@ class RipManager extends ChangeNotifier {
   List<String> get queue => _queue;
   List<RipStatusMessage> get logs => _logs;
   List<HistoryEntry> get history => _history;
+  Set<int> get selectedQueueRows => Set<int>.unmodifiable(_selectedQueueRows);
   Set<int> get selectedHistoryRows =>
       Set<int>.unmodifiable(_selectedHistoryRows);
   bool get isRipping => _isRipping;
@@ -213,9 +215,32 @@ class RipManager extends ChangeNotifier {
   void removeFromQueue(int index) {
     if (index >= 0 && index < _queue.length) {
       _queue.removeAt(index);
+      _selectedQueueRows.clear();
       _saveNonEmptyQueue();
       notifyListeners();
     }
+  }
+
+  void setQueueRowSelected(int index, bool selected) {
+    if (index < 0 || index >= _queue.length) return;
+    if (selected) {
+      _selectedQueueRows.add(index);
+    } else {
+      _selectedQueueRows.remove(index);
+    }
+    notifyListeners();
+  }
+
+  void removeSelectedQueueRows() {
+    final indices = _selectedQueueRows.toList()..sort();
+    for (final index in indices.reversed) {
+      if (index >= 0 && index < _queue.length) {
+        _queue.removeAt(index);
+      }
+    }
+    _selectedQueueRows.clear();
+    _saveNonEmptyQueue();
+    notifyListeners();
   }
 
   void moveQueueItem(int fromIndex, int toIndex) {
@@ -223,12 +248,14 @@ class RipManager extends ChangeNotifier {
     if (toIndex < 0 || toIndex >= _queue.length) return;
     final item = _queue.removeAt(fromIndex);
     _queue.insert(toIndex, item);
+    _selectedQueueRows.clear();
     _saveNonEmptyQueue();
     notifyListeners();
   }
 
   void clearQueue() {
     _queue.clear();
+    _selectedQueueRows.clear();
     _saveNonEmptyQueue();
     notifyListeners();
   }
@@ -262,6 +289,7 @@ class RipManager extends ChangeNotifier {
     _statusText = 'Starting rip...';
     _currentProgressPercent = 0;
     String urlText = _queue.removeAt(0);
+    _selectedQueueRows.clear();
     _saveNonEmptyQueue();
     notifyListeners();
 

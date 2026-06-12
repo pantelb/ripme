@@ -40,8 +40,7 @@ void main() {
       if (!release.isCompleted) release.complete();
     });
     final manager = RipManager(
-      ripperResolver: (uri) =>
-          _BlockingQueueActionRipper(uri, release.future),
+      ripperResolver: (uri) => _BlockingQueueActionRipper(uri, release.future),
     );
 
     await tester.pumpWidget(
@@ -55,17 +54,32 @@ void main() {
     manager.addUrlToQueue('https://example.com/current');
     manager.addUrlToQueue('https://example.com/two');
     manager.addUrlToQueue('https://example.com/three');
+    manager.addUrlToQueue('https://example.com/four');
     await tester.pump();
-    await tester.tap(find.text('Queue(2)'));
+    await tester.tap(find.text('Queue(3)'));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byKey(const Key('queue_row_select_0')));
+    await tester.drag(find.byType(ListView), const Offset(0, -160));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('queue_row_select_2')));
+    await tester.pump();
+    expect(manager.selectedQueueRows, {0, 2});
+
+    await tester.tap(find.byKey(const Key('queue_remove_selected')));
+    await tester.pumpAndSettle();
+    expect(manager.queue, ['https://example.com/three']);
+    expect(manager.selectedQueueRows, isEmpty);
+
+    manager.addUrlToQueue('https://example.com/five');
+    await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.more_horiz).first);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Remove from queue'));
     await tester.pumpAndSettle();
-    expect(manager.queue, ['https://example.com/three']);
+    expect(manager.queue, ['https://example.com/five']);
 
-    await tester.tap(find.byIcon(Icons.delete_sweep_outlined));
+    await tester.tap(find.byKey(const Key('queue_remove_all')));
     await tester.pumpAndSettle();
     expect(
       find.text(
@@ -75,9 +89,9 @@ void main() {
     );
     await tester.tap(find.text('No'));
     await tester.pumpAndSettle();
-    expect(manager.queue, ['https://example.com/three']);
+    expect(manager.queue, ['https://example.com/five']);
 
-    await tester.tap(find.byIcon(Icons.delete_sweep_outlined));
+    await tester.tap(find.byKey(const Key('queue_remove_all')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Yes'));
     await tester.pumpAndSettle();

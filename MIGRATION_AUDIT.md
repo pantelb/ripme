@@ -1165,13 +1165,23 @@ Parity checklist:
     plain-text order and intentionally extends the panel with case-insensitive
     filtering, copy-visible-lines, and manager-backed clear actions, all covered
     by widget tests.
+  - CI: workflow `27395805822` failed only on the timing-sensitive manual-range
+    queue assertion. Workflow `27396240053` succeeded after that assertion was
+    synchronized. Artifacts: Android `7583796742`, Windows `7583775579`, macOS
+    `7583759584`, Linux `7583749949`.
 - [x] Verify history context actions.
   - Completed: Flutter now distinguishes transient table-row selection from the
     persisted checked-for-re-rip flag, matching Java. Bulk actions check all,
     check none, check selected rows, uncheck selected rows, and remove selected
     rows in descending index order. Warned clear and re-rip-checked dialogs are
     retained; Flutter's per-row copy/re-rip/remove menu remains an extension.
-- [ ] Verify queue context actions.
+  - CI: workflow `27396424059` succeeded. Artifacts: Android `7583867026`,
+    Windows `7583851001`, macOS `7583829790`, Linux `7583818860`.
+- [x] Verify queue context actions.
+  - Completed: Java's remove-selected action is represented by transient queue
+    row selection plus a bulk remove control, and remove-all retains the
+    `queue.validation` confirmation dialog. Flutter's per-row copy, reorder,
+    and remove actions are retained as documented platform extensions.
 - [ ] Verify text-field context action protections or Flutter equivalent.
 - [ ] Verify clipboard autorip duplicate handling.
 - [ ] Verify Java clipboard autorip polls every 1000 ms, matches only the first
@@ -1185,9 +1195,9 @@ Parity checklist:
 
 Required tests:
 
-- [~] Widget tests for log/history/queue actions.
-  - Log filtering, copy, clear, and order are covered. History and queue action
-    coverage remains tracked by their checklist items.
+- [x] Widget tests for log/history/queue actions.
+  - Log filtering, copy, clear, and order are covered. History and queue tests
+    cover Java bulk selection/removal and confirmation behavior.
 - [ ] Clipboard autorip tests.
 - [ ] Platform integration tests where practical.
 
@@ -1346,13 +1356,13 @@ Findings:
       entries for the next startup. Flutter currently has no queue persistence,
       so parity needs a choice between matching this bug, fixing it with a
       migration note, or documenting retirement.
-- [ ] Java queue context menu supports remove selected and remove all with a
-      confirmation dialog. Flutter queue actions need matching widget coverage.
-- [ ] Java `QueueMenuMouseListener` has no copy or reorder actions; it only
+- [x] Java queue context menu supports remove selected and remove all with a
+      confirmation dialog. Flutter covers both actions with widget tests.
+- [x] Java `QueueMenuMouseListener` has no copy or reorder actions; it only
       removes selected queue entries or clears all entries after
       `queue.validation` confirmation. Flutter `QueueView` exposes copy,
       move-up, and move-down actions for individual queue rows, so the queue UI
-      currently has extra behavior that needs an intentional parity decision.
+      has intentional platform extensions beyond the Java menu.
 - [ ] Java `-a` appends text to the rip working-folder name through
       `App.stringToAppendToFoldername`; Flutter has no verified equivalent.
 - [ ] Java `-j` self-update replaces a jar on disk. Flutter should document the

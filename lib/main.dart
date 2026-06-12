@@ -1096,10 +1096,27 @@ class QueueView extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
           child: Align(
             alignment: Alignment.centerRight,
-            child: OutlinedButton.icon(
-              onPressed: queue.isEmpty ? null : () => _confirmClear(context),
-              icon: const Icon(Icons.delete_sweep_outlined),
-              label: Text(strings.clearQueue),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              alignment: WrapAlignment.end,
+              children: [
+                OutlinedButton.icon(
+                  key: const Key('queue_remove_selected'),
+                  onPressed: ripManager.selectedQueueRows.isEmpty
+                      ? null
+                      : ripManager.removeSelectedQueueRows,
+                  icon: const Icon(Icons.remove_circle_outline),
+                  label: Text(strings.removeSelectedFromQueue),
+                ),
+                OutlinedButton.icon(
+                  key: const Key('queue_remove_all'),
+                  onPressed:
+                      queue.isEmpty ? null : () => _confirmClear(context),
+                  icon: const Icon(Icons.delete_sweep_outlined),
+                  label: Text(strings.clearQueue),
+                ),
+              ],
             ),
           ),
         ),
@@ -1123,11 +1140,13 @@ class QueueView extends StatelessWidget {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        leading: CircleAvatar(
-                          radius: 17,
-                          backgroundColor: scheme.primaryContainer,
-                          foregroundColor: scheme.onPrimaryContainer,
-                          child: Text('${index + 1}'),
+                        leading: Checkbox(
+                          key: Key('queue_row_select_$index'),
+                          value: ripManager.selectedQueueRows.contains(index),
+                          onChanged: (value) => ripManager.setQueueRowSelected(
+                            index,
+                            value ?? false,
+                          ),
                         ),
                         trailing: PopupMenuButton<String>(
                           icon: const Icon(Icons.more_horiz),
