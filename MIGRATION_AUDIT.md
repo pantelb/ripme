@@ -749,9 +749,18 @@ Parity checklist:
     because packaged APK contents are not a writable portable-app directory.
     Tests cover precedence, Java property escaping, typed/list values,
     immediate persistence, and executable-relative path resolution.
-- [ ] Support Java platform config directories:
+- [x] Support Java platform config directories:
       Windows `%LOCALAPPDATA%/ripme`, macOS `~/Library/Application Support/ripme`,
       Unix `~/.config/ripme`, or document replacement behavior.
+  - Completed by documented Flutter-native replacement: outside portable mode,
+    settings, rip history, and downloaded-URL history use the
+    `shared_preferences` platform backend instead of creating Java's
+    `rip.properties`, `history.json`, and `url_history.txt` directory tree.
+    This maps configuration to each platform's native preference store and
+    extends the same behavior to Android. Portable desktop mode remains the
+    explicit file-backed exception. A persistence test verifies that
+    non-portable writes are committed to the preference backend and survive
+    utility reinitialization.
 - [ ] Reconcile Java default rip directory (`<jar directory>/rips`) with
       Flutter's current app-documents default.
 - [ ] Reconcile Java old-config deletion/reload behavior when required keys are

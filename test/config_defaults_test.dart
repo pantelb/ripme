@@ -99,6 +99,24 @@ void main() {
     expect(Utils.getConfigBoolean('download.save_order', true), isFalse);
   });
 
+  test('non-portable config persists through the platform preference backend',
+      () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+
+    await Utils.setConfigInteger('threads.size', 11);
+    await Utils.setConfigBoolean('file.overwrite', true);
+    await Utils.setConfigString('rips.directory', r'D:\native\rips');
+    await Utils.setConfigList('queue', ['https://one', 'https://two']);
+
+    await Utils.init();
+
+    expect(Utils.getConfigInteger('threads.size', 5), 11);
+    expect(Utils.getConfigBoolean('file.overwrite', false), isTrue);
+    expect(Utils.getConfigString('rips.directory', null), r'D:\native\rips');
+    expect(Utils.getConfigList('queue'), ['https://one', 'https://two']);
+  });
+
   test('parses comma-separated string list config values', () async {
     SharedPreferences.setMockInitialValues({
       'download.ignore_extensions': 'mp4, gif, , webm',
@@ -164,6 +182,10 @@ rips.directory=C\\:\\\\portable\\\\rips
     expect(
       Utils.portableConfigPath(r'C:\Apps\RipMe\ripme.exe'),
       r'C:\Apps\RipMe\rip.properties',
+    );
+    expect(
+      Utils.portableConfigPath('/opt/ripme/ripme'),
+      '/opt/ripme/rip.properties',
     );
   });
 }

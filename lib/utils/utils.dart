@@ -29,8 +29,12 @@ class Utils {
     }
   }
 
-  static String portableConfigPath(String executablePath) =>
-      p.join(File(executablePath).parent.path, 'rip.properties');
+  static String portableConfigPath(String executablePath) {
+    final isWindowsPath = RegExp(r'^[A-Za-z]:[\\/]').hasMatch(executablePath) ||
+        executablePath.startsWith(r'\\');
+    final context = isWindowsPath ? p.windows : p.posix;
+    return context.join(context.dirname(executablePath), 'rip.properties');
+  }
 
   static String bytesToHumanReadable(int bytes) {
     var value = bytes.toDouble();
