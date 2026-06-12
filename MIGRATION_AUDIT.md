@@ -1126,7 +1126,10 @@ Required tests:
 
 - [x] Abstract ripper directory naming tests.
 - [x] Status/progress event tests.
-- [ ] Stop semantics tests.
+- [x] Stop semantics tests.
+  - Covered: queued work does not start after stop, an active response stream
+    is interrupted, Java's `Download interrupted` status is emitted, and
+    post-stop ripper events do not alter manager state.
 - [x] Description support reachability audit; Java has no active runtime path
       requiring a Dart output test.
 - [x] URL-only tests.
