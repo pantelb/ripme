@@ -8,10 +8,29 @@ import '../config_defaults.dart';
 class Utils {
   static const String ripDirectory = "rips";
   static SharedPreferences? _prefs;
+  static File? _portableConfigFile;
+  static Map<String, String>? _portableConfig;
 
-  static Future<void> init() async {
+  static Future<void> init({
+    File? portableConfigFile,
+    bool detectPortableConfig = false,
+  }) async {
     _prefs = await SharedPreferences.getInstance();
+    _portableConfigFile = null;
+    _portableConfig = null;
+
+    final candidate = portableConfigFile ??
+        (detectPortableConfig && !Platform.isAndroid
+            ? File(portableConfigPath(Platform.resolvedExecutable))
+            : null);
+    if (candidate != null && await candidate.exists()) {
+      _portableConfigFile = candidate;
+      _portableConfig = _parseProperties(await candidate.readAsString());
+    }
   }
+
+  static String portableConfigPath(String executablePath) =>
+      p.join(File(executablePath).parent.path, 'rip.properties');
 
   static String bytesToHumanReadable(int bytes) {
     var value = bytes.toDouble();
@@ -57,7 +76,8 @@ class Utils {
   }
 
   static String? getConfigString(String key, String? defaultValue) {
-    return _prefs?.getString(key) ??
+    return _portableConfig?[key] ??
+        _prefs?.getString(key) ??
         ConfigDefaults.strings[key] ??
         defaultValue;
   }
@@ -73,20 +93,41 @@ class Utils {
   }
 
   static List<String> getConfigList(String key) {
+    final portableValue = _portableConfig?[key];
+    if (portableValue != null) {
+      if (portableValue.trim().isEmpty) return const [];
+      return portableValue.split(',').map((value) => value.trim()).toList();
+    }
     return List<String>.of(_prefs?.getStringList(key) ?? const []);
   }
 
   static int getConfigInteger(String key, int defaultValue) {
-    return _prefs?.getInt(key) ?? ConfigDefaults.integers[key] ?? defaultValue;
+    return int.tryParse(_portableConfig?[key] ?? '') ??
+        _prefs?.getInt(key) ??
+        ConfigDefaults.integers[key] ??
+        defaultValue;
   }
 
   static bool getConfigBoolean(String key, bool defaultValue) {
-    return _prefs?.getBool(key) ?? ConfigDefaults.booleans[key] ?? defaultValue;
+    final portableValue = _portableConfig?[key]?.toLowerCase();
+    return switch (portableValue) {
+      'true' => true,
+      'false' => false,
+      _ => _prefs?.getBool(key) ?? ConfigDefaults.booleans[key] ?? defaultValue,
+    };
   }
 
   static bool getConfigBooleanWithFallback(
       String key, String fallbackKey, bool defaultValue) {
-    return _prefs?.getBool(key) ??
+    final portableValue =
+        _portableConfig?[key] ?? _portableConfig?[fallbackKey];
+    final portableBoolean = switch (portableValue?.toLowerCase()) {
+      'true' => true,
+      'false' => false,
+      _ => null,
+    };
+    return portableBoolean ??
+        _prefs?.getBool(key) ??
         _prefs?.getBool(fallbackKey) ??
         ConfigDefaults.booleans[key] ??
         ConfigDefaults.booleans[fallbackKey] ??
@@ -94,19 +135,106 @@ class Utils {
   }
 
   static Future<void> setConfigString(String key, String value) async {
+    if (_portableConfig != null) {
+      await _setPortableConfig(key, value);
+      return;
+    }
     await _prefs?.setString(key, value);
   }
 
   static Future<void> setConfigInteger(String key, int value) async {
+    if (_portableConfig != null) {
+      await _setPortableConfig(key, value.toString());
+      return;
+    }
     await _prefs?.setInt(key, value);
   }
 
   static Future<void> setConfigBoolean(String key, bool value) async {
+    if (_portableConfig != null) {
+      await _setPortableConfig(key, value.toString());
+      return;
+    }
     await _prefs?.setBool(key, value);
   }
 
   static Future<void> setConfigList(String key, Iterable<String> value) async {
+    if (_portableConfig != null) {
+      await _setPortableConfig(key, value.join(','));
+      return;
+    }
     await _prefs?.setStringList(key, List<String>.of(value));
+  }
+
+  static Future<void> _setPortableConfig(String key, String value) async {
+    _portableConfig![key] = value;
+    final entries = _portableConfig!.entries.toList()
+      ..sort((left, right) => left.key.compareTo(right.key));
+    final contents = entries
+        .map(
+          (entry) =>
+              '${_escapeProperty(entry.key)}=${_escapeProperty(entry.value)}',
+        )
+        .join('\n');
+    await _portableConfigFile!.writeAsString('$contents\n', flush: true);
+  }
+
+  static Map<String, String> _parseProperties(String contents) {
+    final values = <String, String>{};
+    for (final rawLine in contents.split(RegExp(r'\r?\n'))) {
+      final line = rawLine.trimLeft();
+      if (line.isEmpty || line.startsWith('#') || line.startsWith('!')) {
+        continue;
+      }
+      final separator = _propertySeparatorIndex(line);
+      if (separator < 0) continue;
+      final key = _unescapeProperty(line.substring(0, separator).trim());
+      final value = _unescapeProperty(line.substring(separator + 1).trim());
+      values[key] = value;
+    }
+    return values;
+  }
+
+  static int _propertySeparatorIndex(String line) {
+    var escaped = false;
+    for (var index = 0; index < line.length; index++) {
+      final char = line[index];
+      if (escaped) {
+        escaped = false;
+      } else if (char == r'\') {
+        escaped = true;
+      } else if (char == '=' || char == ':') {
+        return index;
+      }
+    }
+    return -1;
+  }
+
+  static String _escapeProperty(String value) => value
+      .replaceAll(r'\', r'\\')
+      .replaceAll('\n', r'\n')
+      .replaceAll('\r', r'\r')
+      .replaceAll('\t', r'\t')
+      .replaceAll('=', r'\=')
+      .replaceAll(':', r'\:');
+
+  static String _unescapeProperty(String value) {
+    final output = StringBuffer();
+    for (var index = 0; index < value.length; index++) {
+      final char = value[index];
+      if (char != r'\' || index == value.length - 1) {
+        output.write(char);
+        continue;
+      }
+      final next = value[++index];
+      output.write(switch (next) {
+        'n' => '\n',
+        'r' => '\r',
+        't' => '\t',
+        _ => next,
+      });
+    }
+    return output.toString();
   }
 
   static Future<bool> ensureStorageAccess() async {

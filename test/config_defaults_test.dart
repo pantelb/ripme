@@ -108,4 +108,62 @@ void main() {
     expect(Utils.getConfigStringList('download.ignore_extensions'),
         ['mp4', 'gif', 'webm']);
   });
+
+  test('desktop portable config overrides preferences and Java defaults',
+      () async {
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_portable_config_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final config = File('${directory.path}/rip.properties');
+    await config.writeAsString('''
+threads.size=9
+file.overwrite=true
+download.ignore_extensions=mp4, gif
+rips.directory=C\\:\\\\portable\\\\rips
+''');
+    SharedPreferences.setMockInitialValues({
+      'threads.size': 2,
+      'file.overwrite': false,
+    });
+
+    await Utils.init(portableConfigFile: config);
+
+    expect(Utils.getConfigInteger('threads.size', 5), 9);
+    expect(Utils.getConfigBoolean('file.overwrite', false), isTrue);
+    expect(
+      Utils.getConfigStringList('download.ignore_extensions'),
+      ['mp4', 'gif'],
+    );
+    expect(Utils.getConfigString('rips.directory', null), r'C:\portable\rips');
+  });
+
+  test('portable config setters persist immediately to rip.properties',
+      () async {
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_portable_write_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final config = File('${directory.path}/rip.properties');
+    await config.writeAsString('threads.size=5\n');
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init(portableConfigFile: config);
+
+    await Utils.setConfigInteger('threads.size', 7);
+    await Utils.setConfigBoolean('file.overwrite', true);
+    await Utils.setConfigString('rips.directory', r'D:\portable\rips');
+    await Utils.setConfigList('queue', ['https://one', 'https://two']);
+
+    final saved = await config.readAsString();
+    expect(saved, contains('threads.size=7'));
+    expect(saved, contains('file.overwrite=true'));
+    expect(saved, contains(r'rips.directory=D\:\\portable\\rips'));
+    expect(saved, contains('queue=https\\://one,https\\://two'));
+    expect(Utils.getConfigList('queue'), ['https://one', 'https://two']);
+  });
+
+  test('portable config path is adjacent to the desktop executable', () {
+    expect(
+      Utils.portableConfigPath(r'C:\Apps\RipMe\ripme.exe'),
+      r'C:\Apps\RipMe\rip.properties',
+    );
+  });
 }

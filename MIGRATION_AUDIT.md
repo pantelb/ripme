@@ -739,8 +739,16 @@ Parity checklist:
     platform-specific persistence format. Public DeviantArt ripping retains the
     Java age-gate cookie; authenticated/private gallery parity remains a
     documented limitation rather than a silent claim.
-- [ ] Support Java portable config mode when `rip.properties` exists next to the
+- [x] Support Java portable config mode when `rip.properties` exists next to the
       app, or document a Flutter-native replacement.
+  - Completed: desktop startup detects `rip.properties` beside the resolved
+    executable and uses it as the authoritative typed configuration backend,
+    ahead of SharedPreferences and bundled defaults. String, integer, boolean,
+    comma-list, and queue-list reads are supported; all setting writes update
+    the portable file immediately. Android skips executable-adjacent detection
+    because packaged APK contents are not a writable portable-app directory.
+    Tests cover precedence, Java property escaping, typed/list values,
+    immediate persistence, and executable-relative path resolution.
 - [ ] Support Java platform config directories:
       Windows `%LOCALAPPDATA%/ripme`, macOS `~/Library/Application Support/ripme`,
       Unix `~/.config/ripme`, or document replacement behavior.

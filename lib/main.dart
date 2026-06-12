@@ -25,7 +25,7 @@ import 'utils/utils.dart';
 Future<void> main(List<String> args) async {
   if (CliController.shouldRunHeadless(args)) {
     WidgetsFlutterBinding.ensureInitialized();
-    await Utils.init();
+    await Utils.init(detectPortableConfig: true);
     final result = await CliController().run(args);
     final sink = result.isError ? stderr : stdout;
     sink.writeln(result.output);
@@ -34,7 +34,7 @@ Future<void> main(List<String> args) async {
   }
 
   WidgetsFlutterBinding.ensureInitialized();
-  await Utils.init();
+  await Utils.init(detectPortableConfig: true);
   DesktopRipStartNotifier? ripStartNotifier;
   if (DesktopTrayController.isSupportedDesktop) {
     await windowManager.ensureInitialized();
