@@ -723,7 +723,22 @@ Parity checklist:
     [Windows](https://github.com/pantelb/ripme/actions/runs/27357472965/artifacts/7568877198),
     [macOS](https://github.com/pantelb/ripme/actions/runs/27357472965/artifacts/7568861014),
     [Linux](https://github.com/pantelb/ripme/actions/runs/27357472965/artifacts/7568820741).
-- [ ] Reconcile hidden/runtime-only keys not exposed in UI.
+- [x] Reconcile hidden/runtime-only keys not exposed in UI.
+  - Completed: `ConfigParity` partitions all 71 source-derived Java keys
+    between separately tracked controls and exhaustive hidden-key
+    dispositions. Hidden keys are classified as active, migration aliases,
+    Java sentinel-only keys, intentional retirements, or explicitly
+    unsupported behavior, and tests require exact, disjoint inventory coverage.
+  - Source-backed exceptions: `download.max_size` and `gw.api` are only old
+    config validity sentinels in current Java; `error.skip404` is retained as a
+    migration alias for active `errors.skip404`; SOCKS remains explicitly
+    rejected; Java jar-updater-only hash/testing keys are retired.
+  - DeviantArt's custom credentials and Java-serialized cookie map are retired.
+    All six Java DeviantArt tests are disabled as `Broken ripper`, and importing
+    Java object serialization into Flutter would create an unsafe,
+    platform-specific persistence format. Public DeviantArt ripping retains the
+    Java age-gate cookie; authenticated/private gallery parity remains a
+    documented limitation rather than a silent claim.
 - [ ] Support Java portable config mode when `rip.properties` exists next to the
       app, or document a Flutter-native replacement.
 - [ ] Support Java platform config directories:
