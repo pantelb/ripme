@@ -873,8 +873,12 @@ Parity checklist:
     [Windows](https://github.com/pantelb/ripme/actions/runs/27358697881/artifacts/7569402980),
     [macOS](https://github.com/pantelb/ripme/actions/runs/27358697881/artifacts/7569406272),
     [Linux](https://github.com/pantelb/ripme/actions/runs/27358697881/artifacts/7569355209).
-- [ ] Support or intentionally retire window geometry keys:
+- [x] Support or intentionally retire window geometry keys:
       `window.position`, `window.x`, `window.y`, `window.w`, `window.h`.
+  - Completed by the window-position item above: Linux and macOS restore and
+    save Java integer bounds, invalid/disabled geometry centers the window,
+    Windows preserves Java's explicit positioning exclusion, and Android is a
+    no-op. `desktop_window_geometry_test.dart` covers every platform branch.
 
 Required tests:
 
