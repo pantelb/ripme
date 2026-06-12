@@ -32,6 +32,10 @@ abstract class AbstractRipper {
   bool _shouldStop = false;
   int alreadyDownloadedUrls = 0;
   final Set<String> _attemptedDownloadUrls = <String>{};
+  final Map<String, int> _preRegisteredDownloads = <String, int>{};
+  final Set<String> _pendingDownloads = <String>{};
+  final Set<String> _completedDownloads = <String>{};
+  final Set<String> _erroredDownloads = <String>{};
   Future<void> _urlOnlyWrite = Future<void>.value();
   Future<void> _historyWrite = Future<void>.value();
 
@@ -46,6 +50,22 @@ abstract class AbstractRipper {
   }
 
   bool get isStopped => _shouldStop;
+
+  int get completionPercentage {
+    final total = _pendingDownloads.length +
+        _completedDownloads.length +
+        _erroredDownloads.length;
+    if (total == 0) return 0;
+    return (100 *
+            (_completedDownloads.length + _erroredDownloads.length) /
+            total)
+        .truncate();
+  }
+
+  String get statusText =>
+      '$completionPercentage% - Pending: ${_pendingDownloads.length}, '
+      'Completed: ${_completedDownloads.length}, '
+      'Errored: ${_erroredDownloads.length}';
 
   Future<void> setup() async {
     workingDir = await _getWorkingDir(url);
@@ -123,6 +143,7 @@ abstract class AbstractRipper {
     final queue = Queue<RipperDownload>.of(downloads);
     if (queue.isEmpty || isStopped) return;
 
+    _preRegisterDownloads(queue);
     final configuredThreads = Utils.getConfigInteger('threads.size', 5);
     final workerCount = configuredThreads.clamp(1, queue.length);
 
@@ -150,28 +171,34 @@ abstract class AbstractRipper {
     if (isStopped) return;
     try {
       if (_shouldIgnoreUrl(url)) {
+        _discardPreRegisteredDownload(url);
         sendUpdate(RipStatus.downloadSkip, 'Skipping $url - ignored extension');
         return;
       }
 
       if (!allowDuplicate && !_attemptedDownloadUrls.add(url.toString())) {
+        _discardPreRegisteredDownload(url);
         sendUpdate(RipStatus.downloadSkip, 'Already attempted: $url');
         return;
       }
 
       if (_shouldRememberUrlHistory() &&
           await DownloadHistoryProvider.hasDownloaded(url)) {
+        _discardPreRegisteredDownload(url);
         alreadyDownloadedUrls++;
         sendUpdate(RipStatus.downloadWarn, 'Already downloaded $url');
         return;
       }
 
+      _consumeOrRegisterPendingDownload(url);
       if (Utils.getConfigBoolean('urls_only.save', false)) {
         final resolvedSaveAs = _sanitizeSaveAs(resolveSavePath(saveAs));
         if (!await resolvedSaveAs.parent.exists()) {
           await resolvedSaveAs.parent.create(recursive: true);
         }
-        await _saveUrlOnly(url);
+        final urlFile = await _saveUrlOnly(url);
+        _completeDownload(url);
+        sendUpdate(RipStatus.downloadComplete, urlFile.path);
         return;
       }
 
@@ -191,6 +218,7 @@ abstract class AbstractRipper {
 
       if (!Utils.getConfigBoolean('file.overwrite', false) &&
           await saveAs.exists()) {
+        _completeDownload(url);
         sendUpdate(
           RipStatus.downloadWarn,
           '$url already saved as ${saveAs.path}',
@@ -206,12 +234,63 @@ abstract class AbstractRipper {
         cookies: cookies,
         shouldStop: () => isStopped,
       );
+      _completeDownload(url);
       sendUpdate(RipStatus.downloadComplete, saveAs.path);
     } on DownloadInterruptedException {
+      _errorDownload(url);
       sendUpdate(RipStatus.downloadErrored, 'Download interrupted');
     } catch (e) {
+      _errorDownload(url);
       sendUpdate(RipStatus.downloadErrored, "$url : ${e.toString()}");
     }
+  }
+
+  void _preRegisterDownloads(Iterable<RipperDownload> downloads) {
+    final seen = <String>{..._attemptedDownloadUrls};
+    for (final download in downloads) {
+      final key = download.url.toString();
+      if (_shouldIgnoreUrl(download.url)) continue;
+      if (!download.allowDuplicate && !seen.add(key)) continue;
+      _pendingDownloads.add(key);
+      _preRegisteredDownloads.update(key, (count) => count + 1,
+          ifAbsent: () => 1);
+    }
+  }
+
+  void _consumeOrRegisterPendingDownload(Uri url) {
+    final key = url.toString();
+    final count = _preRegisteredDownloads[key] ?? 0;
+    if (count > 1) {
+      _preRegisteredDownloads[key] = count - 1;
+    } else if (count == 1) {
+      _preRegisteredDownloads.remove(key);
+    } else {
+      _pendingDownloads.add(key);
+    }
+  }
+
+  void _discardPreRegisteredDownload(Uri url) {
+    final key = url.toString();
+    final count = _preRegisteredDownloads[key] ?? 0;
+    if (count == 0) return;
+    if (count > 1) {
+      _preRegisteredDownloads[key] = count - 1;
+    } else {
+      _preRegisteredDownloads.remove(key);
+    }
+    _pendingDownloads.remove(key);
+  }
+
+  void _completeDownload(Uri url) {
+    final key = url.toString();
+    _pendingDownloads.remove(key);
+    _completedDownloads.add(key);
+  }
+
+  void _errorDownload(Uri url) {
+    final key = url.toString();
+    _pendingDownloads.remove(key);
+    _erroredDownloads.add(key);
   }
 
   File _sanitizeSaveAs(File saveAs) {
@@ -243,7 +322,7 @@ abstract class AbstractRipper {
     );
   }
 
-  Future<void> _saveUrlOnly(Uri url) async {
+  Future<File> _saveUrlOnly(Uri url) async {
     final previousWrite = _urlOnlyWrite;
     final urlFile = File(p.join(workingDir.path, 'urls.txt'));
     _urlOnlyWrite = previousWrite.then((_) async {
@@ -254,7 +333,7 @@ abstract class AbstractRipper {
           mode: FileMode.append);
     });
     await _urlOnlyWrite;
-    sendUpdate(RipStatus.downloadComplete, urlFile.path);
+    return urlFile;
   }
 
   Future<void> _rememberDownloadUrl(Uri url) async {

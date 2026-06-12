@@ -489,6 +489,127 @@ void main() {
     expect(ripper.maxActiveDownloads, 2);
   });
 
+  test('uses Java pending completed and errored progress percentage', () async {
+    SharedPreferences.setMockInitialValues({
+      'threads.size': 3,
+      'remember.url_history': false,
+      'download.retries': 0,
+      'download.timeout': 1000,
+    });
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_progress_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+
+    final releaseRemaining = Completer<void>();
+    final firstCompleted = Completer<void>();
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen((request) async {
+      if (request.uri.path != '/one.jpg') {
+        await releaseRemaining.future;
+      }
+      request.response.write('ok');
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final sub = ripper.statusStream.listen((message) {
+      if (message.status == RipStatus.downloadComplete &&
+          !firstCompleted.isCompleted) {
+        firstCompleted.complete();
+      }
+    });
+    addTearDown(sub.cancel);
+
+    final download = ripper.downloadFiles([
+      for (final name in ['one.jpg', 'two.jpg', 'three.jpg'])
+        RipperDownload(
+          url: Uri.parse('http://127.0.0.1:${server.port}/$name'),
+          saveAs: File('${directory.path}/$name'),
+        ),
+    ]);
+
+    await firstCompleted.future;
+    expect(ripper.completionPercentage, 33);
+    expect(
+      ripper.statusText,
+      '33% - Pending: 2, Completed: 1, Errored: 0',
+    );
+
+    releaseRemaining.complete();
+    await download;
+    expect(ripper.completionPercentage, 100);
+    expect(
+      ripper.statusText,
+      '100% - Pending: 0, Completed: 3, Errored: 0',
+    );
+  });
+
+  test('counts Java download errors as finished progress', () async {
+    SharedPreferences.setMockInitialValues({
+      'threads.size': 2,
+      'remember.url_history': false,
+      'download.retries': 0,
+      'download.timeout': 1000,
+    });
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_error_progress_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+
+    final releaseSuccess = Completer<void>();
+    final firstError = Completer<void>();
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen((request) async {
+      if (request.uri.path == '/error.jpg') {
+        request.response.statusCode = HttpStatus.notFound;
+      } else {
+        await releaseSuccess.future;
+        request.response.write('ok');
+      }
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final sub = ripper.statusStream.listen((message) {
+      if (message.status == RipStatus.downloadErrored &&
+          !firstError.isCompleted) {
+        firstError.complete();
+      }
+    });
+    addTearDown(sub.cancel);
+
+    final download = ripper.downloadFiles([
+      RipperDownload(
+        url: Uri.parse('http://127.0.0.1:${server.port}/error.jpg'),
+        saveAs: File('${directory.path}/error.jpg'),
+      ),
+      RipperDownload(
+        url: Uri.parse('http://127.0.0.1:${server.port}/success.jpg'),
+        saveAs: File('${directory.path}/success.jpg'),
+      ),
+    ]);
+
+    await firstError.future;
+    expect(ripper.completionPercentage, 50);
+    expect(
+      ripper.statusText,
+      '50% - Pending: 1, Completed: 0, Errored: 1',
+    );
+
+    releaseSuccess.complete();
+    await download;
+    expect(ripper.completionPercentage, 100);
+  });
+
   test('passes headers and cookies through scheduled downloads', () async {
     SharedPreferences.setMockInitialValues({});
     await Utils.init();

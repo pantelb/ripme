@@ -127,6 +127,10 @@ class ProgressRipper extends AbstractRipper {
 
   final Directory directory;
   final Future<void> release;
+  int _completionPercentage = 0;
+
+  @override
+  int get completionPercentage => _completionPercentage;
 
   @override
   Future<void> setup() async {
@@ -147,8 +151,10 @@ class ProgressRipper extends AbstractRipper {
     sendUpdate(RipStatus.loadingResource, url.toString());
     sendUpdate(RipStatus.downloadStarted, 'https://example.com/one.jpg');
     sendUpdate(RipStatus.downloadStarted, 'https://example.com/two.jpg');
+    _completionPercentage = 50;
     sendUpdate(RipStatus.downloadComplete, '/tmp/one.jpg');
     await release;
+    _completionPercentage = 100;
     sendUpdate(RipStatus.downloadComplete, '/tmp/two.jpg');
     sendUpdate(RipStatus.ripComplete, workingDir.path);
   }
@@ -527,8 +533,7 @@ void main() {
 
     manager.moveQueueItem(1, 0);
     await _waitFor(
-      () => Utils.getConfigList('queue').first ==
-          'https://example.com/three',
+      () => Utils.getConfigList('queue').first == 'https://example.com/three',
     );
     expect(Utils.getConfigList('queue'), [
       'https://example.com/three',

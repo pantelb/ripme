@@ -1052,7 +1052,15 @@ Parity checklist:
     Java's `DownloadFileThread` and `DownloadVideoThread` byte-loop checks.
     Interrupted active transfers emit `DOWNLOAD_ERRORED` with exact text
     `Download interrupted`.
-- [ ] Verify progress percentage semantics.
+  - CI: workflow `27386775040` succeeded. Artifacts: Android `7580458934`,
+    Windows `7580422621`, macOS `7580404955`, Linux `7580400195`.
+- [x] Verify progress percentage semantics.
+  - Completed: Flutter now owns progress state in each ripper using Java's
+    pending/completed/errored model, pre-registers scheduled batch items before
+    workers start, truncates integer percentages like Java, and exposes the
+    exact album status shape `<percent>% - Pending: <n>, Completed: <n>,
+    Errored: <n>`. `RipManager` consumes the ripper percentage instead of
+    reconstructing a denominator from `DOWNLOAD_STARTED` events.
 - [ ] Verify Java byte-progress semantics for `AbstractSingleFileRipper` and
       `VideoRipper`, including human-readable text.
 - [ ] Verify status text/log event text.
