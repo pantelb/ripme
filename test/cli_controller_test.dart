@@ -3,6 +3,8 @@ import 'package:ripme/app_version.dart';
 import 'package:ripme/cli/cli_controller.dart';
 import 'package:ripme/rip_manager.dart';
 import 'package:ripme/update_checker.dart';
+import 'package:ripme/utils/utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class _FakeConfigStore implements CliConfigStore {
   final values = <String, Object>{};
@@ -162,6 +164,38 @@ void main() {
       'rips.directory': 'D:/rips',
       'history.location': 'D:/ripme/url_history.txt',
     });
+  });
+
+  test('CLI settings survive configuration backend reinitialization', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+
+    final result = await CliController().run(const [
+      '--threads',
+      '9',
+      '--overwrite',
+      '--nosaveorder',
+      '--skip404',
+      '--ripsdirectory',
+      '/persistent/rips',
+      '--history',
+      '/persistent/url_history.txt',
+    ]);
+    expect(result.exitCode, 0);
+
+    await Utils.init();
+    expect(Utils.getConfigInteger('threads.size', -1), 9);
+    expect(Utils.getConfigBoolean('file.overwrite', false), isTrue);
+    expect(Utils.getConfigBoolean('download.save_order', true), isFalse);
+    expect(Utils.getConfigBoolean('errors.skip404', false), isTrue);
+    expect(
+      Utils.getConfigString('rips.directory', null),
+      '/persistent/rips',
+    );
+    expect(
+      Utils.getConfigString('history.location', null),
+      '/persistent/url_history.txt',
+    );
   });
 
   test('nosaveorder disables ordering', () async {

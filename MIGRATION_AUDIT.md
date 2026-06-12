@@ -889,7 +889,11 @@ Required tests:
     `configuration_controls_widget_test.dart`. Focused widget tests cover the
     save-directory picker, language reload, log-level dropdown, SSL toggle,
     history warning branches, and disabled auto-update replacement.
-- [ ] Persistence tests for settings changed in UI and CLI.
+- [x] Persistence tests for settings changed in UI and CLI.
+  - Completed: the table-driven configuration widget test reinitializes
+    `Utils` after editing every generic control and verifies all values survive.
+    `cli_controller_test.dart` applies Java CLI setting options through the real
+    backend, reinitializes it, and verifies integer, boolean, and path settings.
 
 ### Workstream 5: HTTP, Proxy, Cookies, And Networking
 

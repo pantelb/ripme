@@ -140,5 +140,19 @@ void main() {
         reason: 'Configuration string did not persist $key',
       );
     }
+
+    await Utils.init();
+    for (final key in _switchKeys) {
+      expect(Utils.getConfigBoolean(key, false), isTrue);
+    }
+    for (final entry in _integerValues.entries) {
+      expect(Utils.getConfigInteger(entry.key, -1), entry.value);
+    }
+    for (var index = 0; index < _stringKeys.length; index++) {
+      expect(
+        Utils.getConfigString(_stringKeys[index], null),
+        'configured-$index',
+      );
+    }
   });
 }
