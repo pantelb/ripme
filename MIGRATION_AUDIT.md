@@ -208,8 +208,16 @@ blocked by platform constraints or missing user input.
     provides the generic Flutter lookup path, while focused tests cover source
     extraction, property parsing, translated lookup, and unknown-key fallback.
     Flutter CI runs the guard before analysis.
-- [ ] Add a script or test that fails when a Java test class has no Dart test,
+- [x] Add a script or test that fails when a Java test class has no Dart test,
       alias mapping, broader integration test, or documented intentional removal.
+  - Completed: `tool/check_java_test_coverage.dart` generates all Java test
+    classes from `origin/main`, compares them with checked-in Dart test files,
+    and applies the reviewed aliases in `JavaTestInventory.coverageAliases`.
+    The guard currently covers all 118 Java test classes, including 20 naming,
+    inherited-ripper, aggregate-suite, or broader-integration mappings. Flutter
+    CI runs the guard before analysis.
+  - Scope: this proves class-level representation only. Section H remains open
+    for the stricter method-by-method and disabled/flaky behavior reconciliation.
 - [x] Record latest passing Actions run and artifacts for the first inventory commit.
 
 ### Workstream 1: CLI And Headless Mode

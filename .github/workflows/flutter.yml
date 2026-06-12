@@ -39,6 +39,9 @@ jobs:
     - name: Verify Java localization key coverage
       run: dart run tool/check_java_localization_keys.dart
 
+    - name: Verify Java test class coverage
+      run: dart run tool/check_java_test_coverage.dart
+
     - name: Analyze
       run: flutter analyze
 
