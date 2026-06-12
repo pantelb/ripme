@@ -771,8 +771,17 @@ Parity checklist:
     application binaries are not a writable download location. Tests cover
     Windows and POSIX path resolution, creation, configured paths, failure
     fallback, and the Android replacement.
-- [ ] Reconcile Java old-config deletion/reload behavior when required keys are
+- [x] Reconcile Java old-config deletion/reload behavior when required keys are
       missing.
+  - Completed: external desktop `rip.properties` files are accepted only when
+    they contain Java's seven exact sentinel keys: `twitter.auth`,
+    `twitter.max_requests`, `tumblr.auth`, `error.skip404`, `gw.api`,
+    `page.timeout`, and `download.max_size`. An obsolete file missing any
+    sentinel is deleted and configuration falls back to platform preferences
+    plus bundled Java defaults. Flutter's non-portable preference backend is
+    intentionally sparse and resolves missing keys individually, so it does
+    not require destructive whole-file migration. Tests remove each sentinel
+    independently and verify deletion/default reload behavior.
 - [ ] Persist settings on exit or immediately in a documented Flutter-native way.
 - [x] Support language selection and reload behavior.
   - Completed: the configuration view exposes every Java bundle language tag,

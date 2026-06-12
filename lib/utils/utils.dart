@@ -7,6 +7,15 @@ import '../config_defaults.dart';
 
 class Utils {
   static const String ripDirectory = "rips";
+  static const Set<String> _requiredExternalConfigKeys = {
+    'twitter.auth',
+    'twitter.max_requests',
+    'tumblr.auth',
+    'error.skip404',
+    'gw.api',
+    'page.timeout',
+    'download.max_size',
+  };
   static SharedPreferences? _prefs;
   static File? _portableConfigFile;
   static Map<String, String>? _portableConfig;
@@ -24,8 +33,13 @@ class Utils {
             ? File(portableConfigPath(Platform.resolvedExecutable))
             : null);
     if (candidate != null && await candidate.exists()) {
-      _portableConfigFile = candidate;
-      _portableConfig = _parseProperties(await candidate.readAsString());
+      final values = _parseProperties(await candidate.readAsString());
+      if (_requiredExternalConfigKeys.every(values.containsKey)) {
+        _portableConfigFile = candidate;
+        _portableConfig = values;
+      } else {
+        await candidate.delete();
+      }
     }
   }
 

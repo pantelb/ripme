@@ -134,6 +134,7 @@ void main() {
     addTearDown(() => directory.delete(recursive: true));
     final config = File('${directory.path}/rip.properties');
     await config.writeAsString('''
+${File('test/fixtures/java_rip_properties.properties').readAsStringSync()}
 threads.size=9
 file.overwrite=true
 download.ignore_extensions=mp4, gif
@@ -161,7 +162,10 @@ rips.directory=C\\:\\\\portable\\\\rips
         await Directory.systemTemp.createTemp('ripme_portable_write_test');
     addTearDown(() => directory.delete(recursive: true));
     final config = File('${directory.path}/rip.properties');
-    await config.writeAsString('threads.size=5\n');
+    await config.writeAsString('''
+${File('test/fixtures/java_rip_properties.properties').readAsStringSync()}
+threads.size=5
+''');
     SharedPreferences.setMockInitialValues({});
     await Utils.init(portableConfigFile: config);
 
@@ -176,6 +180,63 @@ rips.directory=C\\:\\\\portable\\\\rips
     expect(saved, contains(r'rips.directory=D\:\\portable\\rips'));
     expect(saved, contains('queue=https\\://one,https\\://two'));
     expect(Utils.getConfigList('queue'), ['https://one', 'https://two']);
+  });
+
+  test('obsolete external config is deleted and bundled defaults reload',
+      () async {
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_obsolete_config_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final config = File('${directory.path}/rip.properties');
+    await config.writeAsString('threads.size=9\n');
+    SharedPreferences.setMockInitialValues({
+      'file.overwrite': true,
+    });
+
+    await Utils.init(portableConfigFile: config);
+
+    expect(await config.exists(), isFalse);
+    expect(Utils.getConfigInteger('threads.size', 99), 5);
+    expect(Utils.getConfigBoolean('file.overwrite', false), isTrue);
+    expect(Utils.getConfigString('gw.api', null), 'gonewild');
+  });
+
+  test('all seven exact Java sentinels are required for external config',
+      () async {
+    final source = File(
+      'test/fixtures/java_rip_properties.properties',
+    ).readAsLinesSync();
+    const requiredKeys = {
+      'twitter.auth',
+      'twitter.max_requests',
+      'tumblr.auth',
+      'error.skip404',
+      'gw.api',
+      'page.timeout',
+      'download.max_size',
+    };
+
+    for (final missingKey in requiredKeys) {
+      final directory =
+          await Directory.systemTemp.createTemp('ripme_missing_sentinel');
+      addTearDown(() => directory.delete(recursive: true));
+      final config = File('${directory.path}/rip.properties');
+      await config.writeAsString(
+        source
+            .where((line) => !line.trimLeft().startsWith('$missingKey '))
+            .join(
+              '\n',
+            ),
+      );
+
+      await Utils.init(portableConfigFile: config);
+
+      expect(
+        await config.exists(),
+        isFalse,
+        reason: 'External config should be deleted without $missingKey',
+      );
+    }
   });
 
   test('portable config path is adjacent to the desktop executable', () {
