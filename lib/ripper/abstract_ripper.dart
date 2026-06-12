@@ -87,6 +87,19 @@ abstract class AbstractRipper {
 
   bool get fetchesByteTotalBeforeDownload => false;
 
+  bool get includesDownloadCookieHeader => true;
+
+  Map<String, String>? resolveDownloadHeaders(
+    Uri url,
+    Map<String, String>? requestedHeaders,
+  ) =>
+      requestedHeaders;
+
+  Map<String, String>? resolveDownloadCookies(
+    Map<String, String>? requestedCookies,
+  ) =>
+      requestedCookies;
+
   Future<void> setup() async {
     workingDir = await _getWorkingDir(url);
     if (!await workingDir.exists()) {
@@ -256,11 +269,14 @@ abstract class AbstractRipper {
         sendUpdate(RipStatus.completedBytes, bytes);
       }
 
+      final effectiveHeaders = resolveDownloadHeaders(url, headers);
+      final effectiveCookies = resolveDownloadCookies(cookies);
       if (usesByteProgress && fetchesByteTotalBeforeDownload) {
         final totalBytes = await Http.getDownloadContentLength(
           url,
-          headers: headers,
-          cookies: cookies,
+          headers: effectiveHeaders,
+          cookies: effectiveCookies,
+          includeCookieHeader: includesDownloadCookieHeader,
         );
         updateTotalBytes(totalBytes);
       }
@@ -268,13 +284,14 @@ abstract class AbstractRipper {
       await Http.downloadFile(
         url,
         saveAs,
-        headers: headers,
-        cookies: cookies,
+        headers: effectiveHeaders,
+        cookies: effectiveCookies,
         shouldStop: () => isStopped,
         onTotalBytes: usesByteProgress && !fetchesByteTotalBeforeDownload
             ? updateTotalBytes
             : null,
         onBytesCompleted: usesByteProgress ? updateCompletedBytes : null,
+        includeCookieHeader: includesDownloadCookieHeader,
       );
       _completeDownload(url);
       sendUpdate(RipStatus.downloadComplete, saveAs.path);

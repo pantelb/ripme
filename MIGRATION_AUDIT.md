@@ -1071,13 +1071,21 @@ Parity checklist:
     downloads issue HEAD and emit total bytes before GET. Percentage truncation
     and `<percent>%  - <completed> / <total>` text use Java's two-decimal IEC
     formatting.
+  - CI: workflow `27387539744` succeeded. Artifacts: Android `7580743930`,
+    Windows `7580719693`, macOS `7580713023`, Linux `7580688212`.
 - [x] Verify status text/log event text.
   - Completed: accepted events display the active ripper's Java-style status
     text before status-specific handling; `RIP_ERRORED` alone overrides it with
     `Error: <object>`. Log rendering preserves Java's `Downloading`,
     `Downloaded`, completion-history, warning, skip, and error text rules,
     while byte-only events update progress without adding log rows.
-- [ ] Verify video download filename/referrer/cookie behavior.
+  - CI: workflow `27387796798` succeeded. Artifacts: Android `7580826027`,
+    Windows `7580807897`, macOS `7580796805`, Linux `7580777754`.
+- [x] Verify video download filename/referrer/cookie behavior.
+  - Completed: concrete video rippers retain Java's explicit prefix-based
+    filenames. Shared video transport ignores requested referrers/cookies,
+    sends `Referer: <media-url>` for HEAD and GET, and omits the `Cookie`
+    header, matching `VideoRipper` / `DownloadVideoThread`.
 - [ ] Verify ignored extension behavior.
 - [ ] Verify Java empty working-directory cleanup after a failed or empty rip.
 - [ ] Verify Java gaussian jitter applied to ripper sleeps.
@@ -1626,14 +1634,13 @@ Findings:
       `height` is absent and resolves `BaseURL` relative to the manifest URL.
       DASH manifests with missing heights, bandwidth-only variants, duplicate
       heights, or relative base paths can therefore choose a different media URL.
-- [ ] Java `CliphunterRipper.rip()` schedules the decrypted video with
+- [x] Java `CliphunterRipper.rip()` schedules the decrypted video with
       `addURLToDownload(url, HOST + "_" + getGID(...))`; Java
       `VideoRipper.addURLToDownload(..., referrer, cookies, ...)` ignores
-      referrers and cookies entirely. Flutter
-      `CliphunterRipper.getVideoDownloadForRip(...)` attaches a `Referer`
-      header equal to the decrypted video URL, and its test labels that
-      behavior "Java-style", but Java downloads the Cliphunter video without
-      that header.
+      referrers and cookies entirely.
+  - Corrected: Cliphunter's request no longer supplies transport headers, and
+    the shared video downloader applies only Java's media-URL `Referer` while
+    omitting cookies.
 - [ ] Java `VideoRipper.addURLToDownload` has a test-only contract: when
       `markAsTest()` / `isThisATest()` is active and `urls_only.save` is false,
       it does not enqueue or download the video; it mutates `this.url` to the

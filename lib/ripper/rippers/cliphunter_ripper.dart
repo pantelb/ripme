@@ -67,7 +67,6 @@ class CliphunterRipper extends AbstractVideoRipper {
     return VideoDownloadRequest(
       url: videoUrl,
       fileName: javaDownloadFileName(videoUrl, await getGID(url)),
-      headers: {'Referer': videoUrl.toString()},
     );
   }
 

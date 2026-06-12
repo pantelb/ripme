@@ -84,9 +84,15 @@ class Http {
     bool Function()? shouldStop,
     void Function(int totalBytes)? onTotalBytes,
     void Function(int completedBytes)? onBytesCompleted,
+    bool includeCookieHeader = true,
   }) async {
-    final combinedHeaders =
-        _buildHeaders(url, headers, cookies, isDownload: true);
+    final combinedHeaders = _buildHeaders(
+      url,
+      headers,
+      cookies,
+      isDownload: true,
+      includeDownloadCookieHeader: includeCookieHeader,
+    );
     final attempts = Utils.getConfigInteger('download.retries', 3) + 1;
     final timeout = Duration(
       milliseconds: Utils.getConfigInteger('download.timeout', 60000),
@@ -169,6 +175,7 @@ class Http {
     Uri url, {
     Map<String, String>? headers,
     Map<String, String>? cookies,
+    bool includeCookieHeader = true,
   }) async {
     final client = _createClient();
     try {
@@ -178,6 +185,7 @@ class Http {
           headers,
           cookies,
           isDownload: true,
+          includeDownloadCookieHeader: includeCookieHeader,
         ));
       final response = await client.send(request);
       return _javaInt32(response.contentLength ?? -1);
@@ -193,12 +201,14 @@ class Http {
     Map<String, String>? headers,
     Map<String, String>? cookies, {
     bool isDownload = false,
+    bool includeDownloadCookieHeader = true,
   }) {
     final configuredCookies =
         isDownload ? const <String, String>{} : configuredCookiesForUrl(url);
     final allCookies = <String, String>{
-      ...configuredCookies,
-      if (cookies != null) ...cookies,
+      if (!isDownload || includeDownloadCookieHeader) ...configuredCookies,
+      if ((!isDownload || includeDownloadCookieHeader) && cookies != null)
+        ...cookies,
     };
     final Map<String, String> combined = {
       'User-Agent': userAgent,
@@ -206,7 +216,8 @@ class Http {
       if (headers != null) ...headers,
     };
 
-    if ((isDownload || allCookies.isNotEmpty) &&
+    if (((isDownload && includeDownloadCookieHeader) ||
+            allCookies.isNotEmpty) &&
         !combined.containsKey('Cookie')) {
       combined['Cookie'] =
           allCookies.entries.map((e) => '${e.key}=${e.value}').join('; ');

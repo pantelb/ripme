@@ -78,9 +78,13 @@ void main() {
     final directory = await Directory.systemTemp.createTemp('ripme_video_test');
     addTearDown(() => directory.delete(recursive: true));
     final methods = <String>[];
+    final referers = <String?>[];
+    final cookies = <String?>[];
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     server.listen((request) async {
       methods.add(request.method);
+      referers.add(request.headers.value('referer'));
+      cookies.add(request.headers.value('cookie'));
       request.response.contentLength = 6;
       if (request.method == 'GET') {
         request.response.add([1, 2, 3, 4, 5, 6]);
@@ -103,6 +107,11 @@ void main() {
     await Future<void>.delayed(Duration.zero);
 
     expect(methods, ['HEAD', 'GET']);
+    expect(referers, [
+      'http://127.0.0.1:${server.port}/video.mp4',
+      'http://127.0.0.1:${server.port}/video.mp4',
+    ]);
+    expect(cookies, [isNull, isNull]);
     expect(
       statuses.map((message) => message.status),
       containsAllInOrder([
@@ -154,7 +163,7 @@ void main() {
     expect(await File('${directory.path}/video.mp4').exists(), isFalse);
   });
 
-  test('uses videos album title and default page referer for video downloads',
+  test('uses videos album title and Java media URL referer for video downloads',
       () async {
     SharedPreferences.setMockInitialValues({
       'remember.url_history': false,
@@ -177,13 +186,15 @@ void main() {
     expect(await ripper.getAlbumTitle(ripper.url), 'videos');
     expect(ripper.receivedDownloadUrl.toString(),
         'https://cdn.example.com/video-source');
-    expect(
-        ripper.receivedHeaders, {'Referer': 'https://example.com/video-page'});
+    expect(ripper.receivedHeaders,
+        {'Referer': 'https://cdn.example.com/video-source'});
+    expect(ripper.receivedCookies, isNull);
     expect(ripper.receivedSaveAs?.path,
         p.join(directory.path, 'video-source.mp4'));
   });
 
-  test('honors explicit video filenames, referers, and cookies', () async {
+  test('honors video filenames but ignores explicit referrers and cookies',
+      () async {
     SharedPreferences.setMockInitialValues({
       'remember.url_history': false,
     });
@@ -210,8 +221,8 @@ void main() {
 
     expect(
         ripper.receivedDownloadUrl.toString(), 'https://cdn.example.com/best');
-    expect(ripper.receivedHeaders, {'Referer': 'https://example.com/embed'});
-    expect(ripper.receivedCookies, {'session': 'abc'});
+    expect(ripper.receivedHeaders, {'Referer': 'https://cdn.example.com/best'});
+    expect(ripper.receivedCookies, isNull);
     expect(
         ripper.receivedSaveAs?.path, p.join(directory.path, 'unsafe_name.mp4'));
   });

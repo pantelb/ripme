@@ -37,8 +37,7 @@ void main() {
     expect(CliphunterRipper.videoUrlFromHtml(html).toString(), decoded);
   });
 
-  test('uses Java-style video filename prefix and video URL referrer',
-      () async {
+  test('uses Java video filename and leaves transport headers unset', () async {
     final ripper =
         _Harness(Uri.parse('https://www.cliphunter.com/w/24680/example'));
 
@@ -47,9 +46,8 @@ void main() {
     expect(request.url.toString(),
         'https://cdn.cliphunter.com/videos/movie.mp4?download=1');
     expect(request.fileName, 'cliphunter_24680movie.mp4');
-    expect(request.headers, {
-      'Referer': 'https://cdn.cliphunter.com/videos/movie.mp4?download=1',
-    });
+    expect(request.headers, isNull);
+    expect(request.cookies, isNull);
   });
 }
 

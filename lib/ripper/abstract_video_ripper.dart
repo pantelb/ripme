@@ -30,6 +30,22 @@ abstract class AbstractVideoRipper extends AbstractRipper {
   bool get fetchesByteTotalBeforeDownload => true;
 
   @override
+  bool get includesDownloadCookieHeader => false;
+
+  @override
+  Map<String, String> resolveDownloadHeaders(
+    Uri url,
+    Map<String, String>? requestedHeaders,
+  ) =>
+      {'Referer': url.toString()};
+
+  @override
+  Map<String, String>? resolveDownloadCookies(
+    Map<String, String>? requestedCookies,
+  ) =>
+      null;
+
+  @override
   Future<void> rip() async {
     sendUpdate(RipStatus.loadingResource, url.toString());
     try {
@@ -40,8 +56,7 @@ abstract class AbstractVideoRipper extends AbstractRipper {
       await downloadFile(
         request.url,
         saveAs,
-        headers: request.headers,
-        cookies: request.cookies,
+        headers: {'Referer': request.url.toString()},
       );
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
@@ -56,10 +71,7 @@ abstract class AbstractVideoRipper extends AbstractRipper {
 
   Future<VideoDownloadRequest> getVideoDownloadForRip(Uri url) async {
     final videoUrl = await getVideoURLForRip(url);
-    return VideoDownloadRequest(
-      url: videoUrl,
-      headers: {'Referer': url.toString()},
-    );
+    return VideoDownloadRequest(url: videoUrl);
   }
 
   Future<String> _getFileName(VideoDownloadRequest request) async {
