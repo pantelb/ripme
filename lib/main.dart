@@ -1388,9 +1388,13 @@ class ConfigurationView extends StatefulWidget {
   const ConfigurationView({
     super.key,
     this.onLocaleChanged,
+    this.directoryPicker,
+    this.storageAccessChecker,
   });
 
   final ValueChanged<Locale>? onLocaleChanged;
+  final Future<String?> Function()? directoryPicker;
+  final Future<bool> Function()? storageAccessChecker;
 
   @override
   State<ConfigurationView> createState() => _ConfigurationViewState();
@@ -1419,7 +1423,10 @@ class _ConfigurationViewState extends State<ConfigurationView> {
                 compact: true,
               ),
               onTap: () async {
-                if (!await Utils.ensureStorageAccess()) {
+                final hasStorageAccess = await (widget.storageAccessChecker ??
+                        Utils.ensureStorageAccess)
+                    .call();
+                if (!hasStorageAccess) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -1428,11 +1435,13 @@ class _ConfigurationViewState extends State<ConfigurationView> {
                   }
                   return;
                 }
-                String? selectedDirectory = await FilePicker.getDirectoryPath();
+                final selectedDirectory = await (widget.directoryPicker ??
+                        FilePicker.getDirectoryPath)
+                    .call();
                 if (selectedDirectory != null) {
                   await Utils.setConfigString(
                       'rips.directory', selectedDirectory);
-                  setState(() {});
+                  if (mounted) setState(() {});
                 }
               },
             ),

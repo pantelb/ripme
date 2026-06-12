@@ -800,7 +800,15 @@ Parity checklist:
     [Windows](https://github.com/pantelb/ripme/actions/runs/27358136986/artifacts/7569156958),
     [macOS](https://github.com/pantelb/ripme/actions/runs/27358136986/artifacts/7569155864),
     [Linux](https://github.com/pantelb/ripme/actions/runs/27358136986/artifacts/7569106595).
-- [ ] Support save directory selection across desktop and Android.
+- [x] Support save directory selection across desktop and Android.
+  - Completed: the Files configuration section uses the platform directory
+    picker, persists the exact selected path as Java's `rips.directory`, updates
+    the displayed path immediately, and leaves the existing value unchanged on
+    cancellation. Android requests storage/media access before opening the
+    picker and reports denial without changing configuration. The obsolete
+    `Documents/rips` default label was corrected after desktop defaults moved
+    to Java's application-adjacent directory. Widget tests cover successful
+    selection, cancellation, and denied Android-style access.
 - [ ] Support window position persistence or explicitly mark not applicable.
 - [ ] Support log level, log save, popup, sound, URLs-only, album-title folders,
       descriptions, prefer MP4, SSL verification, URL history, retries, timeout,
