@@ -290,7 +290,7 @@ class _MainWindowState extends State<MainWindow>
               },
             ),
             _StatusSummary(ripManager: ripManager),
-            _ProgressStrip(ripManager: ripManager),
+            ProgressStrip(ripManager: ripManager),
             Expanded(
               child: TabBarView(
                 controller: _tabController,
@@ -539,10 +539,10 @@ class _StatusSummary extends StatelessWidget {
   }
 }
 
-class _ProgressStrip extends StatelessWidget {
+class ProgressStrip extends StatelessWidget {
   final RipManager ripManager;
 
-  const _ProgressStrip({required this.ripManager});
+  const ProgressStrip({super.key, required this.ripManager});
 
   @override
   Widget build(BuildContext context) {
@@ -583,9 +583,38 @@ class _ProgressStrip extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             backgroundColor: scheme.surfaceContainerHighest,
           ),
+          if (ripManager.completedDirectory != null &&
+              DesktopTrayController.isSupportedDesktop) ...[
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FilledButton.tonalIcon(
+                key: const Key('open_completed_directory'),
+                onPressed: () => _openDirectory(
+                  ripManager.completedDirectory!,
+                ),
+                icon: const Icon(Icons.folder_open_outlined),
+                label: Text(
+                  '${AppLocalizations.of(context).open} '
+                  '${Utils.shortenPath(ripManager.completedDirectory!)}',
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  Future<void> _openDirectory(String path) async {
+    try {
+      await launchUrl(
+        Uri.file(path),
+        mode: LaunchMode.externalApplication,
+      );
+    } catch (_) {
+      // Java logs and ignores Desktop.open failures.
+    }
   }
 }
 

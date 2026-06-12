@@ -1213,9 +1213,10 @@ Parity checklist:
     consumed-first-item state. Artifacts: Android `7588505546`, Windows
     `7588462405`, macOS `7588449892`, Linux `7588423916`.
   - Follow-up CI: workflow `27409160339` showed the queue-listener assertion
-    could still time out under Linux load. The test now holds a seed rip active
-    and validates all range expansions in the pending queue without racing the
-    consumer.
+    could still time out under Linux load. Workflow `27409927059` then showed
+    an active seed could itself remain briefly pending. The test now uses a
+    collecting `RipManager` subclass and validates expansion/order without any
+    background queue consumer.
 - [x] Verify tray icon/menu support or document platform-native replacement.
   - Completed: Windows, Linux, and macOS initialize a native tray icon on a
     best-effort basis. The menu mirrors Java's Show/Hide, About, Clipboard
@@ -1236,7 +1237,16 @@ Parity checklist:
     notification.
   - Validation: tests cover disabled, active-window, and inactive-window
     branches plus the exact notification text and the setup-notify-run order.
-- [ ] Verify open-folder button behavior after completion.
+- [x] Verify open-folder button behavior after completion.
+  - Completed: a successful desktop rip displays `Open <shortened path>` with
+    the folder icon and launches the completed album directory through the
+    platform shell. Starting the next rip hides the button, matching Java.
+  - Path display uses Java's normalized first-12/last-12 shortening rule.
+    Launch failures remain non-fatal. Android intentionally omits this
+    `Desktop.open`-specific control.
+  - Validation: manager tests cover the completed directory state; widget
+    tests cover button visibility, label text, next-rip hiding, and path
+    shortening.
 - [ ] Verify keyboard interactions.
 - [ ] Verify responsive layout across desktop and Android.
 
@@ -2217,8 +2227,8 @@ Findings:
       replacements. The Java implementation uses `SystemTray`, `TrayIcon`,
       `TrayIcon.displayMessage`, tray About/Hide/Show/Exit/Autorip menu items,
       and `Desktop.getDesktop().open(...)` / `.browse(...)`.
-  - Tray icon/menu and popup notification parity are implemented for Windows,
-    Linux, and macOS. Open-folder behavior remains incomplete.
+  - Tray icon/menu, popup notification, and completion open-folder parity are
+    implemented for Windows, Linux, and macOS.
 - [ ] Java main window lifecycle uses `JFrame.EXIT_ON_CLOSE`, a `WindowListener`
       to toggle tray labels and icon visibility on activate/deactivate,
       `setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)`, and explicit
@@ -5533,8 +5543,9 @@ Open work:
       expansion are source-audited and still need implementation/tests.
 - [ ] Selected-history re-rip behavior is source-audited and still needs a
       Flutter selected-history model or documented replacement.
-- [~] Open-folder and tray/popup behavior is source-audited. Tray and popup
-      parity are implemented for desktop; open-folder behavior remains.
+- [x] Open-folder and tray/popup behavior is implemented for Windows, Linux,
+      and macOS, with Android intentionally excluding Java desktop shell
+      surfaces.
 
 ### Pass 2: Low-Mention Rippers And Runtime Hooks
 

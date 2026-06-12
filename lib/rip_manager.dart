@@ -53,6 +53,7 @@ class RipManager extends ChangeNotifier {
   AbstractRipper? _currentRipper;
   String _statusText = 'Inactive';
   int _currentProgressPercent = 0;
+  String? _completedDirectory;
 
   List<String> get queue => _queue;
   List<RipStatusMessage> get logs => _logs;
@@ -62,6 +63,7 @@ class RipManager extends ChangeNotifier {
       Set<int>.unmodifiable(_selectedHistoryRows);
   bool get isRipping => _isRipping;
   String get statusText => _statusText;
+  String? get completedDirectory => _completedDirectory;
   double get progressValue {
     if (!_isRipping) return 0;
     return (_currentProgressPercent / 100).clamp(0, 1).toDouble();
@@ -292,6 +294,7 @@ class RipManager extends ChangeNotifier {
     _isRipping = true;
     _statusText = 'Starting rip...';
     _currentProgressPercent = 0;
+    _completedDirectory = null;
     String urlText = _queue.removeAt(0);
     _selectedQueueRows.clear();
     _saveNonEmptyQueue();
@@ -397,8 +400,11 @@ class RipManager extends ChangeNotifier {
       case RipStatus.ripErrored:
         _statusText = 'Error: $object';
         _currentProgressPercent = 0;
+        _completedDirectory = null;
         break;
       case RipStatus.ripComplete:
+        _completedDirectory = object;
+        break;
       case RipStatus.queueAdd:
       case RipStatus.totalBytes:
       case RipStatus.completedBytes:

@@ -191,6 +191,22 @@ class LifecycleRipper extends AbstractRipper {
   }
 }
 
+class RangeCollectingManager extends RipManager {
+  RangeCollectingManager(RipperResolver resolver)
+      : super(
+          ripperResolver: resolver,
+          completionSoundPlayer: () async {},
+        );
+
+  final submittedUrls = <String>[];
+
+  @override
+  bool addUrlToQueue(String url) {
+    submittedUrls.add(url);
+    return true;
+  }
+}
+
 Future<void> _waitFor(bool Function() condition) async {
   final deadline = DateTime.now().add(const Duration(seconds: 2));
   while (!condition()) {
@@ -674,17 +690,9 @@ void main() {
     final directory =
         await Directory.systemTemp.createTemp('ripme_manager_range_test');
     addTearDown(() => _deleteIfExists(directory));
-    final release = Completer<void>();
-    addTearDown(() {
-      if (!release.isCompleted) release.complete();
-    });
-    final manager = RipManager(
-      ripperResolver: (uri) => BlockingRipper(uri, directory, release.future),
-      completionSoundPlayer: () async {},
+    final manager = RangeCollectingManager(
+      (uri) => BlockingRipper(uri, directory, Future<void>.value()),
     );
-    await manager.init();
-    manager.addUrlToQueue('https://example.com/active');
-    await _waitFor(() => manager.isRipping);
 
     final result = manager.submitManualUrl(
       'https://example.com/album/{2-4}/page/{ignored}',
@@ -692,7 +700,7 @@ void main() {
 
     expect(result.accepted, 3);
     expect(result.errors, isEmpty);
-    expect(manager.queue, [
+    expect(manager.submittedUrls, [
       'https://example.com/album/2/page/2',
       'https://example.com/album/3/page/3',
       'https://example.com/album/4/page/4',
@@ -816,6 +824,7 @@ void main() {
       'notify:https://example.com/notify',
       'run',
     ]);
+    expect(manager.completedDirectory, directory.path);
   });
 
   test('tracks current rip status text and determinate progress', () async {

@@ -176,6 +176,13 @@ class Utils {
     return '${fullPath.substring(0, end)}.$extension';
   }
 
+  static String shortenPath(String path) {
+    final normalized = p.normalize(path);
+    if (normalized.length < 24) return normalized;
+    return '${normalized.substring(0, 12)}...'
+        '${normalized.substring(normalized.length - 12)}';
+  }
+
   static Map<String, String> parseUrlQuery(String query) {
     final result = <String, String>{};
     if (query.isEmpty) return result;

@@ -121,6 +121,7 @@ class AppLocalizations {
           'checkbox to the right of the URL or Right-click a URL to '
           'check/uncheck all items');
   String get remove => _label('remove', 'Remove');
+  String get open => _label('open', 'Open');
   String get historyImported => 'History imported';
   String historyImportFailed(Object error) => 'History import failed: $error';
   String get historyExported => 'History exported';
