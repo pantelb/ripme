@@ -665,6 +665,7 @@ class _FilteredLogViewState extends State<_FilteredLogView> {
                   SizedBox(
                     width: 320,
                     child: TextField(
+                      key: const Key('log_filter_field'),
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.manage_search_outlined),
                         hintText: strings.filterLog,
@@ -674,6 +675,7 @@ class _FilteredLogViewState extends State<_FilteredLogView> {
                     ),
                   ),
                   OutlinedButton.icon(
+                    key: const Key('log_copy_button'),
                     onPressed: filteredLogs.isEmpty
                         ? null
                         : () => Clipboard.setData(
@@ -685,6 +687,7 @@ class _FilteredLogViewState extends State<_FilteredLogView> {
                     label: Text(strings.copy),
                   ),
                   OutlinedButton.icon(
+                    key: const Key('log_clear_button'),
                     onPressed: widget.logs.isEmpty
                         ? null
                         : widget.ripManager.clearLogs,

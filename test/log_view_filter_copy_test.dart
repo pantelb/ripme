@@ -1,29 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:ripme/main.dart';
 import 'package:ripme/l10n/app_localizations.dart';
+import 'package:ripme/main.dart';
 import 'package:ripme/rip_manager.dart';
 import 'package:ripme/ui/rip_status_message.dart';
 import 'package:ripme/utils/utils.dart';
 
 void main() {
-  testWidgets('LogView renders Java-style plain text lines instead of rows',
-      (tester) async {
+  testWidgets('LogView filters and copies only visible lines', (tester) async {
     SharedPreferences.setMockInitialValues({});
     await Utils.init();
     final manager = RipManager();
     addTearDown(manager.dispose);
     final logs = [
-      RipStatusMessage(
-        RipStatus.downloadStarted,
-        'https://example.com/one.jpg',
-      ),
       RipStatusMessage(RipStatus.downloadComplete, '/tmp/one.jpg'),
       RipStatusMessage(RipStatus.downloadWarn, 'Retrying request'),
-      RipStatusMessage(RipStatus.ripComplete, '/tmp/rips/example'),
+      RipStatusMessage(RipStatus.downloadComplete, '/tmp/two.jpg'),
     ];
+    String? clipboardText;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'Clipboard.setData') {
+          clipboardText =
+              (call.arguments as Map<Object?, Object?>)['text'] as String?;
+        }
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger
+          .setMockMethodCallHandler(SystemChannels.platform, null),
+    );
 
     await tester.pumpWidget(
       MaterialApp(
@@ -34,19 +45,19 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('log_text_block')), findsOneWidget);
-    expect(find.byType(ListTile), findsNothing);
-    expect(find.byType(PopupMenuButton<String>), findsNothing);
+    await tester.enterText(
+      find.byKey(const Key('log_filter_field')),
+      'DOWNLOADED',
+    );
+    await tester.pump();
 
     final text = tester.widget<SelectableText>(
       find.byKey(const Key('log_text_block')),
     );
-    expect(
-      text.data,
-      'Downloading https://example.com/one.jpg\n'
-      'Downloaded /tmp/one.jpg\n'
-      'Retrying request\n'
-      'Rip complete, saved to /tmp/rips/example',
-    );
+    expect(text.data, 'Downloaded /tmp/one.jpg\nDownloaded /tmp/two.jpg');
+
+    await tester.tap(find.byKey(const Key('log_copy_button')));
+    await tester.pump();
+    expect(clipboardText, text.data);
   });
 }

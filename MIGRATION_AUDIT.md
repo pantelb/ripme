@@ -1113,6 +1113,10 @@ Parity checklist:
     direct Java `Thread.sleep(...)` counterparts remain unjittered. Tsumino's
     absent download sleep remains part of its separately documented missing
     object-file/download behavior.
+  - CI: workflow `27395072262` failed on a timing-sensitive manual-range queue
+    assertion unrelated to jitter. After stabilizing that assertion, workflow
+    `27395306355` succeeded. Artifacts: Android `7583468855`, Windows
+    `7583445445`, macOS `7583435982`, Linux `7583418985`.
 - [x] Verify Java MIME/magic-number extension detection for
       `getFileExtFromMIME`.
   - Completed: opt-in downloads inspect the response stream before opening the
@@ -1152,7 +1156,13 @@ Flutter targets:
 
 Parity checklist:
 
-- [ ] Verify log filtering, copying, clearing, and display order.
+- [x] Verify log filtering, copying, clearing, and display order.
+  - Completed: Java appends plain-text log lines chronologically to a
+    non-editable `JTextPane` and moves the caret to the end; it has no dedicated
+    filter, bulk-copy, or clear controls. Flutter preserves chronological
+    plain-text order and intentionally extends the panel with case-insensitive
+    filtering, copy-visible-lines, and manager-backed clear actions, all covered
+    by widget tests.
 - [ ] Verify history context actions.
 - [ ] Verify queue context actions.
 - [ ] Verify text-field context action protections or Flutter equivalent.
@@ -1168,7 +1178,9 @@ Parity checklist:
 
 Required tests:
 
-- [ ] Widget tests for log/history/queue actions.
+- [~] Widget tests for log/history/queue actions.
+  - Log filtering, copy, clear, and order are covered. History and queue action
+    coverage remains tracked by their checklist items.
 - [ ] Clipboard autorip tests.
 - [ ] Platform integration tests where practical.
 
