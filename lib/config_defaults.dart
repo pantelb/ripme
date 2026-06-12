@@ -109,6 +109,7 @@ class ConfigDefaults {
     'urls_only.save': false,
     'play.sound': false,
     'prefer.mp4': false,
+    'log.save': false,
     'proxy.enabled': false,
   };
 
@@ -121,6 +122,7 @@ class ConfigDefaults {
     'gw.api': 'gonewild',
     'erome.laravel_session': '',
     'finish.command': 'ls',
+    'log.level': 'Log level: Debug',
     'proxy.host': '',
     'proxy.username': '',
     'proxy.password': '',

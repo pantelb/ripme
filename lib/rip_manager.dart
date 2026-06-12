@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'app_logger.dart';
 import 'ripper/abstract_ripper.dart';
 import 'ripper/ripper_factory.dart';
 import 'ui/rip_status_message.dart';
@@ -398,6 +399,18 @@ class RipManager extends ChangeNotifier {
 
   void _addLog(RipStatusMessage msg) {
     _logs.add(msg);
+    final message = msg.toString();
+    switch (msg.status) {
+      case RipStatus.ripErrored:
+      case RipStatus.downloadErrored:
+        unawaited(AppLogger.instance.error(message));
+        break;
+      case RipStatus.downloadWarn:
+        unawaited(AppLogger.instance.warn(message));
+        break;
+      default:
+        unawaited(AppLogger.instance.info(message));
+    }
     notifyListeners();
   }
 

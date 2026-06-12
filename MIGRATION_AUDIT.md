@@ -820,15 +820,27 @@ Parity checklist:
     share the save-before-destroy path, and the desktop configuration UI exposes
     the Java toggle. Unit tests cover restore, centering, save/truncation,
     Windows exclusion, and Android no-op behavior.
-- [ ] Support log level, log save, popup, sound, URLs-only, album-title folders,
+- [x] Support log level, log save, popup, sound, URLs-only, album-title folders,
       descriptions, prefer MP4, SSL verification, URL history, retries, timeout,
       retry sleep, thread count, overwrite, and save order.
-  - Completed for popup: the App settings persist Java's
+  - Completed: every reachable Java control is exposed and persists
+    immediately. Java's exact log-level values configure global diagnostic
+    filtering, and `log.save` writes `ripme.log` with 20 MB rolling
+    `ripme.1.log.gz`/`ripme.2.log.gz` archives. Desktop logs use Java's current
+    working directory; Android uses application documents because its process
+    working directory is not a writable user location. Rip status messages are
+    mirrored into the diagnostic logger, and focused tests cover level parsing,
+    filtering, file output, rollover, and UI persistence.
+  - Popup: the App settings persist Java's
     `download.show_popup` false-by-default preference and desktop rip starts
     use it to gate native notifications.
-  - In progress: `ssl.verify.off` now has Java's false default, persists
+  - SSL: `ssl.verify.off` has Java's false default, persists
     immediately from the network configuration UI, and controls
     `HttpClient.badCertificateCallback` for the shared page/download client.
+  - Intentional retirement: Java exposes `descriptions.save`, but the only
+    description-hook override is `FuraffinityRipper`, whose
+    `hasDescriptionSupport()` returns false. The source behavior is unreachable,
+    so Flutter does not expose an ineffective setting.
   - CI artifacts for SSL verification:
     [Android](https://github.com/pantelb/ripme/actions/runs/27359734247/artifacts/7569889411),
     [Windows](https://github.com/pantelb/ripme/actions/runs/27359734247/artifacts/7569824709),
@@ -1626,8 +1638,9 @@ Findings:
       (`url_history.txt`), not the album history JSON. Flutter uses the
       configured file when supplied and otherwise documents SharedPreferences
       as the replacement for Java's default config-dir file.
-- [ ] Java has config-driven log level and `log.save` file logging behavior.
-      Flutter log display exists but rolling file output is not verified.
+- [x] Java has config-driven log level and `log.save` file logging behavior.
+      Flutter uses the exact four Java labels, mirrors rip status diagnostics,
+      writes `ripme.log`, and rolls two gzip archives at 20 MB.
 - [ ] Mechanical source scan found Java-used config keys missing from Flutter
       defaults and therefore requiring parity decisions:
       `DeviantartCustomLoginPassword`, `DeviantartCustomLoginUsername`,
@@ -2474,9 +2487,10 @@ Findings:
       `src/main/resources/camera.wav` is carried forward byte-identically as
       `assets/sounds/camera.wav`, but Flutter currently uses platform alert
       sound. This is an intentional-difference candidate but not parity.
-- [ ] Java logging file output is `ripme.log`, with rolling `ripme.%i.log.gz`
-      output and a 20 MB size policy in log4j2. Flutter file logging is not
-      verified.
+- [x] Java logging file output is `ripme.log`, with rolling `ripme.%i.log.gz`
+      output and a 20 MB size policy in log4j2. Flutter writes the same active
+      filename and maintains `ripme.1.log.gz` and `ripme.2.log.gz`; tests use an
+      injected small limit to prove compression and rollover deterministically.
 - [ ] Java icon assets include `icon.ico`, `icon.png`, and toolbar PNGs
       (`comment`, `folder`, `gear`, `list`, `stop`, `time`, `wrench`).
       The toolbar PNGs and `icon.png` are carried forward byte-identically

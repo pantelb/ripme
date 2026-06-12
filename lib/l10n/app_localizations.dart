@@ -223,6 +223,8 @@ class AppLocalizations {
       _label('sound.when.rip.completes', 'Play sound when rip completes');
   String get notificationWhenRipStarts =>
       _label('notification.when.rip.starts', 'Notification when rip starts');
+  String get saveLogs => _label('save.logs', 'Save logs');
+  String get logLevel => 'Log level';
   String get currentVersion => _label('current.version', 'Current version');
   String get checkForUpdates =>
       _label('check.for.updates', 'Check for updates');

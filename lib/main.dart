@@ -10,6 +10,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 import 'app_version.dart';
+import 'app_logger.dart';
 import 'cli/cli_controller.dart';
 import 'clipboard_autorip.dart';
 import 'desktop_tray_controller.dart';
@@ -27,6 +28,7 @@ Future<void> main(List<String> args) async {
   if (CliController.shouldRunHeadless(args)) {
     WidgetsFlutterBinding.ensureInitialized();
     await Utils.init(detectPortableConfig: true);
+    await AppLogger.instance.configure();
     final result = await CliController().run(args);
     final sink = result.isError ? stderr : stdout;
     sink.writeln(result.output);
@@ -36,6 +38,8 @@ Future<void> main(List<String> args) async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await Utils.init(detectPortableConfig: true);
+  await AppLogger.instance.configure();
+  await AppLogger.instance.info('Initialized ripme v$appVersion');
   DesktopRipStartNotifier? ripStartNotifier;
   DesktopWindowOperations? desktopWindow;
   if (DesktopTrayController.isSupportedDesktop) {
@@ -1926,6 +1930,43 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               defaultValue: false,
               onChanged: _refresh,
             ),
+            ListTile(
+              leading: _IconBadge(
+                icon: Icons.tune_outlined,
+                color: Theme.of(context).colorScheme.primary,
+                compact: true,
+              ),
+              title: Text(strings.logLevel),
+              trailing: DropdownButton<String>(
+                value: Utils.getConfigString(
+                  'log.level',
+                  AppLogLevel.debug.configValue,
+                ),
+                items: [
+                  for (final level in AppLogLevel.values.reversed)
+                    DropdownMenuItem(
+                      value: level.configValue,
+                      child: Text(level.configValue),
+                    ),
+                ],
+                onChanged: (value) async {
+                  if (value == null) return;
+                  await Utils.setConfigString('log.level', value);
+                  await AppLogger.instance.configure();
+                  _refresh();
+                },
+              ),
+            ),
+            _ConfigSwitch(
+              title: strings.saveLogs,
+              icon: Icons.save_outlined,
+              keyName: 'log.save',
+              defaultValue: false,
+              onChanged: () async {
+                await AppLogger.instance.configure();
+                _refresh();
+              },
+            ),
             if (DesktopTrayController.isSupportedDesktop)
               _ConfigSwitch(
                 title: strings.restoreWindowPosition,
@@ -2067,7 +2108,7 @@ class _ConfigSwitch extends StatelessWidget {
   final IconData icon;
   final String keyName;
   final bool defaultValue;
-  final VoidCallback onChanged;
+  final FutureOr<void> Function() onChanged;
 
   const _ConfigSwitch({
     required this.title,
@@ -2089,7 +2130,7 @@ class _ConfigSwitch extends StatelessWidget {
       value: Utils.getConfigBoolean(keyName, defaultValue),
       onChanged: (value) async {
         await Utils.setConfigBoolean(keyName, value);
-        onChanged();
+        await onChanged();
       },
     );
   }
