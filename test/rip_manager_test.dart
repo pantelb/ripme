@@ -218,8 +218,10 @@ Future<void> _waitFor(bool Function() condition) async {
 }
 
 Future<void> _deleteIfExists(Directory directory) async {
-  if (await directory.exists()) {
+  try {
     await directory.delete(recursive: true);
+  } on PathNotFoundException {
+    // Rip completion may remove the empty working directory before teardown.
   }
 }
 
