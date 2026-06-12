@@ -9,6 +9,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'app_version.dart';
 import 'cli/cli_controller.dart';
+import 'clipboard_autorip.dart';
 import 'download_history_provider.dart';
 import 'history_provider.dart';
 import 'l10n/app_localizations.dart';
@@ -200,15 +201,15 @@ class _MainWindowState extends State<MainWindow>
   late TabController _tabController;
   final TextEditingController _urlController = TextEditingController();
   final UndoHistoryController _urlUndoController = UndoHistoryController();
+  final ClipboardAutoripTracker _clipboardAutorip = ClipboardAutoripTracker();
   Timer? _clipboardTimer;
-  String? _lastClipboardUrl;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
     _clipboardTimer = Timer.periodic(
-      const Duration(seconds: 2),
+      ClipboardAutoripTracker.pollInterval,
       (_) => _checkClipboardAutorip(),
     );
   }
@@ -289,13 +290,10 @@ class _MainWindowState extends State<MainWindow>
     if (!mounted) return;
     if (!Utils.getConfigBoolean('clipboard.autorip', false)) return;
     final data = await Clipboard.getData(Clipboard.kTextPlain);
-    final text = data?.text?.trim();
-    if (text == null || text == _lastClipboardUrl) return;
-    final uri = Uri.tryParse(text);
-    if (uri == null || !uri.hasScheme || uri.host.isEmpty) return;
-    _lastClipboardUrl = text;
+    final url = _clipboardAutorip.takeNewUrl(data?.text);
+    if (url == null) return;
     if (!mounted) return;
-    Provider.of<RipManager>(context, listen: false).addUrlToQueue(text);
+    Provider.of<RipManager>(context, listen: false).addUrlToQueue(url);
   }
 }
 

@@ -1182,6 +1182,8 @@ Parity checklist:
     row selection plus a bulk remove control, and remove-all retains the
     `queue.validation` confirmation dialog. Flutter's per-row copy, reorder,
     and remove actions are retained as documented platform extensions.
+  - CI: workflow `27396754424` succeeded. Artifacts: Android `7583978996`,
+    Windows `7583954174`, macOS `7583943410`, Linux `7583930729`.
 - [x] Verify text-field context action protections or Flutter equivalent.
   - Decision: Flutter's platform-adaptive `TextField` actions replace Java's
     URL-field-only Swing popup. The URL field adds an `UndoHistoryController`
@@ -1191,10 +1193,18 @@ Parity checklist:
     whole field, while Swing keyboard paste and Flutter native paste replace
     the active selection. Flutter retains native platform semantics rather than
     reproducing the popup-only inconsistency.
-- [ ] Verify clipboard autorip duplicate handling.
-- [ ] Verify Java clipboard autorip polls every 1000 ms, matches only the first
+  - CI: workflow `27397109861` failed on the manual-range queue observation
+    race. Workflow `27406920253` succeeded after synchronizing that assertion.
+    Artifacts: Android `7588004071`, Windows `7587968645`, macOS `7587974684`,
+    Linux `7587935374`.
+- [x] Verify clipboard autorip duplicate handling.
+- [x] Verify Java clipboard autorip polls every 1000 ms, matches only the first
       URL pattern in clipboard text, keeps a per-session `rippedURLs` set, and
       starts ripping immediately through `MainWindow.ripAlbumStatic`.
+  - Completed: Flutter uses the exact anchored Java URL regex, accepts the same
+    `http`, `https`, `ftp`, and `file` schemes, remembers each matched URL for
+    the app autorip session, and polls every 1000 ms. New matches enter
+    `RipManager.addUrlToQueue`, which starts immediately when idle.
 - [ ] Verify tray icon/menu support or document platform-native replacement.
 - [ ] Verify popup notification behavior or document replacement.
 - [ ] Verify open-folder button behavior after completion.
@@ -1206,7 +1216,7 @@ Required tests:
 - [x] Widget tests for log/history/queue actions.
   - Log filtering, copy, clear, and order are covered. History and queue tests
     cover Java bulk selection/removal and confirmation behavior.
-- [ ] Clipboard autorip tests.
+- [x] Clipboard autorip tests.
 - [ ] Platform integration tests where practical.
 
 ### Workstream 8: Localization And Resources
