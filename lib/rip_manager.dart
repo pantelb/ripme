@@ -284,6 +284,7 @@ class RipManager extends ChangeNotifier {
 
     await activeRipper.setup();
     activeRipper.statusStream.listen((event) {
+      if (activeRipper.isStopped) return;
       if (event.status == RipStatus.queueAdd) {
         _queue.add(event.object.toString());
         _saveNonEmptyQueue();
@@ -342,42 +343,25 @@ class RipManager extends ChangeNotifier {
     AbstractRipper activeRipper,
   ) {
     _currentProgressPercent = activeRipper.completionPercentage;
+    _statusText = activeRipper.statusText;
     final object = msg.object.toString();
     switch (msg.status) {
       case RipStatus.loadingResource:
-        _statusText = 'Loading $object';
-        break;
       case RipStatus.downloadStarted:
-        _statusText = 'Downloading $object';
-        break;
       case RipStatus.downloadComplete:
-        _statusText = 'Downloaded $object';
-        break;
       case RipStatus.downloadCompleteHistory:
-        _statusText = object;
-        break;
       case RipStatus.downloadErrored:
-        _statusText = 'Error: $object';
-        break;
       case RipStatus.downloadSkip:
-        _statusText = object;
-        break;
       case RipStatus.downloadWarn:
-        _statusText = object;
         break;
       case RipStatus.ripErrored:
         _statusText = 'Error: $object';
         _currentProgressPercent = 0;
         break;
       case RipStatus.ripComplete:
-        _statusText = 'Rip complete, saved to $object';
-        break;
       case RipStatus.queueAdd:
-        _statusText = 'Queued $object';
-        break;
       case RipStatus.totalBytes:
       case RipStatus.completedBytes:
-        _statusText = activeRipper.statusText;
         break;
     }
   }

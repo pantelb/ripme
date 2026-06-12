@@ -1071,7 +1071,12 @@ Parity checklist:
     downloads issue HEAD and emit total bytes before GET. Percentage truncation
     and `<percent>%  - <completed> / <total>` text use Java's two-decimal IEC
     formatting.
-- [ ] Verify status text/log event text.
+- [x] Verify status text/log event text.
+  - Completed: accepted events display the active ripper's Java-style status
+    text before status-specific handling; `RIP_ERRORED` alone overrides it with
+    `Error: <object>`. Log rendering preserves Java's `Downloading`,
+    `Downloaded`, completion-history, warning, skip, and error text rules,
+    while byte-only events update progress without adding log rows.
 - [ ] Verify video download filename/referrer/cookie behavior.
 - [ ] Verify ignored extension behavior.
 - [ ] Verify Java empty working-directory cleanup after a failed or empty rip.
@@ -2018,9 +2023,10 @@ Flutter files checked:
 
 Findings:
 
-- [ ] Java `RipStatusMessage.toString()` renders display labels such as
-      `Loading Resource: <value>`. Flutter currently renders enum names such as
-      `loadingResource: <value>`. The log/status layer needs Java text parity.
+- [x] Java `RipStatusMessage.toString()` renders display labels such as
+      `Loading Resource: <value>`.
+  - Completed: Flutter maps every shared status to the exact Java display label;
+    its Flutter-only queue event uses `Queue Add`.
 - [ ] Java status enum includes `NO_ALBUM_OR_USER`; Flutter still lacks that
       status. `DOWNLOAD_COMPLETE_HISTORY`, `TOTAL_BYTES`, and
       `COMPLETED_BYTES` are now represented.

@@ -133,6 +133,9 @@ class ProgressRipper extends AbstractRipper {
   int get completionPercentage => _completionPercentage;
 
   @override
+  String get statusText => '$completionPercentage% progress';
+
+  @override
   Future<void> setup() async {
     workingDir = directory;
   }
@@ -476,6 +479,41 @@ void main() {
     manager.stop();
   });
 
+  test('ignores status events emitted after the active ripper is stopped',
+      () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_manager_late_event_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final release = Completer<void>();
+    addTearDown(() {
+      if (!release.isCompleted) release.complete();
+    });
+    BlockingRipper? activeRipper;
+    final manager = RipManager(
+      ripperResolver: (uri) {
+        activeRipper = BlockingRipper(uri, directory, release.future);
+        return activeRipper;
+      },
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+
+    manager.addUrlToQueue('https://example.com/late-event');
+    await _waitFor(() => manager.isRipping && activeRipper != null);
+    manager.stop();
+    activeRipper!.sendUpdate(RipStatus.downloadComplete, '/tmp/late.jpg');
+    await Future<void>.delayed(Duration.zero);
+
+    expect(
+      manager.logs.any((message) => message.object == '/tmp/late.jpg'),
+      isFalse,
+    );
+    expect(manager.statusText, 'Download interrupted');
+    release.complete();
+  });
+
   test('restores the persisted queue without starting it', () async {
     SharedPreferences.setMockInitialValues({
       'queue': <String>[
@@ -741,13 +779,13 @@ void main() {
     manager.addUrlToQueue('https://example.com/progress');
 
     await _waitFor(() => manager.progressPercent == 50);
-    expect(manager.statusText, 'Downloaded /tmp/one.jpg');
+    expect(manager.statusText, '50% progress');
     expect(manager.isRipping, isTrue);
 
     release.complete();
     await _waitFor(() => manager.history.length == 1);
 
-    expect(manager.statusText, 'Rip complete, saved to ${directory.path}');
+    expect(manager.statusText, '100% progress');
     expect(manager.progressValue, 0);
   });
 }
