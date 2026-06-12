@@ -661,7 +661,10 @@ void main() {
     await manager.init();
     final twoPending = Completer<void>();
     manager.addListener(() {
-      if (manager.queue.length == 2 && !twoPending.isCompleted) {
+      if (manager.isRipping &&
+          manager.queue.length == 2 &&
+          !manager.queue.contains('https://example.com/album/2/page/2') &&
+          !twoPending.isCompleted) {
         twoPending.complete();
       }
     });
