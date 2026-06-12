@@ -83,6 +83,8 @@ class AppLocalizations {
 
   String _label(String key, String fallback) => _labels[key] ?? fallback;
 
+  String javaLabel(String key) => _labels[key] ?? key;
+
   String get appTitle => 'RipMe';
   String get enterUrlToRip => 'Enter URL to rip';
   String get rip => 'Rip';

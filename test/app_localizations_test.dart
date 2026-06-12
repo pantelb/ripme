@@ -40,6 +40,8 @@ void main() {
     expect(strings.history, 'Ιστορικό');
     expect(strings.queue, 'Ουρά');
     expect(strings.config, 'Ρυθμίσεις');
+    expect(strings.javaLabel('download.interrupted'), 'Η μεταφόρτωση διεκόπη');
+    expect(strings.javaLabel('unknown.java.key'), 'unknown.java.key');
   });
 
   test('decodes Java unicode escapes in migrated label bundles', () async {

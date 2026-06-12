@@ -200,8 +200,14 @@ blocked by platform constraints or missing user input.
   - Source discrepancy fixed: the previous hand-maintained inventory omitted
     `DeviantartLogin.cookies`, `download.ignore_extensions`, `gw.api`, and
     `tsumino.blacklist.tags`; all four are now recorded.
-- [ ] Add a script or test that fails when a Java localized key has no Flutter
+- [x] Add a script or test that fails when a Java localized key has no Flutter
       lookup, generated localization mapping, or documented intentional removal.
+  - Completed: `tool/check_java_localization_keys.dart` scans every Java
+    `Utils.getLocalizedString(...)` call in `origin/main` and requires its key
+    to exist in the packaged default Java bundle. `AppLocalizations.javaLabel`
+    provides the generic Flutter lookup path, while focused tests cover source
+    extraction, property parsing, translated lookup, and unknown-key fallback.
+    Flutter CI runs the guard before analysis.
 - [ ] Add a script or test that fails when a Java test class has no Dart test,
       alias mapping, broader integration test, or documented intentional removal.
 - [x] Record latest passing Actions run and artifacts for the first inventory commit.
