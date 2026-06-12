@@ -199,6 +199,7 @@ class _MainWindowState extends State<MainWindow>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _urlController = TextEditingController();
+  final UndoHistoryController _urlUndoController = UndoHistoryController();
   Timer? _clipboardTimer;
   String? _lastClipboardUrl;
 
@@ -217,6 +218,7 @@ class _MainWindowState extends State<MainWindow>
     _clipboardTimer?.cancel();
     _tabController.dispose();
     _urlController.dispose();
+    _urlUndoController.dispose();
     super.dispose();
   }
 
@@ -250,6 +252,7 @@ class _MainWindowState extends State<MainWindow>
           children: [
             _CommandBar(
               controller: _urlController,
+              undoController: _urlUndoController,
               ripManager: ripManager,
               onSubmit: (value) {
                 _enqueueUrl(ripManager, value);
@@ -298,11 +301,13 @@ class _MainWindowState extends State<MainWindow>
 
 class _CommandBar extends StatelessWidget {
   final TextEditingController controller;
+  final UndoHistoryController undoController;
   final RipManager ripManager;
   final ValueChanged<String> onSubmit;
 
   const _CommandBar({
     required this.controller,
+    required this.undoController,
     required this.ripManager,
     required this.onSubmit,
   });
@@ -327,6 +332,25 @@ class _CommandBar extends StatelessWidget {
               final isNarrow = constraints.maxWidth < 720;
               final field = TextField(
                 controller: controller,
+                undoController: undoController,
+                contextMenuBuilder: (context, editableTextState) {
+                  final buttonItems = <ContextMenuButtonItem>[
+                    ContextMenuButtonItem(
+                      label: 'Undo',
+                      onPressed: undoController.value.canUndo
+                          ? () {
+                              undoController.undo();
+                              editableTextState.hideToolbar();
+                            }
+                          : null,
+                    ),
+                    ...editableTextState.contextMenuButtonItems,
+                  ];
+                  return AdaptiveTextSelectionToolbar.buttonItems(
+                    anchors: editableTextState.contextMenuAnchors,
+                    buttonItems: buttonItems,
+                  );
+                },
                 decoration: InputDecoration(
                   hintText: strings.enterUrlToRip,
                   prefixIcon: const Icon(Icons.link_outlined),

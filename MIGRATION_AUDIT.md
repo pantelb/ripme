@@ -1182,7 +1182,15 @@ Parity checklist:
     row selection plus a bulk remove control, and remove-all retains the
     `queue.validation` confirmation dialog. Flutter's per-row copy, reorder,
     and remove actions are retained as documented platform extensions.
-- [ ] Verify text-field context action protections or Flutter equivalent.
+- [x] Verify text-field context action protections or Flutter equivalent.
+  - Decision: Flutter's platform-adaptive `TextField` actions replace Java's
+    URL-field-only Swing popup. The URL field adds an `UndoHistoryController`
+    action ahead of Flutter's native cut/copy/paste/select-all items. Widget
+    coverage verifies the native actions and the explicit undo configuration.
+  - Intentional difference: Java popup paste calls `setText` and replaces the
+    whole field, while Swing keyboard paste and Flutter native paste replace
+    the active selection. Flutter retains native platform semantics rather than
+    reproducing the popup-only inconsistency.
 - [ ] Verify clipboard autorip duplicate handling.
 - [ ] Verify Java clipboard autorip polls every 1000 ms, matches only the first
       URL pattern in clipboard text, keeps a per-session `rippedURLs` set, and
