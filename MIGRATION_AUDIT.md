@@ -1022,12 +1022,21 @@ Parity checklist:
     history writes. Like Java, append-to-folder still resolves and creates the
     normal sibling/subdirectory parent as a side effect but does not relocate
     `urls.txt`.
+  - CI: workflow `27385618025` succeeded. Artifacts: Android `7580053024`,
+    Windows `7580020021`, macOS `7580002788`, Linux `7579995997`.
 - [x] Verify duplicate URL suppression scope.
   - Completed: suppression remains per ripper across attempted URLs and covers
     pending, completed, and failed attempts. Imgur user mode is the only Java
     `allowDuplicates()` override; Eightmuses and Tsumino no longer mistake
     Java's `getFileExtFromMIME=true` argument for a duplicate bypass.
-- [ ] Verify already-downloaded URL skip counter and stopping threshold.
+  - CI: workflow `27385862642` succeeded. Artifacts: Android `7580130083`,
+    Windows `7580103306`, macOS `7580097992`, Linux `7580073088`.
+- [x] Verify already-downloaded URL skip counter and stopping threshold.
+  - Completed: only URL-history hits increment Java's cumulative counter;
+    successful downloads, URL-only writes, and existing files do not reset or
+    increment it. Flutter finishes the current scheduled page batch, then stops
+    future work with `downloadCompleteHistory` for HTML rippers and
+    `downloadComplete` for JSON/other rippers using Java's message text.
 - [x] Verify Java writes downloaded URL history before queueing a download and
       skips URL-history writes while `urls_only.save=true`.
   - Completed: Flutter serializes per-ripper history writes before existing-file
@@ -1681,14 +1690,13 @@ Findings:
       attempted URL set.
   - Completed: the attempted set is retained across download outcomes, and the
     only Java override, Imgur user mode, passes the explicit duplicate opt-out.
-- [ ] Java shared download paths surface prior downloads and existing files as
+- [x] Java shared download paths surface prior downloads and existing files as
       warning statuses: URL-history hits send `DOWNLOAD_WARN` with
       `Already downloaded <url>`, and `downloadExists(...)` sends
       `DOWNLOAD_WARN` with `<url> already saved as <file>` while marking the
-      item completed. Flutter `downloadFile(...)` emits `RipStatus.downloadSkip`
-      with `Already downloaded: <url>` or `File already exists: <path>` instead,
-      changing status category, message text, and completed-item accounting for
-      these common skip paths.
+      item completed.
+  - Completed: Flutter emits warning statuses with Java text, and existing files
+    no longer affect the URL-history counter.
 - [ ] Java `DownloadThreadPool.waitForThreads()` shuts down the fixed thread
       pool and waits at most 3600 seconds for termination. Flutter
       `AbstractRipper.downloadFiles` waits on all worker futures with no
@@ -1702,17 +1710,16 @@ Findings:
       `NhentaiRipper`, and `PornhubRipper`. Flutter uses the shared
       `AbstractRipper.downloadFiles` worker queue and has no verified
       per-ripper pool hook/coverage for these classes.
-- [ ] Java stops an HTML rip after `history.end_rip_after_already_seen` already
-      downloaded URLs and sends `DOWNLOAD_COMPLETE_HISTORY`. Flutter sends a
-      download-skip message and stops; status parity is missing.
-- [ ] Java stops a JSON rip after the same
+- [x] Java stops an HTML rip after `history.end_rip_after_already_seen` already
+      downloaded URLs and sends `DOWNLOAD_COMPLETE_HISTORY`.
+  - Completed: Flutter emits `downloadCompleteHistory` after the current
+    scheduled page batch and stops future work.
+- [x] Java stops a JSON rip after the same
       `history.end_rip_after_already_seen` threshold inside
       `AbstractJSONRipper.rip()` but sends `DOWNLOAD_COMPLETE` with
-      `Already seen the last N images ending rip` before breaking. Flutter's
-      shared history-limit path runs inside `downloadFile(...)`, emits
-      `RipStatus.downloadSkip` with `Already seen the last N files, ending rip`,
-      and calls `stop()`, so JSON-ripper status category, text, and stop timing
-      differ from Java.
+      `Already seen the last N images ending rip` before breaking.
+  - Completed: Flutter emits `downloadComplete` with the same text after the
+    current scheduled page batch.
 - [ ] Java `AbstractHTMLRipper` remembers each processed `doc.location()` and
       breaks when a next page resolves to a previously processed location.
       Flutter `AbstractHTMLRipper` has no visited-location guard, so bad or

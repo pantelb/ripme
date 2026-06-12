@@ -733,6 +733,8 @@ class _FilteredLogViewState extends State<_FilteredLogView> {
         return 'Downloading $object';
       case RipStatus.downloadComplete:
         return 'Downloaded $object';
+      case RipStatus.downloadCompleteHistory:
+        return object;
       case RipStatus.ripComplete:
         return 'Rip complete, saved to $object';
       case RipStatus.downloadErrored:

@@ -314,8 +314,8 @@ void main() {
     await ripper.downloadFile(url, file);
     await Future<void>.delayed(Duration.zero);
 
-    expect(statuses.single.status, RipStatus.downloadSkip);
-    expect(ripper.alreadyDownloadedUrls, 1);
+    expect(statuses.single.status, RipStatus.downloadWarn);
+    expect(ripper.alreadyDownloadedUrls, 0);
     expect(await DownloadHistoryProvider.hasDownloaded(url), isTrue);
   });
 
@@ -370,7 +370,7 @@ void main() {
     await ripper.downloadFile(url, File('${directory.path}/image.jpg'));
     await Future<void>.delayed(Duration.zero);
 
-    expect(statuses.single.status, RipStatus.downloadSkip);
+    expect(statuses.single.status, RipStatus.downloadWarn);
     expect(ripper.alreadyDownloadedUrls, 1);
   });
 
@@ -417,16 +417,48 @@ void main() {
     await Future<void>.delayed(Duration.zero);
 
     expect(ripper.isStopped, isTrue);
-    expect(ripper.alreadyDownloadedUrls, 2);
+    expect(ripper.alreadyDownloadedUrls, 3);
     expect(
       statuses
           .where((msg) => msg.object.toString().contains('Already downloaded')),
-      hasLength(2),
+      hasLength(3),
     );
+    expect(statuses.last.status, RipStatus.downloadComplete);
     expect(
       statuses.last.object.toString(),
-      contains('Already seen the last 2 files, ending rip'),
+      contains('Already seen the last 3 images ending rip'),
     );
+  });
+
+  test('HTML history threshold uses Java completion-history status', () async {
+    final base = await Directory.systemTemp.createTemp('ripme_html_limit_test');
+    addTearDown(() => base.delete(recursive: true));
+    SharedPreferences.setMockInitialValues({
+      'rips.directory': base.path,
+      'remember.url_history': true,
+      'history.end_rip_after_already_seen': 1,
+    });
+    await Utils.init();
+    final url = Uri.parse('https://example.com/seen.jpg');
+    await DownloadHistoryProvider.markDownloaded(url);
+    final ripper = HtmlWorkingDirectoryTestRipper(
+      Uri.parse('https://example.com/album'),
+      'album',
+    );
+    await ripper.setup();
+    final statuses = <RipStatusMessage>[];
+    final sub = ripper.statusStream.listen(statuses.add);
+    addTearDown(sub.cancel);
+
+    await ripper.downloadFiles([
+      RipperDownload(
+        url: url,
+        saveAs: File(p.join(ripper.workingDir.path, 'seen.jpg')),
+      ),
+    ]);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(statuses.last.status, RipStatus.downloadCompleteHistory);
   });
 
   test('limits parallel downloads by threads.size', () async {

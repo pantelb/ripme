@@ -354,6 +354,12 @@ class RipManager extends ChangeNotifier {
           _currentRipTotal = _currentRipFinished;
         }
         break;
+      case RipStatus.downloadCompleteHistory:
+        _statusText = object;
+        if (_currentRipTotal > 0) {
+          _currentRipFinished = _currentRipTotal;
+        }
+        break;
       case RipStatus.downloadErrored:
         _statusText = 'Error: $object';
         _currentRipFinished++;

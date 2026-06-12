@@ -9,6 +9,9 @@ abstract class AbstractHTMLRipper extends AbstractRipper {
   AbstractHTMLRipper(super.url);
 
   @override
+  RipStatus get historyLimitStatus => RipStatus.downloadCompleteHistory;
+
+  @override
   Future<void> rip() async {
     sendUpdate(RipStatus.loadingResource, url.toString());
     Document doc;

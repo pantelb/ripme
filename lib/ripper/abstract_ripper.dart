@@ -140,6 +140,7 @@ abstract class AbstractRipper {
     }
 
     await Future.wait(List.generate(workerCount, (_) => worker()));
+    _stopIfHistoryLimitReached();
   }
 
   Future<void> downloadFile(Uri url, File saveAs,
@@ -161,8 +162,7 @@ abstract class AbstractRipper {
       if (_shouldRememberUrlHistory() &&
           await DownloadHistoryProvider.hasDownloaded(url)) {
         alreadyDownloadedUrls++;
-        sendUpdate(RipStatus.downloadSkip, 'Already downloaded: $url');
-        _stopIfHistoryLimitReached();
+        sendUpdate(RipStatus.downloadWarn, 'Already downloaded $url');
         return;
       }
 
@@ -172,7 +172,6 @@ abstract class AbstractRipper {
           await resolvedSaveAs.parent.create(recursive: true);
         }
         await _saveUrlOnly(url);
-        alreadyDownloadedUrls = 0;
         return;
       }
 
@@ -192,16 +191,15 @@ abstract class AbstractRipper {
 
       if (!Utils.getConfigBoolean('file.overwrite', false) &&
           await saveAs.exists()) {
-        alreadyDownloadedUrls++;
         sendUpdate(
-            RipStatus.downloadSkip, 'File already exists: ${saveAs.path}');
-        _stopIfHistoryLimitReached();
+          RipStatus.downloadWarn,
+          '$url already saved as ${saveAs.path}',
+        );
         return;
       }
 
       sendUpdate(RipStatus.downloadStarted, url.toString());
       await Http.downloadFile(url, saveAs, headers: headers, cookies: cookies);
-      alreadyDownloadedUrls = 0;
       sendUpdate(RipStatus.downloadComplete, saveAs.path);
     } catch (e) {
       sendUpdate(RipStatus.downloadErrored, "$url : ${e.toString()}");
@@ -278,12 +276,14 @@ abstract class AbstractRipper {
         'history.end_rip_after_already_seen', 1000000000);
     if (alreadyDownloadedUrls >= limit) {
       sendUpdate(
-        RipStatus.downloadSkip,
-        'Already seen the last $alreadyDownloadedUrls files, ending rip',
+        historyLimitStatus,
+        'Already seen the last $alreadyDownloadedUrls images ending rip',
       );
       stop();
     }
   }
+
+  RipStatus get historyLimitStatus => RipStatus.downloadComplete;
 
   void dispose() {
     _statusController.close();

@@ -2,6 +2,7 @@ enum RipStatus {
   loadingResource,
   downloadStarted,
   downloadComplete,
+  downloadCompleteHistory,
   downloadErrored,
   ripComplete,
   downloadWarn,
