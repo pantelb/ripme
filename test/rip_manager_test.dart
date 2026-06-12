@@ -659,6 +659,12 @@ void main() {
       completionSoundPlayer: () async {},
     );
     await manager.init();
+    final twoPending = Completer<void>();
+    manager.addListener(() {
+      if (manager.queue.length == 2 && !twoPending.isCompleted) {
+        twoPending.complete();
+      }
+    });
 
     final result = manager.submitManualUrl(
       'https://example.com/album/{2-4}/page/{ignored}',
@@ -667,6 +673,7 @@ void main() {
       await started.future,
       'https://example.com/album/2/page/2',
     );
+    await twoPending.future;
 
     expect(result.accepted, 3);
     expect(result.errors, isEmpty);
