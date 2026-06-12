@@ -36,6 +36,21 @@ class TestRipper extends AbstractRipper {
   Future<void> rip() async {}
 }
 
+class LifecycleTestRipper extends TestRipper {
+  LifecycleTestRipper(
+    super.url,
+    super.directory, {
+    this.error,
+  });
+
+  final Object? error;
+
+  @override
+  Future<void> rip() async {
+    if (error != null) throw error!;
+  }
+}
+
 class SingleFileProgressTestRipper extends AbstractSingleFileRipper {
   SingleFileProgressTestRipper(super.url, this.directory);
 
@@ -204,6 +219,59 @@ void main() {
 
     expect(p.basename(ripper.workingDir.path), List.filled(99, 'a').join());
     expect(await ripper.workingDir.exists(), isTrue);
+  });
+
+  test('run deletes an empty working directory after a successful rip',
+      () async {
+    final parent =
+        await Directory.systemTemp.createTemp('ripme_cleanup_success_test');
+    addTearDown(() => parent.delete(recursive: true));
+    final directory = await Directory(p.join(parent.path, 'album')).create();
+    final ripper = LifecycleTestRipper(
+      Uri.parse('https://example.com/album'),
+      directory,
+    );
+    await ripper.setup();
+
+    await ripper.run();
+
+    expect(await directory.exists(), isFalse);
+  });
+
+  test('run deletes an empty working directory after a failed rip', () async {
+    final parent =
+        await Directory.systemTemp.createTemp('ripme_cleanup_failure_test');
+    addTearDown(() => parent.delete(recursive: true));
+    final directory = await Directory(p.join(parent.path, 'album')).create();
+    final ripper = LifecycleTestRipper(
+      Uri.parse('https://example.com/album'),
+      directory,
+      error: StateError('rip failed'),
+    );
+    await ripper.setup();
+
+    await expectLater(ripper.run(), throwsStateError);
+
+    expect(await directory.exists(), isFalse);
+  });
+
+  test('run preserves a non-empty working directory', () async {
+    final parent =
+        await Directory.systemTemp.createTemp('ripme_cleanup_nonempty_test');
+    addTearDown(() => parent.delete(recursive: true));
+    final directory = await Directory(p.join(parent.path, 'album')).create();
+    final file = await File(p.join(directory.path, 'image.jpg'))
+        .writeAsString('downloaded');
+    final ripper = LifecycleTestRipper(
+      Uri.parse('https://example.com/album'),
+      directory,
+    );
+    await ripper.setup();
+
+    await ripper.run();
+
+    expect(await directory.exists(), isTrue);
+    expect(await file.readAsString(), 'downloaded');
   });
 
   test('album_titles.save false uses Java JSON fallback directory', () async {

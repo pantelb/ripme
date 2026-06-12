@@ -463,7 +463,7 @@ usage: ripme [OPTIONS]
 
     try {
       await ripper.setup();
-      await ripper.rip();
+      await ripper.run();
     } finally {
       ripper.dispose();
     }

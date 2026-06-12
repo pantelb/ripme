@@ -312,7 +312,7 @@ class RipManager extends ChangeNotifier {
     });
 
     try {
-      await activeRipper.rip();
+      await activeRipper.run();
     } catch (e) {
       _statusText = 'Error: $e';
       _addLog(RipStatusMessage(RipStatus.ripErrored, e.toString()));

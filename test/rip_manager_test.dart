@@ -173,6 +173,12 @@ Future<void> _waitFor(bool Function() condition) async {
   }
 }
 
+Future<void> _deleteIfExists(Directory directory) async {
+  if (await directory.exists()) {
+    await directory.delete(recursive: true);
+  }
+}
+
 void main() {
   test('plays completion sound when enabled', () async {
     SharedPreferences.setMockInitialValues({'play.sound': true});
@@ -180,7 +186,7 @@ void main() {
 
     final directory =
         await Directory.systemTemp.createTemp('ripme_manager_test');
-    addTearDown(() => directory.delete(recursive: true));
+    addTearDown(() => _deleteIfExists(directory));
 
     var soundCount = 0;
     final manager = RipManager(
@@ -203,7 +209,7 @@ void main() {
 
     final directory =
         await Directory.systemTemp.createTemp('ripme_manager_test');
-    addTearDown(() => directory.delete(recursive: true));
+    addTearDown(() => _deleteIfExists(directory));
 
     var soundCount = 0;
     final manager = RipManager(
@@ -226,7 +232,7 @@ void main() {
     await Utils.init();
     final directory =
         await Directory.systemTemp.createTemp('ripme_manager_metadata_test');
-    addTearDown(() => directory.delete(recursive: true));
+    addTearDown(() => _deleteIfExists(directory));
     final manager = RipManager(
       ripperResolver: (uri) => ProgressRipper(
         uri,
@@ -333,7 +339,7 @@ void main() {
     await Utils.init();
     final directory =
         await Directory.systemTemp.createTemp('ripme_selected_history_test');
-    addTearDown(() => directory.delete(recursive: true));
+    addTearDown(() => _deleteIfExists(directory));
     final release = Completer<void>();
     addTearDown(() {
       if (!release.isCompleted) release.complete();
@@ -400,7 +406,7 @@ void main() {
 
     final directory =
         await Directory.systemTemp.createTemp('ripme_manager_queue_test');
-    addTearDown(() => directory.delete(recursive: true));
+    addTearDown(() => _deleteIfExists(directory));
     final release = Completer<void>();
     addTearDown(() {
       if (!release.isCompleted) release.complete();
@@ -441,7 +447,7 @@ void main() {
     await Utils.init();
     final directory =
         await Directory.systemTemp.createTemp('ripme_manager_stop_test');
-    addTearDown(() => directory.delete(recursive: true));
+    addTearDown(() => _deleteIfExists(directory));
     final started = <String>[];
     final manager = RipManager(
       ripperResolver: (uri) => StopAwareRipper(uri, directory, started.add),
@@ -485,7 +491,7 @@ void main() {
     await Utils.init();
     final directory =
         await Directory.systemTemp.createTemp('ripme_manager_late_event_test');
-    addTearDown(() => directory.delete(recursive: true));
+    addTearDown(() => _deleteIfExists(directory));
     final release = Completer<void>();
     addTearDown(() {
       if (!release.isCompleted) release.complete();
@@ -546,7 +552,7 @@ void main() {
     await Utils.init();
     final directory =
         await Directory.systemTemp.createTemp('ripme_manager_persist_test');
-    addTearDown(() => directory.delete(recursive: true));
+    addTearDown(() => _deleteIfExists(directory));
     final release = Completer<void>();
     addTearDown(() {
       if (!release.isCompleted) release.complete();
@@ -610,7 +616,7 @@ void main() {
 
     final directory =
         await Directory.systemTemp.createTemp('ripme_manager_duplicate_test');
-    addTearDown(() => directory.delete(recursive: true));
+    addTearDown(() => _deleteIfExists(directory));
     final release = Completer<void>();
     addTearDown(() {
       if (!release.isCompleted) release.complete();
@@ -639,7 +645,7 @@ void main() {
 
     final directory =
         await Directory.systemTemp.createTemp('ripme_manager_range_test');
-    addTearDown(() => directory.delete(recursive: true));
+    addTearDown(() => _deleteIfExists(directory));
     final release = Completer<void>();
     addTearDown(() {
       if (!release.isCompleted) release.complete();
@@ -692,7 +698,7 @@ void main() {
     final resolvedUris = <Uri>[];
     final directory =
         await Directory.systemTemp.createTemp('ripme_manager_validate_test');
-    addTearDown(() => directory.delete(recursive: true));
+    addTearDown(() => _deleteIfExists(directory));
     final manager = RipManager(
       ripperResolver: (uri) {
         resolvedUris.add(uri);
@@ -730,7 +736,7 @@ void main() {
 
     final directory =
         await Directory.systemTemp.createTemp('ripme_manager_child_queue_test');
-    addTearDown(() => directory.delete(recursive: true));
+    addTearDown(() => _deleteIfExists(directory));
 
     var childStarted = false;
     final release = Completer<void>();
@@ -764,7 +770,7 @@ void main() {
 
     final directory =
         await Directory.systemTemp.createTemp('ripme_manager_progress_test');
-    addTearDown(() => directory.delete(recursive: true));
+    addTearDown(() => _deleteIfExists(directory));
     final release = Completer<void>();
     addTearDown(() {
       if (!release.isCompleted) release.complete();

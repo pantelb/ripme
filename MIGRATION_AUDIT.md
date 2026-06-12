@@ -1086,6 +1086,8 @@ Parity checklist:
     filenames. Shared video transport ignores requested referrers/cookies,
     sends `Referer: <media-url>` for HEAD and GET, and omits the `Cookie`
     header, matching `VideoRipper` / `DownloadVideoThread`.
+  - CI: workflow `27394170545` succeeded. Artifacts: Android `7583066315`,
+    Windows `7583047323`, macOS `7583038660`, Linux `7583024709`.
 - [x] Verify ignored extension behavior.
   - Completed: Flutter reads the comma-separated extension list, compares
     case-insensitively against only the final dot-delimited URL path suffix,
@@ -1093,7 +1095,12 @@ Parity checklist:
     `Skipping <url> - ignored extension` `DOWNLOAD_SKIP` message. Dots in
     parent path segments and extensions followed by another path segment do not
     match.
-- [ ] Verify Java empty working-directory cleanup after a failed or empty rip.
+- [x] Verify Java empty working-directory cleanup after a failed or empty rip.
+  - Completed: GUI and CLI execution now wrap `rip()` with Java's final cleanup
+    boundary. The album working directory is deleted non-recursively when its
+    immediate listing is empty after either success or failure, while non-empty
+    directories are preserved. Setup failures remain outside that boundary,
+    matching `AbstractRipper.run()`.
 - [ ] Verify Java gaussian jitter applied to ripper sleeps.
 - [ ] Verify Java MIME/magic-number extension detection for
       `getFileExtFromMIME`.
@@ -1855,8 +1862,10 @@ Findings:
       then still extracts the first marker and schedules the download. Flutter
       `MotherlessVideoRipper.videoUrlFromHtml(...)` extracts the same marker
       without emitting that Java-visible diagnostic side effect.
-- [ ] Java deletes an empty working directory during cleanup. Flutter does not
-      yet verify this cleanup behavior.
+- [x] Java deletes an empty working directory during cleanup.
+  - Reconciled: `AbstractRipper.run()` performs the same final, non-recursive
+    empty-directory deletion after success or failure, and both GUI and CLI
+    execution use that lifecycle wrapper.
 - [ ] Java `AbstractHTMLRipper` supports queue-only pages through
       `hasQueueSupport`, `pageContainsAlbums`, and `getAlbumsToQueue`, adding
       discovered album URLs to `MainWindow` queue. Flutter needs verification

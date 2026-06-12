@@ -122,6 +122,21 @@ abstract class AbstractRipper {
 
   Future<void> rip();
 
+  Future<void> run() async {
+    try {
+      await rip();
+    } finally {
+      await _cleanup();
+    }
+  }
+
+  Future<void> _cleanup() async {
+    if (!await workingDir.exists()) return;
+    if (await workingDir.list().isEmpty) {
+      await workingDir.delete();
+    }
+  }
+
   String getHost();
 
   Future<String> getGID(Uri url);
