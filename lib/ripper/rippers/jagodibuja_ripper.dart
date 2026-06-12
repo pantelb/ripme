@@ -74,7 +74,7 @@ class JagodibujaRipper extends AbstractHTMLRipper {
     for (final comicPageUrl in comicPageUrlsFromDocument(page)) {
       if (isStopped) return result;
       try {
-        await Http.delay(const Duration(milliseconds: 500));
+        await sleepWithGaussianJitter(500);
         final comicPage = await Http.get(Uri.parse(comicPageUrl));
         result.add(fullSizeHrefFromDocument(comicPage));
       } catch (_) {

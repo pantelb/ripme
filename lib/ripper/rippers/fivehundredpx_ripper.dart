@@ -79,7 +79,9 @@ class FivehundredpxRipper extends AbstractJSONRipper {
       final galleries = json['galleries'];
       if (galleries is List) {
         for (var i = 0; i < galleries.length; i++) {
-          if (i > 0) await Http.delay(pageDelay);
+          if (i > 0) {
+            await sleepWithGaussianJitter(pageDelay.inMilliseconds);
+          }
           final gallery = galleries[i];
           if (gallery is! Map) continue;
           final galleryId = gallery['id'];
@@ -102,7 +104,9 @@ class FivehundredpxRipper extends AbstractJSONRipper {
       final blogs = json['blog_posts'];
       if (blogs is List) {
         for (var i = 0; i < blogs.length; i++) {
-          if (i > 0) await Http.delay(pageDelay);
+          if (i > 0) {
+            await sleepWithGaussianJitter(pageDelay.inMilliseconds);
+          }
           final blog = blogs[i];
           if (blog is! Map) continue;
           final blogId = blog['id'];
@@ -130,7 +134,7 @@ class FivehundredpxRipper extends AbstractJSONRipper {
     if (currentPage is! int || totalPages is! int) return null;
     if (currentPage == totalPages) return null;
 
-    await Http.delay(pageDelay);
+    await sleepWithGaussianJitter(pageDelay.inMilliseconds);
     _page++;
     final nextJson = await Http.getJSON(
         Uri.parse('$_baseUrl&page=$_page&consumer_key=$consumerKey'));
@@ -164,7 +168,7 @@ class FivehundredpxRipper extends AbstractJSONRipper {
     var imageUrl =
         (photo['image_url'] ?? '').toString().replaceAll('/4.', '/5.');
     final larger = imageUrl.replaceAll('/5.', '/2048.');
-    await Http.delay(sizeProbeDelay);
+    await sleepWithGaussianJitter(sizeProbeDelay.inMilliseconds);
     if (await urlExists(larger)) return larger;
     return imageUrl;
   }

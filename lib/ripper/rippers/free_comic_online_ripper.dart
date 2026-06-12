@@ -1,6 +1,5 @@
 import 'package:html/dom.dart';
 
-import '../../utils/http_utils.dart';
 import '../abstract_html_ripper.dart';
 
 class FreeComicOnlineRipper extends AbstractHTMLRipper {
@@ -52,7 +51,7 @@ class FreeComicOnlineRipper extends AbstractHTMLRipper {
     final match = _chapterPattern.firstMatch(href);
     if (match == null) return null;
 
-    await Http.delay(pageDelay);
+    await sleepWithGaussianJitter(pageDelay.inMilliseconds);
     return Uri.parse(match.group(0)!);
   }
 

@@ -125,7 +125,7 @@ class MyhentaicomicsRipper extends AbstractHTMLRipper {
   Future<Uri?> getNextPage(Document page) async {
     final next = nextPageUrlFromDocument(page);
     if (next == null) return null;
-    await Http.delay(const Duration(milliseconds: 500));
+    await sleepWithGaussianJitter(500);
     return next;
   }
 

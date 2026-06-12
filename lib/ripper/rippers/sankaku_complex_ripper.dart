@@ -76,7 +76,7 @@ class SankakuComplexRipper extends AbstractHTMLRipper {
       for (final imageUrl in await getURLsFromPage(page)) {
         if (isStopped) break;
         index++;
-        await Http.delay(const Duration(seconds: 8));
+        await sleepWithGaussianJitter(8000);
         final imageUri = Uri.parse(imageUrl);
         downloads.add(
           RipperDownload(

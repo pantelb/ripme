@@ -94,7 +94,7 @@ class E621Ripper extends AbstractHTMLRipper {
       for (final postUrl in await getURLsFromPage(page)) {
         if (isStopped) break;
         index++;
-        await Http.delay(postDelay);
+        await sleepWithGaussianJitter(postDelay.inMilliseconds);
         final fullSize = await fullSizedImage(Uri.parse(postUrl));
         if (fullSize == null || fullSize.isEmpty) continue;
         final uri = Uri.parse(fullSize);

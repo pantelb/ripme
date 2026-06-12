@@ -58,7 +58,7 @@ class MangadexRipper extends AbstractJSONRipper {
     var index = 0;
     for (final imageUrl in imageUrls) {
       if (isStopped) break;
-      await Http.delay(const Duration(seconds: 1));
+      await sleepWithGaussianJitter(1000);
       index++;
       final uri = Uri.parse(imageUrl);
       await downloadFile(

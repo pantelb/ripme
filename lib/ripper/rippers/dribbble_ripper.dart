@@ -86,7 +86,7 @@ class DribbbleRipper extends AbstractHTMLRipper {
     final next = page.querySelector('a.next_page');
     if (next == null) return null;
 
-    await Http.delay(const Duration(milliseconds: 500));
+    await sleepWithGaussianJitter(500);
     return Uri.parse('https://www.dribbble.com${next.attributes['href']}');
   }
 

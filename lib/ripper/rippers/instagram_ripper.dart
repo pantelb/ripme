@@ -233,7 +233,7 @@ class InstagramRipper extends AbstractRipper {
     String? qHash,
     Map<String, dynamic> variables,
   ) async {
-    await Http.delay(const Duration(milliseconds: 2500));
+    await sleepWithGaussianJitter(2500);
     final encodedVariables = jsonEncode(variables);
     final uri = Uri.parse(
       'https://www.instagram.com/graphql/query/?query_hash=$qHash&variables=$encodedVariables',

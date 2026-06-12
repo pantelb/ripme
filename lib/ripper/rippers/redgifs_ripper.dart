@@ -104,7 +104,7 @@ class RedgifsRipper extends AbstractJSONRipper {
         break;
       }
       _currentPage++;
-      await Future<void>.delayed(const Duration(seconds: 1));
+      await sleepWithGaussianJitter(1000);
     }
   }
 

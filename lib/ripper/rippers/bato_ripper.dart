@@ -76,7 +76,7 @@ class BatoRipper extends AbstractHTMLRipper {
     final imageUrls = await getURLsFromPage(page);
     for (var i = 0; i < imageUrls.length; i++) {
       if (isStopped) break;
-      await Http.delay(const Duration(milliseconds: 500));
+      await sleepWithGaussianJitter(500);
 
       final imageUri = Uri.parse(imageUrls[i]);
       await downloadFile(

@@ -167,7 +167,7 @@ class ChanRipper extends AbstractHTMLRipper {
       if (isStopped) break;
       final imageUri = Uri.parse(imageUrls[i]);
       if (isVideo(imageUri)) {
-        await Http.delay(const Duration(seconds: 5));
+        await sleepWithGaussianJitter(5000);
       }
       await downloadFile(
         imageUri,

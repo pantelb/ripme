@@ -91,7 +91,7 @@ class OglafRipper extends AbstractHTMLRipper {
     final next = nextPageUrlFromPage(page);
     if (next == null) return null;
 
-    await Future<void>.delayed(const Duration(seconds: 1));
+    await sleepWithGaussianJitter(1000);
     return next;
   }
 

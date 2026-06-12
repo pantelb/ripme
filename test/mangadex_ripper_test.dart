@@ -198,6 +198,9 @@ class _DownloadRecordingMangadexRipper extends MangadexRipper {
   final downloaded = <File>[];
 
   @override
+  double nextGaussian() => 0;
+
+  @override
   Future<Map<String, dynamic>> getFirstPage() async {
     return {
       'hash': 'hash',

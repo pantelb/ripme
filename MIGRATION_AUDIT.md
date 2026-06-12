@@ -1095,13 +1095,24 @@ Parity checklist:
     `Skipping <url> - ignored extension` `DOWNLOAD_SKIP` message. Dots in
     parent path segments and extensions followed by another path segment do not
     match.
+  - CI: workflow `27394484708` succeeded. Artifacts: Android `7583187368`,
+    Windows `7583153637`, macOS `7583154249`, Linux `7583135268`.
 - [x] Verify Java empty working-directory cleanup after a failed or empty rip.
   - Completed: GUI and CLI execution now wrap `rip()` with Java's final cleanup
     boundary. The album working directory is deleted non-recursively when its
     immediate listing is empty after either success or failure, while non-empty
     directories are preserved. Setup failures remain outside that boundary,
     matching `AbstractRipper.run()`.
-- [ ] Verify Java gaussian jitter applied to ripper sleeps.
+  - CI: workflow `27394683535` succeeded. Artifacts: Android `7583247163`,
+    Windows `7583232862`, macOS `7583221517`, Linux `7583203706`.
+- [x] Verify Java gaussian jitter applied to ripper sleeps.
+  - Completed: the shared ripper delay samples a normal distribution centered
+    on the requested milliseconds with a 30% standard deviation, truncates to
+    an integer like Java, and clamps to the same 47% minimum. Every implemented
+    Dart counterpart of Java's `AbstractRipper.sleep(...)` uses the helper;
+    direct Java `Thread.sleep(...)` counterparts remain unjittered. Tsumino's
+    absent download sleep remains part of its separately documented missing
+    object-file/download behavior.
 - [ ] Verify Java MIME/magic-number extension detection for
       `getFileExtFromMIME`.
 
@@ -1988,8 +1999,11 @@ Findings:
       overlap/precedence parity for packaged Java dispatch is unproven.
 - [x] Java `download.ignore_extensions` suppresses extension-matched URLs with
       `DOWNLOAD_SKIP`; exact match and nonmatch path cases are covered.
-- [ ] Java `sleep(milliseconds)` applies gaussian jitter with a minimum of 47%
-      of requested time. Flutter delay behavior is not equivalent.
+- [x] Java `sleep(milliseconds)` applies gaussian jitter with a minimum of 47%
+      of requested time.
+  - Reconciled: Flutter applies the same mean, 30% standard deviation, integer
+    truncation, and minimum clamp through `sleepWithGaussianJitter(...)`, with
+    deterministic tests for jitter and clamping.
 - [ ] Java `RipperInterface` contract includes `rip`, `canRip`, `sanitizeURL`,
       `setWorkingDir`, `getHost`, and `getGID`; Flutter abstract classes should
       keep all equivalent hooks covered by tests.

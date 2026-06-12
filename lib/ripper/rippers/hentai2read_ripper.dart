@@ -135,7 +135,7 @@ class Hentai2readRipper extends AbstractHTMLRipper {
     if (href == null || href.isEmpty) return null;
     if (href == _lastPage) return null;
     _lastPage = href;
-    await Http.delay(pageDelay);
+    await sleepWithGaussianJitter(pageDelay.inMilliseconds);
     return Uri.parse(href);
   }
 

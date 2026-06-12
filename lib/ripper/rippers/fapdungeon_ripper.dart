@@ -58,7 +58,7 @@ class FapDungeonRipper extends AbstractHTMLRipper {
     for (final mediaUrl in await getURLsFromPage(page)) {
       if (isStopped) break;
       index++;
-      await Http.delay(downloadDelay);
+      await sleepWithGaussianJitter(downloadDelay.inMilliseconds);
       final uri = Uri.parse(mediaUrl);
       await downloadFile(
         uri,

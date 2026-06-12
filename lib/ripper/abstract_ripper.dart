@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:collection';
+import 'dart:math';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart' as p;
 import '../download_history_provider.dart';
@@ -26,6 +27,7 @@ class RipperDownload {
 
 abstract class AbstractRipper {
   static final Logger logger = Logger();
+  static final Random _randomGenerator = Random();
   static String? folderNameSuffix;
   final Uri url;
   late Directory workingDir;
@@ -135,6 +137,23 @@ abstract class AbstractRipper {
     if (await workingDir.list().isEmpty) {
       await workingDir.delete();
     }
+  }
+
+  double nextGaussian() {
+    var first = 0.0;
+    while (first == 0) {
+      first = _randomGenerator.nextDouble();
+    }
+    final second = _randomGenerator.nextDouble();
+    return sqrt(-2 * log(first)) * cos(2 * pi * second);
+  }
+
+  Future<bool> sleepWithGaussianJitter(int milliseconds) async {
+    final adjusted =
+        (milliseconds + nextGaussian() * milliseconds * 0.3).toInt();
+    final minimum = (milliseconds * 0.47).toInt();
+    await Http.delay(Duration(milliseconds: max(adjusted, minimum)));
+    return true;
   }
 
   String getHost();

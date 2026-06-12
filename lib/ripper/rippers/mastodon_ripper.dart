@@ -70,7 +70,7 @@ class MastodonRipper extends AbstractHTMLRipper {
 
       final nextUrl = nextPageUrl(page);
       if (nextUrl == null || isStopped) break;
-      await Http.delay(const Duration(milliseconds: 500));
+      await sleepWithGaussianJitter(500);
 
       try {
         sendUpdate(RipStatus.loadingResource, nextUrl.toString());

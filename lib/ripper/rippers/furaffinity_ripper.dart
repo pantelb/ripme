@@ -118,7 +118,7 @@ class FuraffinityRipper extends AbstractHTMLRipper {
   Future<Uri?> getNextPage(Document page) async {
     final href = page.querySelector('a.right')?.attributes['href'];
     if (href == null || href.isEmpty) return null;
-    await Http.delay(pageDelay);
+    await sleepWithGaussianJitter(pageDelay.inMilliseconds);
     return Uri.parse('$urlBase$href');
   }
 
@@ -134,7 +134,7 @@ class FuraffinityRipper extends AbstractHTMLRipper {
   }
 
   Future<String?> getImageFromPost(String postUrl) async {
-    await Http.delay(postDelay);
+    await sleepWithGaussianJitter(postDelay.inMilliseconds);
     try {
       final page = await Http.get(Uri.parse(postUrl), cookies: _cookies);
       return imageFromPostPage(page);

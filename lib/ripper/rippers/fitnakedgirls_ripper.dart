@@ -48,7 +48,7 @@ class FitnakedgirlsRipper extends AbstractHTMLRipper {
     for (final imageUrl in await getURLsFromPage(page)) {
       if (isStopped) break;
       index++;
-      await Http.delay(downloadDelay);
+      await sleepWithGaussianJitter(downloadDelay.inMilliseconds);
       final uri = Uri.parse(imageUrl);
       await downloadFile(
         uri,

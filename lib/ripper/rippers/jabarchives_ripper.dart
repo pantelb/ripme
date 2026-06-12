@@ -77,7 +77,7 @@ class JabArchivesRipper extends AbstractHTMLRipper {
 
       try {
         sendUpdate(RipStatus.loadingResource, nextUri.toString());
-        await Http.delay(const Duration(milliseconds: 500));
+        await sleepWithGaussianJitter(500);
         page = await Http.get(nextUri);
       } catch (_) {
         break;

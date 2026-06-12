@@ -97,7 +97,7 @@ class ImagefapRipper extends AbstractHTMLRipper {
       if (nextUri == null) break;
 
       try {
-        await Http.delay(pageSleepTime);
+        await sleepWithGaussianJitter(pageSleepTime.inMilliseconds);
         sendUpdate(
             RipStatus.loadingResource, 'Loading next page URL: $nextUri');
         page = await getPageWithRetries(nextUri);
@@ -130,7 +130,7 @@ class ImagefapRipper extends AbstractHTMLRipper {
         for (var i = 0; i < httpRetryLimit; i++) {
           image = await getFullSizedImage(pageUrl);
           if (image != null) break;
-          await Http.delay(pageSleepTime);
+          await sleepWithGaussianJitter(pageSleepTime.inMilliseconds);
         }
         if (image == null) {
           throw StateError(
@@ -159,7 +159,7 @@ class ImagefapRipper extends AbstractHTMLRipper {
 
   Future<String?> getFullSizedImage(Uri pageUrl) async {
     try {
-      await Http.delay(imageSleepTime);
+      await sleepWithGaussianJitter(imageSleepTime.inMilliseconds);
       final doc = await getPageWithRetries(pageUrl);
       return fullSizedImageFromDocument(doc);
     } catch (e) {
@@ -197,7 +197,7 @@ class ImagefapRipper extends AbstractHTMLRipper {
               RipStatus.downloadWarn,
               'HTTP call failed: $e retrying $httpAttempts / $httpRetryLimit',
             );
-            await Http.delay(pageSleepTime);
+            await sleepWithGaussianJitter(pageSleepTime.inMilliseconds);
             continue;
           }
 

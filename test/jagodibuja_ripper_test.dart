@@ -7,6 +7,13 @@ import 'package:ripme/utils/http_utils.dart';
 import 'package:ripme/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class _DeterministicJagodibujaRipper extends JagodibujaRipper {
+  _DeterministicJagodibujaRipper(super.url);
+
+  @override
+  double nextGaussian() => 0;
+}
+
 void main() {
   tearDown(() {
     Http.delay = Future.delayed;
@@ -94,7 +101,7 @@ void main() {
     });
     addTearDown(server.close);
 
-    final ripper = JagodibujaRipper(
+    final ripper = _DeterministicJagodibujaRipper(
       Uri.parse('http://www.jagodibuja.com/comic-in-me/'),
     );
     final page = html.parse('''

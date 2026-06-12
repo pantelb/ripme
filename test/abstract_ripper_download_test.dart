@@ -9,6 +9,7 @@ import 'package:ripme/ripper/abstract_json_ripper.dart';
 import 'package:ripme/ripper/abstract_ripper.dart';
 import 'package:ripme/ripper/abstract_single_file_ripper.dart';
 import 'package:ripme/ui/rip_status_message.dart';
+import 'package:ripme/utils/http_utils.dart';
 import 'package:ripme/utils/utils.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,6 +50,18 @@ class LifecycleTestRipper extends TestRipper {
   Future<void> rip() async {
     if (error != null) throw error!;
   }
+}
+
+class GaussianSleepTestRipper extends TestRipper {
+  GaussianSleepTestRipper(super.url, super.directory, this.sample);
+
+  final double sample;
+
+  @override
+  double nextGaussian() => sample;
+
+  Future<bool> sleepForTest(int milliseconds) =>
+      sleepWithGaussianJitter(milliseconds);
 }
 
 class SingleFileProgressTestRipper extends AbstractSingleFileRipper {
@@ -272,6 +285,44 @@ void main() {
 
     expect(await directory.exists(), isTrue);
     expect(await file.readAsString(), 'downloaded');
+  });
+
+  test('sleep applies Java gaussian jitter and integer truncation', () async {
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_gaussian_sleep_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final originalDelay = Http.delay;
+    final delays = <Duration>[];
+    Http.delay = (duration) async => delays.add(duration);
+    addTearDown(() => Http.delay = originalDelay);
+    final ripper = GaussianSleepTestRipper(
+      Uri.parse('https://example.com/album'),
+      directory,
+      0.5,
+    );
+
+    expect(await ripper.sleepForTest(101), isTrue);
+
+    expect(delays, [const Duration(milliseconds: 116)]);
+  });
+
+  test('sleep clamps Java gaussian jitter to 47 percent', () async {
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_gaussian_clamp_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final originalDelay = Http.delay;
+    final delays = <Duration>[];
+    Http.delay = (duration) async => delays.add(duration);
+    addTearDown(() => Http.delay = originalDelay);
+    final ripper = GaussianSleepTestRipper(
+      Uri.parse('https://example.com/album'),
+      directory,
+      -10,
+    );
+
+    expect(await ripper.sleepForTest(1000), isTrue);
+
+    expect(delays, [const Duration(milliseconds: 470)]);
   });
 
   test('album_titles.save false uses Java JSON fallback directory', () async {

@@ -67,7 +67,7 @@ class CoomerPartyRipper extends AbstractJSONRipper {
         if (isStopped) break;
         index++;
         final uri = Uri.parse(urlText);
-        await Http.delay(downloadDelay);
+        await sleepWithGaussianJitter(downloadDelay.inMilliseconds);
         downloads.add(
           RipperDownload(
             url: uri,

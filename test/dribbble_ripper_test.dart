@@ -5,6 +5,13 @@ import 'package:ripme/utils/http_utils.dart';
 import 'package:ripme/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class _DeterministicDribbbleRipper extends DribbbleRipper {
+  _DeterministicDribbbleRipper(super.url);
+
+  @override
+  double nextGaussian() => 0;
+}
+
 void main() {
   test('matches Java host, domain, URL support, and GIDs', () async {
     final ripper = DribbbleRipper(Uri.parse('https://dribbble.com/typogriff'));
@@ -64,7 +71,8 @@ void main() {
       Http.delay = originalDelay;
     });
 
-    final ripper = DribbbleRipper(Uri.parse('https://dribbble.com/typogriff'));
+    final ripper = _DeterministicDribbbleRipper(
+        Uri.parse('https://dribbble.com/typogriff'));
     final page =
         parse('<a class="next_page" href="/typogriff?page=2">Next</a>');
 

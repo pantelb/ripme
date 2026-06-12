@@ -95,7 +95,7 @@ class TwodgalleriesRipper extends AbstractHTMLRipper {
 
   Future<Document> getNextDocument() async {
     _offset += 24;
-    await Http.delay(const Duration(milliseconds: 500));
+    await sleepWithGaussianJitter(500);
     final nextPage = await getPage(pageUrlForUser(await getGID(url), _offset));
     if (nextPage.querySelectorAll('div.hcaption > img').isEmpty) {
       throw const HttpException('No more images to retrieve');
