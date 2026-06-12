@@ -6,10 +6,10 @@ import 'package:path/path.dart' as p;
 import '../../ui/rip_status_message.dart';
 import '../../utils/http_utils.dart';
 import '../../utils/utils.dart';
-import '../abstract_html_ripper.dart';
+import '../abstract_single_file_ripper.dart';
 import '../abstract_ripper.dart';
 
-class RulePornRipper extends AbstractHTMLRipper {
+class RulePornRipper extends AbstractSingleFileRipper {
   static final RegExp _gidPattern = RegExp(r'^https://.*ruleporn\.com/(.*)/$');
 
   RulePornRipper(super.url);

@@ -67,6 +67,57 @@ class TestVideoRipper extends AbstractVideoRipper {
 }
 
 void main() {
+  test('uses Java HEAD then GET byte progress for video rips', () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': false,
+      'download.retries': 0,
+      'download.timeout': 1000,
+    });
+    await Utils.init();
+
+    final directory = await Directory.systemTemp.createTemp('ripme_video_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final methods = <String>[];
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen((request) async {
+      methods.add(request.method);
+      request.response.contentLength = 6;
+      if (request.method == 'GET') {
+        request.response.add([1, 2, 3, 4, 5, 6]);
+      }
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final ripper = TestVideoRipper(
+      Uri.parse('https://example.com/video-page'),
+      directory,
+      Uri.parse('http://127.0.0.1:${server.port}/video.mp4'),
+    );
+    await ripper.setup();
+    final statuses = <RipStatusMessage>[];
+    final sub = ripper.statusStream.listen(statuses.add);
+    addTearDown(sub.cancel);
+
+    await ripper.rip();
+    await Future<void>.delayed(Duration.zero);
+
+    expect(methods, ['HEAD', 'GET']);
+    expect(
+      statuses.map((message) => message.status),
+      containsAllInOrder([
+        RipStatus.loadingResource,
+        RipStatus.totalBytes,
+        RipStatus.downloadStarted,
+        RipStatus.completedBytes,
+        RipStatus.downloadComplete,
+        RipStatus.ripComplete,
+      ]),
+    );
+    expect(ripper.completionPercentage, 100);
+    expect(ripper.statusText, '100%  - 6.00iB / 6.00iB');
+  });
+
   test('uses shared download path for video rips', () async {
     SharedPreferences.setMockInitialValues({
       'remember.url_history': false,

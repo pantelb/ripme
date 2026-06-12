@@ -13,6 +13,27 @@ class Utils {
     _prefs = await SharedPreferences.getInstance();
   }
 
+  static String bytesToHumanReadable(int bytes) {
+    var value = bytes.toDouble();
+    const magnitudes = ['', 'K', 'M', 'G', 'T'];
+    var magnitude = 0;
+    while (value >= 1024) {
+      value /= 1024;
+      magnitude++;
+    }
+    return '${value.toStringAsFixed(2)}${magnitudes[magnitude]}iB';
+  }
+
+  static String getByteStatusText(
+    int completionPercentage,
+    int bytesCompleted,
+    int bytesTotal,
+  ) {
+    return '$completionPercentage%  - '
+        '${bytesToHumanReadable(bytesCompleted)} / '
+        '${bytesToHumanReadable(bytesTotal)}';
+  }
+
   static Future<Directory> getWorkingDirectory() async {
     String? customPath = getConfigString("rips.directory", null);
     if (customPath != null) {

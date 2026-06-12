@@ -24,6 +24,12 @@ abstract class AbstractVideoRipper extends AbstractRipper {
   AbstractVideoRipper(super.url);
 
   @override
+  bool get usesByteProgress => true;
+
+  @override
+  bool get fetchesByteTotalBeforeDownload => true;
+
+  @override
   Future<void> rip() async {
     sendUpdate(RipStatus.loadingResource, url.toString());
     try {

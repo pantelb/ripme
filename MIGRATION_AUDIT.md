@@ -1061,8 +1061,16 @@ Parity checklist:
     exact album status shape `<percent>% - Pending: <n>, Completed: <n>,
     Errored: <n>`. `RipManager` consumes the ripper percentage instead of
     reconstructing a denominator from `DOWNLOAD_STARTED` events.
-- [ ] Verify Java byte-progress semantics for `AbstractSingleFileRipper` and
+  - CI: workflow `27387157948` succeeded. Artifacts: Android `7580603784`,
+    Windows `7580568747`, macOS `7580568566`, Linux `7580544624`.
+- [x] Verify Java byte-progress semantics for `AbstractSingleFileRipper` and
       `VideoRipper`, including human-readable text.
+  - Completed: Flutter restores byte-progress inheritance for RulePorn,
+    Spankbang, Xvideos, and Youporn; file downloads emit total bytes from the
+    GET response followed by cumulative completed-byte events, while video
+    downloads issue HEAD and emit total bytes before GET. Percentage truncation
+    and `<percent>%  - <completed> / <total>` text use Java's two-decimal IEC
+    formatting.
 - [ ] Verify status text/log event text.
 - [ ] Verify video download filename/referrer/cookie behavior.
 - [ ] Verify ignored extension behavior.
@@ -1074,7 +1082,7 @@ Parity checklist:
 Required tests:
 
 - [x] Abstract ripper directory naming tests.
-- [ ] Status/progress event tests.
+- [x] Status/progress event tests.
 - [ ] Stop semantics tests.
 - [x] Description support reachability audit; Java has no active runtime path
       requiring a Dart output test.
@@ -1593,9 +1601,11 @@ Findings:
       plumbing; `DownloadFileThread` does not compare response size against that
       key before saving. Flutter now retains the property for compatibility
       without exposing or enforcing the former Flutter-only global limit.
-- [ ] Java `DownloadVideoThread` first issues a HEAD request for total bytes,
-      then downloads with no connect timeout and byte-progress events. Flutter
-      video helpers need exact progress comparison.
+- [x] Java `DownloadVideoThread` first issues a HEAD request for total bytes,
+      then downloads with no connect timeout and byte-progress events.
+  - Completed: Flutter video downloads now perform HEAD without a request
+    timeout, emit `TOTAL_BYTES`, then start GET and emit cumulative
+    `COMPLETED_BYTES` updates using Java 32-bit integer behavior.
 - [ ] Java `DownloadVideoThread` retry behavior also differs from shared
       Flutter downloads: it has no retry-sleep delay, gets total bytes through a
       separate HEAD request before the retry loop, and only increments `tries`
@@ -1850,12 +1860,11 @@ Findings:
   - Reconciled: `AbstractRipper.folderNameSuffix` and `resolveSavePath(...)`
     provide the equivalent path shaping, while `CliController` preserves the
     exact option value. Both behaviors have focused tests.
-- [ ] Java `AbstractSingleFileRipper` provides byte-progress status text and
+- [x] Java `AbstractSingleFileRipper` provides byte-progress status text and
       byte-progress percentage behavior for its subclasses: `RulePornRipper`,
       `SpankbangRipper`, `XvideosRipper`, and `YoupornRipper`. The Flutter
-      ports for these classes currently extend `AbstractHTMLRipper`; their
-      tests cover extraction/filenames, but not Java single-file byte-progress
-      inheritance semantics.
+      ports now extend the restored `AbstractSingleFileRipper`, with focused
+      inheritance, event-order, percentage, and status-text tests.
 - [x] Java `SpankbangRipper.getURLsFromPage(...)` returns `null` when
       `.video-js > source` is absent, after logging that the embed code could
       not be found. Flutter `SpankbangRipper.videoUrlsFromDocument(...)`
@@ -2012,9 +2021,9 @@ Findings:
 - [ ] Java `RipStatusMessage.toString()` renders display labels such as
       `Loading Resource: <value>`. Flutter currently renders enum names such as
       `loadingResource: <value>`. The log/status layer needs Java text parity.
-- [ ] Java status enum includes `DOWNLOAD_COMPLETE_HISTORY`, `TOTAL_BYTES`,
-      `COMPLETED_BYTES`, and `NO_ALBUM_OR_USER`; Flutter status enum does not
-      include all of these.
+- [ ] Java status enum includes `NO_ALBUM_OR_USER`; Flutter still lacks that
+      status. `DOWNLOAD_COMPLETE_HISTORY`, `TOTAL_BYTES`, and
+      `COMPLETED_BYTES` are now represented.
 - [ ] Java `RipStatusComplete` carries directory and count. Flutter history
       updates from `ripComplete` need exact count/directory parity.
 - [ ] Java `MainWindow.handleEvent(...)` applies status-specific UI side effects
@@ -4895,8 +4904,8 @@ they are not yet a substitute for committed Dart tests.
 - [x] Scanned Java ripper inheritance against Flutter ripper inheritance. The
       Java `AbstractSingleFileRipper` subclasses `RulePornRipper`,
       `SpankbangRipper`, `XvideosRipper`, and `YoupornRipper` are implemented
-      as Flutter `AbstractHTMLRipper` subclasses, so byte-progress inheritance
-      parity needs explicit verification; the finding is recorded in section E.
+      through Flutter's restored `AbstractSingleFileRipper`, including shared
+      byte-progress behavior and focused tests.
 - [x] Rechecked Java package-distinct rippers with duplicate simple class names
       against Flutter factory/catalog routing. Java has separate album and
       video implementations for Pornhub, Vk, and Yuvutu, while Flutter catalog

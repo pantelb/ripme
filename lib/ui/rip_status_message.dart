@@ -9,6 +9,8 @@ enum RipStatus {
   downloadSkip,
   ripErrored,
   queueAdd,
+  totalBytes,
+  completedBytes,
 }
 
 class RipStatusMessage {

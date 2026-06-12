@@ -6,10 +6,10 @@ import 'package:path/path.dart' as p;
 import '../../ui/rip_status_message.dart';
 import '../../utils/http_utils.dart';
 import '../../utils/utils.dart';
-import '../abstract_html_ripper.dart';
+import '../abstract_single_file_ripper.dart';
 import '../abstract_ripper.dart';
 
-class YoupornRipper extends AbstractHTMLRipper {
+class YoupornRipper extends AbstractSingleFileRipper {
   static final RegExp _urlPattern =
       RegExp(r'^https?://[wm.]*youporn\.com/watch/[0-9]+.*$');
   static final RegExp _gidPattern =

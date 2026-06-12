@@ -36,6 +36,8 @@ abstract class AbstractRipper {
   final Set<String> _pendingDownloads = <String>{};
   final Set<String> _completedDownloads = <String>{};
   final Set<String> _erroredDownloads = <String>{};
+  int _bytesTotal = 1;
+  int _bytesCompleted = 1;
   Future<void> _urlOnlyWrite = Future<void>.value();
   Future<void> _historyWrite = Future<void>.value();
 
@@ -52,6 +54,12 @@ abstract class AbstractRipper {
   bool get isStopped => _shouldStop;
 
   int get completionPercentage {
+    if (usesByteProgress) {
+      if (_bytesTotal == 0) {
+        return _bytesCompleted == 0 ? 0 : 2147483647;
+      }
+      return (100 * (_bytesCompleted / _bytesTotal)).truncate();
+    }
     final total = _pendingDownloads.length +
         _completedDownloads.length +
         _erroredDownloads.length;
@@ -62,10 +70,22 @@ abstract class AbstractRipper {
         .truncate();
   }
 
-  String get statusText =>
-      '$completionPercentage% - Pending: ${_pendingDownloads.length}, '
-      'Completed: ${_completedDownloads.length}, '
-      'Errored: ${_erroredDownloads.length}';
+  String get statusText {
+    if (usesByteProgress) {
+      return Utils.getByteStatusText(
+        completionPercentage,
+        _bytesCompleted,
+        _bytesTotal,
+      );
+    }
+    return '$completionPercentage% - Pending: ${_pendingDownloads.length}, '
+        'Completed: ${_completedDownloads.length}, '
+        'Errored: ${_erroredDownloads.length}';
+  }
+
+  bool get usesByteProgress => false;
+
+  bool get fetchesByteTotalBeforeDownload => false;
 
   Future<void> setup() async {
     workingDir = await _getWorkingDir(url);
@@ -226,6 +246,24 @@ abstract class AbstractRipper {
         return;
       }
 
+      void updateTotalBytes(int bytes) {
+        _bytesTotal = bytes;
+        sendUpdate(RipStatus.totalBytes, bytes);
+      }
+
+      void updateCompletedBytes(int bytes) {
+        _bytesCompleted = bytes;
+        sendUpdate(RipStatus.completedBytes, bytes);
+      }
+
+      if (usesByteProgress && fetchesByteTotalBeforeDownload) {
+        final totalBytes = await Http.getDownloadContentLength(
+          url,
+          headers: headers,
+          cookies: cookies,
+        );
+        updateTotalBytes(totalBytes);
+      }
       sendUpdate(RipStatus.downloadStarted, url.toString());
       await Http.downloadFile(
         url,
@@ -233,6 +271,10 @@ abstract class AbstractRipper {
         headers: headers,
         cookies: cookies,
         shouldStop: () => isStopped,
+        onTotalBytes: usesByteProgress && !fetchesByteTotalBeforeDownload
+            ? updateTotalBytes
+            : null,
+        onBytesCompleted: usesByteProgress ? updateCompletedBytes : null,
       );
       _completeDownload(url);
       sendUpdate(RipStatus.downloadComplete, saveAs.path);

@@ -293,7 +293,12 @@ class RipManager extends ChangeNotifier {
         runItemCount++;
       }
       _updateProgressFromEvent(event, activeRipper);
-      _addLog(event);
+      if (event.status == RipStatus.totalBytes ||
+          event.status == RipStatus.completedBytes) {
+        notifyListeners();
+      } else {
+        _addLog(event);
+      }
       if (event.status == RipStatus.ripComplete) {
         unawaited(_playCompletionSoundIfEnabled());
         _addToHistory(
@@ -369,6 +374,10 @@ class RipManager extends ChangeNotifier {
         break;
       case RipStatus.queueAdd:
         _statusText = 'Queued $object';
+        break;
+      case RipStatus.totalBytes:
+      case RipStatus.completedBytes:
+        _statusText = activeRipper.statusText;
         break;
     }
   }

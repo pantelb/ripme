@@ -744,6 +744,9 @@ class _FilteredLogViewState extends State<_FilteredLogView> {
         return object;
       case RipStatus.queueAdd:
         return 'Queued $object';
+      case RipStatus.totalBytes:
+      case RipStatus.completedBytes:
+        return object;
     }
   }
 }

@@ -82,6 +82,8 @@ class Http {
     Map<String, String>? headers,
     Map<String, String>? cookies,
     bool Function()? shouldStop,
+    void Function(int totalBytes)? onTotalBytes,
+    void Function(int completedBytes)? onBytesCompleted,
   }) async {
     final combinedHeaders =
         _buildHeaders(url, headers, cookies, isDownload: true);
@@ -93,6 +95,7 @@ class Http {
       milliseconds: Utils.getConfigInteger('download.retry.sleep', 0),
     );
     Object? lastError;
+    var completedBytes = 0;
 
     for (var attempt = 0; attempt < attempts; attempt++) {
       http.Client? client;
@@ -121,6 +124,7 @@ class Http {
           lastError = HttpException(
               'Failed to load $url: Status ${response.statusCode}');
         } else {
+          onTotalBytes?.call(_javaInt32(response.contentLength ?? -1));
           if (!await saveAs.parent.exists()) {
             await saveAs.parent.create(recursive: true);
           }
@@ -130,6 +134,8 @@ class Http {
               throw const DownloadInterruptedException();
             }
             sink.add(chunk);
+            completedBytes = _javaInt32(completedBytes + chunk.length);
+            onBytesCompleted?.call(completedBytes);
           }
           await sink.close();
           sink = null;
@@ -158,6 +164,29 @@ class Http {
     }
     throw HttpException('Failed to download $url');
   }
+
+  static Future<int> getDownloadContentLength(
+    Uri url, {
+    Map<String, String>? headers,
+    Map<String, String>? cookies,
+  }) async {
+    final client = _createClient();
+    try {
+      final request = http.Request('HEAD', url)
+        ..headers.addAll(_buildHeaders(
+          url,
+          headers,
+          cookies,
+          isDownload: true,
+        ));
+      final response = await client.send(request);
+      return _javaInt32(response.contentLength ?? -1);
+    } finally {
+      client.close();
+    }
+  }
+
+  static int _javaInt32(int value) => value.toSigned(32);
 
   static Map<String, String> _buildHeaders(
     Uri url,

@@ -7,6 +7,7 @@ import 'package:ripme/download_history_provider.dart';
 import 'package:ripme/ripper/abstract_html_ripper.dart';
 import 'package:ripme/ripper/abstract_json_ripper.dart';
 import 'package:ripme/ripper/abstract_ripper.dart';
+import 'package:ripme/ripper/abstract_single_file_ripper.dart';
 import 'package:ripme/ui/rip_status_message.dart';
 import 'package:ripme/utils/utils.dart';
 import 'package:path/path.dart' as p;
@@ -33,6 +34,32 @@ class TestRipper extends AbstractRipper {
 
   @override
   Future<void> rip() async {}
+}
+
+class SingleFileProgressTestRipper extends AbstractSingleFileRipper {
+  SingleFileProgressTestRipper(super.url, this.directory);
+
+  final Directory directory;
+
+  @override
+  Future<void> setup() async {
+    workingDir = directory;
+  }
+
+  @override
+  bool canRip(Uri url) => true;
+
+  @override
+  Future<String> getGID(Uri url) async => 'single';
+
+  @override
+  String getHost() => 'test';
+
+  @override
+  Future<List<String>> getURLsFromPage(Document page) async => const [];
+
+  @override
+  Future<Uri?> getNextPage(Document page) async => null;
 }
 
 class ParallelTestRipper extends TestRipper {
@@ -608,6 +635,72 @@ void main() {
     releaseSuccess.complete();
     await download;
     expect(ripper.completionPercentage, 100);
+  });
+
+  test('single-file rippers emit Java GET byte progress and status text',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': false,
+      'download.retries': 0,
+      'download.timeout': 1000,
+    });
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_byte_progress_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper = SingleFileProgressTestRipper(
+      Uri.parse('https://example.com/video'),
+      directory,
+    );
+    await ripper.setup();
+
+    final releaseSecondChunk = Completer<void>();
+    final firstChunkObserved = Completer<void>();
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen((request) async {
+      request.response
+        ..bufferOutput = false
+        ..contentLength = 6
+        ..add([1, 2, 3]);
+      await request.response.flush();
+      await releaseSecondChunk.future;
+      request.response.add([4, 5, 6]);
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final statuses = <RipStatusMessage>[];
+    final sub = ripper.statusStream.listen((message) {
+      statuses.add(message);
+      if (message.status == RipStatus.completedBytes &&
+          !firstChunkObserved.isCompleted) {
+        firstChunkObserved.complete();
+      }
+    });
+    addTearDown(sub.cancel);
+
+    final download = ripper.downloadFile(
+      Uri.parse('http://127.0.0.1:${server.port}/video.mp4'),
+      File('${directory.path}/video.mp4'),
+    );
+    await firstChunkObserved.future;
+
+    expect(ripper.completionPercentage, 50);
+    expect(ripper.statusText, '50%  - 3.00iB / 6.00iB');
+    expect(
+      statuses.map((message) => message.status),
+      containsAllInOrder([
+        RipStatus.downloadStarted,
+        RipStatus.totalBytes,
+        RipStatus.completedBytes,
+      ]),
+    );
+
+    releaseSecondChunk.complete();
+    await download;
+    expect(ripper.completionPercentage, 100);
+    expect(ripper.statusText, '100%  - 6.00iB / 6.00iB');
   });
 
   test('passes headers and cookies through scheduled downloads', () async {
