@@ -3,6 +3,7 @@ Type=Application
 Name=RipMe
 Comment=Cross-platform media album ripper
 Exec=ripme
+TryExec=ripme
 Icon=ripme
 Categories=Network;FileTransfer;
 Terminal=false

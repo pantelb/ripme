@@ -1613,7 +1613,21 @@ Parity checklist:
     for Java's Java-17-only platform requirement.
   - Validation: `test/macos_platform_metadata_test.dart` and
     `tool/check_macos_platform.dart`, enforced by CI.
-- [ ] Verify Linux metadata and executable packaging.
+- [x] Verify Linux metadata and executable packaging.
+  - Java ships one executable fat jar with its dependencies and requires a Java
+    17 runtime. Flutter replaces that with a relocatable native bundle whose
+    root `ripme` executable resolves Flutter/plugin libraries through
+    `$ORIGIN/lib` and includes Flutter assets under `data`.
+  - CMake installs the exact MIT license, Java-derived 256px hicolor icon,
+    `ripme.desktop`, and `com.rarchives.ripme.metainfo.xml`. Desktop and
+    AppStream metadata consistently identify executable `ripme`, app id
+    `com.rarchives.ripme`, and a non-terminal network/file-transfer app.
+  - Both CI and release workflows run `tool/verify_linux_bundle.sh` against the
+    actual release bundle before creating the tarball. The guard requires an
+    executable root binary, Flutter runtime library/assets, license, desktop
+    entry, icon, and AppStream metadata.
+  - Validation: `test/linux_packaging_metadata_test.dart` and
+    `tool/check_linux_packaging.dart`, enforced by CI.
 - [ ] Verify Windows metadata, icon, and executable packaging.
 - [ ] Verify workflow separation between CI and release.
 
@@ -4948,10 +4962,10 @@ Findings:
       config for release builds. Final Android artifact evidence must distinguish
       CI-build availability from production-signing/readiness and either add a
       real signing flow or document the migration limitation.
-- [ ] Linux metadata and Windows resource versioning still need first-class
-      release-artifact verification. macOS entitlements/minimum OS and all
-      platform app icons are now source-guarded rather than assumed from
-      Flutter defaults.
+- [ ] Windows resource versioning still needs first-class release-artifact
+      verification. Linux metadata/bundle contents, macOS
+      entitlements/minimum OS, and all platform app icons are now
+      source-guarded rather than assumed from Flutter defaults.
 - [x] Linux packaging metadata declares `ripme.desktop`,
       `Icon=ripme`, app id `com.rarchives.ripme`, and summary
       `Cross-platform media album ripper`; CMake installs the tested

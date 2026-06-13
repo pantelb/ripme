@@ -162,6 +162,10 @@ jobs:
           --dart-define "RIPME_VERSION=$RIPME_VERSION"
           --dart-define "RIPME_BUILD_NUMBER=$RIPME_BUILD_NUMBER"
 
+      - name: Verify Linux bundle
+        if: matrix.target == 'linux'
+        run: bash tool/verify_linux_bundle.sh
+
       - name: Package ${{ matrix.artifact }}
         shell: bash
         run: |

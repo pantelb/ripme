@@ -60,6 +60,9 @@ jobs:
     - name: Verify macOS platform policy
       run: dart run tool/check_macos_platform.dart
 
+    - name: Verify Linux packaging policy
+      run: dart run tool/check_linux_packaging.dart
+
     - name: Verify Java test class coverage
       run: dart run tool/check_java_test_coverage.dart
 
@@ -112,6 +115,10 @@ jobs:
 
     - name: Build ${{ matrix.target }}
       run: flutter build ${{ matrix.target }} --release
+
+    - name: Verify Linux bundle
+      if: matrix.target == 'linux'
+      run: bash tool/verify_linux_bundle.sh
 
     - name: Package ${{ matrix.artifact }}
       shell: bash

@@ -51,6 +51,15 @@ persisted custom download directories. The directory picker retains Apple's
 user-selected read-write entitlement because the macOS `file_picker` plugin
 requires it even for a non-sandboxed application.
 
+## Linux Bundle
+
+The Linux release is a relocatable `tar.gz` bundle. Extract it and run
+`./ripme` from the extracted directory; the executable loads Flutter and plugin
+libraries from its adjacent `lib` directory. The archive also includes the MIT
+license, desktop entry, hicolor icon, and AppStream metadata. A CI bundle check
+verifies the executable bit and every required runtime/metadata path before the
+archive is uploaded.
+
 ## Updates And Releases
 
 RipMe checks the latest release in `pantelb/ripme` and opens its GitHub release
