@@ -2003,7 +2003,10 @@ class _ConfigurationViewState extends State<ConfigurationView> {
   Future<void> _checkForUpdates() async {
     setState(() => _checkingForUpdates = true);
     try {
-      final result = await const UpdateChecker().check();
+      final result = await UpdateChecker(
+        alwaysTryToUpdate:
+            Utils.getConfigBoolean('testing.always_try_to_update', false),
+      ).check();
       if (!mounted) return;
       setState(() => _updateCheckResult = result);
       ScaffoldMessenger.of(context).showSnackBar(

@@ -26,11 +26,13 @@ class UpdateChecker {
   const UpdateChecker({
     this.repository = releaseRepository,
     this.currentVersion = appVersion,
+    this.alwaysTryToUpdate = false,
     ReleaseJsonFetcher? fetcher,
   }) : _fetcher = fetcher ?? _fetchLatestReleaseJson;
 
   final String repository;
   final String currentVersion;
+  final bool alwaysTryToUpdate;
   final ReleaseJsonFetcher _fetcher;
 
   Future<UpdateCheckResult> check() async {
@@ -53,33 +55,37 @@ class UpdateChecker {
       latestVersion: tagName,
       releaseUrl: Uri.parse(htmlUrl),
       releaseName: _stringValue(release['name']),
-      updateAvailable: isNewerVersion(tagName, currentVersion),
+      updateAvailable: alwaysTryToUpdate ||
+          isNewerVersion(_releaseVersion(tagName), currentVersion),
     );
   }
 
   static bool isNewerVersion(String latestVersion, String currentVersion) {
     final latest = _versionNumbers(latestVersion);
     final current = _versionNumbers(currentVersion);
-    final length =
-        latest.length > current.length ? latest.length : current.length;
 
-    for (var index = 0; index < length; index++) {
-      final latestPart = index < latest.length ? latest[index] : 0;
-      final currentPart = index < current.length ? current[index] : 0;
-      if (latestPart > currentPart) return true;
-      if (latestPart < currentPart) return false;
+    for (var index = 0; index < 4; index++) {
+      if (latest[index] > current[index]) return true;
+      if (latest[index] < current[index]) return false;
     }
-    return false;
+    return latestVersion != currentVersion;
   }
 
   static List<int> _versionNumbers(String version) {
-    final normalized = version.trim().replaceFirst(RegExp(r'^[vV]'), '');
-    return normalized
-        .split(RegExp(r'[.\-+]'))
+    final parts = version
+        .split(RegExp(r'[.\-]'))
         .take(4)
         .map((part) => int.tryParse(part) ?? 0)
-        .toList(growable: false);
+        .toList();
+    return List<int>.generate(
+      4,
+      (index) => index < parts.length ? parts[index] : 0,
+      growable: false,
+    );
   }
+
+  static String _releaseVersion(String tagName) =>
+      tagName.replaceFirst(RegExp(r'^[vV]'), '');
 
   static String? _stringValue(Object? value) => value is String ? value : null;
 

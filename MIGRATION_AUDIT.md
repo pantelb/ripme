@@ -1531,7 +1531,13 @@ Flutter targets:
 
 Parity checklist:
 
-- [ ] Verify update check behavior against Java expectations.
+- [x] Verify update check behavior against Java expectations.
+  - Flutter now reproduces Java's fixed four-component comparison, including
+    non-numeric components as zero and the exact-string inequality fallback
+    after numeric equality.
+  - GitHub's Flutter release tags are normalized only by removing their leading
+    `v` before the Java comparison. GUI and CLI checks honor Java's hidden
+    `testing.always_try_to_update` override.
 - [ ] Document replacement for Java self-update.
 - [ ] Document Java updater source of truth (`ripmeapp/ripme` `ripme.json`),
       changelist handling, SHA-256 update verification, and why jar replacement
@@ -1546,7 +1552,7 @@ Parity checklist:
 
 Required tests:
 
-- [ ] Update checker tests.
+- [x] Update checker tests.
 - [ ] Workflow/artifact verification by GitHub Actions.
 - [ ] Platform config lint or script checks where practical.
 
@@ -4846,12 +4852,11 @@ Findings:
       the new jar, and installs by platform script. Flutter update checker must
       either reproduce the user-visible check/changelog/hash behavior for
       Flutter artifacts or explicitly retire self-update behavior.
-- [ ] Java `UpdateUtils.isNewerVersion` has a string-inequality fallback after
+- [x] Java `UpdateUtils.isNewerVersion` has a string-inequality fallback after
       the first four numeric components compare equal: if `latestVersion` and
       `getThisJarVersion()` are not exactly equal, Java treats the latest string
-      as newer. Flutter `UpdateChecker.isNewerVersion` returns false once the
-      numeric components compare equal, so suffix-only release changes such as
-      commit-count/hash text are not Java-compatible.
+      as newer. Flutter now preserves that behavior and adapts only the leading
+      `v` used by its GitHub release workflow before comparison.
 - [ ] Java updater installation uses runtime process behavior:
       `Runtime.getRuntime().exec`, `ProcessBuilder`, a shutdown hook, a Windows
       batch file, `Files.move`, and optional `java -jar` restart. Flutter must
@@ -5286,9 +5291,8 @@ they are not yet a substitute for committed Dart tests.
       recorded in section E for the `ArtStationRipper` and `DeviantartRipper`
       URL-history normalization hooks.
 - [x] Re-read Java `UpdateUtils.isNewerVersion` and Flutter
-      `UpdateChecker.isNewerVersion`. Java's exact-string fallback after equal
-      numeric components is missing from Flutter; the finding is recorded in
-      section J.
+      `UpdateChecker.isNewerVersion`. Flutter now preserves Java's exact-string
+      fallback after equal numeric components, with focused Java-fixture tests.
 - [x] Re-read Java `Http`, `DownloadFileThread`, and `DownloadVideoThread`
       against Flutter `http_utils.dart` and `AbstractRipper`. The concrete
       differences found in this pass were already represented in section D:

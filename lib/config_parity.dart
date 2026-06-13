@@ -76,7 +76,7 @@ class ConfigParity {
     'reddit.rip_by_upvote': HiddenConfigDisposition.active,
     'reddit.use_sub_dirs': HiddenConfigDisposition.active,
     'security.check_update_hash': HiddenConfigDisposition.retired,
-    'testing.always_try_to_update': HiddenConfigDisposition.retired,
+    'testing.always_try_to_update': HiddenConfigDisposition.active,
     'tsumino.blacklist.tags': HiddenConfigDisposition.active,
     'tumblr.auth': HiddenConfigDisposition.active,
     'twitter.auth': HiddenConfigDisposition.active,

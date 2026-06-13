@@ -16,6 +16,15 @@ typedef CliHistoryLoader = Future<List<HistoryEntry>> Function();
 typedef CliDelay = Future<void> Function(Duration duration);
 typedef CliUpdateChecker = Future<UpdateCheckResult> Function();
 
+Future<UpdateCheckResult> _checkForUpdateFromConfig() {
+  return UpdateChecker(
+    alwaysTryToUpdate: Utils.getConfigBoolean(
+      'testing.always_try_to_update',
+      false,
+    ),
+  ).check();
+}
+
 abstract class CliConfigStore {
   Future<void> setBoolean(String key, bool value);
   Future<void> setInteger(String key, int value);
@@ -74,7 +83,7 @@ class CliController {
         _setFolderSuffix = setFolderSuffix ?? _setDefaultFolderSuffix,
         _loadHistory = loadHistory ?? HistoryProvider.loadHistory,
         _delay = delay ?? Future<void>.delayed,
-        _checkForUpdate = checkForUpdate ?? const UpdateChecker().check;
+        _checkForUpdate = checkForUpdate ?? _checkForUpdateFromConfig;
 
   static const String helpText = '''
 usage: ripme [OPTIONS]
