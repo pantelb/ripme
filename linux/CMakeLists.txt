@@ -124,6 +124,9 @@ install(DIRECTORY "${PROJECT_BUILD_DIR}/${FLUTTER_ASSET_DIR_NAME}"
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ripme.desktop"
   DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications"
   COMPONENT Runtime)
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ripme.png"
+  DESTINATION "${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/256x256/apps"
+  COMPONENT Runtime)
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/com.rarchives.ripme.metainfo.xml"
   DESTINATION "${CMAKE_INSTALL_PREFIX}/share/metainfo"
   COMPONENT Runtime)

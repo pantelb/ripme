@@ -1479,7 +1479,15 @@ Parity checklist:
   - Documented lifecycle difference: Java writes the selected combo value
     during window shutdown, while Flutter persists it when selected so mobile
     process termination cannot lose the preference.
-- [ ] Verify icon resources on Windows, Linux, macOS, and Android.
+- [x] Verify icon resources on Windows, Linux, macOS, and Android.
+  - `assets/icon.png` and `assets/icon.ico` carry Java's exact source bytes.
+    Windows embeds the Java ICO directly. macOS and Android use correctly sized
+    transparent PNG derivatives of Java's small source icon.
+  - Linux now ships a 256x256 `ripme.png` into the hicolor application icon
+    directory referenced by `ripme.desktop`.
+  - CI compares the source PNG/ICO with `origin/main`; Flutter tests decode
+    every platform PNG, verify its required dimensions and visible pixels, and
+    check Linux installation metadata.
 - [ ] Verify completion sound uses Java `camera.wav` or a documented platform
       replacement.
 - [ ] Verify resource licensing/packaging.
