@@ -30,8 +30,9 @@ class RipperDownload {
 abstract class AbstractRipper {
   static final Logger logger = Logger();
   static final Random _randomGenerator = Random();
+  static bool _thisIsATest = false;
   static String? folderNameSuffix;
-  final Uri url;
+  Uri url;
   late Directory workingDir;
   bool _shouldStop = false;
   int alreadyDownloadedUrls = 0;
@@ -50,6 +51,16 @@ abstract class AbstractRipper {
   Stream<RipStatusMessage> get statusStream => _statusController.stream;
 
   AbstractRipper(this.url);
+
+  void markAsTest() {
+    _thisIsATest = true;
+  }
+
+  bool get isThisATest => _thisIsATest;
+
+  static void resetTestMode() {
+    _thisIsATest = false;
+  }
 
   void stop() {
     _shouldStop = true;

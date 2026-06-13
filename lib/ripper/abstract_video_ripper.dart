@@ -66,11 +66,15 @@ abstract class AbstractVideoRipper extends AbstractRipper {
       String fileName = await _getFileName(request);
       File saveAs = File(workingDir.path + Platform.pathSeparator + fileName);
 
-      await downloadFile(
-        request.url,
-        saveAs,
-        headers: {'Referer': request.url.toString()},
-      );
+      if (isThisATest && !Utils.getConfigBoolean('urls_only.save', false)) {
+        url = request.url;
+      } else {
+        await downloadFile(
+          request.url,
+          saveAs,
+          headers: {'Referer': request.url.toString()},
+        );
+      }
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
     }

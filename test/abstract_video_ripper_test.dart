@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart' show parse;
+import 'package:ripme/ripper/abstract_ripper.dart';
 import 'package:ripme/ripper/abstract_video_ripper.dart';
 import 'package:ripme/ui/rip_status_message.dart';
 import 'package:ripme/utils/http_utils.dart';
@@ -69,6 +70,60 @@ class TestVideoRipper extends AbstractVideoRipper {
 }
 
 void main() {
+  tearDown(AbstractRipper.resetTestMode);
+
+  test('test mode mutates the ripper URL without downloading the video',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': false,
+      'urls_only.save': false,
+    });
+    await Utils.init();
+
+    final directory = await Directory.systemTemp.createTemp('ripme_video_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final pageUrl = Uri.parse('https://example.com/video-page');
+    final videoUrl = Uri.parse('https://cdn.example.com/resolved.mp4');
+    final ripper = TestVideoRipper(
+      pageUrl,
+      directory,
+      videoUrl,
+      captureDownload: true,
+    );
+    await ripper.setup();
+    ripper.markAsTest();
+
+    await ripper.rip();
+
+    expect(ripper.url, videoUrl);
+    expect(ripper.receivedDownloadUrl, isNull);
+    expect(await directory.list().toList(), isEmpty);
+  });
+
+  test('URL-only mode takes precedence over video test mode', () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': false,
+      'urls_only.save': true,
+    });
+    await Utils.init();
+
+    final directory = await Directory.systemTemp.createTemp('ripme_video_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final pageUrl = Uri.parse('https://example.com/video-page');
+    final videoUrl = Uri.parse('https://cdn.example.com/resolved.mp4');
+    final ripper = TestVideoRipper(pageUrl, directory, videoUrl);
+    await ripper.setup();
+    ripper.markAsTest();
+
+    await ripper.rip();
+
+    expect(ripper.url, pageUrl);
+    expect(
+      await File(p.join(directory.path, 'urls.txt')).readAsString(),
+      '$videoUrl${Platform.lineTerminator}',
+    );
+  });
+
   test('uses Java HEAD then GET byte progress for video rips', () async {
     SharedPreferences.setMockInitialValues({
       'remember.url_history': false,

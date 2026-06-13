@@ -2268,13 +2268,16 @@ Findings:
   - Corrected: Cliphunter's request no longer supplies transport headers, and
     the shared video downloader applies only Java's media-URL `Referer` while
     omitting cookies.
-- [ ] Java `VideoRipper.addURLToDownload` has a test-only contract: when
+- [x] Java `VideoRipper.addURLToDownload` has a test-only contract: when
       `markAsTest()` / `isThisATest()` is active and `urls_only.save` is false,
       it does not enqueue or download the video; it mutates `this.url` to the
       resolved video download URL and returns true. Java `VideoRippersTest`
       asserts that the ripper URL changes from the original page URL. Flutter
-      video tests capture requested downloads, but no shared equivalent
-      Java-compatible test-mode URL mutation is represented.
+      now carries the Java global test marker and mutable ripper URL, resolves
+      the media request, then mutates the URL without entering the download
+      path. Tests verify no file/download request occurs and that
+      `urls_only.save` still takes precedence by writing `urls.txt` while
+      leaving the page URL unchanged.
 - [ ] Java SSL verification toggle globally disables/enables certificate and
       hostname checks for Jsoup. Flutter has no verified equivalent.
 - [ ] Java has two cookie parsers with different delimiters:
