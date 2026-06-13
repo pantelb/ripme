@@ -1596,7 +1596,23 @@ Parity checklist:
     assertion or retrievable failure log. Later workflow `27457745643` ran the
     same suite successfully. CI now runs tests serially with expanded progress
     output and a 30-minute step timeout to prevent another silent worker hang.
-- [ ] Verify macOS entitlements and minimum OS behavior.
+- [x] Verify macOS entitlements and minimum OS behavior.
+  - Java runs as an unrestricted Java 17 desktop process and stores ordinary
+    filesystem paths for its executable-adjacent defaults, portable
+    configuration, history, and selected rip directory. Flutter's prior App
+    Sandbox entitlement could not preserve those paths across launches without
+    security-scoped bookmarks, which the app and `file_picker 11.0.2` do not
+    store. Debug/profile and release builds are therefore intentionally
+    unsandboxed.
+  - The user-selected read-write entitlement remains because the macOS
+    `file_picker` implementation checks for it before opening a directory
+    panel. Debug/profile also retains the Flutter JIT and local development
+    server entitlements.
+  - Xcode Debug/Profile/Release, CocoaPods, and `LSMinimumSystemVersion` all
+    resolve to macOS 12.0. This is the documented native Flutter replacement
+    for Java's Java-17-only platform requirement.
+  - Validation: `test/macos_platform_metadata_test.dart` and
+    `tool/check_macos_platform.dart`, enforced by CI.
 - [ ] Verify Linux metadata and executable packaging.
 - [ ] Verify Windows metadata, icon, and executable packaging.
 - [ ] Verify workflow separation between CI and release.
@@ -4932,9 +4948,10 @@ Findings:
       config for release builds. Final Android artifact evidence must distinguish
       CI-build availability from production-signing/readiness and either add a
       real signing flow or document the migration limitation.
-- [ ] macOS sandbox entitlements, Linux metadata, Windows resource versioning,
-      and app icons must be verified as first-class release artifacts rather
-      than assumed from Flutter defaults.
+- [ ] Linux metadata and Windows resource versioning still need first-class
+      release-artifact verification. macOS entitlements/minimum OS and all
+      platform app icons are now source-guarded rather than assumed from
+      Flutter defaults.
 - [x] Linux packaging metadata declares `ripme.desktop`,
       `Icon=ripme`, app id `com.rarchives.ripme`, and summary
       `Cross-platform media album ripper`; CMake installs the tested

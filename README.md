@@ -5,7 +5,7 @@ A unified cross-platform application for ripping albums from various websites, b
 ## Supported Platforms
 - Windows
 - Linux
-- macOS
+- macOS 12.0 or later
 - Android
 
 ## Features
@@ -41,6 +41,15 @@ macOS. It is intentionally disabled on Android: the system tree picker grants
 URI access, while RipMe's Java-compatible ripping engine writes through
 filesystem paths. Converting the selected URI to a raw path would not provide
 reliable scoped-storage access across restarts.
+
+## macOS Filesystem Access
+
+The macOS application is intentionally distributed without App Sandbox
+entitlement. RipMe preserves Java's ordinary filesystem-path behavior for its
+application-adjacent default, portable configuration, history files, and
+persisted custom download directories. The directory picker retains Apple's
+user-selected read-write entitlement because the macOS `file_picker` plugin
+requires it even for a non-sandboxed application.
 
 ## Updates And Releases
 
