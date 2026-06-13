@@ -27,4 +27,24 @@ void main() {
       {'queue', 'history.check.all'},
     );
   });
+
+  test('Java bundle parity permits missing localized keys', () {
+    expect(
+      JavaLocalizationKeyInventory.unexpectedLocalizedKeys(
+        defaultSource: 'one = One\ntwo = Two\n',
+        localizedSource: 'one = Uno\n',
+      ),
+      isEmpty,
+    );
+  });
+
+  test('Java bundle parity rejects localized-only keys', () {
+    expect(
+      JavaLocalizationKeyInventory.unexpectedLocalizedKeys(
+        defaultSource: 'one = One\n',
+        localizedSource: 'one = Uno\ntwo = Dos\n',
+      ),
+      {'two'},
+    );
+  });
 }

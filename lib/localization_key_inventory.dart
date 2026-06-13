@@ -19,4 +19,13 @@ class JavaLocalizationKeyInventory {
     }
     return keys;
   }
+
+  static Set<String> unexpectedLocalizedKeys({
+    required String defaultSource,
+    required String localizedSource,
+  }) {
+    final defaultKeys = keysFromProperties(defaultSource);
+    final localizedKeys = keysFromProperties(localizedSource);
+    return localizedKeys.difference(defaultKeys);
+  }
 }

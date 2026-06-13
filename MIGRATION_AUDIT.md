@@ -1461,8 +1461,13 @@ Parity checklist:
     Flutter preserves the selector tag while using the same Finnish locale
     fallback. CI compares the shared Flutter catalog directly with bundle
     filenames on `origin/main`.
-- [ ] Verify Java bundle parity test behavior: non-default bundles may omit
+- [x] Verify Java bundle parity test behavior: non-default bundles may omit
       keys, but any keys they contain must exist in the default bundle.
+  - The Dart inventory reproduces `LabelsBundlesTest.testKeyName`: partial
+    translations are valid, while localized-only keys fail validation.
+  - CI applies the rule to every localized bundle on `origin/main` and every
+    corresponding Flutter-packaged asset. Focused tests lock both the allowed
+    missing-key case and rejected extra-key case.
 - [ ] Verify language switching behavior.
 - [ ] Verify icon resources on Windows, Linux, macOS, and Android.
 - [ ] Verify completion sound uses Java `camera.wav` or a documented platform

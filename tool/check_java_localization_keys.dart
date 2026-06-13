@@ -75,10 +75,60 @@ Future<void> main() async {
     return;
   }
 
+  final defaultSource = bundleResult.stdout as String;
+  final localizedBundlePaths =
+      (resourcePathsResult.stdout as String).split(RegExp(r'\r?\n')).where(
+            (path) => RegExp(
+              r'LabelsBundle_[A-Za-z_]+\.properties$',
+            ).hasMatch(path),
+          );
+  for (final path in localizedBundlePaths) {
+    final javaBundleResult = await Process.run(
+      'git',
+      ['show', 'origin/main:$path'],
+    );
+    if (javaBundleResult.exitCode != 0) {
+      stderr.write(javaBundleResult.stderr);
+      exitCode = javaBundleResult.exitCode;
+      return;
+    }
+    final javaUnexpected = JavaLocalizationKeyInventory.unexpectedLocalizedKeys(
+      defaultSource: defaultSource,
+      localizedSource: javaBundleResult.stdout as String,
+    );
+    if (javaUnexpected.isNotEmpty) {
+      stderr.writeln(
+        '$path contains keys absent from the Java default bundle: '
+        '${(javaUnexpected.toList()..sort()).join(', ')}',
+      );
+      exitCode = 1;
+      return;
+    }
+
+    final flutterBundle = File(path);
+    if (!flutterBundle.existsSync()) {
+      stderr.writeln('Flutter is not packaging Java bundle $path.');
+      exitCode = 1;
+      return;
+    }
+    final flutterUnexpected =
+        JavaLocalizationKeyInventory.unexpectedLocalizedKeys(
+      defaultSource: defaultSource,
+      localizedSource: flutterBundle.readAsStringSync(),
+    );
+    if (flutterUnexpected.isNotEmpty) {
+      stderr.writeln(
+        '$path contains Flutter-packaged keys absent from the default bundle: '
+        '${(flutterUnexpected.toList()..sort()).join(', ')}',
+      );
+      exitCode = 1;
+      return;
+    }
+  }
+
   final usedKeys = JavaLocalizationKeyInventory.keysFromSources(sources);
-  final defaultKeys = JavaLocalizationKeyInventory.keysFromProperties(
-    bundleResult.stdout as String,
-  );
+  final defaultKeys =
+      JavaLocalizationKeyInventory.keysFromProperties(defaultSource);
   final missingFromJavaBundle = usedKeys.difference(defaultKeys).toList()
     ..sort();
   if (missingFromJavaBundle.isNotEmpty) {
