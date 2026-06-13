@@ -138,8 +138,26 @@ jobs:
       - name: Install Dart dependencies
         run: flutter pub get
 
+      - name: Resolve release version
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${RELEASE_TAG#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release tag must contain a version such as v1.2.3: $RELEASE_TAG" >&2
+            exit 1
+          fi
+          echo "RIPME_VERSION=$version" >> "$GITHUB_ENV"
+          echo "RIPME_BUILD_NUMBER=$GITHUB_RUN_NUMBER" >> "$GITHUB_ENV"
+
       - name: Build ${{ matrix.target }} release
-        run: flutter build ${{ matrix.target }} --release
+        shell: bash
+        run: >-
+          flutter build ${{ matrix.target }} --release
+          --build-name "$RIPME_VERSION"
+          --build-number "$RIPME_BUILD_NUMBER"
+          --dart-define "RIPME_VERSION=$RIPME_VERSION"
+          --dart-define "RIPME_BUILD_NUMBER=$RIPME_BUILD_NUMBER"
 
       - name: Package ${{ matrix.artifact }}
         shell: bash
@@ -188,11 +206,33 @@ jobs:
       - name: Install Dart dependencies
         run: flutter pub get
 
+      - name: Resolve release version
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${RELEASE_TAG#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release tag must contain a version such as v1.2.3: $RELEASE_TAG" >&2
+            exit 1
+          fi
+          echo "RIPME_VERSION=$version" >> "$GITHUB_ENV"
+          echo "RIPME_BUILD_NUMBER=$GITHUB_RUN_NUMBER" >> "$GITHUB_ENV"
+
       - name: Build Android APK
-        run: flutter build apk --release
+        run: >-
+          flutter build apk --release
+          --build-name "$RIPME_VERSION"
+          --build-number "$RIPME_BUILD_NUMBER"
+          --dart-define "RIPME_VERSION=$RIPME_VERSION"
+          --dart-define "RIPME_BUILD_NUMBER=$RIPME_BUILD_NUMBER"
 
       - name: Build Android App Bundle
-        run: flutter build appbundle --release
+        run: >-
+          flutter build appbundle --release
+          --build-name "$RIPME_VERSION"
+          --build-number "$RIPME_BUILD_NUMBER"
+          --dart-define "RIPME_VERSION=$RIPME_VERSION"
+          --dart-define "RIPME_BUILD_NUMBER=$RIPME_BUILD_NUMBER"
 
       - name: Package Android artifacts
         run: |

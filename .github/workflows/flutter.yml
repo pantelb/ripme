@@ -48,6 +48,9 @@ jobs:
     - name: Verify Java resource packaging
       run: dart run tool/check_java_resource_packaging.dart
 
+    - name: Verify version metadata
+      run: dart run tool/check_version_metadata.dart
+
     - name: Verify Java test class coverage
       run: dart run tool/check_java_test_coverage.dart
 

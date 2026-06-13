@@ -1557,7 +1557,15 @@ Parity checklist:
   - `security.check_update_hash` remains retired because Flutter never downloads
     or replaces its own executable; Java batch/process replacement scripts do
     not apply to app bundles, APKs, or platform package managers.
-- [ ] Verify version display and build number.
+- [x] Verify version display and build number.
+  - Java embeds its `jgitver` result as `Implementation-Version` and prints that
+    value through `-v`. Flutter keeps `pubspec.yaml` as the local default and
+    guards the Dart version/build constants against it.
+  - Release builds require a native-compatible `vMAJOR.MINOR.PATCH` tag, use the
+    Actions run number as the numeric build identity, and inject both values
+    into Dart plus Flutter's Android, Windows, and macOS build metadata.
+  - CLI `--version` reports the semantic version like Java; the GUI additionally
+    displays the platform build number as `<version>+<build>`.
 - [ ] Verify release artifact naming.
 - [ ] Verify Android permissions and storage behavior.
 - [ ] Verify macOS entitlements and minimum OS behavior.
@@ -4810,15 +4818,15 @@ Flutter files checked:
 
 Findings:
 
-- [ ] Java derives build versions with `jgitver` from tag/base version/commit
+- [x] Java derives build versions with `jgitver` from tag/base version/commit
       metadata and embeds `Implementation-Version` in the jar manifest. Flutter
-      currently declares `version: 1.0.0+1`; version display, release artifact
-      naming, update comparison, and reproducible commit identity need a
-      Flutter-native equivalent.
-- [ ] Java README documents semantic version strings with commit count, short
-      SHA, and branch suffix. Flutter README currently claims complete feature
-      parity without linking to this audit or describing remaining gaps; that
-      is misleading until this file is fully closed.
+      uses a semantic release tag as its cross-platform app version and the
+      immutable Actions run number as its native/Dart build identity. CI guards
+      local defaults and release injection across platform metadata.
+- [x] Java README documents semantic version strings with commit count, short
+      SHA, and branch suffix. Flutter documents its native-compatible semantic
+      release tag plus numeric Actions build identity and no longer claims
+      unconditional complete parity while this audit remains open.
 - [ ] Java CI builds a fat jar on Linux, Windows, and macOS and uploads the Java
       17 Ubuntu jar artifact. Flutter release CI builds Android APK/AAB,
       Windows, macOS, and Linux artifacts. The migration must document that this

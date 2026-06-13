@@ -9,7 +9,7 @@ A unified cross-platform application for ripping albums from various websites, b
 - Android
 
 ## Features
-- Complete feature parity with the original Java version.
+- Java-compatible behavior across the audited migration surface.
 - Multi-threaded ripping engine.
 - Local history and configuration persistence.
 - Cross-platform directory picking.
@@ -40,3 +40,7 @@ release notes and URL; it does not download, install, or launch an update.
 Every Flutter release also publishes `SHA256SUMS.txt` for manual artifact
 verification. This replaces Java's `currentHash` check, which applied to the
 jar downloaded by the in-process updater.
+
+Release tags provide the semantic app version, and GitHub Actions supplies the
+numeric build number. Both values are embedded in Android, Windows, macOS, and
+the Dart UI/CLI from the same release build invocation.
