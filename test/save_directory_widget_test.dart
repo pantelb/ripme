@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Widget _configuration({
   required Future<String?> Function() directoryPicker,
-  required Future<bool> Function() storageAccessChecker,
+  required bool isAndroid,
 }) {
   return MaterialApp(
     localizationsDelegates: const [
@@ -21,17 +21,16 @@ Widget _configuration({
     home: Scaffold(
       body: ConfigurationView(
         directoryPicker: directoryPicker,
-        storageAccessChecker: storageAccessChecker,
+        isAndroid: isAndroid,
       ),
     ),
   );
 }
 
 void main() {
-  testWidgets('save directory selection, cancellation, and access denial',
+  testWidgets('desktop save directory selection and cancellation',
       (tester) async {
     String? selectedDirectory = '/selected/rips';
-    var storageAccess = true;
     var pickerCalls = 0;
     SharedPreferences.setMockInitialValues({});
     await Utils.init();
@@ -42,7 +41,7 @@ void main() {
           pickerCalls++;
           return selectedDirectory;
         },
-        storageAccessChecker: () async => storageAccess,
+        isAndroid: false,
       ),
     );
     await tester.pumpAndSettle();
@@ -60,14 +59,5 @@ void main() {
     expect(Utils.getConfigString('rips.directory', null), '/selected/rips');
     expect(find.text('/selected/rips'), findsOneWidget);
     expect(pickerCalls, 2);
-
-    storageAccess = false;
-    selectedDirectory = '/unreachable/rips';
-    await tester.tap(find.byType(ListTile).first);
-    await tester.pumpAndSettle();
-
-    expect(pickerCalls, 2);
-    expect(Utils.getConfigString('rips.directory', null), '/selected/rips');
-    expect(find.text('Storage access was not granted'), findsOneWidget);
   });
 }

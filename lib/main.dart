@@ -1421,13 +1421,13 @@ class ConfigurationView extends StatefulWidget {
     this.selectedLanguageTag,
     this.onLanguageChanged,
     this.directoryPicker,
-    this.storageAccessChecker,
+    this.isAndroid,
   });
 
   final String? selectedLanguageTag;
   final ValueChanged<String>? onLanguageChanged;
   final Future<String?> Function()? directoryPicker;
-  final Future<bool> Function()? storageAccessChecker;
+  final bool? isAndroid;
 
   @override
   State<ConfigurationView> createState() => _ConfigurationViewState();
@@ -1440,6 +1440,8 @@ class _ConfigurationViewState extends State<ConfigurationView> {
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
+    final supportsDirectoryPicker =
+        Utils.supportsCustomRipDirectory(android: widget.isAndroid);
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -1456,28 +1458,18 @@ class _ConfigurationViewState extends State<ConfigurationView> {
                 color: Theme.of(context).colorScheme.primary,
                 compact: true,
               ),
-              onTap: () async {
-                final hasStorageAccess = await (widget.storageAccessChecker ??
-                        Utils.ensureStorageAccess)
-                    .call();
-                if (!hasStorageAccess) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text(strings.storageAccessWasNotGranted)),
-                    );
-                  }
-                  return;
-                }
-                final selectedDirectory = await (widget.directoryPicker ??
-                        FilePicker.getDirectoryPath)
-                    .call();
-                if (selectedDirectory != null) {
-                  await Utils.setConfigString(
-                      'rips.directory', selectedDirectory);
-                  if (mounted) setState(() {});
-                }
-              },
+              onTap: supportsDirectoryPicker
+                  ? () async {
+                      final selectedDirectory = await (widget.directoryPicker ??
+                              FilePicker.getDirectoryPath)
+                          .call();
+                      if (selectedDirectory != null) {
+                        await Utils.setConfigString(
+                            'rips.directory', selectedDirectory);
+                        if (mounted) setState(() {});
+                      }
+                    }
+                  : null,
             ),
             _ConfigSwitch(
               title: strings.overwriteExistingFiles,

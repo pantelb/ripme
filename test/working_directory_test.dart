@@ -79,4 +79,9 @@ void main() {
     expect(workingDirectory.path, '${root.path}${Platform.pathSeparator}rips');
     expect(await workingDirectory.exists(), isTrue);
   });
+
+  test('custom rip directories remain desktop-only', () {
+    expect(Utils.supportsCustomRipDirectory(android: false), isTrue);
+    expect(Utils.supportsCustomRipDirectory(android: true), isFalse);
+  });
 }

@@ -28,6 +28,20 @@ flutter run
 flutter test
 ```
 
+## Android Storage
+
+Android downloads are stored in RipMe's app-specific external `rips` directory,
+with the app documents directory as a fallback. This location does not require
+legacy storage, media-read, or all-files permissions. Android removes
+app-specific files when the application is uninstalled, so move downloads that
+must be retained before uninstalling.
+
+Arbitrary save-directory selection remains available on Windows, Linux, and
+macOS. It is intentionally disabled on Android: the system tree picker grants
+URI access, while RipMe's Java-compatible ripping engine writes through
+filesystem paths. Converting the selected URI to a raw path would not provide
+reliable scoped-storage access across restarts.
+
 ## Updates And Releases
 
 RipMe checks the latest release in `pantelb/ripme` and opens its GitHub release

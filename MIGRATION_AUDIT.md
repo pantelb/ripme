@@ -801,15 +801,20 @@ Parity checklist:
     [Windows](https://github.com/pantelb/ripme/actions/runs/27358136986/artifacts/7569156958),
     [macOS](https://github.com/pantelb/ripme/actions/runs/27358136986/artifacts/7569155864),
     [Linux](https://github.com/pantelb/ripme/actions/runs/27358136986/artifacts/7569106595).
-- [x] Support save directory selection across desktop and Android.
+- [x] Support Java save directory selection on desktop and define the Android
+      storage replacement.
   - Completed: the Files configuration section uses the platform directory
     picker, persists the exact selected path as Java's `rips.directory`, updates
     the displayed path immediately, and leaves the existing value unchanged on
-    cancellation. Android requests storage/media access before opening the
-    picker and reports denial without changing configuration. The obsolete
-    `Documents/rips` default label was corrected after desktop defaults moved
-    to Java's application-adjacent directory. Widget tests cover successful
-    selection, cancellation, and denied Android-style access.
+    cancellation on Windows, Linux, and macOS. Android instead uses its
+    app-specific external `rips` directory with application documents fallback
+    and does not request legacy, media-read, or all-files permissions. Audit
+    correction: `file_picker 11.0.2` opens `ACTION_OPEN_DOCUMENT_TREE` but
+    converts the tree URI to a raw path without persisting a URI grant; that
+    path cannot provide reliable Dart `File` access under scoped storage.
+    Android arbitrary-directory selection is therefore disabled rather than
+    falsely represented as Java-equivalent. Widget tests cover desktop
+    selection/cancellation and the Android-disabled replacement.
 - [x] Support window position persistence or explicitly mark not applicable.
   - Completed with Java platform semantics: Linux and macOS restore valid
     `window.x`, `window.y`, `window.w`, and `window.h` bounds when
@@ -1574,7 +1579,23 @@ Parity checklist:
   - GitHub Actions artifact container names remain stable and version-neutral;
     release filenames use the normalized version without a duplicate leading
     `v`.
-- [ ] Verify Android permissions and storage behavior.
+- [x] Verify Android permissions and storage behavior.
+  - Android uses `path_provider` app-specific external storage with application
+    documents fallback and creates the `rips` child before use. The manifest
+    declares only network access; obsolete external-storage, media-read, and
+    legacy-storage declarations were removed together with `permission_handler`.
+  - Java's arbitrary filesystem directory chooser remains available on desktop.
+    Android disables that control because its system picker returns a tree URI
+    and the current ripper pipeline requires persistent filesystem paths.
+    README documents scoped-storage behavior and uninstall data retention.
+  - Validation: working-directory and configuration widget tests plus
+    `tool/check_android_storage_policy.dart`, which is enforced by CI.
+  - CI repair: workflow
+    [27457012630](https://github.com/pantelb/ripme/actions/runs/27457012630)
+    was terminated while `flutter test` remained in progress without a failed
+    assertion or retrievable failure log. Later workflow `27457745643` ran the
+    same suite successfully. CI now runs tests serially with expanded progress
+    output and a 30-minute step timeout to prevent another silent worker hang.
 - [ ] Verify macOS entitlements and minimum OS behavior.
 - [ ] Verify Linux metadata and executable packaging.
 - [ ] Verify Windows metadata, icon, and executable packaging.
@@ -4901,10 +4922,12 @@ Findings:
       the exact Java license as a Flutter asset, installs it at the Linux and
       Windows bundle roots, copies it into macOS app resources, and declares
       MIT in Linux AppStream metadata.
-- [ ] Android support is new relative to Java desktop. Android permissions,
-      scoped storage, directory picking, background downloads, and notification
-      behavior need explicit parity/replacement notes for every desktop-only
-      Java behavior.
+- [ ] Android support is new relative to Java desktop. Permissions, scoped
+      storage, and directory picking now have explicit replacement notes:
+      downloads use app-specific storage without broad permissions, and the
+      unreliable raw-path tree picker is disabled. Background downloads and
+      notification behavior still need explicit parity/replacement notes for
+      every desktop-only Java behavior.
 - [ ] Flutter Android release configuration currently uses the debug signing
       config for release builds. Final Android artifact evidence must distinguish
       CI-build availability from production-signing/readiness and either add a

@@ -54,6 +54,9 @@ jobs:
     - name: Verify release artifact naming
       run: dart run tool/check_release_artifact_naming.dart
 
+    - name: Verify Android storage policy
+      run: dart run tool/check_android_storage_policy.dart
+
     - name: Verify Java test class coverage
       run: dart run tool/check_java_test_coverage.dart
 
@@ -61,7 +64,8 @@ jobs:
       run: flutter analyze
 
     - name: Run tests
-      run: flutter test
+      timeout-minutes: 30
+      run: flutter test --reporter expanded --concurrency=1
 
   build-desktop:
     needs: test
