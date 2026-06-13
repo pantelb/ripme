@@ -8,6 +8,25 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('exposes Java bundle locale set to Flutter', () {
+    expect(AppLocalizations.supportedLanguageTags, <String>[
+      'ar-AR',
+      'de-DE',
+      'el-GR',
+      'en-US',
+      'es-ES',
+      'fi-FI',
+      'fi-FI-porrisavo',
+      'fr-CH',
+      'in-ID',
+      'it-IT',
+      'kr-KR',
+      'nl-NL',
+      'pl-PL',
+      'pt-BR',
+      'pt-PT',
+      'ru-RU',
+      'zh-CN',
+    ]);
     expect(AppLocalizations.supportedLocales, contains(const Locale('en')));
     expect(AppLocalizations.supportedLocales, contains(const Locale('el')));
     expect(
@@ -16,6 +35,10 @@ void main() {
         AppLocalizations.supportedLocales, contains(const Locale('zh', 'CN')));
     expect(AppLocalizations.supportedLanguageTags, contains('in-ID'));
     expect(AppLocalizations.supportedLanguageTags, contains('kr-KR'));
+    expect(
+      AppLocalizations.localeFromLanguageTag('fi-FI-porrisavo'),
+      const Locale('fi', 'FI'),
+    );
     expect(
       AppLocalizations.localeFromLanguageTag('in-ID'),
       const Locale('id', 'ID'),

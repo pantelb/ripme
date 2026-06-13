@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 
+import '../localization_catalog.dart';
+
 class AppLocalizations {
   AppLocalizations(this.locale, this._labels);
 
@@ -29,24 +31,8 @@ class AppLocalizations {
     Locale('zh', 'CN'),
   ];
 
-  static const supportedLanguageTags = <String>[
-    'en-US',
-    'ar-AR',
-    'de-DE',
-    'el-GR',
-    'es-ES',
-    'fi-FI',
-    'fr-CH',
-    'in-ID',
-    'it-IT',
-    'kr-KR',
-    'nl-NL',
-    'pl-PL',
-    'pt-PT',
-    'pt-BR',
-    'ru-RU',
-    'zh-CN',
-  ];
+  static const supportedLanguageTags =
+      LocalizationCatalog.supportedLanguageTags;
 
   static Locale localeFromLanguageTag(String? tag) {
     if (tag == null || tag.trim().isEmpty) {

@@ -1452,7 +1452,15 @@ Parity checklist:
     the Flutter-packaged bundle instead of only checking Java source against
     Java's own bundle. A runtime asset test proves every packaged key is loaded
     into the generic lookup.
-- [ ] Verify locale list matches Java bundles.
+- [x] Verify locale list matches Java bundles.
+  - Flutter exposes all 17 tags discovered by Java's
+    `LabelsBundle_(?<lang>[A-Za-z_]+).properties` scan, including
+    `fi-FI-porrisavo`, `in-ID`, and `kr-KR`.
+  - Java `Locale.forLanguageTag("fi-FI-porrisavo")` resolves to ordinary
+    `fi_FI` because the nine-character variant is not a valid BCP 47 variant.
+    Flutter preserves the selector tag while using the same Finnish locale
+    fallback. CI compares the shared Flutter catalog directly with bundle
+    filenames on `origin/main`.
 - [ ] Verify Java bundle parity test behavior: non-default bundles may omit
       keys, but any keys they contain must exist in the default bundle.
 - [ ] Verify language switching behavior.
