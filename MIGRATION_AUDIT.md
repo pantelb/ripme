@@ -2132,6 +2132,14 @@ Findings:
       same truncation, whitespace, trailing-semicolon, and malformed-segment
       behavior; focused tests lock each edge case. Concrete rippers may still
       parse site-specific response cookies separately where Java does likewise.
+  - CI: [run 27470106304](https://github.com/pantelb/ripme/actions/runs/27470106304)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27470106304/artifacts/7611846042),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27470106304/artifacts/7611833488),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27470106304/artifacts/7611824663),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27470106304/artifacts/7611815984)
+    artifacts.
 - [x] Java proxy CLI/config accepts single strings such as
       `[user:password]@host[:port]` for HTTP and SOCKS. Flutter currently uses
       `proxy.enabled`, `proxy.host`, `proxy.port`, `proxy.username`, and
@@ -2166,6 +2174,14 @@ Findings:
       `MrCongRipper` says `Expected misskon.com URL format`,
       `ReadcomicRipper` says `Expected view-comic URL format`, and
       `JabArchivesRipper` says `Expected javarchives.com URL format`.
+  - CI: [run 27470338182](https://github.com/pantelb/ripme/actions/runs/27470338182)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27470338182/artifacts/7611912910),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27470338182/artifacts/7611899829),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27470338182/artifacts/7611894526),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27470338182/artifacts/7611886468)
+    artifacts.
 - [x] Java `Http` retry loop attempts exactly the configured count. Flutter's
       shared page path now uses the same total-attempt boundary.
 - [x] Java `Http.TIMEOUT` is a `static final` value read once from
@@ -2216,12 +2232,14 @@ Findings:
   - Completed: Flutter video downloads now perform HEAD without a request
     timeout, emit `TOTAL_BYTES`, then start GET and emit cumulative
     `COMPLETED_BYTES` updates using Java 32-bit integer behavior.
-- [ ] Java `DownloadVideoThread` retry behavior also differs from shared
-      Flutter downloads: it has no retry-sleep delay, gets total bytes through a
-      separate HEAD request before the retry loop, and only increments `tries`
-      after the GET connection is configured. Flutter routes video downloads
-      through the shared `Http.downloadFile(...)` response path, so timeout and
-      retry timing are not Java-compatible.
+- [x] Java `DownloadVideoThread` gets total bytes through a separate HEAD
+      request, then performs one initial GET plus `download.retries` retries
+      with no connect/read timeout and no retry-sleep delay. It emits
+      `DOWNLOAD_STARTED` for each attempt. Flutter's video policy now preserves
+      those differences while retaining the shared file lifecycle; ordinary
+      downloads keep their configured timeout and retry sleep. A deterministic
+      HEAD/500/200 test verifies method order, attempt statuses, zero delay, and
+      final bytes.
 - [ ] Java DASH manifest selection in `RedditRipper.parseRedditVideoMPD(...)`
       considers only the `height` attribute, treats a missing height as `0`,
       updates the candidate only when the height is strictly greater than the

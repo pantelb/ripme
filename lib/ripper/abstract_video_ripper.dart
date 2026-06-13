@@ -33,6 +33,19 @@ abstract class AbstractVideoRipper extends AbstractRipper {
   bool get includesDownloadCookieHeader => false;
 
   @override
+  int get downloadRetryCountOverride =>
+      Utils.getConfigInteger('download.retries', 1);
+
+  @override
+  bool get disablesDownloadTimeout => true;
+
+  @override
+  Duration get downloadRetrySleepOverride => Duration.zero;
+
+  @override
+  bool get sendsDownloadStartedPerAttempt => true;
+
+  @override
   Map<String, String> resolveDownloadHeaders(
     Uri url,
     Map<String, String>? requestedHeaders,

@@ -86,6 +86,10 @@ class Http {
     void Function(int completedBytes)? onBytesCompleted,
     bool includeCookieHeader = true,
     bool getFileExtFromMIME = false,
+    int? retryCount,
+    bool disableTimeout = false,
+    Duration? retrySleepOverride,
+    void Function()? onAttempt,
   }) async {
     final combinedHeaders = _buildHeaders(
       url,
@@ -94,13 +98,17 @@ class Http {
       isDownload: true,
       includeDownloadCookieHeader: includeCookieHeader,
     );
-    final attempts = Utils.getConfigInteger('download.retries', 3) + 1;
-    final timeout = Duration(
-      milliseconds: Utils.getConfigInteger('download.timeout', 60000),
-    );
-    final retrySleep = Duration(
-      milliseconds: Utils.getConfigInteger('download.retry.sleep', 0),
-    );
+    final attempts =
+        (retryCount ?? Utils.getConfigInteger('download.retries', 3)) + 1;
+    final timeout = disableTimeout
+        ? null
+        : Duration(
+            milliseconds: Utils.getConfigInteger('download.timeout', 60000),
+          );
+    final retrySleep = retrySleepOverride ??
+        Duration(
+          milliseconds: Utils.getConfigInteger('download.retry.sleep', 0),
+        );
     Object? lastError;
     var completedBytes = 0;
 
@@ -111,10 +119,13 @@ class Http {
         if (shouldStop?.call() ?? false) {
           throw const DownloadInterruptedException();
         }
+        onAttempt?.call();
         client = _createClient();
         final request = http.Request('GET', url)
           ..headers.addAll(combinedHeaders);
-        final response = await client.send(request).timeout(timeout);
+        final response = disableTimeout
+            ? await client.send(request)
+            : await client.send(request).timeout(timeout!);
 
         if (response.statusCode ~/ 100 == 4) {
           throw _NonRetriableHttpException(
@@ -134,7 +145,9 @@ class Http {
           onTotalBytes?.call(_javaInt32(response.contentLength ?? -1));
           if (getFileExtFromMIME) {
             final iterator = StreamIterator<List<int>>(
-              response.stream.timeout(timeout),
+              disableTimeout
+                  ? response.stream
+                  : response.stream.timeout(timeout!),
             );
             final bufferedChunks = <List<int>>[];
             final probe = <int>[];
@@ -173,7 +186,10 @@ class Http {
               await saveAs.parent.create(recursive: true);
             }
             sink = saveAs.openWrite();
-            await for (final chunk in response.stream.timeout(timeout)) {
+            final stream = disableTimeout
+                ? response.stream
+                : response.stream.timeout(timeout!);
+            await for (final chunk in stream) {
               if (shouldStop?.call() ?? false) {
                 throw const DownloadInterruptedException();
               }

@@ -93,6 +93,14 @@ abstract class AbstractRipper {
 
   bool get includesDownloadCookieHeader => true;
 
+  int? get downloadRetryCountOverride => null;
+
+  bool get disablesDownloadTimeout => false;
+
+  Duration? get downloadRetrySleepOverride => null;
+
+  bool get sendsDownloadStartedPerAttempt => false;
+
   Map<String, String>? resolveDownloadHeaders(
     Uri url,
     Map<String, String>? requestedHeaders,
@@ -320,7 +328,9 @@ abstract class AbstractRipper {
         );
         updateTotalBytes(totalBytes);
       }
-      sendUpdate(RipStatus.downloadStarted, url.toString());
+      if (!sendsDownloadStartedPerAttempt) {
+        sendUpdate(RipStatus.downloadStarted, url.toString());
+      }
       saveAs = await Http.downloadFile(
         url,
         saveAs,
@@ -333,6 +343,12 @@ abstract class AbstractRipper {
         onBytesCompleted: usesByteProgress ? updateCompletedBytes : null,
         includeCookieHeader: includesDownloadCookieHeader,
         getFileExtFromMIME: getFileExtFromMIME,
+        retryCount: downloadRetryCountOverride,
+        disableTimeout: disablesDownloadTimeout,
+        retrySleepOverride: downloadRetrySleepOverride,
+        onAttempt: sendsDownloadStartedPerAttempt
+            ? () => sendUpdate(RipStatus.downloadStarted, url.toString())
+            : null,
       );
       _completeDownload(url);
       sendUpdate(RipStatus.downloadComplete, saveAs.path);

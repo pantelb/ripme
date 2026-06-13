@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:ripme/ripper/abstract_video_ripper.dart';
 import 'package:ripme/ui/rip_status_message.dart';
+import 'package:ripme/utils/http_utils.dart';
 import 'package:ripme/utils/utils.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -126,6 +127,64 @@ void main() {
     );
     expect(ripper.completionPercentage, 100);
     expect(ripper.statusText, '100%  - 6.00iB / 6.00iB');
+  });
+
+  test('uses Java video retry attempts without retry sleep', () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': false,
+      'download.retries': 1,
+      'download.retry.sleep': 60000,
+      'download.timeout': 1,
+    });
+    await Utils.init();
+
+    final delays = <Duration>[];
+    final originalDelay = Http.delay;
+    Http.delay = (duration) async => delays.add(duration);
+    addTearDown(() => Http.delay = originalDelay);
+
+    final directory = await Directory.systemTemp.createTemp('ripme_video_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final methods = <String>[];
+    var getAttempts = 0;
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen((request) async {
+      methods.add(request.method);
+      if (request.method == 'HEAD') {
+        request.response.contentLength = 2;
+      } else {
+        getAttempts++;
+        if (getAttempts == 1) {
+          request.response.statusCode = HttpStatus.internalServerError;
+        } else {
+          request.response.add([1, 2]);
+        }
+      }
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final ripper = TestVideoRipper(
+      Uri.parse('https://example.com/video-page'),
+      directory,
+      Uri.parse('http://127.0.0.1:${server.port}/video.mp4'),
+    );
+    await ripper.setup();
+    final statuses = <RipStatusMessage>[];
+    final sub = ripper.statusStream.listen(statuses.add);
+    addTearDown(sub.cancel);
+
+    await ripper.rip();
+    await Future<void>.delayed(Duration.zero);
+
+    expect(methods, ['HEAD', 'GET', 'GET']);
+    expect(delays, isEmpty);
+    expect(
+      statuses.where((message) => message.status == RipStatus.downloadStarted),
+      hasLength(2),
+    );
+    expect(
+        await File(p.join(directory.path, 'video.mp4')).readAsBytes(), [1, 2]);
   });
 
   test('uses shared download path for video rips', () async {
