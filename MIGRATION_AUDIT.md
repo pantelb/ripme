@@ -1820,22 +1820,35 @@ Flutter files checked:
 
 Findings:
 
-- [ ] Java config file name is `rip.properties`; Flutter stores settings in
-      SharedPreferences. Migration/import behavior from existing Java
-      `rip.properties` needs a decision and tests.
-- [ ] Java portable mode uses a `rip.properties` file next to the jar/current
-      working directory. Flutter does not yet verify or support portable mode.
-- [ ] Java config directory resolution is platform-specific:
+- [x] Java config file name is `rip.properties`; Flutter uses the existing Java
+      file directly when it is executable-adjacent portable configuration.
+      Outside portable mode, Flutter intentionally uses the platform-native
+      SharedPreferences backend rather than automatically importing or
+      rewriting Java's platform config file. Tests cover both backends,
+      precedence, persistence, and reinitialization.
+- [x] Java portable mode uses a `rip.properties` file next to the jar/current
+      working directory. Flutter desktop startup detects the file beside the
+      resolved executable, validates the same seven required Java keys, and
+      uses it as the authoritative read/write backend. Android intentionally
+      omits portable mode because an APK is not a writable portable directory.
+- [x] Java config directory resolution is platform-specific:
       `%LOCALAPPDATA%/ripme` on Windows, `~/Library/Application Support/ripme`
-      on macOS, `~/.config/ripme` on Unix. Flutter currently uses
-      SharedPreferences and app documents for the default rips folder.
-- [ ] Java default working directory is the jar directory plus `rips/`, with the
+      on macOS, `~/.config/ripme` on Unix. Flutter intentionally replaces those
+      directories with each platform's SharedPreferences backend outside
+      portable mode; persistence tests prove values survive utility
+      reinitialization.
+- [x] Java default working directory is the jar directory plus `rips/`, with the
       jar directory derived from `java.class.path` or `user.dir` and fallback to
-      `user.home` when creation fails. Flutter currently defaults to app
-      documents/external storage plus `rips`.
-- [ ] Java deletes and reloads old configs missing required keys such as
-      `twitter.auth`, `tumblr.auth`, or `download.max_size`. Flutter needs a
-      compatibility or migration story.
+      `user.home` when creation fails. Flutter desktop uses the resolved
+      executable directory plus `rips`, falls back to the user home directory
+      after creation failure, and keeps Android's writable external/app
+      documents replacement. Cross-platform path and failure tests cover the
+      distinction.
+- [x] Java deletes and reloads old configs missing required keys such as
+      `twitter.auth`, `tumblr.auth`, or `download.max_size`. Flutter applies the
+      exact seven-key sentinel check to external desktop `rip.properties`,
+      deletes obsolete files, and falls back to preferences plus bundled
+      defaults. Focused tests remove each sentinel in turn.
 - [ ] Java default `download.retry.sleep` is absent from `rip.properties` and
       call sites commonly default to `0`; Flutter default is `5000`. This is a
       concrete behavior difference.
