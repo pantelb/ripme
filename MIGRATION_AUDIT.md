@@ -2111,16 +2111,19 @@ Findings:
       Flutter now exposes the equivalent surface through `Http.url(...)` while
       retaining its existing static convenience methods.
       Flutter has focused helpers but not the full API surface.
-- [ ] Java configured cookies use `cookies.<domain>` and check parent domains;
-      values are parsed as semicolon-delimited `key=value` pairs. Flutter does
-      similar domain lookup, but parser edge cases and precedence need tests.
-- [ ] Java shared cookie parsing in `RipUtils.getCookiesFromString(...)` uses
+- [x] Java configured cookies use `cookies.<domain>` and check the exact host,
+      then progressively remove the leftmost label while at least two labels
+      remain. Flutter follows the same first-non-empty precedence, does not
+      consult a bare top-level-domain key, and applies configured cookies to
+      page requests but not Java-style file-download defaults. Focused HTTP
+      tests cover exact/empty-parent lookup and request injection.
+- [x] Java shared cookie parsing in `RipUtils.getCookiesFromString(...)` uses
       `pair.split("=")` with no split limit and no malformed-pair guard:
       `a=b=c` becomes `a -> b`, and a semicolon segment without `=` throws
-      instead of being skipped. Flutter shared parsing in
-      `Http._parseCookieHeader(...)` preserves extra `=` characters and ignores
-      malformed segments; per-ripper parsers such as Furaffinity currently test
-      the Flutter behavior, not the Java quirk.
+      instead of being skipped. Flutter's configured-cookie parser now has the
+      same truncation, whitespace, trailing-semicolon, and malformed-segment
+      behavior; focused tests lock each edge case. Concrete rippers may still
+      parse site-specific response cookies separately where Java does likewise.
 - [x] Java proxy CLI/config accepts single strings such as
       `[user:password]@host[:port]` for HTTP and SOCKS. Flutter currently uses
       `proxy.enabled`, `proxy.host`, `proxy.port`, `proxy.username`, and
