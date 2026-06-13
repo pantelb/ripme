@@ -2261,6 +2261,14 @@ Findings:
       explicit `..` path segments whereas Java `URL.toExternalForm()` preserves
       them; this platform URI representation difference is documented rather
       than misreported as exact textual parity.
+  - CI: [run 27471021055](https://github.com/pantelb/ripme/actions/runs/27471021055)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27471021055/artifacts/7612122316),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27471021055/artifacts/7612107808),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27471021055/artifacts/7612099928),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27471021055/artifacts/7612090829)
+    artifacts.
 - [x] Java `CliphunterRipper.rip()` schedules the decrypted video with
       `addURLToDownload(url, HOST + "_" + getGID(...))`; Java
       `VideoRipper.addURLToDownload(..., referrer, cookies, ...)` ignores
@@ -2278,8 +2286,24 @@ Findings:
       path. Tests verify no file/download request occurs and that
       `urls_only.save` still takes precedence by writing `urls.txt` while
       leaving the page URL unchanged.
-- [ ] Java SSL verification toggle globally disables/enables certificate and
-      hostname checks for Jsoup. Flutter has no verified equivalent.
+  - CI: [run 27471253168](https://github.com/pantelb/ripme/actions/runs/27471253168)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27471253168/artifacts/7612190633),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27471253168/artifacts/7612177712),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27471253168/artifacts/7612165136),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27471253168/artifacts/7612161942)
+    artifacts.
+- [x] Java SSL verification toggle globally disables/enables certificate and
+      hostname checks for Jsoup.
+  - Reconciled duplicate: the verified implementation and CI evidence are
+    recorded in the HTTP/configuration section above. Every shared Flutter
+    page, JSON, text, HEAD, and download client is created through
+    `Http._createClient()`, which applies `ssl.verify.off` through
+    `badCertificateCallback`; false restores Dart's default certificate and
+    hostname validation. Unlike Java's process-global `HttpsURLConnection`
+    mutation, Flutter evaluates the persisted setting for each new client, so
+    changes take effect without constructing a new HTML ripper.
 - [ ] Java has two cookie parsers with different delimiters:
       `Http`/`RipUtils.getCookiesFromString` parse semicolon-delimited cookies,
       while `Utils.getCookies(host)` parses space-delimited pairs. Flutter needs
