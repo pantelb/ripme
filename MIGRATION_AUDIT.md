@@ -1642,13 +1642,34 @@ Parity checklist:
     original-filename, and version resources.
   - Validation: `test/windows_packaging_metadata_test.dart` and
     `tool/check_windows_packaging.dart`, enforced by CI.
-- [ ] Verify workflow separation between CI and release.
+  - CI: workflow
+    [27462687743](https://github.com/pantelb/ripme/actions/runs/27462687743)
+    succeeded, including the built Windows bundle verifier. Artifacts:
+    [Android 7609500509](https://github.com/pantelb/ripme/actions/runs/27462687743/artifacts/7609500509),
+    [Windows 7609499336](https://github.com/pantelb/ripme/actions/runs/27462687743/artifacts/7609499336),
+    [macOS 7609496501](https://github.com/pantelb/ripme/actions/runs/27462687743/artifacts/7609496501),
+    [Linux 7609482433](https://github.com/pantelb/ripme/actions/runs/27462687743/artifacts/7609482433).
+- [x] Verify workflow separation between CI and release.
+  - Java's combined workflow built every branch and gave its Ubuntu/Java-17 job
+    release-write authority to update a mutable `latest-<branch-slug>`
+    prerelease. Flutter intentionally replaces that branch publication with
+    read-only, retention-limited Actions artifacts from `flutter.yml`.
+  - `flutter.yml` handles branch pushes and pull requests with
+    `contents: read` and contains no release trigger/action. `release.yml` is
+    entered only by a `v*` tag, explicit dispatch, or reusable call; its
+    analyze/build jobs remain read-only and only `publish` receives
+    `contents: write`.
+  - The Java branch's `run-flutter-release.yml` manual wrapper is retained with
+    its exact `tag`, `build_ref`, `draft`, and `prerelease` inputs and delegates
+    to the reusable workflow on `Flutter`.
+  - Validation: `test/workflow_separation_test.dart` and
+    `tool/check_workflow_separation.dart`, enforced by CI.
 
 Required tests:
 
 - [x] Update checker tests.
-- [ ] Workflow/artifact verification by GitHub Actions.
-- [ ] Platform config lint or script checks where practical.
+- [x] Workflow/artifact verification by GitHub Actions.
+- [x] Platform config lint or script checks where practical.
 
 ### Workstream 10: Final Ripper Reconciliation
 
@@ -4903,17 +4924,17 @@ Findings:
       Windows, macOS, and Linux artifacts. This is a documented platform
       expansion: release files preserve Java's version-first prefix and add the
       native target/format rather than pretending to be jar-name equivalents.
-- [ ] Java release automation creates/updates prereleases named
+- [x] Java release automation creates/updates prereleases named
       `latest-<branch-slug>` with jar artifacts. Flutter release automation
-      publishes tag-driven releases through `softprops/action-gh-release`; the
-      branch-latest release behavior needs a replacement decision.
-- [ ] `origin/main` also contains `.github/workflows/run-flutter-release.yml`,
+      publishes tag-driven releases through `softprops/action-gh-release`.
+      Mutable branch releases are intentionally retired: read-only CI uploads
+      per-run native artifacts, while only explicit tag/manual release runs can
+      write repository releases.
+- [x] `origin/main` also contains `.github/workflows/run-flutter-release.yml`,
       a manual `workflow_dispatch` wrapper that accepts `tag`, `build_ref`,
       `draft`, and `prerelease` inputs and calls
-      `pantelb/ripme/.github/workflows/release.yml@Flutter`. The Flutter branch
-      carries direct `flutter.yml` and `release.yml` workflows but not this
-      wrapper, so manual release invocation semantics need to be documented or
-      restored.
+      `pantelb/ripme/.github/workflows/release.yml@Flutter`. The wrapper is now
+      carried on the Flutter branch with the same inputs and permissions.
 - [ ] Java root developer scripts are part of the source workflow:
       `build.sh` and `build.bat` both run `./gradlew clean build -x test`, while
       `remote-branch.sh` and `remote-merge.sh` add a user remote, fetch a branch,

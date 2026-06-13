@@ -54,6 +54,9 @@ jobs:
     - name: Verify release artifact naming
       run: dart run tool/check_release_artifact_naming.dart
 
+    - name: Verify CI and release workflow separation
+      run: dart run tool/check_workflow_separation.dart
+
     - name: Verify Android storage policy
       run: dart run tool/check_android_storage_policy.dart
 

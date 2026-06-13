@@ -1,0 +1,38 @@
+name: Run Flutter Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to publish, for example v1.0.0.'
+        required: true
+        type: string
+      build_ref:
+        description: 'Git ref to build.'
+        required: true
+        default: 'Flutter'
+        type: string
+      draft:
+        description: 'Create the GitHub Release as a draft.'
+        required: false
+        default: false
+        type: boolean
+      prerelease:
+        description: 'Mark the GitHub Release as a prerelease.'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  flutter-release:
+    uses: pantelb/ripme/.github/workflows/release.yml@Flutter
+    permissions:
+      contents: write
+    with:
+      tag: ${{ inputs.tag }}
+      build_ref: ${{ inputs.build_ref }}
+      draft: ${{ inputs.draft }}
+      prerelease: ${{ inputs.prerelease }}

@@ -82,6 +82,14 @@ Every Flutter release also publishes `SHA256SUMS.txt` for manual artifact
 verification. This replaces Java's `currentHash` check, which applied to the
 jar downloaded by the in-process updater.
 
+Ordinary branch and pull-request CI is read-only: it analyzes, tests, builds,
+and uploads temporary workflow artifacts, but never creates a GitHub Release.
+Publishing requires an explicit `vMAJOR.MINOR.PATCH` tag or the manual
+`Run Flutter Release` workflow. The release workflow grants repository write
+access only to its final publish job. This intentionally replaces the Java
+workflow's mutable `latest-<branch>` prereleases with immutable CI artifacts
+until an explicit release is requested.
+
 Release tags provide the semantic app version, and GitHub Actions supplies the
 numeric build number. Both values are embedded in Android, Windows, macOS, and
 the Dart UI/CLI from the same release build invocation.

@@ -48,7 +48,7 @@ on:
         type: boolean
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: flutter-release-${{ inputs.tag || github.ref_name }}
@@ -267,6 +267,8 @@ jobs:
       - build-desktop
       - build-android
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Download release artifacts
         uses: actions/download-artifact@v8
