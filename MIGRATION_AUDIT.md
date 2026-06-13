@@ -1468,7 +1468,17 @@ Parity checklist:
   - CI applies the rule to every localized bundle on `origin/main` and every
     corresponding Flutter-packaged asset. Focused tests lock both the allowed
     missing-key case and rejected extra-key case.
-- [ ] Verify language switching behavior.
+- [x] Verify language switching behavior.
+  - Selecting a Java language tag immediately reloads Flutter localizations and
+    persists the exact `lang` value for restart. Tests switch from English to
+    Greek, verify translated configuration text, and reinitialize the
+    configuration backend to prove persistence.
+  - The selected tag is tracked separately from Flutter's `Locale`, preserving
+    Java's visible `fi-FI-porrisavo` selector entry even though both runtimes
+    resolve that invalid BCP 47 variant to ordinary Finnish.
+  - Documented lifecycle difference: Java writes the selected combo value
+    during window shutdown, while Flutter persists it when selected so mobile
+    process termination cannot lose the preference.
 - [ ] Verify icon resources on Windows, Linux, macOS, and Android.
 - [ ] Verify completion sound uses Java `camera.wav` or a documented platform
       replacement.

@@ -87,14 +87,17 @@ class RipMeApp extends StatefulWidget {
 }
 
 class _RipMeAppState extends State<RipMeApp> {
+  late String _languageTag;
   late Locale _locale;
 
   @override
   void initState() {
     super.initState();
-    _locale = AppLocalizations.localeFromLanguageTag(
-      Utils.getConfigString('lang', null),
-    );
+    final configuredTag = Utils.getConfigString('lang', null);
+    _locale = AppLocalizations.localeFromLanguageTag(configuredTag);
+    _languageTag = configuredTag == null || configuredTag.trim().isEmpty
+        ? AppLocalizations.languageTagForLocale(_locale)
+        : configuredTag;
   }
 
   @override
@@ -122,7 +125,11 @@ class _RipMeAppState extends State<RipMeApp> {
       theme: _buildTheme(lightScheme),
       darkTheme: _buildTheme(darkScheme),
       home: MainWindow(
-        onLocaleChanged: (locale) => setState(() => _locale = locale),
+        selectedLanguageTag: _languageTag,
+        onLanguageChanged: (tag) => setState(() {
+          _languageTag = tag;
+          _locale = AppLocalizations.localeFromLanguageTag(tag);
+        }),
         desktopWindow: widget.desktopWindow,
       ),
     );
@@ -228,11 +235,13 @@ class _RipMeAppState extends State<RipMeApp> {
 class MainWindow extends StatefulWidget {
   const MainWindow({
     super.key,
-    this.onLocaleChanged,
+    this.selectedLanguageTag,
+    this.onLanguageChanged,
     this.desktopWindow,
   });
 
-  final ValueChanged<Locale>? onLocaleChanged;
+  final String? selectedLanguageTag;
+  final ValueChanged<String>? onLanguageChanged;
   final DesktopWindowOperations? desktopWindow;
 
   @override
@@ -317,7 +326,8 @@ class _MainWindowState extends State<MainWindow>
                       history: ripManager.history, ripManager: ripManager),
                   QueueView(queue: ripManager.queue, ripManager: ripManager),
                   ConfigurationView(
-                    onLocaleChanged: widget.onLocaleChanged,
+                    selectedLanguageTag: widget.selectedLanguageTag,
+                    onLanguageChanged: widget.onLanguageChanged,
                   ),
                 ],
               ),
@@ -1408,12 +1418,14 @@ class QueueView extends StatelessWidget {
 class ConfigurationView extends StatefulWidget {
   const ConfigurationView({
     super.key,
-    this.onLocaleChanged,
+    this.selectedLanguageTag,
+    this.onLanguageChanged,
     this.directoryPicker,
     this.storageAccessChecker,
   });
 
-  final ValueChanged<Locale>? onLocaleChanged;
+  final String? selectedLanguageTag;
+  final ValueChanged<String>? onLanguageChanged;
   final Future<String?> Function()? directoryPicker;
   final Future<bool> Function()? storageAccessChecker;
 
@@ -1846,22 +1858,9 @@ class _ConfigurationViewState extends State<ConfigurationView> {
                 compact: true,
               ),
               title: Text(strings.language),
-              trailing: DropdownButton<String>(
-                key: const Key('config.lang'),
-                value: AppLocalizations.languageTagForLocale(
-                  Localizations.localeOf(context),
-                ),
-                items: [
-                  for (final tag in AppLocalizations.supportedLanguageTags)
-                    DropdownMenuItem(value: tag, child: Text(tag)),
-                ],
-                onChanged: (tag) async {
-                  if (tag == null) return;
-                  await Utils.setConfigString('lang', tag);
-                  widget.onLocaleChanged?.call(
-                    AppLocalizations.localeFromLanguageTag(tag),
-                  );
-                },
+              trailing: LanguageSelector(
+                selectedLanguageTag: widget.selectedLanguageTag,
+                onLanguageChanged: widget.onLanguageChanged,
               ),
             ),
             ListTile(
@@ -2076,6 +2075,49 @@ class _ConfigurationViewState extends State<ConfigurationView> {
         );
       }
     }
+  }
+}
+
+class LanguageSelector extends StatefulWidget {
+  const LanguageSelector({
+    super.key,
+    this.selectedLanguageTag,
+    this.onLanguageChanged,
+  });
+
+  final String? selectedLanguageTag;
+  final ValueChanged<String>? onLanguageChanged;
+
+  @override
+  State<LanguageSelector> createState() => _LanguageSelectorState();
+}
+
+class _LanguageSelectorState extends State<LanguageSelector> {
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<String>(
+      key: const Key('config.lang'),
+      value: _selectedLanguageTag(context),
+      items: [
+        for (final tag in AppLocalizations.supportedLanguageTags)
+          DropdownMenuItem(value: tag, child: Text(tag)),
+      ],
+      onChanged: (tag) async {
+        if (tag == null) return;
+        await Utils.setConfigString('lang', tag);
+        widget.onLanguageChanged?.call(tag);
+        if (mounted) setState(() {});
+      },
+    );
+  }
+
+  String _selectedLanguageTag(BuildContext context) {
+    final selected = widget.selectedLanguageTag ??
+        Utils.getConfigString('lang', null) ??
+        AppLocalizations.languageTagForLocale(Localizations.localeOf(context));
+    return AppLocalizations.supportedLanguageTags.contains(selected)
+        ? selected
+        : 'en-US';
   }
 }
 
