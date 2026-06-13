@@ -435,9 +435,14 @@ usage: ripme [OPTIONS]
               'Install it from the release page'
           : 'RipMe ${result.currentVersion} is up to date '
               '(latest ${result.latestVersion})';
+      final notes = result.releaseNotes?.trim();
       return CliResult(
         exitCode: 0,
-        output: '$status\n${result.releaseUrl}',
+        output: [
+          status,
+          if (notes != null && notes.isNotEmpty) notes,
+          result.releaseUrl,
+        ].join('\n'),
       );
     } on Exception catch (error) {
       return CliResult(

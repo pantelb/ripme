@@ -36,4 +36,7 @@ Install the appropriate Android, Windows, macOS, or Linux release artifact
 using that platform's normal installation or replacement process.
 
 The `-j` / `--update` CLI option performs the same release check and prints the
-release URL; it does not download, install, or launch an update.
+release notes and URL; it does not download, install, or launch an update.
+Every Flutter release also publishes `SHA256SUMS.txt` for manual artifact
+verification. This replaces Java's `currentHash` check, which applied to the
+jar downloaded by the in-process updater.

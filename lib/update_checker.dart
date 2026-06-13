@@ -13,6 +13,7 @@ class UpdateCheckResult {
     required this.releaseUrl,
     required this.updateAvailable,
     this.releaseName,
+    this.releaseNotes,
   });
 
   final String currentVersion;
@@ -20,6 +21,7 @@ class UpdateCheckResult {
   final Uri releaseUrl;
   final bool updateAvailable;
   final String? releaseName;
+  final String? releaseNotes;
 }
 
 class UpdateChecker {
@@ -55,6 +57,7 @@ class UpdateChecker {
       latestVersion: tagName,
       releaseUrl: Uri.parse(htmlUrl),
       releaseName: _stringValue(release['name']),
+      releaseNotes: _stringValue(release['body']),
       updateAvailable: alwaysTryToUpdate ||
           isNewerVersion(_releaseVersion(tagName), currentVersion),
     );

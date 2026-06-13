@@ -385,6 +385,7 @@ void main() {
         releaseUrl:
             Uri.parse('https://github.com/pantelb/ripme/releases/tag/v1.2.0'),
         updateAvailable: true,
+        releaseNotes: 'Fixed downloads and packaging.',
       ),
     );
 
@@ -394,6 +395,7 @@ void main() {
     expect(result.isError, isFalse);
     expect(result.output, contains('Update available: v1.2.0'));
     expect(result.output, contains('Install it from the release page'));
+    expect(result.output, contains('Fixed downloads and packaging.'));
     expect(result.output, contains('/releases/tag/v1.2.0'));
     expect(result.output, isNot(contains('Downloading')));
   });

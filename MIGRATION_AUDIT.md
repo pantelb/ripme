@@ -1545,9 +1545,18 @@ Parity checklist:
   - GUI and CLI checks point to the GitHub Release containing native artifacts;
     README and CLI output explicitly require installation through the target
     platform's normal update process.
-- [ ] Document Java updater source of truth (`ripmeapp/ripme` `ripme.json`),
+- [x] Document Java updater source of truth (`ripmeapp/ripme` `ripme.json`),
       changelist handling, SHA-256 update verification, and why jar replacement
       scripts are or are not applicable to Flutter.
+  - Java reads `ripmeapp/ripme` `ripme.json`, stops its `changeList` at the
+    running version, and verifies the downloaded jar against `currentHash`
+    unless `security.check_update_hash` is disabled.
+  - Flutter uses the configured GitHub Releases API instead. Release `body`
+    text is returned as release notes to CLI callers, the GUI links to the same
+    release page, and release CI publishes `SHA256SUMS.txt` for native artifacts.
+  - `security.check_update_hash` remains retired because Flutter never downloads
+    or replaces its own executable; Java batch/process replacement scripts do
+    not apply to app bundles, APKs, or platform package managers.
 - [ ] Verify version display and build number.
 - [ ] Verify release artifact naming.
 - [ ] Verify Android permissions and storage behavior.
@@ -4854,11 +4863,11 @@ Findings:
       Flutter README needs migration-specific test instructions that include
       `flutter analyze --no-pub`, targeted tests, and expanded reporter full
       suite.
-- [ ] Java updater reads `ripme.json`, compares versions component-by-component,
+- [x] Java updater reads `ripme.json`, compares versions component-by-component,
       verifies SHA-256 by default through `security.check_update_hash`, downloads
-      the new jar, and installs by platform script. Flutter update checker must
-      either reproduce the user-visible check/changelog/hash behavior for
-      Flutter artifacts or explicitly retire self-update behavior.
+      the new jar, and installs by platform script. Flutter intentionally uses
+      GitHub release metadata/notes, external platform installation, and a
+      release-published `SHA256SUMS.txt`; in-process self-update is retired.
 - [x] Java `UpdateUtils.isNewerVersion` has a string-inequality fallback after
       the first four numeric components compare equal: if `latestVersion` and
       `getThisJarVersion()` are not exactly equal, Java treats the latest string

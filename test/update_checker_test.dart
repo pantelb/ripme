@@ -48,6 +48,7 @@ void main() {
         return {
           'tag_name': 'v1.2.0',
           'name': 'RipMe 1.2.0',
+          'body': 'Fixed update behavior.',
           'html_url': 'https://github.com/owner/repo/releases/tag/v1.2.0',
         };
       },
@@ -60,6 +61,7 @@ void main() {
     expect(result.currentVersion, '1.0.0');
     expect(result.latestVersion, 'v1.2.0');
     expect(result.releaseName, 'RipMe 1.2.0');
+    expect(result.releaseNotes, 'Fixed update behavior.');
     expect(result.releaseUrl.toString(),
         'https://github.com/owner/repo/releases/tag/v1.2.0');
     expect(result.updateAvailable, isTrue);
