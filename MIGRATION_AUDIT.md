@@ -1871,15 +1871,34 @@ Findings:
       field use `5000`, while `DownloadFileThread` uses `0`. Flutter no longer
       supplies a global default; page requests use `5000`, file downloads use
       `0`, and an explicitly configured value overrides both paths.
+  - CI: [run 27463911894](https://github.com/pantelb/ripme/actions/runs/27463911894)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27463911894/artifacts/7609903074),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27463911894/artifacts/7609892599),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27463911894/artifacts/7609884217),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27463911894/artifacts/7609878623)
+    artifacts.
 - [x] Java bundled `rip.properties` sets `threads.size=5`, while
       `DownloadThreadPool` uses `10` when an authoritative external config omits
       the key. Flutter preserves both cases: bundled/native preferences default
       to five, portable `rip.properties` is authoritative rather than layered
       over bundled defaults, and `AbstractRipper.downloadFiles(...)` uses the
       Java ten-thread call-site fallback.
-- [ ] Java uses both `error.skip404` in defaults and some code paths checking
-      `errors.skip404`; Flutter uses `error.skip404`. The typo/alias behavior
-      must be reconciled for CLI and download paths.
+  - CI: [run 27464068594](https://github.com/pantelb/ripme/actions/runs/27464068594)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27464068594/artifacts/7609954392),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27464068594/artifacts/7609941230),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27464068594/artifacts/7609939675),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27464068594/artifacts/7609928154)
+    artifacts.
+- [x] Java ships `error.skip404=true`, while CLI and a late
+      `DownloadFileThread` branch use `errors.skip404`; however, the earlier
+      4xx branch returns before that late check. Flutter preserves both keys for
+      configuration/CLI compatibility and matches the observable behavior:
+      normal page and file 404 responses are non-retriable regardless of either
+      value. CLI, widget, page, and file tests cover the split.
 - [ ] Java `Utils.getConfigStringArray(key)` returns `null` when
       `PropertiesConfiguration.getStringArray(key)` has length zero. Flutter
       `Utils.getConfigStringList(key)` returns an empty list for missing or
