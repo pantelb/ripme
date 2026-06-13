@@ -3,8 +3,38 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:ripme/utils/utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  tearDown(Utils.resetCookieCache);
+
+  test('Utils getCookies uses Java space-delimited cached pairs', () async {
+    SharedPreferences.setMockInitialValues({
+      'cookies.legacy.example': 'first=one second=two=extra;third=ignored',
+    });
+    await Utils.init();
+
+    expect(
+      Utils.getCookies('legacy.example'),
+      {
+        'first': 'one',
+        'second': 'two=extra;third=ignored',
+      },
+    );
+
+    await Utils.setConfigString(
+      'cookies.legacy.example',
+      'replacement=value',
+    );
+    expect(
+      Utils.getCookies('legacy.example'),
+      {
+        'first': 'one',
+        'second': 'two=extra;third=ignored',
+      },
+    );
+  });
+
   test('Utils filesystemSafe', () {
     expect(Utils.filesystemSafe('hello/world?'), equals('helloworld'));
     expect(Utils.filesystemSafe('valid-name_123'), equals('valid-name_123'));
@@ -55,7 +85,7 @@ void main() {
     expect(
       shortened.replaceAll(r'\', '/'),
       'D:/rips/test/reddit/deep/'
-          '${List.filled(208, 'f').join()}.png',
+      '${List.filled(208, 'f').join()}.png',
     );
     expect(shortened.length, 237);
   });

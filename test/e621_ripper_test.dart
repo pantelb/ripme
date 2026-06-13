@@ -73,8 +73,12 @@ void main() {
   test('parses configured cookies and uses Java-style ordered filenames',
       () async {
     expect(
-      E621Ripper.parseCookies('cf_clearance=abc; remember=token; bad; a=b=c'),
-      {'cf_clearance': 'abc', 'remember': 'token', 'a': 'b=c'},
+      E621Ripper.parseCookies('cf_clearance=abc; remember=token; a=b=c'),
+      {'cf_clearance': 'abc', 'remember': 'token', 'a': 'b'},
+    );
+    expect(
+      () => E621Ripper.parseCookies('cf_clearance=abc; bad'),
+      throwsRangeError,
     );
 
     SharedPreferences.setMockInitialValues({

@@ -376,6 +376,22 @@ void main() {
     );
   });
 
+  test('semicolon cookie parser matches Java RipUtils split behavior', () {
+    expect(
+      Http.cookiesFromString(' first=one;second=two=ignored; third= spaced '),
+      {
+        'first': 'one',
+        'second': 'two',
+        'third': ' spaced ',
+      },
+    );
+    expect(
+      () => Http.cookiesFromString('valid=one; malformed'),
+      throwsRangeError,
+    );
+    expect(() => Http.cookiesFromString('empty='), throwsRangeError);
+  });
+
   test('routes requests through configured HTTP proxy', () async {
     SharedPreferences.setMockInitialValues({
       'download.retries': 1,

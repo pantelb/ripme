@@ -66,7 +66,7 @@ void main() {
   test('parses configured cookies and honors disabled login', () async {
     SharedPreferences.setMockInitialValues({
       'furaffinity.login': true,
-      'furaffinity.cookies': 'a=one;b=two=extra; empty ; c = three ',
+      'furaffinity.cookies': 'a=one;b=two=extra;c = three ',
     });
     await Utils.init();
 
@@ -76,9 +76,14 @@ void main() {
 
     expect(ripper.cookiesForTesting, {
       'a': 'one',
-      'b': 'two=extra',
-      'c': 'three',
+      'b': 'two',
+      'c': ' three ',
     });
+
+    expect(
+      () => FuraffinityRipper.parseCookies('a=one; empty '),
+      throwsRangeError,
+    );
 
     SharedPreferences.setMockInitialValues({'furaffinity.login': false});
     await Utils.init();

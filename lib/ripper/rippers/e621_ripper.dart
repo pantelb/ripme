@@ -220,16 +220,7 @@ class E621Ripper extends AbstractHTMLRipper {
   }
 
   static Map<String, String> parseCookies(String cookiesString) {
-    final cookies = <String, String>{};
-    for (final rawPart in cookiesString.split(';')) {
-      final part = rawPart.trim();
-      if (part.isEmpty) continue;
-      final separator = part.indexOf('=');
-      if (separator <= 0) continue;
-      cookies[part.substring(0, separator).trim()] =
-          part.substring(separator + 1).trim();
-    }
-    return cookies;
+    return Http.cookiesFromString(cookiesString);
   }
 
   static String downloadFileName(Uri uri, int index) {

@@ -160,14 +160,7 @@ class FuraffinityRipper extends AbstractHTMLRipper {
   }
 
   static Map<String, String> parseCookies(String cookieText) {
-    final cookies = <String, String>{};
-    for (final part in cookieText.split(';')) {
-      final separator = part.indexOf('=');
-      if (separator <= 0) continue;
-      cookies[part.substring(0, separator).trim()] =
-          part.substring(separator + 1).trim();
-    }
-    return cookies;
+    return Http.cookiesFromString(cookieText);
   }
 
   static String fileNameForUrl(Uri uri, int index) {

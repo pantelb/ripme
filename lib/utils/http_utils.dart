@@ -559,21 +559,24 @@ class Http {
       final domain = parts.join('.');
       final cookieText = Utils.getConfigString('cookies.$domain', '') ?? '';
       if (cookieText.trim().isNotEmpty) {
-        return _parseConfiguredCookies(cookieText);
+        return cookiesFromString(cookieText.trim());
       }
       parts = parts.sublist(1);
     }
     return const {};
   }
 
-  static Map<String, String> _parseConfiguredCookies(String cookieText) {
+  static Map<String, String> cookiesFromString(String cookieText) {
     final cookies = <String, String>{};
-    final pairs = cookieText.trim().split(';');
-    while (pairs.isNotEmpty && pairs.last.isEmpty) {
+    final pairs = cookieText.split(';');
+    while (pairs.length > 1 && pairs.last.isEmpty) {
       pairs.removeLast();
     }
     for (final pair in pairs) {
       final keyValue = pair.split('=');
+      while (keyValue.length > 1 && keyValue.last.isEmpty) {
+        keyValue.removeLast();
+      }
       cookies[keyValue[0].trim()] = keyValue[1];
     }
     return cookies;

@@ -18,6 +18,7 @@ class Utils {
   static SharedPreferences? _prefs;
   static File? _portableConfigFile;
   static Map<String, String>? _portableConfig;
+  static final Map<String, Map<String, String>> _cookieCache = {};
 
   static Future<void> init({
     File? portableConfigFile,
@@ -135,6 +136,24 @@ class Utils {
         .map((item) => item.trim())
         .where((item) => item.isNotEmpty)
         .toList(growable: false);
+  }
+
+  static Map<String, String> getCookies(String host) {
+    return _cookieCache.putIfAbsent(host, () {
+      final cookies = <String, String>{};
+      final configured = getConfigString('cookies.$host', '') ?? '';
+      for (var pair in configured.split(' ')) {
+        pair = pair.trim();
+        if (!pair.contains('=')) continue;
+        final separator = pair.indexOf('=');
+        cookies[pair.substring(0, separator)] = pair.substring(separator + 1);
+      }
+      return cookies;
+    });
+  }
+
+  static void resetCookieCache() {
+    _cookieCache.clear();
   }
 
   static List<String> getConfigList(String key) {

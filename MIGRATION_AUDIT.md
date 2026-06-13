@@ -2304,10 +2304,20 @@ Findings:
     hostname validation. Unlike Java's process-global `HttpsURLConnection`
     mutation, Flutter evaluates the persisted setting for each new client, so
     changes take effect without constructing a new HTML ripper.
-- [ ] Java has two cookie parsers with different delimiters:
+- [x] Java has two cookie parsers with different delimiters:
       `Http`/`RipUtils.getCookiesFromString` parse semicolon-delimited cookies,
-      while `Utils.getCookies(host)` parses space-delimited pairs. Flutter needs
-      tests for both call-site expectations.
+      while `Utils.getCookies(host)` parses space-delimited pairs. Flutter's
+      shared HTTP, E621, and Furaffinity paths now use one strict semicolon
+      parser preserving Java's key-only trim, second-token value, and malformed
+      pair failure. The dormant Java `Utils.getCookies(host)` API is retained
+      as a separately tested space-delimited, first-`=` parser with the same
+      per-host cache behavior; source search confirms Java has no production
+      caller for that legacy helper.
+  - CI repair included: run 27471517193 failed only because optional
+    Microsoft apt repositories preinstalled on the Ubuntu runner returned 403
+    during `apt-get update`. CI and release jobs now share a guarded Linux
+    dependency installer that removes only those unrelated source files before
+    updating Ubuntu repositories; a workflow test locks all four call sites.
 
 ### E. Ripper Runtime And Filesystem Semantics
 
