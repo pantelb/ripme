@@ -166,6 +166,12 @@ jobs:
         if: matrix.target == 'linux'
         run: bash tool/verify_linux_bundle.sh
 
+      - name: Verify Windows bundle
+        if: matrix.target == 'windows'
+        run: >-
+          pwsh -File tool/verify_windows_bundle.ps1 -Bundle
+          "${{ matrix.build_path }}"
+
       - name: Package ${{ matrix.artifact }}
         shell: bash
         run: |

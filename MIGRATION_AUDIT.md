@@ -1628,7 +1628,20 @@ Parity checklist:
     entry, icon, and AppStream metadata.
   - Validation: `test/linux_packaging_metadata_test.dart` and
     `tool/check_linux_packaging.dart`, enforced by CI.
-- [ ] Verify Windows metadata, icon, and executable packaging.
+- [x] Verify Windows metadata, icon, and executable packaging.
+  - Java ships a Java-17 fat jar; Flutter replaces it with a native
+    `ripme.exe` bundle whose Flutter/plugin DLLs, ICU data, AOT code/assets, and
+    exact inherited MIT license remain adjacent in the release ZIP.
+  - `Runner.rc` embeds the exact Java `icon.ico`, uses Flutter's injected
+    semantic version and numeric build for native file/product versions, and
+    identifies `ripme.exe`/RipMe consistently. The manifest declares
+    per-monitor-v2 DPI awareness and Windows 10/11 compatibility.
+  - Both CI and release workflows run `tool/verify_windows_bundle.ps1` against
+    the actual Release directory before archiving. It requires all core runtime
+    files and inspects the built executable's description, product,
+    original-filename, and version resources.
+  - Validation: `test/windows_packaging_metadata_test.dart` and
+    `tool/check_windows_packaging.dart`, enforced by CI.
 - [ ] Verify workflow separation between CI and release.
 
 Required tests:
@@ -4962,10 +4975,10 @@ Findings:
       config for release builds. Final Android artifact evidence must distinguish
       CI-build availability from production-signing/readiness and either add a
       real signing flow or document the migration limitation.
-- [ ] Windows resource versioning still needs first-class release-artifact
-      verification. Linux metadata/bundle contents, macOS
-      entitlements/minimum OS, and all platform app icons are now
-      source-guarded rather than assumed from Flutter defaults.
+- [x] Windows resource versioning, Linux metadata/bundle contents, macOS
+      entitlements/minimum OS, and all platform app icons are source-guarded;
+      Linux and Windows workflows additionally inspect built bundle contents
+      before archiving.
 - [x] Linux packaging metadata declares `ripme.desktop`,
       `Icon=ripme`, app id `com.rarchives.ripme`, and summary
       `Cross-platform media album ripper`; CMake installs the tested

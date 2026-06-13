@@ -3,7 +3,7 @@
 A unified cross-platform application for ripping albums from various websites, built with Flutter.
 
 ## Supported Platforms
-- Windows
+- Windows 10 or later
 - Linux
 - macOS 12.0 or later
 - Android
@@ -59,6 +59,15 @@ libraries from its adjacent `lib` directory. The archive also includes the MIT
 license, desktop entry, hicolor icon, and AppStream metadata. A CI bundle check
 verifies the executable bit and every required runtime/metadata path before the
 archive is uploaded.
+
+## Windows Bundle
+
+The Windows release ZIP contains `ripme.exe`, Flutter and plugin DLLs, ICU data,
+AOT code/assets, and the inherited MIT license. Keep the extracted files
+together and launch `ripme.exe`. The executable embeds the exact Java ICO,
+semantic version plus numeric build metadata, per-monitor DPI awareness, and
+Windows 10/11 compatibility declarations. CI inspects those version resources
+and required runtime paths before creating each ZIP.
 
 ## Updates And Releases
 

@@ -63,6 +63,9 @@ jobs:
     - name: Verify Linux packaging policy
       run: dart run tool/check_linux_packaging.dart
 
+    - name: Verify Windows packaging policy
+      run: dart run tool/check_windows_packaging.dart
+
     - name: Verify Java test class coverage
       run: dart run tool/check_java_test_coverage.dart
 
@@ -119,6 +122,12 @@ jobs:
     - name: Verify Linux bundle
       if: matrix.target == 'linux'
       run: bash tool/verify_linux_bundle.sh
+
+    - name: Verify Windows bundle
+      if: matrix.target == 'windows'
+      run: >-
+        pwsh -File tool/verify_windows_bundle.ps1 -Bundle
+        "${{ matrix.path }}"
 
     - name: Package ${{ matrix.artifact }}
       shell: bash
