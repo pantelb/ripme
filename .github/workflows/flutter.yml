@@ -33,6 +33,9 @@ jobs:
     - name: Verify legacy ripper catalog
       run: dart run tool/check_legacy_ripper_catalog.dart
 
+    - name: Verify path-aware ripper reconciliation
+      run: dart run tool/check_ripper_reconciliation.dart
+
     - name: Verify Java config key coverage
       run: dart run tool/check_java_config_keys.dart
 

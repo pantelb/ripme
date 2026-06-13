@@ -1690,17 +1690,29 @@ Parity checklist:
 - [x] Generate/verify list of Java rippers from source tree.
 - [x] Compare generated list to `legacyRipperClasses`.
 - [x] Compare `legacyRipperClasses` to `portedRipperClasses`.
-- [ ] Verify each port has focused Dart tests.
-- [ ] Verify factory can resolve every supported Java URL shape used in tests.
-- [ ] Verify no placeholder/scaffold-only rippers remain.
-- [ ] Verify video-subpackage Java rippers are represented.
-- [ ] Verify helper classes such as `ChanSite` are represented.
+- [x] Verify each port has focused Dart tests.
+- [x] Verify factory can resolve every supported Java URL shape used in tests.
+- [x] Verify no placeholder/scaffold-only rippers remain.
+- [x] Verify video-subpackage Java rippers are represented.
+- [x] Verify helper classes such as `ChanSite` are represented.
+  - `tool/check_ripper_reconciliation.dart` reads all Java production paths
+    directly from `origin/main`, rather than deduplicating simple class names.
+    It maps every path to exactly one Dart class and requires a declaration, a
+    focused non-factory test, factory registration, and an asserted factory URL
+    fixture for every ripper.
+  - The path-aware mapping distinguishes Java's album/video duplicate names as
+    `PornhubRipper`/`PornhubVideoRipper`, `VkRipper`/`VkVideoRipper`, and
+    `YuvutuRipper`/`YuvutuVideoRipper`. All other `video/` classes retain their
+    Java names.
+  - `ripperhelpers/ChanSite.java` maps to the tested `ChanSite` implementation
+    in `chan_ripper.dart` and is explicitly excluded from factory registration.
+    The guard also rejects placeholder markers in every mapped implementation.
 
 Required tests:
 
-- [~] Catalog reconciliation test.
-- [ ] Factory coverage test.
-- [ ] Any missing helper behavior tests.
+- [x] Catalog reconciliation test.
+- [x] Factory coverage test.
+- [x] Any missing helper behavior tests.
 
 ## Deep Source Parity Findings
 
