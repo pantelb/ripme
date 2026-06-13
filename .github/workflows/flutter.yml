@@ -45,6 +45,9 @@ jobs:
     - name: Verify Java completion sound
       run: dart run tool/check_java_sound_resource.dart
 
+    - name: Verify Java resource packaging
+      run: dart run tool/check_java_resource_packaging.dart
+
     - name: Verify Java test class coverage
       run: dart run tool/check_java_test_coverage.dart
 

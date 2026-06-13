@@ -34,5 +34,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - LICENSE.txt
     - assets/
     - src/main/resources/

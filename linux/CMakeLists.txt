@@ -130,6 +130,9 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ripme.png"
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/com.rarchives.ripme.metainfo.xml"
   DESTINATION "${CMAKE_INSTALL_PREFIX}/share/metainfo"
   COMPONENT Runtime)
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE.txt"
+  DESTINATION "${CMAKE_INSTALL_PREFIX}"
+  COMPONENT Runtime)
 
 # Install the AOT library on non-Debug builds only.
 if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")

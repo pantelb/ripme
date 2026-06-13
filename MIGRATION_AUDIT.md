@@ -130,22 +130,23 @@ done.
 
 ### Resources
 
-- [~] `src/main/resources/LabelsBundle*.properties`
-- [ ] `src/main/resources/camera.wav`
-- [ ] `src/main/resources/comment.png`
-- [ ] `src/main/resources/folder.png`
-- [ ] `src/main/resources/gear.png`
-- [ ] `src/main/resources/icon.ico`
-- [ ] `src/main/resources/icon.png`
-- [ ] `src/main/resources/list.png`
+- [x] `src/main/resources/LabelsBundle*.properties`
+- [x] `src/main/resources/camera.wav`
+- [x] `src/main/resources/comment.png`
+- [x] `src/main/resources/folder.png`
+- [x] `src/main/resources/gear.png`
+- [x] `src/main/resources/icon.ico`
+- [x] `src/main/resources/icon.png`
+- [x] `src/main/resources/list.png`
 - [ ] `src/main/resources/log4j.file.properties`
 - [ ] `src/main/resources/log4j2-example.xml`
 - [~] `src/main/resources/rip.properties`
-- [ ] `src/main/resources/stop.png`
-- [ ] `src/main/resources/time.png`
-- [ ] `src/main/resources/wrench.png`
-  - Current finding: localization and defaults are partly carried forward;
-    sound/icon/logging resource parity needs a platform/resource audit.
+- [x] `src/main/resources/stop.png`
+- [x] `src/main/resources/time.png`
+- [x] `src/main/resources/wrench.png`
+  - Current finding: localization, sound, icons, and toolbar resources are
+    packaged and guarded against `origin/main`; Java logging configuration
+    files remain replaced by the tested Dart logger implementation.
 
 ### Java Tests To Reconcile
 
@@ -1498,13 +1499,18 @@ Parity checklist:
     validates the WAV structure and CI compares its bytes with `origin/main`.
   - Linux validation and release jobs install the GStreamer development
     packages required by the native `audioplayers` plugin.
-- [ ] Verify resource licensing/packaging.
+- [x] Verify resource licensing/packaging.
+  - Flutter packages the exact Java MIT `LICENSE.txt` on all targets. Linux and
+    Windows additionally place it at the bundle root, macOS copies it into app
+    resources, and Linux AppStream metadata declares MIT.
+  - CI byte-compares all ten user-facing Java binary resources, requires every
+    Java label bundle, and checks platform packaging declarations.
 
 Required tests:
 
-- [ ] Localization key coverage test.
-- [ ] Asset existence test.
-- [ ] Platform metadata checks where scriptable.
+- [x] Localization key coverage test.
+- [x] Asset existence test.
+- [x] Platform metadata checks where scriptable.
 
 ### Workstream 9: Update, Release, Packaging, And Platform Behavior
 
@@ -2566,27 +2572,23 @@ Findings:
       `LabelsBundlesTest.testKeyName()` while treating `testKeyCount()` as a
       diagnostic-only source signal unless an intentional stronger check is
       documented.
-- [ ] Java completion sound is `camera.wav`; the Java blob
+- [x] Java completion sound is `camera.wav`; the Java blob
       `src/main/resources/camera.wav` is carried forward byte-identically as
-      `assets/sounds/camera.wav`, but Flutter currently uses platform alert
-      sound. This is an intentional-difference candidate but not parity.
+      `assets/sounds/camera.wav` and played through the native `audioplayers`
+      implementations on every supported platform.
 - [x] Java logging file output is `ripme.log`, with rolling `ripme.%i.log.gz`
       output and a 20 MB size policy in log4j2. Flutter writes the same active
       filename and maintains `ripme.1.log.gz` and `ripme.2.log.gz`; tests use an
       injected small limit to prove compression and rollover deterministically.
-- [ ] Java icon assets include `icon.ico`, `icon.png`, and toolbar PNGs
+- [x] Java icon assets include `icon.ico`, `icon.png`, and toolbar PNGs
       (`comment`, `folder`, `gear`, `list`, `stop`, `time`, `wrench`).
-      The toolbar PNGs and `icon.png` are carried forward byte-identically
-      under `assets/`, but Java `icon.ico` is not present there; Windows uses
-      `windows/runner/resources/app_icon.ico`, while Android and macOS use
-      generated launcher/AppIcon sets. Platform icon provenance and visual
-      parity still need explicit checks.
-- [ ] `pubspec.yaml` includes `src/main/resources/`, but the local Flutter
-      resource folder currently contains only `LabelsBundle*.properties`.
-      Java binary resources from `origin/main:src/main/resources` are relocated
-      to `assets/`, `assets/sounds/`, or platform launcher-resource folders, so
-      resource parity must verify both relocated asset paths and actual runtime
-      usage.
+      All source assets are carried forward byte-identically under `assets/`;
+      Windows embeds the exact Java ICO, while Android, macOS, and Linux use
+      tested transparent derivatives of Java branding at native dimensions.
+- [x] `pubspec.yaml` packages `src/main/resources/`, `assets/`, and
+      `LICENSE.txt`. CI verifies every relocated user-facing binary resource,
+      all Java label bundles, platform license declarations, and exact inherited
+      MIT license bytes.
 - [ ] Java `log4j.file.properties` and `log4j2-example.xml` remain Java-only
       logging resources; local Flutter `src/main/resources` does not carry
       them forward. The migration needs an explicit retirement/replacement note
@@ -4858,9 +4860,10 @@ Findings:
 - [ ] Java `ripme.json` is a bundled/public changelog source. Flutter has no
       verified equivalent changelog feed, release notes parser, or
       app-visible recent changes text.
-- [ ] Java uses `LICENSE.txt` and README links to MIT licensing. Flutter Linux
-      metadata and package resources must be checked against the inherited
-      license text and platform metadata requirements.
+- [x] Java uses `LICENSE.txt` and README links to MIT licensing. Flutter carries
+      the exact Java license as a Flutter asset, installs it at the Linux and
+      Windows bundle roots, copies it into macOS app resources, and declares
+      MIT in Linux AppStream metadata.
 - [ ] Android support is new relative to Java desktop. Android permissions,
       scoped storage, directory picking, background downloads, and notification
       behavior need explicit parity/replacement notes for every desktop-only
@@ -4872,21 +4875,16 @@ Findings:
 - [ ] macOS sandbox entitlements, Linux metadata, Windows resource versioning,
       and app icons must be verified as first-class release artifacts rather
       than assumed from Flutter defaults.
-- [ ] Linux packaging metadata currently declares `ripme.desktop`,
+- [x] Linux packaging metadata declares `ripme.desktop`,
       `Icon=ripme`, app id `com.rarchives.ripme`, and summary
-      `Cross-platform media album ripper`; the audit still needs to verify that
-      the packaged Linux artifact actually installs an icon named `ripme` and
-      that the metadata/license text matches the Java project contract.
-- [ ] macOS `Info.plist` leaves `CFBundleIconFile` empty and relies on the
-      generated AppIcon asset catalog. This must be verified against Java
-      `icon.png`/`icon.ico` branding instead of assumed from Flutter defaults.
-- [ ] Windows `Runner.rc` embeds `windows/runner/resources/app_icon.ico`, but
-      its Git blob differs from Java `src/main/resources/icon.ico`; Windows
-      executable icon parity requires a visual/provenance decision.
-- [ ] Android launcher icons are new platform resources under
-      `android/app/src/main/res/mipmap-*`; Android icon branding parity cannot
-      be inferred from Java desktop resources and needs explicit visual/source
-      verification.
+      `Cross-platform media album ripper`; CMake installs the tested
+      Java-derived `ripme` icon and exact inherited license.
+- [x] macOS relies on its AppIcon asset catalog, whose complete native size set
+      is generated from and tested against visible Java branding.
+- [x] Windows `Runner.rc` embeds the exact Java
+      `src/main/resources/icon.ico` bytes.
+- [x] Android launcher icons are tested Java-derived resources at every
+      required density.
 - [ ] Java dependency removal/replacement needs a checked migration decision for
       non-feature infrastructure as well as app behavior: `commons-cli` command
       parsing, `commons-configuration` property loading/persistence,
@@ -5227,12 +5225,10 @@ they are not yet a substitute for committed Dart tests.
       recorded in section G.
 - [x] Scanned Java binary resources from
       `origin/main:src/main/resources` against Flutter assets/platform
-      resources using Git blob IDs. Java toolbar PNGs, `icon.png`, and
-      `camera.wav` are carried forward byte-identically under `assets/` or
-      `assets/sounds/`; Java `icon.ico` differs from the Windows embedded
-      `app_icon.ico`, and Android/macOS launcher icons are generated platform
-      resources requiring visual/provenance verification. Resource-path and
-      packaging findings are recorded in sections G and J.
+      resources using Git blob IDs. Java toolbar PNGs, both source icons, and
+      `camera.wav` are carried forward byte-identically; Windows embeds the
+      exact ICO and Android/macOS/Linux use tested Java-derived native sizes.
+      CI also verifies label-bundle presence and exact MIT license packaging.
 - [x] Re-scanned Java TODO/disabled/test-tag surfaces and Flutter skipped/live
       tests. The Java suite has 119 flaky tags, 7 slow tags, and 44 disabled
       annotations, while Flutter currently exposes only two environment-gated
@@ -5705,13 +5701,13 @@ Initial status:
 
 - [x] Java label bundles are available to Flutter localization with English fallback.
 - [x] Platform build artifacts are produced by GitHub Actions for Android, Windows, macOS, and Linux.
-- [x] Completion sound behavior exists through platform alert sound.
-- [ ] Exact Java `camera.wav` sound-resource parity is source-audited and still
-      needs runtime replacement/intentional-difference tests.
-- [ ] Java icon/resource parity is source-audited and still needs
-      platform-by-platform visual/provenance verification.
-- [ ] Logging file output parity is source-audited and still needs Flutter file
-      logging implementation or documented retirement.
+- [x] Completion sound behavior plays the exact Java `camera.wav`.
+- [x] Exact Java `camera.wav` sound-resource parity is source-audited and
+      guarded by runtime dispatch, asset, and CI byte-comparison tests.
+- [x] Java icon/resource parity is source-audited and guarded by
+      platform-by-platform provenance, dimension, and packaging tests.
+- [x] Logging file output parity uses tested Java-compatible `ripme.log` naming,
+      filtering, gzip rotation, and size policy through the Dart logger.
 
 ### 6. Ripper Catalog
 
