@@ -492,6 +492,73 @@ void main() {
     expect(delays, [const Duration(milliseconds: 25)]);
   });
 
+  test('page retries use Java 5000 ms fallback when the key is absent',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 2,
+      'page.timeout': 1000,
+    });
+    await Utils.init();
+    final delays = <Duration>[];
+    Http.delay = (duration) async {
+      delays.add(duration);
+    };
+
+    var attempts = 0;
+    final server = await _server((request) async {
+      attempts++;
+      if (attempts == 1) {
+        request.response.statusCode = 500;
+      } else {
+        request.response.write('ok');
+      }
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final response =
+        await Http.get(Uri.parse('http://127.0.0.1:${server.port}/page'));
+
+    expect(response.body?.text, 'ok');
+    expect(delays, [const Duration(milliseconds: 5000)]);
+  });
+
+  test('file retries use Java zero-delay fallback when the key is absent',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 1,
+      'download.timeout': 1000,
+    });
+    await Utils.init();
+    final delays = <Duration>[];
+    Http.delay = (duration) async {
+      delays.add(duration);
+    };
+
+    var attempts = 0;
+    final server = await _server((request) async {
+      attempts++;
+      if (attempts == 1) {
+        request.response.statusCode = 500;
+      } else {
+        request.response.add([1, 2, 3]);
+      }
+      await request.response.close();
+    });
+    addTearDown(server.close);
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_retry_default_test');
+    addTearDown(() => directory.delete(recursive: true));
+
+    await Http.downloadFile(
+      Uri.parse('http://127.0.0.1:${server.port}/file'),
+      File('${directory.path}/file.bin'),
+    );
+
+    expect(attempts, 2);
+    expect(delays, isEmpty);
+  });
+
   test('waits after every failed Java attempt including the final one',
       () async {
     SharedPreferences.setMockInitialValues({

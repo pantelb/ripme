@@ -81,7 +81,6 @@ class ConfigDefaults {
     'download.timeout': 60000,
     'page.timeout': 5000,
     'download.max_size': 104857600,
-    'download.retry.sleep': 5000,
     'twitter.max_requests': 10,
     'reddit.min_upvotes': 0,
     'reddit.max_upvotes': 10000,

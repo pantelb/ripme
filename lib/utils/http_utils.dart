@@ -373,7 +373,11 @@ class Http {
           milliseconds: Utils.getConfigInteger(timeoutKey, defaultTimeoutMs),
         );
     final retrySleep = Duration(
-        milliseconds: Utils.getConfigInteger('download.retry.sleep', 0));
+      milliseconds: Utils.getConfigInteger(
+        'download.retry.sleep',
+        isDownload ? 0 : 5000,
+      ),
+    );
     Object? lastError;
 
     for (var attempt = 0; attempt < attempts; attempt++) {

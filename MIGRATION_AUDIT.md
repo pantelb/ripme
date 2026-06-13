@@ -1849,9 +1849,11 @@ Findings:
       exact seven-key sentinel check to external desktop `rip.properties`,
       deletes obsolete files, and falls back to preferences plus bundled
       defaults. Focused tests remove each sentinel in turn.
-- [ ] Java default `download.retry.sleep` is absent from `rip.properties` and
-      call sites commonly default to `0`; Flutter default is `5000`. This is a
-      concrete behavior difference.
+- [x] Java `download.retry.sleep` is absent from `rip.properties` and has
+      subsystem-specific fallbacks: `Http` page requests and the configuration
+      field use `5000`, while `DownloadFileThread` uses `0`. Flutter no longer
+      supplies a global default; page requests use `5000`, file downloads use
+      `0`, and an explicitly configured value overrides both paths.
 - [ ] Java parallel download defaults use `Utils.getConfigInteger("threads.size",
       10)` in `DownloadThreadPool`, so a missing config runs up to ten download
       workers. Flutter `config_defaults.dart` sets `threads.size` to `5`, and

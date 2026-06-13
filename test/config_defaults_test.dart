@@ -58,7 +58,7 @@ void main() {
 
     expect(Utils.getConfigInteger('threads.size', 10), 5);
     expect(Utils.getConfigInteger('download.retries', 0), 3);
-    expect(Utils.getConfigInteger('download.retry.sleep', 0), 5000);
+    expect(Utils.getConfigInteger('download.retry.sleep', 0), 0);
     expect(Utils.getConfigInteger('proxy.port', 0), 8080);
     expect(Utils.getConfigBoolean('file.overwrite', true), isFalse);
     expect(Utils.getConfigBoolean('errors.skip404', true), isFalse);
