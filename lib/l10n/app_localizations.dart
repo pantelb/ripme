@@ -83,6 +83,8 @@ class AppLocalizations {
 
   String _label(String key, String fallback) => _labels[key] ?? fallback;
 
+  bool containsJavaLabel(String key) => _labels.containsKey(key);
+
   String javaLabel(String key) => _labels[key] ?? key;
 
   String get appTitle => 'RipMe';

@@ -1444,7 +1444,14 @@ Flutter targets:
 
 Parity checklist:
 
-- [ ] Verify every Java label key has a Flutter lookup or documented removal.
+- [x] Verify every Java label key has a Flutter lookup or documented removal.
+  - Flutter packages Java's complete default `LabelsBundle.properties` and
+    exposes every key through `AppLocalizations.javaLabel`, including
+    download-thread log messages that do not need dedicated typed UI getters.
+  - The CI inventory now compares every default key from `origin/main` with
+    the Flutter-packaged bundle instead of only checking Java source against
+    Java's own bundle. A runtime asset test proves every packaged key is loaded
+    into the generic lookup.
 - [ ] Verify locale list matches Java bundles.
 - [ ] Verify Java bundle parity test behavior: non-default bundles may omit
       keys, but any keys they contain must exist in the default bundle.

@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripme/l10n/app_localizations.dart';
+import 'package:ripme/localization_key_inventory.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -42,6 +44,21 @@ void main() {
     expect(strings.config, 'Ρυθμίσεις');
     expect(strings.javaLabel('download.interrupted'), 'Η μεταφόρτωση διεκόπη');
     expect(strings.javaLabel('unknown.java.key'), 'unknown.java.key');
+  });
+
+  test('every packaged Java default label is available through lookup',
+      () async {
+    final source = await rootBundle.loadString(
+      'src/main/resources/LabelsBundle.properties',
+    );
+    final keys = JavaLocalizationKeyInventory.keysFromProperties(source);
+    final strings = await AppLocalizations.delegate.load(const Locale('en'));
+
+    expect(keys, isNotEmpty);
+    expect(
+      keys.where((key) => !strings.containsJavaLabel(key)),
+      isEmpty,
+    );
   });
 
   test('decodes Java unicode escapes in migrated label bundles', () async {

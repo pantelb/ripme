@@ -44,17 +44,41 @@ Future<void> main() async {
   final defaultKeys = JavaLocalizationKeyInventory.keysFromProperties(
     bundleResult.stdout as String,
   );
-  final missing = usedKeys.difference(defaultKeys).toList()..sort();
-  if (missing.isNotEmpty) {
+  final missingFromJavaBundle = usedKeys.difference(defaultKeys).toList()
+    ..sort();
+  if (missingFromJavaBundle.isNotEmpty) {
     stderr.writeln(
       'Java localized keys missing from the packaged default bundle: '
-      '${missing.join(', ')}',
+      '${missingFromJavaBundle.join(', ')}',
+    );
+    exitCode = 1;
+    return;
+  }
+
+  final flutterBundle = File('src/main/resources/LabelsBundle.properties');
+  if (!flutterBundle.existsSync()) {
+    stderr.writeln(
+      'Flutter is not packaging src/main/resources/LabelsBundle.properties.',
+    );
+    exitCode = 1;
+    return;
+  }
+  final flutterKeys = JavaLocalizationKeyInventory.keysFromProperties(
+    flutterBundle.readAsStringSync(),
+  );
+  final missingFromFlutter = defaultKeys.difference(flutterKeys).toList()
+    ..sort();
+  if (missingFromFlutter.isNotEmpty) {
+    stderr.writeln(
+      'Java default labels missing from the Flutter-packaged bundle: '
+      '${missingFromFlutter.join(', ')}',
     );
     exitCode = 1;
     return;
   }
 
   stdout.writeln(
-    'Flutter localization assets cover all ${usedKeys.length} Java-used keys.',
+    'Flutter localization assets cover all ${defaultKeys.length} Java default '
+    'labels, including ${usedKeys.length} keys used by Java production code.',
   );
 }
