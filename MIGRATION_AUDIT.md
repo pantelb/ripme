@@ -1981,6 +1981,14 @@ Findings:
       The original scan incorrectly called `error.skip404` Flutter-only: it is
       the bundled Java resource/sentinel key, while Java CLI and a late download
       branch use `errors.skip404`; that discrepancy is tracked above.
+  - CI: [run 27469648565](https://github.com/pantelb/ripme/actions/runs/27469648565)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27469648565/artifacts/7611700209),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27469648565/artifacts/7611688120),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27469648565/artifacts/7611683488),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27469648565/artifacts/7611673045)
+    artifacts.
 
 ### C. History And Re-Rip
 
@@ -1999,29 +2007,40 @@ Flutter files checked:
 
 Findings:
 
-- [ ] Java album history fields are `url`, `title`, `dir`, `count`,
+- [x] Java album history fields are `url`, `title`, `dir`, `count`,
       `startDate`, `modifiedDate`, and `selected`. Flutter `HistoryEntry`
-      currently stores `url`, `dir`, and one `date`; import maps Java
-      `modifiedDate`/`startDate`, but `title`, `count`, `selected`, and two-date
-      display semantics need parity.
-- [ ] Java writes `url`, `startDate`, `modifiedDate`, `title`, `count`, and
+      carries all seven fields, preserves Java epoch-millisecond timestamps,
+      updates only `modifiedDate` on repeated completion, and displays both
+      dates and the count. Provider, manager, and table tests cover the full
+      model and repeated-completion behavior.
+- [x] Java writes `url`, `startDate`, `modifiedDate`, `title`, `count`, and
       `selected`, but does not write `dir` even though it reads `dir`.
-      Flutter writes `dir`; the migration file must track this format extension.
-- [ ] Java history import is strict for the core JSON shape:
+      Flutter intentionally extends exported records with `dir` so its
+      open-directory action survives export/import, and also retains the
+      legacy Flutter `date` field for backward compatibility. Java ignores
+      both additional properties on import; a format-extension test locks the
+      complete output.
+- [x] Java history import is strict for the core JSON shape:
       `History.fromJSON(...)` calls `getJSONObject(i)`, and
       `HistoryEntry.fromJSON(...)` requires `url`, `startDate`, and
       `modifiedDate` through `getString`/`getLong`; malformed entries make
-      `fromFile(...)` throw an `IOException`. Flutter `HistoryProvider` filters
-      non-map list entries and `HistoryEntry.fromJson(...)` defaults missing
-      `url` to `''` and missing dates to epoch `0`, so invalid/partial history
-      files are accepted differently.
-- [ ] Java history table displays dates as `yyyy/MM/dd`. Flutter date display
-      needs comparison.
-- [ ] Java history context menu supports check all, uncheck all, check selected,
-      and uncheck selected. Flutter does not yet have verified selected-entry
-      parity.
-- [ ] Java CLI `-r` re-rips all history entries and `-R` re-rips selected
-      entries. Flutter needs equivalent behavior or a documented replacement.
+      `fromFile(...)` throw an `IOException`. Flutter file import requires the
+      same object/string/numeric core shape and reports `FormatException`;
+      tolerant decoding remains limited to previously persisted Flutter-native
+      preference records. Focused tests reject non-objects, missing fields, and
+      string timestamps.
+- [x] Java history table displays dates as `yyyy/MM/dd`. Flutter uses the same
+      zero-padded format for separate created and modified columns, verified by
+      a widget test.
+- [x] Java history context actions support check all, uncheck all, check
+      selected rows, and uncheck selected rows. Flutter exposes and persists
+      all four operations, with row-selection and checked-state behavior
+      covered by manager and widget tests.
+- [x] Java CLI `-r` re-rips all history entries and `-R` re-rips selected
+      entries. Flutter supports both short and long forms, preserves history
+      order, skips malformed entries while reporting errors, delays after
+      successful rips like Java, and distinguishes empty from unchecked
+      history in focused CLI tests.
 - [x] Java can reconstruct history candidates from existing rip directories via
       `RipUtils.urlFromDirectoryName`; Flutter now ports and tests the mapping.
 - [x] Java fallback history guessing is narrower than its intent: `App.loadHistory`
