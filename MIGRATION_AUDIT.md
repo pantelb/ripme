@@ -1488,8 +1488,16 @@ Parity checklist:
   - CI compares the source PNG/ICO with `origin/main`; Flutter tests decode
     every platform PNG, verify its required dimensions and visible pixels, and
     check Linux installation metadata.
-- [ ] Verify completion sound uses Java `camera.wav` or a documented platform
+- [x] Verify completion sound uses Java `camera.wav` or a documented platform
       replacement.
+  - When `play.sound` is enabled, Flutter now plays the exact packaged Java
+    `camera.wav` through `audioplayers` on Android, Windows, Linux, and macOS
+    instead of substituting the operating system alert.
+  - Playback remains asynchronous and failures remain non-fatal, matching
+    Java. Existing manager tests cover enabled/disabled dispatch; an asset test
+    validates the WAV structure and CI compares its bytes with `origin/main`.
+  - Linux validation and release jobs install the GStreamer development
+    packages required by the native `audioplayers` plugin.
 - [ ] Verify resource licensing/packaging.
 
 Required tests:

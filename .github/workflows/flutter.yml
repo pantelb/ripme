@@ -22,7 +22,7 @@ jobs:
         cache: true
 
     - name: Install Linux build dependencies
-      run: sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libayatana-appindicator3-dev libnotify-dev
+      run: sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libayatana-appindicator3-dev libnotify-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 
     - name: Install dependencies
       run: flutter pub get
@@ -41,6 +41,9 @@ jobs:
 
     - name: Verify Java icon resources
       run: dart run tool/check_java_icon_resources.dart
+
+    - name: Verify Java completion sound
+      run: dart run tool/check_java_sound_resource.dart
 
     - name: Verify Java test class coverage
       run: dart run tool/check_java_test_coverage.dart
@@ -86,7 +89,7 @@ jobs:
 
     - name: Install Linux build dependencies
       if: matrix.target == 'linux'
-      run: sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libayatana-appindicator3-dev libnotify-dev
+      run: sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libayatana-appindicator3-dev libnotify-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 
     - name: Install dependencies
       run: flutter pub get

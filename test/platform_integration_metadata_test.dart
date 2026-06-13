@@ -13,6 +13,7 @@ void main() {
     expect(
       plugins['windows'],
       containsAll(<String>{
+        'audioplayers_windows',
         'local_notifier',
         'tray_manager',
         'url_launcher_windows',
@@ -22,6 +23,7 @@ void main() {
     expect(
       plugins['linux'],
       containsAll(<String>{
+        'audioplayers_linux',
         'local_notifier',
         'tray_manager',
         'url_launcher_linux',
@@ -31,6 +33,7 @@ void main() {
     expect(
       plugins['macos'],
       containsAll(<String>{
+        'audioplayers_darwin',
         'local_notifier',
         'tray_manager',
         'url_launcher_macos',
@@ -42,6 +45,7 @@ void main() {
   test('Android registers its launcher without desktop-only integrations', () {
     final androidPlugins = _pluginsByPlatform(metadataFile)['android']!;
 
+    expect(androidPlugins, contains('audioplayers_android'));
     expect(androidPlugins, contains('url_launcher_android'));
     expect(
       androidPlugins,

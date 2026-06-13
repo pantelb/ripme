@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'app_logger.dart';
+import 'completion_sound_player.dart';
 import 'ripper/abstract_ripper.dart';
 import 'ripper/ripper_factory.dart';
 import 'ui/rip_status_message.dart';
@@ -591,7 +591,7 @@ class RipManager extends ChangeNotifier {
   }
 
   static Future<void> _playDefaultCompletionSound() async {
-    await SystemSound.play(SystemSoundType.alert);
+    await JavaCompletionSound.playJavaCameraSound();
   }
 
   Future<void> _runFinishCommandIfEnabled(String url, String path) async {
