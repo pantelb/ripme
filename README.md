@@ -44,3 +44,7 @@ jar downloaded by the in-process updater.
 Release tags provide the semantic app version, and GitHub Actions supplies the
 numeric build number. Both values are embedded in Android, Windows, macOS, and
 the Dart UI/CLI from the same release build invocation.
+
+Release files preserve Java's `ripme-<version>` prefix and add the native target:
+`linux-x64.tar.gz`, `windows-x64.zip`, `macos-universal.zip`, `android.apk`, and
+`android.aab`.

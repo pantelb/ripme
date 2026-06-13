@@ -99,16 +99,19 @@ jobs:
           - os: ubuntu-latest
             target: linux
             artifact: ripme-linux-x64
+            platform_suffix: linux-x64
             build_path: build/linux/x64/release/bundle
             archive_type: tar.gz
           - os: windows-2022
             target: windows
             artifact: ripme-windows-x64
+            platform_suffix: windows-x64
             build_path: build/windows/x64/runner/Release
             archive_type: zip
           - os: macos-latest
             target: macos
             artifact: ripme-macos-universal
+            platform_suffix: macos-universal
             build_path: build/macos/Build/Products/Release/RipMe.app
             archive_type: zip
 
@@ -164,7 +167,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist
-          archive_name="${{ matrix.artifact }}-${RELEASE_TAG}"
+          archive_name="ripme-${RIPME_VERSION}-${{ matrix.platform_suffix }}"
 
           if [ "${{ matrix.archive_type }}" = "tar.gz" ]; then
             tar -C "${{ matrix.build_path }}" -czf "dist/${archive_name}.tar.gz" .
@@ -238,8 +241,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist
-          cp build/app/outputs/flutter-apk/app-release.apk "dist/ripme-android-${RELEASE_TAG}.apk"
-          cp build/app/outputs/bundle/release/app-release.aab "dist/ripme-android-${RELEASE_TAG}.aab"
+          cp build/app/outputs/flutter-apk/app-release.apk "dist/ripme-${RIPME_VERSION}-android.apk"
+          cp build/app/outputs/bundle/release/app-release.aab "dist/ripme-${RIPME_VERSION}-android.aab"
 
       - name: Upload Android artifacts
         uses: actions/upload-artifact@v7

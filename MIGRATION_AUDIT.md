@@ -1566,7 +1566,14 @@ Parity checklist:
     into Dart plus Flutter's Android, Windows, and macOS build metadata.
   - CLI `--version` reports the semantic version like Java; the GUI additionally
     displays the platform build number as `<version>+<build>`.
-- [ ] Verify release artifact naming.
+- [x] Verify release artifact naming.
+  - Java publishes `ripme-<version>.jar`. Flutter preserves the
+    `ripme-<version>` prefix and appends an explicit native target:
+    `linux-x64.tar.gz`, `windows-x64.zip`, `macos-universal.zip`,
+    `android.apk`, or `android.aab`.
+  - GitHub Actions artifact container names remain stable and version-neutral;
+    release filenames use the normalized version without a duplicate leading
+    `v`.
 - [ ] Verify Android permissions and storage behavior.
 - [ ] Verify macOS entitlements and minimum OS behavior.
 - [ ] Verify Linux metadata and executable packaging.
@@ -4827,10 +4834,11 @@ Findings:
       SHA, and branch suffix. Flutter documents its native-compatible semantic
       release tag plus numeric Actions build identity and no longer claims
       unconditional complete parity while this audit remains open.
-- [ ] Java CI builds a fat jar on Linux, Windows, and macOS and uploads the Java
+- [x] Java CI builds a fat jar on Linux, Windows, and macOS and uploads the Java
       17 Ubuntu jar artifact. Flutter release CI builds Android APK/AAB,
-      Windows, macOS, and Linux artifacts. The migration must document that this
-      is a platform expansion, not direct artifact-name parity.
+      Windows, macOS, and Linux artifacts. This is a documented platform
+      expansion: release files preserve Java's version-first prefix and add the
+      native target/format rather than pretending to be jar-name equivalents.
 - [ ] Java release automation creates/updates prereleases named
       `latest-<branch-slug>` with jar artifacts. Flutter release automation
       publishes tag-driven releases through `softprops/action-gh-release`; the

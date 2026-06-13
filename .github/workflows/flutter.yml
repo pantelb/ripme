@@ -51,6 +51,9 @@ jobs:
     - name: Verify version metadata
       run: dart run tool/check_version_metadata.dart
 
+    - name: Verify release artifact naming
+      run: dart run tool/check_release_artifact_naming.dart
+
     - name: Verify Java test class coverage
       run: dart run tool/check_java_test_coverage.dart
 
