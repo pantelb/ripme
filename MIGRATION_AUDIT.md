@@ -2318,6 +2318,14 @@ Findings:
     during `apt-get update`. CI and release jobs now share a guarded Linux
     dependency installer that removes only those unrelated source files before
     updating Ubuntu repositories; a workflow test locks all four call sites.
+  - CI: [run 27472195798](https://github.com/pantelb/ripme/actions/runs/27472195798)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27472195798/artifacts/7612468033),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27472195798/artifacts/7612457113),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27472195798/artifacts/7612443771),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27472195798/artifacts/7612440747)
+    artifacts, confirming the apt-source repair.
 
 ### E. Ripper Runtime And Filesystem Semantics
 
@@ -2342,31 +2350,45 @@ Flutter files checked:
 
 Findings:
 
-- [ ] Java `filesystemSafe` removes every character outside
+- [x] Java `filesystemSafe` removes every character outside
       `[a-zA-Z0-9-.,_ ]`, trims, and truncates names longer than 100 characters
-      to 99. Flutter currently matches the character-removal/trim behavior, but
-      does not truncate long strings.
-- [ ] Java `filesystemSanitized` replaces disallowed characters with `_`.
-      Flutter has only `filesystemSafe` and `sanitizeSaveAs`.
-- [ ] Java `sanitizeSaveAs` replaces `\\:*?"<>|` and has test-backed filename
+      to 99. Reconciled duplicate: `Utils.filesystemSafe` implements all three
+      operations, and `test/utils_test.dart` locks the 101-to-99 edge case.
+- [x] Java `filesystemSanitized` replaces disallowed characters with `_`.
+      Reconciled duplicate: Flutter exposes the separate
+      `Utils.filesystemSanitized` helper with the exact
+      `[^a-zA-Z0-9.-]` replacement rule and focused coverage.
+- [x] Java `sanitizeSaveAs` replaces `\\:*?"<>|` and has test-backed filename
       edge cases: explicit file name plus extension yields `test.test`, explicit
       filename without extension yields `test`, query URL object yields `Object`,
       and `file.` stays `file.`.
-- [ ] Java working directory creation preserves an existing directory's
+  - Reconciled duplicate: `Utils.sanitizeSaveAs` and
+    `AbstractRipper.getFileName` preserve these rules; punctuation tests live
+    in `test/utils_test.dart` and all named filename overload cases live in
+    `test/abstract_ripper_download_test.dart`.
+- [x] Java working directory creation preserves an existing directory's
       original case on Unix/macOS through `getOriginalDirectory`.
-- [ ] Java `Utils.getWorkingDirectory()` creates the configured
-      `rips.directory` when it does not exist. Flutter `Utils.getWorkingDirectory`
-      returns a configured custom path directly without creating it, so custom
-      rip-root creation behavior is not Java-compatible.
-- [ ] Java shortens Windows paths above 260 characters and long filenames above
-      filesystem limits; Flutter has no verified equivalent.
-- [ ] Java `getFileName` strips query, fragment, ampersand, and colon segments,
+  - Reconciled duplicate: non-Windows setup calls
+    `Utils.getOriginalDirectory`, and a mixed-case on-disk fixture verifies the
+    returned spelling.
+- [x] Java `Utils.getWorkingDirectory()` creates the configured
+      `rips.directory` when it does not exist.
+  - Reconciled duplicate: Flutter creates the selected directory
+    non-recursively like `Files.createDirectory`, falls back to the supplied
+    user-home directory on failure, and has tests for both outcomes.
+- [x] Java shortens Windows paths above 260 characters and long filenames above
+      filesystem limits.
+  - Reconciled duplicate: shared downloads invoke
+    `Utils.shortenSaveAsWindows` above 259 absolute characters; fixture tests
+    lock Java's extension-preserving arithmetic and exhausted-parent failure.
+- [x] Java `getFileName` strips query, fragment, ampersand, and colon segments,
       adds prefix before extension handling, then sanitizes. Its URL-extension
       inference also uses `lastBit.split(".")`, where `"."` is a regex matching
       any character, so callers that pass an explicit `fileName` but no
       `extension` usually do not receive an inferred extension from the URL.
-      Flutter rippers use local filename helpers that need shared parity tests,
-      especially for custom-filename/no-extension overloads.
+  - Reconciled duplicate: shared `AbstractRipper.getFileName` ports the shipped
+    regex bug intentionally, and focused tests cover custom names with and
+    without explicit extensions, query/fragment delimiters, and trailing dots.
 - [ ] Java writes downloaded URLs to URL history before handing a download to
       the thread pool. Flutter marks downloads after `Http.downloadFile`
       succeeds; this changes retry/interruption semantics.
