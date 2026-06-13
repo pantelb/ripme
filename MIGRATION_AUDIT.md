@@ -2240,15 +2240,27 @@ Findings:
       downloads keep their configured timeout and retry sleep. A deterministic
       HEAD/500/200 test verifies method order, attempt statuses, zero delay, and
       final bytes.
-- [ ] Java DASH manifest selection in `RedditRipper.parseRedditVideoMPD(...)`
+  - CI: [run 27470589176](https://github.com/pantelb/ripme/actions/runs/27470589176)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27470589176/artifacts/7611980730),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27470589176/artifacts/7611977406),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27470589176/artifacts/7611977894),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27470589176/artifacts/7611962934)
+    artifacts.
+- [x] Java DASH manifest selection in `RedditRipper.parseRedditVideoMPD(...)`
       considers only the `height` attribute, treats a missing height as `0`,
       updates the candidate only when the height is strictly greater than the
       previous largest value, and then appends the selected `BaseURL` text to
-      the original video URL. Flutter's shared
-      `AbstractVideoRipper.bestDashVideoUrl(...)` falls back to `bandwidth` when
-      `height` is absent and resolves `BaseURL` relative to the manifest URL.
-      DASH manifests with missing heights, bandwidth-only variants, duplicate
-      heights, or relative base paths can therefore choose a different media URL.
+      the original video URL. Flutter now uses a Reddit-specific parser that
+      preserves those rules instead of the shared bandwidth-aware resolver.
+      Tests cover bandwidth-only entries, Java's `/null` result when no height
+      exceeds zero, literal leading-slash appends, and duplicate-height text
+      that makes Java URI construction fail. Invalid numeric heights also
+      preserve Java's uncaught number-format failure. Dart `Uri` normalizes
+      explicit `..` path segments whereas Java `URL.toExternalForm()` preserves
+      them; this platform URI representation difference is documented rather
+      than misreported as exact textual parity.
 - [x] Java `CliphunterRipper.rip()` schedules the decrypted video with
       `addURLToDownload(url, HOST + "_" + getGID(...))`; Java
       `VideoRipper.addURLToDownload(..., referrer, cookies, ...)` ignores

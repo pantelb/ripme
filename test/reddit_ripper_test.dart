@@ -225,6 +225,71 @@ void main() {
         'postid-vidid-Video Post-.mp4');
   });
 
+  test('selects Reddit DASH video with Java height-only semantics', () {
+    final videoUrl = Uri.parse('https://v.redd.it/abc');
+
+    expect(
+      RedditRipper.redditVideoUrlFromManifest(
+        parse('''
+          <MPD><Period><AdaptationSet>
+            <Representation bandwidth="9999999">
+              <BaseURL>bandwidth-only.mp4</BaseURL>
+            </Representation>
+            <Representation height="360">
+              <BaseURL>DASH_360.mp4</BaseURL>
+            </Representation>
+            <Representation height="720">
+              <BaseURL>/DASH_720.mp4</BaseURL>
+            </Representation>
+          </AdaptationSet></Period></MPD>
+        '''),
+        videoUrl,
+      ).toString(),
+      'https://v.redd.it/abc//DASH_720.mp4',
+    );
+
+    expect(
+      RedditRipper.redditVideoUrlFromManifest(
+        parse('''
+          <MPD><Period><AdaptationSet>
+            <Representation bandwidth="9999999">
+              <BaseURL>bandwidth-only.mp4</BaseURL>
+            </Representation>
+          </AdaptationSet></Period></MPD>
+        '''),
+        videoUrl,
+      ).toString(),
+      'https://v.redd.it/abc/null',
+    );
+
+    expect(
+      RedditRipper.redditVideoUrlFromManifest(
+        parse('''
+          <MPD><Period><AdaptationSet>
+            <Representation height="720"><BaseURL>first.mp4</BaseURL></Representation>
+            <Representation height="720"><BaseURL>second.mp4</BaseURL></Representation>
+          </AdaptationSet></Period></MPD>
+        '''),
+        videoUrl,
+      ),
+      isNull,
+    );
+
+    expect(
+      () => RedditRipper.redditVideoUrlFromManifest(
+        parse('''
+          <MPD><Period><AdaptationSet>
+            <Representation height="invalid">
+              <BaseURL>invalid.mp4</BaseURL>
+            </Representation>
+          </AdaptationSet></Period></MPD>
+        '''),
+        videoUrl,
+      ),
+      throwsFormatException,
+    );
+  });
+
   test('matches Java single-link title behavior when subfolders are disabled',
       () async {
     SharedPreferences.setMockInitialValues({

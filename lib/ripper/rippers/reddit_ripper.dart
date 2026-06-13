@@ -7,7 +7,6 @@ import 'package:path/path.dart' as p;
 
 import '../abstract_ripper.dart';
 import '../abstract_json_ripper.dart';
-import '../abstract_video_ripper.dart';
 import '../../ui/rip_status_message.dart';
 import '../../utils/http_utils.dart';
 import '../../utils/utils.dart';
@@ -671,12 +670,40 @@ class RedditRipper extends AbstractJSONRipper {
 
   static Future<Uri?> _bestRedditVideoUrl(Uri uri) async {
     try {
-      return AbstractVideoRipper.bestVideoUrlFromManifest(
+      final manifest = await Http.get(
         Uri.parse('${uri.toString()}/DASHPlaylist.mpd'),
       );
+      return redditVideoUrlFromManifest(manifest, uri);
+    } on FormatException {
+      rethrow;
     } catch (_) {
       return null;
     }
+  }
+
+  static Uri? redditVideoUrlFromManifest(Document manifest, Uri videoUrl) {
+    var largestHeight = 0;
+    String? baseUrl;
+    final representations = manifest
+        .querySelectorAll('MPD > Period > AdaptationSet > Representation');
+
+    for (final representation in representations) {
+      final heightText = representation.attributes['height'] ?? '0';
+      final height = int.parse(heightText);
+      if (largestHeight < height) {
+        largestHeight = height;
+        baseUrl = representations
+            .where(
+              (candidate) => candidate.attributes['height'] == heightText,
+            )
+            .map((candidate) => candidate.querySelector('BaseURL')?.text ?? '')
+            .join(' ');
+      }
+    }
+
+    final candidate = '$videoUrl/${baseUrl ?? 'null'}';
+    if (RegExp(r'\s').hasMatch(candidate)) return null;
+    return Uri.tryParse(candidate);
   }
 
   static String downloadFileNameFor(RedditMedia media) {
