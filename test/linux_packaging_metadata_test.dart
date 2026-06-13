@@ -43,4 +43,19 @@ void main() {
       contains(command),
     );
   });
+
+  test('CI uses resilient shared Linux dependency setup', () {
+    const command = 'bash tool/install_linux_build_dependencies.sh';
+    final ci = File('.github/workflows/flutter.yml').readAsStringSync();
+    final release = File('.github/workflows/release.yml').readAsStringSync();
+    final installer =
+        File('tool/install_linux_build_dependencies.sh').readAsStringSync();
+
+    expect(RegExp(command).allMatches(ci), hasLength(2));
+    expect(RegExp(command).allMatches(release), hasLength(2));
+    expect(installer, contains("'packages.microsoft.com'"));
+    expect(installer, contains('sudo apt-get update'));
+    expect(installer, contains('libgtk-3-dev'));
+    expect(installer, contains('libgstreamer-plugins-base1.0-dev'));
+  });
 }
