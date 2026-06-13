@@ -1804,6 +1804,14 @@ Findings:
       comment-skipping behavior. Flutter's configuration action now preserves
       this separate GUI behavior, including duplicate valid lines and warning
       logs for blank/non-http lines.
+  - CI: [run 27463556249](https://github.com/pantelb/ripme/actions/runs/27463556249)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27463556249/artifacts/7609793219),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27463556249/artifacts/7609780583),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27463556249/artifacts/7609772031),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27463556249/artifacts/7609764222)
+    artifacts.
 
 ### B. Configuration And Defaults
 
@@ -1849,16 +1857,26 @@ Findings:
       exact seven-key sentinel check to external desktop `rip.properties`,
       deletes obsolete files, and falls back to preferences plus bundled
       defaults. Focused tests remove each sentinel in turn.
+  - Audit reconciliation CI:
+    [run 27463723642](https://github.com/pantelb/ripme/actions/runs/27463723642)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27463723642/artifacts/7609845817),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27463723642/artifacts/7609832650),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27463723642/artifacts/7609826772),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27463723642/artifacts/7609819264)
+    artifacts.
 - [x] Java `download.retry.sleep` is absent from `rip.properties` and has
       subsystem-specific fallbacks: `Http` page requests and the configuration
       field use `5000`, while `DownloadFileThread` uses `0`. Flutter no longer
       supplies a global default; page requests use `5000`, file downloads use
       `0`, and an explicitly configured value overrides both paths.
-- [ ] Java parallel download defaults use `Utils.getConfigInteger("threads.size",
-      10)` in `DownloadThreadPool`, so a missing config runs up to ten download
-      workers. Flutter `config_defaults.dart` sets `threads.size` to `5`, and
-      `AbstractRipper.downloadFiles(...)` also falls back to `5`, cutting the
-      default concurrency in half.
+- [x] Java bundled `rip.properties` sets `threads.size=5`, while
+      `DownloadThreadPool` uses `10` when an authoritative external config omits
+      the key. Flutter preserves both cases: bundled/native preferences default
+      to five, portable `rip.properties` is authoritative rather than layered
+      over bundled defaults, and `AbstractRipper.downloadFiles(...)` uses the
+      Java ten-thread call-site fallback.
 - [ ] Java uses both `error.skip404` in defaults and some code paths checking
       `errors.skip404`; Flutter uses `error.skip404`. The typo/alias behavior
       must be reconciled for CLI and download paths.

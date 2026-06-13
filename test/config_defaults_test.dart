@@ -173,6 +173,34 @@ rips.directory=C\\:\\\\portable\\\\rips
     expect(Utils.getConfigString('rips.directory', null), r'C:\portable\rips');
   });
 
+  test('portable config uses Java call-site defaults for omitted keys',
+      () async {
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_portable_defaults_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final config = File('${directory.path}/rip.properties');
+    final values = File(
+      'test/fixtures/java_rip_properties.properties',
+    )
+        .readAsLinesSync()
+        .where(
+          (line) =>
+              !line.trimLeft().startsWith('threads.size ') &&
+              !line.trimLeft().startsWith('file.overwrite '),
+        )
+        .join('\n');
+    await config.writeAsString('$values\n');
+    SharedPreferences.setMockInitialValues({
+      'threads.size': 2,
+      'file.overwrite': true,
+    });
+
+    await Utils.init(portableConfigFile: config);
+
+    expect(Utils.getConfigInteger('threads.size', 10), 10);
+    expect(Utils.getConfigBoolean('file.overwrite', false), isFalse);
+  });
+
   test('portable config setters persist immediately to rip.properties',
       () async {
     final directory =

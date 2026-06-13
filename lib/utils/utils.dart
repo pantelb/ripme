@@ -118,8 +118,11 @@ class Utils {
       !(android ?? Platform.isAndroid);
 
   static String? getConfigString(String key, String? defaultValue) {
-    return _portableConfig?[key] ??
-        _prefs?.getString(key) ??
+    final portableConfig = _portableConfig;
+    if (portableConfig != null) {
+      return portableConfig[key] ?? defaultValue;
+    }
+    return _prefs?.getString(key) ??
         ConfigDefaults.strings[key] ??
         defaultValue;
   }
@@ -135,8 +138,10 @@ class Utils {
   }
 
   static List<String> getConfigList(String key) {
-    final portableValue = _portableConfig?[key];
-    if (portableValue != null) {
+    final portableConfig = _portableConfig;
+    if (portableConfig != null) {
+      final portableValue = portableConfig[key];
+      if (portableValue == null) return const [];
       if (portableValue.trim().isEmpty) return const [];
       return portableValue.split(',').map((value) => value.trim()).toList();
     }
@@ -144,14 +149,23 @@ class Utils {
   }
 
   static int getConfigInteger(String key, int defaultValue) {
-    return int.tryParse(_portableConfig?[key] ?? '') ??
-        _prefs?.getInt(key) ??
-        ConfigDefaults.integers[key] ??
-        defaultValue;
+    final portableConfig = _portableConfig;
+    if (portableConfig != null) {
+      return int.tryParse(portableConfig[key] ?? '') ?? defaultValue;
+    }
+    return _prefs?.getInt(key) ?? ConfigDefaults.integers[key] ?? defaultValue;
   }
 
   static bool getConfigBoolean(String key, bool defaultValue) {
-    final portableValue = _portableConfig?[key]?.toLowerCase();
+    final portableConfig = _portableConfig;
+    final portableValue = portableConfig?[key]?.toLowerCase();
+    if (portableConfig != null) {
+      return switch (portableValue) {
+        'true' => true,
+        'false' => false,
+        _ => defaultValue,
+      };
+    }
     return switch (portableValue) {
       'true' => true,
       'false' => false,
@@ -161,13 +175,16 @@ class Utils {
 
   static bool getConfigBooleanWithFallback(
       String key, String fallbackKey, bool defaultValue) {
-    final portableValue =
-        _portableConfig?[key] ?? _portableConfig?[fallbackKey];
+    final portableConfig = _portableConfig;
+    final portableValue = portableConfig?[key] ?? portableConfig?[fallbackKey];
     final portableBoolean = switch (portableValue?.toLowerCase()) {
       'true' => true,
       'false' => false,
       _ => null,
     };
+    if (portableConfig != null) {
+      return portableBoolean ?? defaultValue;
+    }
     return portableBoolean ??
         _prefs?.getBool(key) ??
         _prefs?.getBool(fallbackKey) ??

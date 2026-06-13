@@ -213,7 +213,7 @@ abstract class AbstractRipper {
     if (queue.isEmpty || isStopped) return;
 
     _preRegisterDownloads(queue);
-    final configuredThreads = Utils.getConfigInteger('threads.size', 5);
+    final configuredThreads = Utils.getConfigInteger('threads.size', 10);
     final workerCount = configuredThreads.clamp(1, queue.length);
 
     Future<void> worker() async {
