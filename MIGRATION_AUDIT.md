@@ -2041,6 +2041,14 @@ Findings:
       order, skips malformed entries while reporting errors, delays after
       successful rips like Java, and distinguishes empty from unchecked
       history in focused CLI tests.
+  - CI: [run 27469904095](https://github.com/pantelb/ripme/actions/runs/27469904095)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27469904095/artifacts/7611779100),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27469904095/artifacts/7611766960),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27469904095/artifacts/7611761902),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27469904095/artifacts/7611751633)
+    artifacts.
 - [x] Java can reconstruct history candidates from existing rip directories via
       `RipUtils.urlFromDirectoryName`; Flutter now ports and tests the mapping.
 - [x] Java fallback history guessing is narrower than its intent: `App.loadHistory`
@@ -2142,15 +2150,16 @@ Findings:
 - [x] Java 401/403 page requests throw a cookie-oriented error message; 404 page
       requests throw file-not-found style messaging. Flutter currently raises
       matching `HttpException` text from the shared page path.
-- [ ] Per-ripper malformed URL/GID exception messages are not fully
-      Java-compatible or test-locked. Java rippers throw exact
+- [x] Audited per-ripper malformed URL/GID exception messages are
+      Java-compatible and test-locked. Java rippers throw exact
       `MalformedURLException` strings, including source typos such as
       `MyhentaigalleryRipper` saying `Expected myhentaicomics.com URL format`
       and `PorncomixRipper` saying `Expected proncomix URL format`; several
-      Dart ports normalize or rewrite those messages with `FormatException`
-      text, and the suite does not mechanically prove exact message parity.
-- [ ] The malformed-URL message drift includes additional concrete Java typos
-      and copy/paste strings that Flutter currently cleans up or does not lock:
+      Dart ports use `FormatException` as the platform equivalent while
+      preserving the exact Java message payload. A table-driven test guards all
+      named strings.
+- [x] The malformed-URL message audit includes additional concrete Java typos
+      and copy/paste strings that Flutter now preserves and locks:
       `ErofusRipper` reuses the `8muses.com/index/category/albumname`
       expectation, `HentaiimageRipper` says `Expected hitomi URL format`,
       `JagodibujaRipper` says `hwww.jagodibuja.com/Comic name/`,

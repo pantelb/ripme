@@ -29,8 +29,8 @@ class JagodibujaRipper extends AbstractHTMLRipper {
     if (match != null) return match.group(1)!;
 
     throw FormatException(
-      'Expected jagodibuja.com gallery format: '
-      'www.jagodibuja.com/Comic-name/ - got $url instead',
+      'Expected jagodibuja.com gallery formats '
+      'hwww.jagodibuja.com/Comic name/ got $url instead',
     );
   }
 

@@ -30,7 +30,7 @@ class MyhentaigalleryRipper extends AbstractHTMLRipper {
     if (match != null) return match.group(1)!;
 
     throw FormatException(
-      'Expected myhentaigallery.com URL format: '
+      'Expected myhentaicomics.com URL format: '
       'myhentaigallery.com/gallery/thumbnails/ID - got $url instead',
     );
   }
