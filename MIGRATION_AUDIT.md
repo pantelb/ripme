@@ -1748,6 +1748,14 @@ Findings:
     enters CLI mode and prints help, matching Java's no-argument headless path.
     Other platforms require explicit CLI arguments because Flutter exposes no
     cross-platform equivalent to AWT's `GraphicsEnvironment.isHeadless()`.
+  - CI: [run 27463224052](https://github.com/pantelb/ripme/actions/runs/27463224052)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27463224052/artifacts/7609684145),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27463224052/artifacts/7609671297),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27463224052/artifacts/7609668718),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27463224052/artifacts/7609659073)
+    artifacts.
 - [x] Java URL-file ripping skips lines beginning with `//` and `#`; Flutter
       has parser coverage for that exact pre-trim behavior.
 - [x] Java CLI URL-file mode does not skip blank or whitespace-only lines:
@@ -1786,13 +1794,16 @@ Findings:
       replaces this with a GitHub Release check and manual platform-artifact
       installation; README and CLI output state that no in-place replacement
       occurs.
-- [ ] Java `ripAlbum` normalizes user input by converting `gonewild:<name>` to
+- [x] Java `ripAlbum` normalizes user input by converting `gonewild:<name>` to
       `http://gonewild.com/user/<name>` and prepending `http://` when no scheme
-      is supplied. Flutter URL input needs exact coverage or an intentional
-      replacement.
-- [ ] Java URL-list file chooser in the GUI queues only trimmed lines starting
+      is supplied. Flutter applies the same case-insensitive gonewild rewrite
+      and case-sensitive `http` prefix check immediately before factory
+      resolution, with bare-host and mixed-case gonewild tests.
+- [x] Java URL-list file chooser in the GUI queues only trimmed lines starting
       with `http` and logs malformed lines; CLI URL-file mode has different
-      comment-skipping behavior. Flutter must preserve or document both paths.
+      comment-skipping behavior. Flutter's configuration action now preserves
+      this separate GUI behavior, including duplicate valid lines and warning
+      logs for blank/non-http lines.
 
 ### B. Configuration And Defaults
 

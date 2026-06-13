@@ -40,6 +40,16 @@ class QueueSubmissionResult {
   final List<String> errors;
 }
 
+class UrlListImportResult {
+  const UrlListImportResult({
+    required this.queued,
+    required this.skipped,
+  });
+
+  final int queued;
+  final List<String> skipped;
+}
+
 enum HistoryReripResult {
   queued,
   emptyHistory,
@@ -183,12 +193,53 @@ class RipManager extends ChangeNotifier {
     return QueueSubmissionResult(accepted: accepted, errors: errors);
   }
 
-  bool? validateUrlInput(String input) {
-    var urlText = input.trim();
-    if (urlText.isEmpty) return null;
-    if (!urlText.startsWith('http')) {
-      urlText = 'http://$urlText';
+  UrlListImportResult importUrlListLines(Iterable<String> lines) {
+    var queued = 0;
+    final skipped = <String>[];
+    for (final rawLine in lines) {
+      final line = rawLine.trim();
+      if (line.startsWith('http')) {
+        // Java's file chooser inserts directly into the list model, so unlike
+        // manual entry it preserves duplicate lines.
+        _queue.add(line);
+        queued++;
+      } else {
+        skipped.add(line);
+        _addLog(RipStatusMessage(
+          RipStatus.downloadWarn,
+          "Skipping url $line because it looks malformed "
+          "(doesn't start with http)",
+        ));
+      }
     }
+
+    if (queued > 0) {
+      _saveNonEmptyQueue();
+      notifyListeners();
+      if (!_isRipping) {
+        _stopRequested = false;
+        _ripNext();
+      }
+    }
+    return UrlListImportResult(queued: queued, skipped: skipped);
+  }
+
+  static String normalizeRipInput(String input) {
+    var value = input.trim();
+    if (value.toLowerCase().startsWith('gonewild:')) {
+      value = 'http://gonewild.com/user/'
+          '${value.substring(value.indexOf(':') + 1)}';
+    }
+    if (!value.startsWith('http')) {
+      value = 'http://$value';
+    }
+    return value;
+  }
+
+  bool? validateUrlInput(String input) {
+    final trimmed = input.trim();
+    if (trimmed.isEmpty) return null;
+    final urlText = normalizeRipInput(trimmed);
 
     final uri = Uri.tryParse(urlText);
     if (uri == null || !uri.hasScheme || uri.host.isEmpty) {
@@ -321,6 +372,7 @@ class RipManager extends ChangeNotifier {
     _saveNonEmptyQueue();
     notifyListeners();
 
+    urlText = normalizeRipInput(urlText);
     Uri? uri = Uri.tryParse(urlText);
     if (uri == null) {
       _statusText = 'Error: Invalid URL: $urlText';

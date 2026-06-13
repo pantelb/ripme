@@ -1421,12 +1421,16 @@ class ConfigurationView extends StatefulWidget {
     this.selectedLanguageTag,
     this.onLanguageChanged,
     this.directoryPicker,
+    this.urlListPicker,
+    this.urlListReader,
     this.isAndroid,
   });
 
   final String? selectedLanguageTag;
   final ValueChanged<String>? onLanguageChanged;
   final Future<String?> Function()? directoryPicker;
+  final Future<String?> Function()? urlListPicker;
+  final Future<List<String>> Function(String path)? urlListReader;
   final bool? isAndroid;
 
   @override
@@ -1470,6 +1474,16 @@ class _ConfigurationViewState extends State<ConfigurationView> {
                       }
                     }
                   : null,
+            ),
+            ListTile(
+              key: const Key('config.download.url.list'),
+              title: Text(strings.downloadUrlList),
+              leading: _IconBadge(
+                icon: Icons.playlist_add_outlined,
+                color: Theme.of(context).colorScheme.primary,
+                compact: true,
+              ),
+              onTap: () => _importUrlList(context),
             ),
             _ConfigSwitch(
               title: strings.overwriteExistingFiles,
@@ -2018,6 +2032,30 @@ class _ConfigurationViewState extends State<ConfigurationView> {
         setState(() => _checkingForUpdates = false);
       }
     }
+  }
+
+  Future<void> _importUrlList(BuildContext context) async {
+    final path = await (widget.urlListPicker ?? _pickUrlList).call();
+    if (path == null) return;
+    try {
+      final lines = await (widget.urlListReader ?? _readUrlList)(path);
+      if (!context.mounted) return;
+      Provider.of<RipManager>(context, listen: false).importUrlListLines(lines);
+    } on FileSystemException catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.message)),
+      );
+    }
+  }
+
+  static Future<String?> _pickUrlList() async {
+    final result = await FilePicker.pickFiles(type: FileType.any);
+    return result?.files.single.path;
+  }
+
+  static Future<List<String>> _readUrlList(String path) {
+    return File(path).readAsLines();
   }
 
   Future<void> _importDownloadedUrlHistory(BuildContext context) async {

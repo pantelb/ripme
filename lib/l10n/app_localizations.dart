@@ -126,6 +126,8 @@ class AppLocalizations {
   String get removeFromQueue => 'Remove from queue';
   String get files => 'Files';
   String get saveDirectory => _label('select.save.dir', 'Save directory');
+  String get downloadUrlList =>
+      _label('download.url.list', 'Download url list');
   String get defaultSaveDirectory => 'Default application rips directory';
   String get storageAccessWasNotGranted => 'Storage access was not granted';
   String get restoreWindowPosition =>

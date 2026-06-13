@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -154,5 +156,14 @@ void main() {
         'configured-$index',
       );
     }
+  });
+
+  test('URL-list configuration action is wired to RipManager import', () {
+    final source = File('lib/main.dart').readAsStringSync();
+
+    expect(source, contains("Key('config.download.url.list')"));
+    expect(source, contains('widget.urlListPicker ?? _pickUrlList'));
+    expect(source, contains('widget.urlListReader ?? _readUrlList'));
+    expect(source, contains('.importUrlListLines(lines)'));
   });
 }

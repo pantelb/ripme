@@ -789,6 +789,89 @@ void main() {
     expect(manager.queue, isEmpty);
   });
 
+  test('normalizes bare and gonewild input when starting a rip', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+    final resolvedUris = <Uri>[];
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_manager_normalize_test');
+    addTearDown(() => _deleteIfExists(directory));
+    final releases = <Completer<void>>[];
+    final manager = RipManager(
+      ripperResolver: (uri) {
+        resolvedUris.add(uri);
+        final release = Completer<void>();
+        releases.add(release);
+        return BlockingRipper(uri, directory, release.future);
+      },
+      completionSoundPlayer: () async {},
+    );
+    addTearDown(() {
+      for (final release in releases) {
+        if (!release.isCompleted) release.complete();
+      }
+    });
+    await manager.init();
+
+    manager.addUrlToQueue(' example.com/gallery ');
+    await _waitFor(() => resolvedUris.length == 1);
+    expect(resolvedUris.single, Uri.parse('http://example.com/gallery'));
+
+    releases.single.complete();
+    await _waitFor(() => !manager.isRipping);
+    manager.addUrlToQueue('GoNeWiLd:example_user');
+    await _waitFor(() => resolvedUris.length == 2);
+    expect(
+      resolvedUris.last,
+      Uri.parse('http://gonewild.com/user/example_user'),
+    );
+  });
+
+  test('GUI URL-list import queues only trimmed http lines like Java',
+      () async {
+    SharedPreferences.setMockInitialValues({});
+    await Utils.init();
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_manager_url_list_test');
+    addTearDown(() => _deleteIfExists(directory));
+    final release = Completer<void>();
+    addTearDown(() {
+      if (!release.isCompleted) release.complete();
+    });
+    final manager = RipManager(
+      ripperResolver: (uri) => BlockingRipper(uri, directory, release.future),
+      completionSoundPlayer: () async {},
+    );
+    await manager.init();
+    manager.addUrlToQueue('https://example.com/current');
+    await _waitFor(() => manager.isRipping);
+
+    final result = manager.importUrlListLines(const [
+      ' https://example.com/one ',
+      'ftp://example.com/file',
+      '',
+      'http://example.com/two',
+      'https://example.com/one',
+    ]);
+
+    expect(result.queued, 3);
+    expect(result.skipped, ['ftp://example.com/file', '']);
+    expect(manager.queue, [
+      'https://example.com/one',
+      'http://example.com/two',
+      'https://example.com/one',
+    ]);
+    expect(
+      manager.logs
+          .where((message) => message.status == RipStatus.downloadWarn)
+          .map((message) => message.object),
+      containsAll([
+        contains('Skipping url ftp://example.com/file'),
+        contains("doesn't start with http"),
+      ]),
+    );
+  });
+
   test('URL input validation detects bare hosts through the resolved ripper',
       () async {
     SharedPreferences.setMockInitialValues({});
