@@ -1538,7 +1538,13 @@ Parity checklist:
   - GitHub's Flutter release tags are normalized only by removing their leading
     `v` before the Java comparison. GUI and CLI checks honor Java's hidden
     `testing.always_try_to_update` override.
-- [ ] Document replacement for Java self-update.
+- [x] Document replacement for Java self-update.
+  - Java's `-j` downloads a jar, optionally verifies it, replaces the running
+    jar through platform scripts/processes, and may relaunch it. Flutter does
+    not mutate a running app bundle or APK.
+  - GUI and CLI checks point to the GitHub Release containing native artifacts;
+    README and CLI output explicitly require installation through the target
+    platform's normal update process.
 - [ ] Document Java updater source of truth (`ripmeapp/ripme` `ripme.json`),
       changelist handling, SHA-256 update verification, and why jar replacement
       scripts are or are not applicable to Flutter.
@@ -1648,9 +1654,10 @@ Findings:
       has intentional platform extensions beyond the Java menu.
 - [ ] Java `-a` appends text to the rip working-folder name through
       `App.stringToAppendToFoldername`; Flutter has no verified equivalent.
-- [ ] Java `-j` self-update replaces a jar on disk. Flutter should document the
-      GitHub-release/update-checker replacement and not silently mark this as
-      parity.
+- [x] Java `-j` self-update replaces a jar on disk. Flutter intentionally
+      replaces this with a GitHub Release check and manual platform-artifact
+      installation; README and CLI output state that no in-place replacement
+      occurs.
 - [ ] Java `ripAlbum` normalizes user input by converting `gonewild:<name>` to
       `http://gonewild.com/user/<name>` and prepending `http://` when no scheme
       is supplied. Flutter URL input needs exact coverage or an intentional

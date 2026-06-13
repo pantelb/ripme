@@ -393,7 +393,9 @@ void main() {
     expect(result.exitCode, 0);
     expect(result.isError, isFalse);
     expect(result.output, contains('Update available: v1.2.0'));
+    expect(result.output, contains('Install it from the release page'));
     expect(result.output, contains('/releases/tag/v1.2.0'));
+    expect(result.output, isNot(contains('Downloading')));
   });
 
   test('update runs after a URL rip like Java option ordering', () async {

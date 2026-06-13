@@ -27,3 +27,13 @@ flutter run
 ```bash
 flutter test
 ```
+
+## Updates And Releases
+
+RipMe checks the latest release in `pantelb/ripme` and opens its GitHub release
+page. The Flutter application does not replace its running executable in place.
+Install the appropriate Android, Windows, macOS, or Linux release artifact
+using that platform's normal installation or replacement process.
+
+The `-j` / `--update` CLI option performs the same release check and prints the
+release URL; it does not download, install, or launch an update.

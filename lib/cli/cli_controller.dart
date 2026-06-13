@@ -102,7 +102,7 @@ usage: ripme [OPTIONS]
  -v,--version                Show current version
  -s,--socks-server <SERVER>  Use socks server ([user:password]@host[:port])
  -p,--proxy-server <SERVER>  Use HTTP Proxy server ([user:password]@host[:port])
- -j,--update                 Update ripme
+ -j,--update                 Check for a new RipMe release
  -a,--append-to-folder <TEXT> Append a string to the output folder name
  -H,--history <PATH>         Set history file location.
 ''';
@@ -431,7 +431,8 @@ usage: ripme [OPTIONS]
       final result = await _checkForUpdate();
       final status = result.updateAvailable
           ? 'Update available: ${result.latestVersion} '
-              '(current ${result.currentVersion})'
+              '(current ${result.currentVersion}). '
+              'Install it from the release page'
           : 'RipMe ${result.currentVersion} is up to date '
               '(latest ${result.latestVersion})';
       return CliResult(
