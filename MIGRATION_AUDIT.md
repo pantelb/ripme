@@ -1944,6 +1944,14 @@ Findings:
       the key. Flutter preserves both cases: native/bundled configuration
       defaults to false, portable configuration uses the Java call-site true
       fallback, and focused tests cover both values.
+  - CI: [run 27469372085](https://github.com/pantelb/ripme/actions/runs/27469372085)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27469372085/artifacts/7611619358),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27469372085/artifacts/7611606017),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27469372085/artifacts/7611606502),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27469372085/artifacts/7611592632)
+    artifacts.
 - [x] Java `history.location` controls downloaded-URL history
       (`url_history.txt`), not the album history JSON. Flutter uses the
       configured file when supplied and otherwise documents SharedPreferences
@@ -1951,32 +1959,28 @@ Findings:
 - [x] Java has config-driven log level and `log.save` file logging behavior.
       Flutter uses the exact four Java labels, mirrors rip status diagnostics,
       writes `ripme.log`, and rolls two gzip archives at 20 MB.
-- [ ] Mechanical source scan found Java-used config keys missing from Flutter
-      defaults and therefore requiring parity decisions:
-      `DeviantartCustomLoginPassword`, `DeviantartCustomLoginUsername`,
-      `auto.update`, `chans.chan_sites`, dynamic `cookies.<domain>`,
-      `derpi.key`, `descriptions.save`, `download.history`,
-      `download.show_popup`, `e621.cookies`, `e621.useragent`,
-      `ehentai.blacklist.tags`, `enable.finish.command`, `errors.skip404`,
-      `finish.command`, `furaffinity.cookies`, `furaffinity.login`,
-      `hentai-foundry.filter_order`, `hentai-foundry.use_prefix`,
-      `history.location`, `history.warn_before_delete`, `imgur.client_id`,
-      `instagram.download_images_only`, `instagram.session_id`, `lang`,
-      `log.level`, `log.save`, `nhentai.blacklist.tags`, `prefer.mp4`,
-      `proxy.http`, `proxy.socks`, `queue`, `rips.directory`,
-      `security.check_update_hash`, `ssl.verify.off`,
-      `testing.always_try_to_update`, `twitter.max_items_request`,
-      `window.h`, `window.position`, `window.w`, `window.x`, and `window.y`.
-- [ ] Mechanical source scan also found Java-used config keys that do exist in
-      Flutter defaults but still require explicit Java-behavior verification:
-      `clipboard.autorip`, `download.retries`, `download.timeout`,
-      `page.timeout`, `play.sound`, Reddit upvote/subdirectory keys
-      (`reddit.rip_by_upvote`, `reddit.min_upvotes`, `reddit.max_upvotes`,
-      `reddit.use_sub_dirs`), and `remember.url_history`.
-- [ ] Mechanical source scan also found Flutter-only replacement keys requiring
-      mapping notes: `error.skip404` versus Java `errors.skip404`,
-      `history.skip_downloaded_urls`, `proxy.enabled`, `proxy.host`,
-      `proxy.port`, `proxy.username`, and `proxy.password`.
+- [x] The mechanical source scan's Java-used-key findings are fully reconciled.
+      The source-backed generator currently finds 71 keys, all represented by
+      `ConfigDefaults.javaRuntimeKeys`; `ConfigParity` partitions them between
+      separately tracked controls and explicit active, alias, sentinel,
+      retired, or unsupported dispositions. The original finding's phrase
+      "missing from Flutter defaults" meant absent from the typed bundled
+      default maps, not absent from the parity inventory, and did not imply
+      that credentials, optional values, or retired sentinels should acquire
+      invented defaults.
+- [x] Java-used keys already carrying Flutter defaults are explicitly tracked
+      and behaviorally verified by their feature rows and focused tests:
+      clipboard autorip, retry/timeouts, sound, Reddit filtering/subdirectories,
+      and downloaded-URL history. The exhaustive parity test prevents a Java
+      key from being silently omitted or classified twice.
+- [x] Flutter-only configuration compatibility keys now have guarded mapping
+      notes. `history.skip_downloaded_urls` is a legacy fallback for Java
+      `remember.url_history`; `proxy.enabled`, `proxy.host`, `proxy.port`,
+      `proxy.username`, and `proxy.password` provide a structured UI for Java
+      `proxy.http`, while portable `proxy.http` retains precedence.
+      The original scan incorrectly called `error.skip404` Flutter-only: it is
+      the bundled Java resource/sentinel key, while Java CLI and a late download
+      branch use `errors.skip404`; that discrepancy is tracked above.
 
 ### C. History And Re-Rip
 

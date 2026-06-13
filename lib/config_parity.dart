@@ -9,6 +9,16 @@ enum HiddenConfigDisposition {
 }
 
 class ConfigParity {
+  static const Map<String, String> flutterOnlyReplacementKeys = {
+    'history.skip_downloaded_urls':
+        'Legacy Flutter fallback for Java remember.url_history',
+    'proxy.enabled': 'Structured Flutter UI for Java proxy.http',
+    'proxy.host': 'Structured Flutter UI for Java proxy.http',
+    'proxy.port': 'Structured Flutter UI for Java proxy.http',
+    'proxy.username': 'Structured Flutter UI for Java proxy.http',
+    'proxy.password': 'Structured Flutter UI for Java proxy.http',
+  };
+
   static const Set<String> separatelyTrackedControlKeys = {
     'album_titles.save',
     'auto.update',

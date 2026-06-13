@@ -37,4 +37,25 @@ void main() {
       HiddenConfigDisposition.retired,
     );
   });
+
+  test('maps every Flutter-only compatibility key to Java behavior', () {
+    expect(
+      ConfigParity.flutterOnlyReplacementKeys,
+      {
+        'history.skip_downloaded_urls':
+            'Legacy Flutter fallback for Java remember.url_history',
+        'proxy.enabled': 'Structured Flutter UI for Java proxy.http',
+        'proxy.host': 'Structured Flutter UI for Java proxy.http',
+        'proxy.port': 'Structured Flutter UI for Java proxy.http',
+        'proxy.username': 'Structured Flutter UI for Java proxy.http',
+        'proxy.password': 'Structured Flutter UI for Java proxy.http',
+      },
+    );
+    expect(
+      ConfigParity.flutterOnlyReplacementKeys.keys
+          .toSet()
+          .intersection(ConfigDefaults.javaRuntimeKeys),
+      isEmpty,
+    );
+  });
 }
