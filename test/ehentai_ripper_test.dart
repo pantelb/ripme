@@ -39,6 +39,10 @@ void main() {
           ['test', 'midnight on mars'], EHentaiRipper.tagsFromPage(page)),
       'midnight on mars',
     );
+    expect(
+      EHentaiRipper.checkTags(const [], EHentaiRipper.tagsFromPage(page)),
+      isNull,
+    );
   });
 
   test('extracts image URLs from preferred and fallback selectors', () {

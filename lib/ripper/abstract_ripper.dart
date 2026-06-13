@@ -214,7 +214,9 @@ abstract class AbstractRipper {
 
     _preRegisterDownloads(queue);
     final configuredThreads = Utils.getConfigInteger('threads.size', 10);
-    final workerCount = configuredThreads.clamp(1, queue.length);
+    final workerCount = Utils.getConfigBoolean('urls_only.save', false)
+        ? 1
+        : configuredThreads.clamp(1, queue.length);
 
     Future<void> worker() async {
       while (!isStopped && queue.isNotEmpty) {

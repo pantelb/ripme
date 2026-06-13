@@ -199,6 +199,7 @@ rips.directory=C\\:\\\\portable\\\\rips
 
     expect(Utils.getConfigInteger('threads.size', 10), 10);
     expect(Utils.getConfigBoolean('file.overwrite', false), isFalse);
+    expect(Utils.getConfigStringList('download.ignore_extensions'), isEmpty);
   });
 
   test('portable config setters persist immediately to rip.properties',

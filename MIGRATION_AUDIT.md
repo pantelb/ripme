@@ -1175,7 +1175,8 @@ Parity checklist:
     `<workingDir>/urls.txt`, emits download-complete status, and skips URL
     history writes. Like Java, append-to-folder still resolves and creates the
     normal sibling/subdirectory parent as a side effect but does not relocate
-    `urls.txt`.
+    `urls.txt`. URL-only scheduling is serialized so entries retain the source
+    list order instead of depending on concurrent worker start order.
   - CI: workflow `27385618025` succeeded. Artifacts: Android `7580053024`,
     Windows `7580020021`, macOS `7580002788`, Linux `7579995997`.
 - [x] Verify duplicate URL suppression scope.
@@ -1899,12 +1900,20 @@ Findings:
       configuration/CLI compatibility and matches the observable behavior:
       normal page and file 404 responses are non-retriable regardless of either
       value. CLI, widget, page, and file tests cover the split.
-- [ ] Java `Utils.getConfigStringArray(key)` returns `null` when
+  - CI: [run 27467310203](https://github.com/pantelb/ripme/actions/runs/27467310203)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27467310203/artifacts/7610981601),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27467310203/artifacts/7610964614),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27467310203/artifacts/7610956492),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27467310203/artifacts/7610948631)
+    artifacts.
+- [x] Java `Utils.getConfigStringArray(key)` returns `null` when
       `PropertiesConfiguration.getStringArray(key)` has length zero. Flutter
-      `Utils.getConfigStringList(key)` returns an empty list for missing or
-      blank values. Callers that distinguish `null` from empty lists, including
-      Java `RipUtils.checkTags(...)` and ignored-extension plumbing, need exact
-      compatibility tests or a deliberate replacement decision.
+      intentionally exposes a non-null empty list for missing or blank values.
+      All Java callers treat null and empty identically: ignored-extension
+      filtering returns false and tag blacklist checks return null. Missing
+      portable-key and empty-blacklist tests lock this equivalent Dart API.
 - [x] Java `album_titles.save=false` changes `AbstractJSONRipper` and the
       deprecated `AlbumRipper`
       directory naming: `AbstractJSONRipper.setWorkingDir(...)` falls back to
