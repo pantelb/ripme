@@ -1737,35 +1737,41 @@ Flutter files checked:
 
 Findings:
 
-- [ ] Flutter does not yet provide Java-compatible CLI/headless mode. Java
+- [x] Flutter provides Java-compatible CLI/headless mode. Java
       enters CLI mode when the environment is headless or any CLI args are
       present, then supports URL ripping, URL-file ripping, history re-rip,
       selected-history re-rip, proxy flags, save-order flags, overwrite,
       skip-404, custom rips directory, no-property-file mode, append-to-folder,
       and updater mode.
-- [ ] Java URL-file ripping skips lines beginning with `//` and `#`; Flutter
-      needs parser tests for that exact behavior.
-- [ ] Java CLI URL-file mode does not skip blank or whitespace-only lines:
+  - Flutter routes every non-empty argument list before GUI startup. On Linux,
+    an empty invocation with neither `DISPLAY` nor `WAYLAND_DISPLAY` also
+    enters CLI mode and prints help, matching Java's no-argument headless path.
+    Other platforms require explicit CLI arguments because Flutter exposes no
+    cross-platform equivalent to AWT's `GraphicsEnvironment.isHeadless()`.
+- [x] Java URL-file ripping skips lines beginning with `//` and `#`; Flutter
+      has parser coverage for that exact pre-trim behavior.
+- [x] Java CLI URL-file mode does not skip blank or whitespace-only lines:
       only raw lines starting with `//` or `#` are treated as comments, and
       every other line is trimmed and passed to `ripURL`.
-- [ ] Java `-n` / `--no-prop-file` behavior must be treated as source-backed
+- [x] Java `-n` / `--no-prop-file` behavior is treated as source-backed
       current behavior, not just help-text intent: `App.ripURL` receives but
       ignores its `saveConfig` argument, so history/config writes still follow
-      the normal Java code paths.
-- [ ] Java manual URL input rejects duplicate queue entries and expands
-      `{start-end}` numeric ranges before enqueueing. Flutter currently queues
-      the submitted URL string through `RipManager` and needs parity tests.
-- [ ] Java persists queue state through the `queue` config key on updates and
-      restores it on startup. Flutter queue persistence/restoration needs to be
-      implemented or intentionally replaced.
-- [ ] Java queue persistence has a shipped empty-queue edge case:
+      the normal Java code paths. Flutter recognizes the option as the same
+      tested no-op.
+- [x] Java manual URL input rejects duplicate queue entries and expands
+      `{start-end}` numeric ranges before enqueueing. `RipManager` matches both
+      behaviors with focused duplicate, inclusive-range, multi-group, and
+      malformed-range tests.
+- [x] Java persists queue state through the `queue` config key on updates and
+      restores it on startup. Flutter preserves ordered pending entries and
+      restores them without automatically starting a rip.
+- [x] Java queue persistence has a shipped empty-queue edge case:
       `MainWindow.updateQueue(...)` only calls `Utils.setConfigList("queue",
       ...)` and `Utils.saveConfig()` when `model.size() > 0`. Removing the last
       queued item or using the queue context menu's remove-all action updates
       the in-memory model/label but can leave stale persisted `queue` config
-      entries for the next startup. Flutter currently has no queue persistence,
-      so parity needs a choice between matching this bug, fixing it with a
-      migration note, or documenting retirement.
+      entries for the next startup. Flutter intentionally matches this shipped
+      behavior and has a regression test for the stale persisted value.
 - [x] Java queue context menu supports remove selected and remove all with a
       confirmation dialog. Flutter covers both actions with widget tests.
 - [x] Java `QueueMenuMouseListener` has no copy or reorder actions; it only
@@ -1773,8 +1779,9 @@ Findings:
       `queue.validation` confirmation. Flutter `QueueView` exposes copy,
       move-up, and move-down actions for individual queue rows, so the queue UI
       has intentional platform extensions beyond the Java menu.
-- [ ] Java `-a` appends text to the rip working-folder name through
-      `App.stringToAppendToFoldername`; Flutter has no verified equivalent.
+- [x] Java `-a` appends text to the rip working-folder name through
+      `App.stringToAppendToFoldername`; Flutter stores the exact untrimmed
+      process suffix and applies it in shared download path resolution.
 - [x] Java `-j` self-update replaces a jar on disk. Flutter intentionally
       replaces this with a GitHub Release check and manual platform-artifact
       installation; README and CLI output state that no in-place replacement
@@ -5672,8 +5679,9 @@ Initial status:
 - [x] Flutter has update checking through GitHub Releases instead of Java self-update.
 - [~] Java GUI behavior is partly represented; source-audited MainWindow gaps
       are tracked in sections F, G, and the workflow notes below.
-- [ ] Java CLI/headless mode from `App.java` is not yet verified as ported.
-- [ ] Java command-line options are not yet fully mapped to Flutter behavior.
+- [x] Java CLI/headless mode from `App.java` is verified as ported, with
+      explicit platform replacements for SOCKS proxying and self-update.
+- [x] Java command-line options are mapped to tested Flutter behavior.
 
 CLI/headless Java behavior to verify and port:
 
@@ -5689,7 +5697,8 @@ CLI/headless Java behavior to verify and port:
 - `-D` / `--nosaveorder`: set `download.save_order=false`
 - `-4` / `--skip404`: set 404 skip behavior
 - `-l` / `--ripsdirectory`: set `rips.directory`
-- `-n` / `--no-prop-file`: do not persist property/config changes for that run
+- `-n` / `--no-prop-file`: accepted no-op because Java never reads the
+  `saveConfig` argument
 - `-s` / `--socks-server`: use SOCKS proxy
 - `-p` / `--proxy-server`: use HTTP proxy
 - `-j` / `--update`: run updater
@@ -5698,14 +5707,18 @@ CLI/headless Java behavior to verify and port:
 
 First findings:
 
-- Java chooses CLI/headless mode when either the environment is headless or any CLI args are present. Flutter currently starts the GUI from `main()` and does not branch on process arguments.
-- Java supports persisted queue restoration through the `queue` config key in `MainWindow`; Flutter keeps an in-memory queue in `RipManager`, and queue persistence/restoration still needs a focused parity check.
+- Java chooses CLI/headless mode when either the environment is headless or any
+  CLI args are present. Flutter branches before GUI construction for all
+  arguments and for no-display Linux sessions; no-argument headless mode prints
+  help like Java.
+- Java supports persisted queue restoration through the `queue` config key in
+  `MainWindow`; Flutter now restores and updates the same key, including Java's
+  non-empty update edge case.
 - Java rejects duplicate manual queue entries and expands numeric URL ranges
-  using `{start-end}` syntax in `RipButtonHandler`; Flutter currently enqueues
-  the submitted text directly, so queue-entry parity is missing.
+  using `{start-end}` syntax in `RipButtonHandler`; Flutter now matches both
+  behaviors with deterministic queue tests.
 - Java validates the current URL while typing and shows detected ripper host;
-  Flutter command bar parity for live validation is tracked as a source-backed
-  UI gap in section F.
+  Flutter command bar now performs the same live validation and host status.
 
 ### 2. Main Window And User Workflows
 
@@ -5885,12 +5898,12 @@ Sources read:
 
 Open work:
 
-- [ ] Port or explicitly replace Java CLI/headless mode.
-- [ ] Add Dart tests for CLI parsing/config side effects.
-- [ ] Queue persistence, duplicate enqueue behavior, and `{start-end}` URL range
-      expansion are source-audited and still need implementation/tests.
-- [ ] Selected-history re-rip behavior is source-audited and still needs a
-      Flutter selected-history model or documented replacement.
+- [x] Port or explicitly replace Java CLI/headless mode.
+- [x] Add Dart tests for CLI parsing/config side effects.
+- [x] Queue persistence, duplicate enqueue behavior, and `{start-end}` URL range
+      expansion are implemented and tested.
+- [x] Selected-history re-rip behavior uses a persisted selected-history model
+      and is covered in CLI/provider/widget tests.
 - [x] Open-folder and tray/popup behavior is implemented for Windows, Linux,
       and macOS, with Android intentionally excluding Java desktop shell
       surfaces.

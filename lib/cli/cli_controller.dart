@@ -107,10 +107,23 @@ usage: ripme [OPTIONS]
  -H,--history <PATH>         Set history file location.
 ''';
 
-  static bool shouldRunHeadless(List<String> args) => args.isNotEmpty;
+  static bool shouldRunHeadless(
+    List<String> args, {
+    bool? runningOnLinux,
+    Map<String, String>? environment,
+  }) {
+    if (args.isNotEmpty) return true;
+    if (!(runningOnLinux ?? Platform.isLinux)) return false;
+
+    final processEnvironment = environment ?? Platform.environment;
+    final display = processEnvironment['DISPLAY']?.trim();
+    final waylandDisplay = processEnvironment['WAYLAND_DISPLAY']?.trim();
+    return (display == null || display.isEmpty) &&
+        (waylandDisplay == null || waylandDisplay.isEmpty);
+  }
 
   Future<CliResult> run(List<String> args) async {
-    if (_hasOption(args, '-h', '--help')) {
+    if (args.isEmpty || _hasOption(args, '-h', '--help')) {
       return const CliResult(exitCode: 0, output: helpText);
     }
     if (_hasOption(args, '-v', '--version')) {

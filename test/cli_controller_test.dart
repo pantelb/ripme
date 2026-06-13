@@ -26,11 +26,54 @@ class _FakeConfigStore implements CliConfigStore {
 }
 
 void main() {
-  test('only non-empty argument lists select headless mode', () {
-    expect(CliController.shouldRunHeadless(const []), isFalse);
+  test('arguments or a Linux no-display session select headless mode', () {
+    expect(
+      CliController.shouldRunHeadless(
+        const [],
+        runningOnLinux: false,
+        environment: const {},
+      ),
+      isFalse,
+    );
+    expect(
+      CliController.shouldRunHeadless(
+        const [],
+        runningOnLinux: true,
+        environment: const {'DISPLAY': ':0'},
+      ),
+      isFalse,
+    );
+    expect(
+      CliController.shouldRunHeadless(
+        const [],
+        runningOnLinux: true,
+        environment: const {'WAYLAND_DISPLAY': 'wayland-0'},
+      ),
+      isFalse,
+    );
+    expect(
+      CliController.shouldRunHeadless(
+        const [],
+        runningOnLinux: true,
+        environment: const {},
+      ),
+      isTrue,
+    );
     expect(CliController.shouldRunHeadless(const ['--help']), isTrue);
-    expect(CliController.shouldRunHeadless(const ['--url', 'https://x.test']),
-        isTrue);
+    expect(
+      CliController.shouldRunHeadless(
+        const ['--url', 'https://x.test'],
+      ),
+      isTrue,
+    );
+  });
+
+  test('no-argument headless invocation prints Java help', () async {
+    final result = await CliController().run(const []);
+
+    expect(result.exitCode, 0);
+    expect(result.isError, isFalse);
+    expect(result.output, startsWith('usage: ripme [OPTIONS]'));
   });
 
   test('short and long help options print the Java CLI option surface',
