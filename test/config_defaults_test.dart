@@ -186,7 +186,8 @@ rips.directory=C\\:\\\\portable\\\\rips
         .where(
           (line) =>
               !line.trimLeft().startsWith('threads.size ') &&
-              !line.trimLeft().startsWith('file.overwrite '),
+              !line.trimLeft().startsWith('file.overwrite ') &&
+              !line.trimLeft().startsWith('twitter.rip_retweets '),
         )
         .join('\n');
     await config.writeAsString('$values\n');
@@ -199,6 +200,7 @@ rips.directory=C\\:\\\\portable\\\\rips
 
     expect(Utils.getConfigInteger('threads.size', 10), 10);
     expect(Utils.getConfigBoolean('file.overwrite', false), isFalse);
+    expect(Utils.getConfigBoolean('twitter.rip_retweets', true), isTrue);
     expect(Utils.getConfigStringList('download.ignore_extensions'), isEmpty);
   });
 

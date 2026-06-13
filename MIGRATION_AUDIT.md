@@ -1914,6 +1914,14 @@ Findings:
       All Java callers treat null and empty identically: ignored-extension
       filtering returns false and tag blacklist checks return null. Missing
       portable-key and empty-blacklist tests lock this equivalent Dart API.
+  - CI: [run 27469057151](https://github.com/pantelb/ripme/actions/runs/27469057151)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27469057151/artifacts/7611522674),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27469057151/artifacts/7611520500),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27469057151/artifacts/7611517269),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27469057151/artifacts/7611498185)
+    artifacts.
 - [x] Java `album_titles.save=false` changes `AbstractJSONRipper` and the
       deprecated `AlbumRipper`
       directory naming: `AbstractJSONRipper.setWorkingDir(...)` falls back to
@@ -1931,11 +1939,11 @@ Findings:
     [Windows](https://github.com/pantelb/ripme/actions/runs/27357574894/artifacts/7568925684),
     [macOS](https://github.com/pantelb/ripme/actions/runs/27357574894/artifacts/7568909737),
     [Linux](https://github.com/pantelb/ripme/actions/runs/27357574894/artifacts/7568869363).
-- [ ] Java `TwitterRipper` defaults `twitter.rip_retweets` to `true` through
-      `Utils.getConfigBoolean("twitter.rip_retweets", true)`. Flutter's
-      `config_defaults.dart` sets `twitter.rip_retweets` to `false`, so the
-      default Twitter media set is narrower than Java unless the user changes
-      the setting.
+- [x] Java bundled `rip.properties` sets `twitter.rip_retweets=false`, while
+      `TwitterRipper` uses `true` when an authoritative external config omits
+      the key. Flutter preserves both cases: native/bundled configuration
+      defaults to false, portable configuration uses the Java call-site true
+      fallback, and focused tests cover both values.
 - [x] Java `history.location` controls downloaded-URL history
       (`url_history.txt`), not the album history JSON. Flutter uses the
       configured file when supplied and otherwise documents SharedPreferences
