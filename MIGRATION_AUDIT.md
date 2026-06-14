@@ -2419,6 +2419,14 @@ Findings:
     the explicit text preflight preserves Java behavior for raw URL fixtures.
     Focused tests verify silent rejection leaves no history or URL-only output
     and lock literal-space replacement.
+  - CI: [run 27486069829](https://github.com/pantelb/ripme/actions/runs/27486069829)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27486069829/artifacts/7616746911),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27486069829/artifacts/7616736181),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27486069829/artifacts/7616726285),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27486069829/artifacts/7616723525)
+    artifacts.
 - [x] Java `urls_only.save=true` writes `urls.txt`, counts it as completed, and
       attempts to open `urls.txt` after rip completion.
   - Completed: Flutter writes and reports each URL as completed, preserves the
@@ -2446,15 +2454,32 @@ Findings:
       interruption equivalent; Java only logs an interrupted wait and emits no
       rip status. An overridable timeout provides deterministic focused
       coverage without weakening the production duration.
-- [ ] Java `AbstractHTMLRipper`/`AbstractJSONRipper` wait on overridable
-      `getThreadPool()` hooks, and concrete rippers can replace the default
-      pool with per-ripper pools. Current Java overrides are
+  - CI: [run 27486221589](https://github.com/pantelb/ripme/actions/runs/27486221589)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27486221589/artifacts/7616795450),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27486221589/artifacts/7616780332),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27486221589/artifacts/7616772814),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27486221589/artifacts/7616771074)
+    artifacts.
+- [x] Java `AbstractHTMLRipper` waits on an overridable `getThreadPool()` hook,
+      and concrete rippers can add a per-ripper auxiliary pool. Java declarations
+      occur in
       `DeviantartRipper`, `E621Ripper`, `EHentaiRipper`, `FlickrRipper`,
       `FuraffinityRipper`, `HqpornerRipper`, `ImagebamRipper`,
       `ImagevenueRipper`, `ListalRipper`, `MotherlessRipper`, `NfsfwRipper`,
-      `NhentaiRipper`, and `PornhubRipper`. Flutter uses the shared
-      `AbstractRipper.downloadFiles` worker queue and has no verified
-      per-ripper pool hook/coverage for these classes.
+      `NhentaiRipper`, and `PornhubRipper`.
+  - Java-source discrepancy: `AbstractJSONRipper.getThreadPool()` is private,
+    always returns `null`, and cannot be overridden. The Flickr, Furaffinity,
+    and Nhentai HTML overrides return pools that never receive a task, so their
+    extra wait is behaviorally inert. The other ten rippers submit page/media
+    resolution work to a second fixed pool. Flutter now provides
+    `runAuxiliaryTasks`, using the configured `threads.size`, preserving
+    submission-order results, isolating task failures, honoring per-ripper
+    scheduling delays, and applying the same worker wait timeout. All ten
+    active callers use it before handing resolved media to `downloadFiles`.
+    Shared tests verify width, result order, and task-failure isolation; each
+    affected ripper suite verifies its parser and download metadata paths.
 - [x] Java stops an HTML rip after `history.end_rip_after_already_seen` already
       downloaded URLs and sends `DOWNLOAD_COMPLETE_HISTORY`.
   - Completed: Flutter emits `downloadCompleteHistory` after the current

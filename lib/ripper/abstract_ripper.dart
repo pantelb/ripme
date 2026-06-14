@@ -281,6 +281,62 @@ abstract class AbstractRipper {
     _stopIfHistoryLimitReached();
   }
 
+  Future<List<T>> runAuxiliaryTasks<T>(
+    Iterable<Future<T?> Function()> tasks, {
+    Future<void> Function()? beforeEach,
+    Future<void> Function()? afterEach,
+  }) async {
+    final taskList = tasks.toList(growable: false);
+    if (taskList.isEmpty || isStopped) return <T>[];
+
+    final workerLimit =
+        Utils.getConfigInteger('threads.size', 10).clamp(1, taskList.length);
+    final results = List<T?>.filled(taskList.length, null);
+    final activeTasks = <Future<void>>[];
+    final slotWaiters = Queue<Completer<void>>();
+    var activeCount = 0;
+
+    Future<void> acquireSlot() async {
+      if (activeCount < workerLimit) {
+        activeCount++;
+        return;
+      }
+      final waiter = Completer<void>();
+      slotWaiters.add(waiter);
+      await waiter.future;
+      activeCount++;
+    }
+
+    void releaseSlot() {
+      activeCount--;
+      if (slotWaiters.isNotEmpty) {
+        slotWaiters.removeFirst().complete();
+      }
+    }
+
+    for (var index = 0; index < taskList.length && !isStopped; index++) {
+      if (beforeEach != null) await beforeEach();
+      await acquireSlot();
+      final task = Future<void>(() async {
+        try {
+          results[index] = await taskList[index]();
+        } catch (_) {
+          // Java executor task failures do not escape waitForThreads().
+        } finally {
+          releaseSlot();
+        }
+      });
+      activeTasks.add(task);
+      if (afterEach != null) await afterEach();
+    }
+
+    await Future.wait<void>(activeTasks).timeout(
+      downloadWorkerWaitTimeout,
+      onTimeout: () => <void>[],
+    );
+    return results.whereType<T>().toList(growable: false);
+  }
+
   Future<void> downloadFile(Uri url, File saveAs,
       {Map<String, String>? headers,
       Map<String, String>? cookies,

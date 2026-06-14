@@ -7,6 +7,7 @@ import '../../ui/rip_status_message.dart';
 import '../../utils/http_utils.dart';
 import '../../utils/utils.dart';
 import '../abstract_html_ripper.dart';
+import '../abstract_ripper.dart';
 
 class ImagebamRipper extends AbstractHTMLRipper {
   ImagebamRipper(super.url);
@@ -60,26 +61,37 @@ class ImagebamRipper extends AbstractHTMLRipper {
 
     var index = 0;
     while (!isStopped) {
-      for (final imagePageUrl in await getURLsFromPage(page)) {
-        if (isStopped) break;
-        index++;
-        final directImageUrl = await directImageUrlFromPageUrl(
-          Uri.parse(imagePageUrl),
-        );
-        if (directImageUrl == null) continue;
-
-        final imageUri = Uri.parse(directImageUrl);
-        await downloadFile(
-          imageUri,
-          File(
-            p.join(
-              workingDir.path,
-              fileNameForUrl(imageUri, prefix: prefixForIndex(index)),
-            ),
-          ),
-        );
-        await sleepWithGaussianJitter(500);
-      }
+      final imagePageUrls = await getURLsFromPage(page);
+      final indexedPageUrls = [
+        for (final imagePageUrl in imagePageUrls)
+          (url: imagePageUrl, index: ++index),
+      ];
+      final downloads = await runAuxiliaryTasks<RipperDownload>(
+        [
+          for (final item in indexedPageUrls)
+            () async {
+              final directImageUrl = await directImageUrlFromPageUrl(
+                Uri.parse(item.url),
+              );
+              if (directImageUrl == null) return null;
+              final imageUri = Uri.parse(directImageUrl);
+              return RipperDownload(
+                url: imageUri,
+                saveAs: File(
+                  p.join(
+                    workingDir.path,
+                    fileNameForUrl(
+                      imageUri,
+                      prefix: prefixForIndex(item.index),
+                    ),
+                  ),
+                ),
+              );
+            },
+        ],
+        afterEach: () => sleepWithGaussianJitter(500),
+      );
+      await downloadFiles(downloads);
 
       if (isStopped) break;
       final nextUri = await getNextPage(page);

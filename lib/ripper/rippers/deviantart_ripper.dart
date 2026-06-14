@@ -94,16 +94,16 @@ class DeviantartRipper extends AbstractHTMLRipper {
         break;
       }
 
-      final downloads = <RipperDownload>[];
-      for (final pageUrl in pageUrls) {
-        if (isStopped) break;
-        sendUpdate(
-          RipStatus.loadingResource,
-          'Searching max. resolution for $pageUrl',
-        );
-        final download = await downloadFromDeviationPage(Uri.parse(pageUrl));
-        if (download != null) downloads.add(download);
-      }
+      final downloads = await runAuxiliaryTasks<RipperDownload>([
+        for (final pageUrl in pageUrls)
+          () async {
+            sendUpdate(
+              RipStatus.loadingResource,
+              'Searching max. resolution for $pageUrl',
+            );
+            return downloadFromDeviationPage(Uri.parse(pageUrl));
+          },
+      ]);
       await downloadFiles(downloads);
 
       if (isStopped) break;

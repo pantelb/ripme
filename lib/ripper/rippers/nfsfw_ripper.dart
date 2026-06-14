@@ -85,22 +85,25 @@ class NfsfwRipper extends AbstractHTMLRipper {
       final imagePageUrls = imagePageUrlsFromDocument(page);
       _subalbumURLs.addAll(subalbumUrlsFromDocument(page));
 
-      final downloads = <RipperDownload>[];
-      for (final imagePageUrl in imagePageUrls) {
-        if (isStopped) break;
-        final imagePageUri = Uri.parse(imagePageUrl);
-        final downloadIndex = _currentDir.isEmpty ? ++index : ++_subalbumIndex;
-        final download = await downloadFromImagePage(
-          imagePageUri,
-          index: downloadIndex,
-          subdirectory: _currentDir,
-          imagePageFetcher: (uri) => Http.get(
-            uri,
-            headers: {'Referer': uri.toString()},
+      final indexedPageUrls = [
+        for (final imagePageUrl in imagePageUrls)
+          (
+            url: imagePageUrl,
+            index: _currentDir.isEmpty ? ++index : ++_subalbumIndex,
           ),
-        );
-        if (download != null) downloads.add(download);
-      }
+      ];
+      final downloads = await runAuxiliaryTasks<RipperDownload>([
+        for (final item in indexedPageUrls)
+          () => downloadFromImagePage(
+                Uri.parse(item.url),
+                index: item.index,
+                subdirectory: _currentDir,
+                imagePageFetcher: (uri) => Http.get(
+                  uri,
+                  headers: {'Referer': uri.toString()},
+                ),
+              ),
+      ]);
       await downloadFiles(downloads);
 
       final nextUri = await getNextPage(page);

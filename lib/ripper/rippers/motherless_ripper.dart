@@ -59,23 +59,34 @@ class MotherlessRipper extends AbstractHTMLRipper {
     var index = 0;
 
     while (page != null && !isStopped) {
-      for (final pageUrlText in await getURLsFromPage(page)) {
-        if (isStopped) break;
-
-        index++;
-        final pageUri = Uri.parse(pageUrlText);
-        final fileUri = await fileUrlFromImagePage(pageUri);
-        await Http.delay(imageSleepTime);
-        if (fileUri == null) continue;
-
-        downloads.add(RipperDownload(
-          url: fileUri,
-          saveAs: File(p.join(
-            workingDir.path,
-            fileNameForUrl(fileUri, prefix: prefixForIndex(index)),
-          )),
-        ));
-      }
+      final pageUrls = await getURLsFromPage(page);
+      final indexedPageUrls = [
+        for (final pageUrl in pageUrls) (url: pageUrl, index: ++index),
+      ];
+      downloads.addAll(
+        await runAuxiliaryTasks<RipperDownload>(
+          [
+            for (final item in indexedPageUrls)
+              () async {
+                final fileUri = await fileUrlFromImagePage(Uri.parse(item.url));
+                if (fileUri == null) return null;
+                return RipperDownload(
+                  url: fileUri,
+                  saveAs: File(
+                    p.join(
+                      workingDir.path,
+                      fileNameForUrl(
+                        fileUri,
+                        prefix: prefixForIndex(item.index),
+                      ),
+                    ),
+                  ),
+                );
+              },
+          ],
+          afterEach: () => Http.delay(imageSleepTime),
+        ),
+      );
 
       if (isStopped) break;
 

@@ -109,27 +109,33 @@ class ListalRipper extends AbstractHTMLRipper {
 
     var index = 0;
     while (!isStopped) {
-      final downloads = <RipperDownload>[];
-      for (final imagePageUrl in await getURLsFromPage(page)) {
-        if (isStopped) break;
-        final imageUrl =
-            await imageUrlFromImagePageUrl(Uri.parse(imagePageUrl));
-        if (imageUrl == null) continue;
-        index++;
-        final imageUri = Uri.parse(imageUrl);
-        final imagePageUri = Uri.parse(imagePageUrl);
-        downloads.add(
-          RipperDownload(
-            url: imageUri,
-            saveAs: File(
-              p.join(
-                workingDir.path,
-                fileNameForImagePage(imagePageUri, prefixForIndex(index)),
+      final imagePageUrls = await getURLsFromPage(page);
+      final indexedPageUrls = [
+        for (final imagePageUrl in imagePageUrls)
+          (url: imagePageUrl, index: ++index),
+      ];
+      final downloads = await runAuxiliaryTasks<RipperDownload>([
+        for (final item in indexedPageUrls)
+          () async {
+            final imageUrl =
+                await imageUrlFromImagePageUrl(Uri.parse(item.url));
+            if (imageUrl == null) return null;
+            final imageUri = Uri.parse(imageUrl);
+            final imagePageUri = Uri.parse(item.url);
+            return RipperDownload(
+              url: imageUri,
+              saveAs: File(
+                p.join(
+                  workingDir.path,
+                  fileNameForImagePage(
+                    imagePageUri,
+                    prefixForIndex(item.index),
+                  ),
+                ),
               ),
-            ),
-          ),
-        );
-      }
+            );
+          },
+      ]);
 
       await downloadFiles(downloads);
       if (isStopped) break;

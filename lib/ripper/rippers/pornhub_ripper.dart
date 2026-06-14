@@ -51,16 +51,24 @@ class PornhubRipper extends AbstractHTMLRipper {
 
     var index = 0;
     while (!isStopped) {
-      for (final imagePageUrl in await getURLsFromPage(page)) {
-        if (isStopped) break;
-        index++;
-        await _queueImageFromPage(Uri.parse(imagePageUrl), index);
-        if (!isStopped) {
-          await Http.delay(
-            const Duration(milliseconds: imageSleepMilliseconds),
-          );
-        }
-      }
+      final imagePageUrls = await getURLsFromPage(page);
+      final indexedPageUrls = [
+        for (final imagePageUrl in imagePageUrls)
+          (url: imagePageUrl, index: ++index),
+      ];
+      final downloads = await runAuxiliaryTasks<RipperDownload>(
+        [
+          for (final item in indexedPageUrls)
+            () => _downloadFromImagePage(
+                  Uri.parse(item.url),
+                  item.index,
+                ),
+        ],
+        afterEach: () => Http.delay(
+          const Duration(milliseconds: imageSleepMilliseconds),
+        ),
+      );
+      await downloadFiles(downloads);
 
       if (isStopped) break;
       final nextUri = await getNextPage(page);
@@ -77,27 +85,28 @@ class PornhubRipper extends AbstractHTMLRipper {
     sendUpdate(RipStatus.ripComplete, workingDir.path);
   }
 
-  Future<void> _queueImageFromPage(Uri imagePageUrl, int index) async {
+  Future<RipperDownload?> _downloadFromImagePage(
+    Uri imagePageUrl,
+    int index,
+  ) async {
     try {
       final imagePage = await Http.get(
         imagePageUrl,
         headers: referrerHeaders(imagePageUrl),
       );
       final imageUrl = directImageUrlFromDocument(imagePage, imagePageUrl);
-      if (imageUrl == null) return;
-      await downloadFiles([
-        RipperDownload(
-          url: imageUrl,
-          saveAs: File(
-            p.join(
-              workingDir.path,
-              fileNameForUrl(imageUrl, prefix: prefixForIndex(index)),
-            ),
+      if (imageUrl == null) return null;
+      return RipperDownload(
+        url: imageUrl,
+        saveAs: File(
+          p.join(
+            workingDir.path,
+            fileNameForUrl(imageUrl, prefix: prefixForIndex(index)),
           ),
         ),
-      ]);
+      );
     } catch (_) {
-      return;
+      return null;
     }
   }
 

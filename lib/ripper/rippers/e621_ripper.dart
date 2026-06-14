@@ -90,21 +90,30 @@ class E621Ripper extends AbstractHTMLRipper {
     var index = 0;
     while (!isStopped) {
       warnAboutBlacklist(page);
-      final downloads = <RipperDownload>[];
-      for (final postUrl in await getURLsFromPage(page)) {
-        if (isStopped) break;
-        index++;
-        await sleepWithGaussianJitter(postDelay.inMilliseconds);
-        final fullSize = await fullSizedImage(Uri.parse(postUrl));
-        if (fullSize == null || fullSize.isEmpty) continue;
-        final uri = Uri.parse(fullSize);
-        downloads.add(
-          RipperDownload(
-            url: uri,
-            saveAs: File(p.join(workingDir.path, downloadFileName(uri, index))),
-          ),
-        );
-      }
+      final postUrls = await getURLsFromPage(page);
+      final indexedPostUrls = [
+        for (final postUrl in postUrls) (url: postUrl, index: ++index),
+      ];
+      final downloads = await runAuxiliaryTasks<RipperDownload>(
+        [
+          for (final item in indexedPostUrls)
+            () async {
+              final fullSize = await fullSizedImage(Uri.parse(item.url));
+              if (fullSize == null || fullSize.isEmpty) return null;
+              final uri = Uri.parse(fullSize);
+              return RipperDownload(
+                url: uri,
+                saveAs: File(
+                  p.join(
+                    workingDir.path,
+                    downloadFileName(uri, item.index),
+                  ),
+                ),
+              );
+            },
+        ],
+        beforeEach: () => sleepWithGaussianJitter(postDelay.inMilliseconds),
+      );
 
       if (downloads.isEmpty) {
         sendUpdate(RipStatus.ripErrored, 'No images found at $url');

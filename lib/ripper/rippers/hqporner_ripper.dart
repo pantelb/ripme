@@ -7,6 +7,7 @@ import '../../ui/rip_status_message.dart';
 import '../../utils/http_utils.dart';
 import '../../utils/utils.dart';
 import '../abstract_html_ripper.dart';
+import '../abstract_ripper.dart';
 
 class HqpornerRipper extends AbstractHTMLRipper {
   HqpornerRipper(super.url);
@@ -57,7 +58,8 @@ class HqpornerRipper extends AbstractHTMLRipper {
 
     try {
       if (_videoPattern.hasMatch(url.toString())) {
-        await _downloadVideoPage(url, '');
+        final download = await _videoDownloadForPage(url, '');
+        if (download != null) await downloadFiles([download]);
       } else {
         await _ripListing();
       }
@@ -72,10 +74,12 @@ class HqpornerRipper extends AbstractHTMLRipper {
     var page = await Http.get(url);
     final subdirectory = subdirectoryForListing(url);
     while (!isStopped) {
-      for (final videoPage in await getURLsFromPage(page)) {
-        if (isStopped) break;
-        await _downloadVideoPage(Uri.parse(videoPage), subdirectory);
-      }
+      final videoPages = await getURLsFromPage(page);
+      final downloads = await runAuxiliaryTasks<RipperDownload>([
+        for (final videoPage in videoPages)
+          () => _videoDownloadForPage(Uri.parse(videoPage), subdirectory),
+      ]);
+      await downloadFiles(downloads);
       if (isStopped) break;
 
       final next = await getNextPage(page);
@@ -85,9 +89,12 @@ class HqpornerRipper extends AbstractHTMLRipper {
     }
   }
 
-  Future<void> _downloadVideoPage(Uri videoPageUrl, String subdirectory) async {
+  Future<RipperDownload?> _videoDownloadForPage(
+    Uri videoPageUrl,
+    String subdirectory,
+  ) async {
     final request = await getVideoDownloadForPage(videoPageUrl);
-    if (request == null) return;
+    if (request == null) return null;
 
     final fileName = '${await getGID(videoPageUrl)}.mp4';
     final pathParts = [
@@ -98,7 +105,7 @@ class HqpornerRipper extends AbstractHTMLRipper {
     final saveAs = File(
       p.joinAll(pathParts),
     );
-    await downloadFile(request, saveAs);
+    return RipperDownload(url: request, saveAs: saveAs);
   }
 
   Future<Uri?> getVideoDownloadForPage(Uri videoPageUrl) async {

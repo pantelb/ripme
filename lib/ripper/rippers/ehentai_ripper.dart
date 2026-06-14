@@ -68,14 +68,17 @@ class EHentaiRipper extends AbstractHTMLRipper {
 
     var index = 0;
     while (page != null && !isStopped) {
-      final downloads = <RipperDownload>[];
-      for (final pageUrl in await getURLsFromPage(page)) {
-        if (isStopped) break;
-        index++;
-        final download = await downloadFromImagePage(Uri.parse(pageUrl), index);
-        if (download != null) downloads.add(download);
-        await Http.delay(imageSleepTime);
-      }
+      final pageUrls = await getURLsFromPage(page);
+      final indexedPageUrls = [
+        for (final pageUrl in pageUrls) (url: pageUrl, index: ++index),
+      ];
+      final downloads = await runAuxiliaryTasks<RipperDownload>(
+        [
+          for (final item in indexedPageUrls)
+            () => downloadFromImagePage(Uri.parse(item.url), item.index),
+        ],
+        afterEach: () => Http.delay(imageSleepTime),
+      );
 
       if (downloads.isEmpty) {
         sendUpdate(RipStatus.ripErrored, 'No images found at $url');

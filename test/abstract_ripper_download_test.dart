@@ -146,6 +146,22 @@ class TimedWaitTestRipper extends TestRipper {
   }
 }
 
+class AuxiliaryPoolTestRipper extends TestRipper {
+  AuxiliaryPoolTestRipper(super.url, super.directory);
+
+  int activeTasks = 0;
+  int maxActiveTasks = 0;
+
+  Future<int?> task(int value, {bool fail = false}) async {
+    activeTasks++;
+    if (activeTasks > maxActiveTasks) maxActiveTasks = activeTasks;
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    activeTasks--;
+    if (fail) throw StateError('task failed');
+    return value;
+  }
+}
+
 class HeaderCookieTestRipper extends TestRipper {
   HeaderCookieTestRipper(super.url, super.directory);
 
@@ -745,6 +761,28 @@ void main() {
 
     expect(ripper.release.isCompleted, isFalse);
     ripper.release.complete();
+  });
+
+  test('runs Java auxiliary pool tasks with configured width and isolation',
+      () async {
+    SharedPreferences.setMockInitialValues({'threads.size': 2});
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_aux_pool_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        AuxiliaryPoolTestRipper(Uri.parse('https://example.com'), directory);
+
+    final results = await ripper.runAuxiliaryTasks<int>([
+      () => ripper.task(1),
+      () => ripper.task(2, fail: true),
+      () => ripper.task(3),
+      () => ripper.task(4),
+    ]);
+
+    expect(results, [1, 3, 4]);
+    expect(ripper.maxActiveTasks, 2);
   });
 
   test('uses Java pending completed and errored progress percentage', () async {
