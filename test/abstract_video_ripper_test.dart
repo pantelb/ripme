@@ -69,6 +69,15 @@ class TestVideoRipper extends AbstractVideoRipper {
   }
 }
 
+class FailingVideoRipper extends TestVideoRipper {
+  FailingVideoRipper(super.url, super.directory, super.videoUrl);
+
+  @override
+  Future<VideoDownloadRequest> getVideoDownloadForRip(Uri url) async {
+    throw const FormatException('missing video');
+  }
+}
+
 void main() {
   tearDown(AbstractRipper.resetTestMode);
 
@@ -81,7 +90,9 @@ void main() {
     await Utils.init();
 
     final directory = await Directory.systemTemp.createTemp('ripme_video_test');
-    addTearDown(() => directory.delete(recursive: true));
+    addTearDown(() async {
+      if (await directory.exists()) await directory.delete(recursive: true);
+    });
     final pageUrl = Uri.parse('https://example.com/video-page');
     final videoUrl = Uri.parse('https://cdn.example.com/resolved.mp4');
     final ripper = TestVideoRipper(
@@ -121,6 +132,31 @@ void main() {
     expect(
       await File(p.join(directory.path, 'urls.txt')).readAsString(),
       '$videoUrl${Platform.lineTerminator}',
+    );
+  });
+
+  test('video resolution errors do not fall through to rip completion',
+      () async {
+    final directory = await Directory.systemTemp.createTemp('ripme_video_test');
+    addTearDown(() async {
+      if (await directory.exists()) await directory.delete(recursive: true);
+    });
+    final ripper = FailingVideoRipper(
+      Uri.parse('https://example.com/video-page'),
+      directory,
+      Uri.parse('https://example.com/missing.mp4'),
+    );
+    await ripper.setup();
+    final statuses = <RipStatusMessage>[];
+    final subscription = ripper.statusStream.listen(statuses.add);
+    addTearDown(subscription.cancel);
+
+    await ripper.run();
+    await Future<void>.delayed(Duration.zero);
+
+    expect(
+      statuses.map((message) => message.status),
+      [RipStatus.loadingResource, RipStatus.ripErrored],
     );
   });
 

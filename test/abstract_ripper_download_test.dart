@@ -53,6 +53,16 @@ class LifecycleTestRipper extends TestRipper {
   }
 }
 
+class ConflictingTerminalStatusTestRipper extends TestRipper {
+  ConflictingTerminalStatusTestRipper(super.url, super.directory);
+
+  @override
+  Future<void> rip() async {
+    sendUpdate(RipStatus.ripErrored, 'failed');
+    sendUpdate(RipStatus.ripComplete, workingDir.path);
+  }
+}
+
 class NormalizingHistoryTestRipper extends TestRipper {
   NormalizingHistoryTestRipper(
     super.url,
@@ -392,6 +402,31 @@ class JsonMediaGuardTestRipper extends AbstractJSONRipper {
   }
 }
 
+class FailingJsonLifecycleTestRipper extends AbstractJSONRipper {
+  FailingJsonLifecycleTestRipper(super.url, this.directory);
+
+  final Directory directory;
+
+  @override
+  Future<void> setup() async {
+    workingDir = directory;
+  }
+
+  @override
+  bool canRip(Uri url) => true;
+
+  @override
+  Future<String> getGID(Uri url) async => 'json-failure';
+
+  @override
+  String getHost() => 'json';
+
+  @override
+  Future<void> parseJSON(Uri url) async {
+    throw const FormatException('invalid JSON');
+  }
+}
+
 void main() {
   tearDown(() {
     AbstractRipper.folderNameSuffix = null;
@@ -434,7 +469,7 @@ void main() {
     expect(await directory.exists(), isFalse);
   });
 
-  test('run deletes an empty working directory after a failed rip', () async {
+  test('run reports Java rip errors and deletes the empty directory', () async {
     final parent =
         await Directory.systemTemp.createTemp('ripme_cleanup_failure_test');
     addTearDown(() => parent.delete(recursive: true));
@@ -445,10 +480,40 @@ void main() {
       error: StateError('rip failed'),
     );
     await ripper.setup();
+    final statuses = <RipStatusMessage>[];
+    final subscription = ripper.statusStream.listen(statuses.add);
+    addTearDown(subscription.cancel);
 
-    await expectLater(ripper.run(), throwsStateError);
+    await ripper.run();
+    await Future<void>.delayed(Duration.zero);
 
     expect(await directory.exists(), isFalse);
+    expect(statuses, hasLength(1));
+    expect(statuses.single.status, RipStatus.ripErrored);
+    expect(statuses.single.object, 'Bad state: rip failed');
+  });
+
+  test('suppresses rip completion after a terminal rip error', () async {
+    final parent =
+        await Directory.systemTemp.createTemp('ripme_terminal_status_test');
+    addTearDown(() => parent.delete(recursive: true));
+    final directory = await Directory(p.join(parent.path, 'album')).create();
+    final ripper = ConflictingTerminalStatusTestRipper(
+      Uri.parse('https://example.com/album'),
+      directory,
+    );
+    await ripper.setup();
+    final statuses = <RipStatusMessage>[];
+    final subscription = ripper.statusStream.listen(statuses.add);
+    addTearDown(subscription.cancel);
+
+    await ripper.run();
+    await Future<void>.delayed(Duration.zero);
+
+    expect(
+      statuses.map((message) => message.status),
+      [RipStatus.ripErrored],
+    );
   });
 
   test('run preserves a non-empty working directory', () async {
@@ -674,6 +739,30 @@ void main() {
       ),
     );
     await expectLater(asap.parseJSON(url), completes);
+  });
+
+  test('JSON rip errors do not fall through to rip completion', () async {
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_json_failure_test');
+    addTearDown(() async {
+      if (await directory.exists()) await directory.delete(recursive: true);
+    });
+    final ripper = FailingJsonLifecycleTestRipper(
+      Uri.parse('https://example.com/json'),
+      directory,
+    );
+    await ripper.setup();
+    final statuses = <RipStatusMessage>[];
+    final subscription = ripper.statusStream.listen(statuses.add);
+    addTearDown(subscription.cancel);
+
+    await ripper.run();
+    await Future<void>.delayed(Duration.zero);
+
+    expect(
+      statuses.map((message) => message.status),
+      [RipStatus.loadingResource, RipStatus.ripErrored],
+    );
   });
 
   test('shared filename helper preserves Java extension edge cases', () {

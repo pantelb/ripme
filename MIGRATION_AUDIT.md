@@ -2562,14 +2562,33 @@ Findings:
     per-page extraction paths. `flutter analyze --no-pub` passed and
     `flutter test --no-pub --reporter expanded` passed 853 tests with 2
     skipped.
-- [ ] Java error/completion status ordering is not equivalent. Java
+  - CI: [run 27487203219](https://github.com/pantelb/ripme/actions/runs/27487203219)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27487203219/artifacts/7617130203),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27487203219/artifacts/7617118903),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27487203219/artifacts/7617112794),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27487203219/artifacts/7617108492)
+    artifacts.
+- [x] Java error/completion status ordering is not equivalent. Java
       `AbstractRipper.run()` catches failed `rip()` calls, waits for threads,
       and sends `RIP_ERRORED`, while `RIP_COMPLETE` is emitted separately from
       `checkIfComplete()` after successful scheduled-download completion.
-      Flutter `AbstractJSONRipper`, `AbstractVideoRipper`, and many concrete
-      rippers catch an error with `sendUpdate(RipStatus.ripErrored, ...)` and
-      then still fall through to `sendUpdate(RipStatus.ripComplete, ...)`,
-      making failed rips look completed in the event stream.
+  - Completed: Flutter `AbstractRipper.run()` now consumes rip exceptions,
+    records them, emits `ripErrored`, and still performs cleanup. Flutter's
+    Future-backed download and auxiliary pools are awaited by their calling
+    rip methods before `run()` returns.
+  - `AbstractJSONRipper` and `AbstractVideoRipper` now let failures reach the
+    shared lifecycle instead of catching and falling through. The shared status
+    boundary also suppresses any later `ripComplete` after a concrete ripper
+    has already emitted `ripErrored`, covering legacy concrete catch blocks
+    without allowing contradictory terminal events.
+  - Validation: lifecycle, JSON, video, and deliberately conflicting-terminal
+    fixtures verify that failed runs return after one error status, never emit
+    completion, and still remove empty working directories.
+    `flutter analyze --no-pub` passed and
+    `flutter test --no-pub --reporter expanded` passed 856 tests with 2
+    skipped.
 - [ ] Java `DownloadFileThread.run()` sends `DOWNLOAD_STARTED` at the start of
       every download attempt before connection, status-code, redirect, and retry
       handling. Flutter `AbstractRipper.downloadFile(...)` emits

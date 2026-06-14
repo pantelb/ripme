@@ -61,22 +61,18 @@ abstract class AbstractVideoRipper extends AbstractRipper {
   @override
   Future<void> rip() async {
     sendUpdate(RipStatus.loadingResource, url.toString());
-    try {
-      final request = await getVideoDownloadForRip(url);
-      String fileName = await _getFileName(request);
-      File saveAs = File(workingDir.path + Platform.pathSeparator + fileName);
+    final request = await getVideoDownloadForRip(url);
+    String fileName = await _getFileName(request);
+    File saveAs = File(workingDir.path + Platform.pathSeparator + fileName);
 
-      if (isThisATest && !Utils.getConfigBoolean('urls_only.save', false)) {
-        url = request.url;
-      } else {
-        await downloadFile(
-          request.url,
-          saveAs,
-          headers: {'Referer': request.url.toString()},
-        );
-      }
-    } catch (e) {
-      sendUpdate(RipStatus.ripErrored, e.toString());
+    if (isThisATest && !Utils.getConfigBoolean('urls_only.save', false)) {
+      url = request.url;
+    } else {
+      await downloadFile(
+        request.url,
+        saveAs,
+        headers: {'Referer': request.url.toString()},
+      );
     }
     sendUpdate(RipStatus.ripComplete, workingDir.path);
   }

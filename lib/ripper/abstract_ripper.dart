@@ -43,6 +43,7 @@ abstract class AbstractRipper {
   final Set<String> _erroredDownloads = <String>{};
   int _bytesTotal = 1;
   int _bytesCompleted = 1;
+  bool _ripErrored = false;
   Future<void> _urlOnlyWrite = Future<void>.value();
   Future<void> _historyWrite = Future<void>.value();
 
@@ -160,6 +161,13 @@ abstract class AbstractRipper {
   Future<void> run() async {
     try {
       await rip();
+    } catch (error, stackTrace) {
+      logger.e(
+        'Got exception while running ripper',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      sendUpdate(RipStatus.ripErrored, error.toString());
     } finally {
       await _cleanup();
     }
@@ -251,6 +259,11 @@ abstract class AbstractRipper {
   }
 
   void sendUpdate(RipStatus status, dynamic message) {
+    if (status == RipStatus.ripErrored) {
+      _ripErrored = true;
+    } else if (status == RipStatus.ripComplete && _ripErrored) {
+      return;
+    }
     _statusController.add(RipStatusMessage(status, message));
   }
 

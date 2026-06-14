@@ -10,11 +10,7 @@ abstract class AbstractJSONRipper extends AbstractRipper {
   @override
   Future<void> rip() async {
     sendUpdate(RipStatus.loadingResource, url.toString());
-    try {
-      await parseJSON(url);
-    } catch (e) {
-      sendUpdate(RipStatus.ripErrored, e.toString());
-    }
+    await parseJSON(url);
     sendUpdate(RipStatus.ripComplete, workingDir.path);
   }
 
