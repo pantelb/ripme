@@ -43,9 +43,6 @@ abstract class AbstractVideoRipper extends AbstractRipper {
   Duration get downloadRetrySleepOverride => Duration.zero;
 
   @override
-  bool get sendsDownloadStartedPerAttempt => true;
-
-  @override
   Map<String, String> resolveDownloadHeaders(
     Uri url,
     Map<String, String>? requestedHeaders,

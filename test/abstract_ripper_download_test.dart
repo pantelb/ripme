@@ -880,6 +880,60 @@ void main() {
     expect(await DownloadHistoryProvider.hasDownloaded(url), isTrue);
   });
 
+  test('emits download started for every Java file retry attempt', () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': false,
+      'download.retries': 2,
+      'download.retry.sleep': 0,
+      'download.timeout': 1000,
+    });
+    await Utils.init();
+
+    var requests = 0;
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    addTearDown(server.close);
+    server.listen((request) async {
+      requests++;
+      request.response.statusCode = HttpStatus.serviceUnavailable;
+      await request.response.close();
+    });
+    final url = Uri.parse(
+      'http://${server.address.host}:${server.port}/unavailable.jpg',
+    );
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_attempt_status_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+    final statuses = <RipStatusMessage>[];
+    final subscription = ripper.statusStream.listen(statuses.add);
+    addTearDown(subscription.cancel);
+
+    await ripper.downloadFile(
+      url,
+      File(p.join(directory.path, 'unavailable.jpg')),
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(requests, 3);
+    expect(
+      statuses.map((message) => message.status),
+      [
+        RipStatus.downloadStarted,
+        RipStatus.downloadStarted,
+        RipStatus.downloadStarted,
+        RipStatus.downloadErrored,
+      ],
+    );
+    expect(
+      statuses
+          .where((message) => message.status == RipStatus.downloadStarted)
+          .map((message) => message.object),
+      everyElement(url.toString()),
+    );
+  });
+
   test('uses ripper URL normalization for history lookup and writes', () async {
     SharedPreferences.setMockInitialValues({
       'remember.url_history': true,

@@ -2589,14 +2589,25 @@ Findings:
     `flutter analyze --no-pub` passed and
     `flutter test --no-pub --reporter expanded` passed 856 tests with 2
     skipped.
-- [ ] Java `DownloadFileThread.run()` sends `DOWNLOAD_STARTED` at the start of
+- [x] Java `DownloadFileThread.run()` sends `DOWNLOAD_STARTED` at the start of
       every download attempt before connection, status-code, redirect, and retry
-      handling. Flutter `AbstractRipper.downloadFile(...)` emits
-      `RipStatus.downloadStarted` before calling `Http.downloadFile(...)`, so a
-      failed high-level download can produce one started event, but shared HTTP
-      retries and redirects stay hidden inside `Http._getResponse(...)`.
-      Multi-attempt failures therefore still do not produce Java-compatible
-      per-attempt started status events.
+      handling.
+  - Completed: every Flutter file download now emits
+    `RipStatus.downloadStarted` from `Http.downloadFile(...)`'s attempt
+    callback. Generic and video downloads therefore use the same Java lifecycle:
+    one event immediately before each initial or retry request, with automatic
+    redirects remaining within that request as they do with Java's
+    `HttpURLConnection.setInstanceFollowRedirects(true)`.
+  - Audit discrepancy: the previous gap text referred to
+    `Http._getResponse(...)`, but production file downloads use the dedicated
+    streamed `Http.downloadFile(...)` loop. The existing callback was already
+    correct for video downloads and is now shared by every ripper.
+  - Validation: a deterministic generic-download fixture returns HTTP 503 for
+    the initial request and two configured retries, then verifies three ordered
+    `downloadStarted` events followed by one `downloadErrored` event.
+    `flutter analyze --no-pub` passed and
+    `flutter test --no-pub --reporter expanded` passed 857 tests with 2
+    skipped.
 - [ ] Java shared test mode is a static `AbstractRipper.thisIsATest` flag set by
       `markAsTest()`. `AbstractHTMLRipper` and `AbstractJSONRipper` remove all
       but one media URL per page, stop before fetching the next page, suppress

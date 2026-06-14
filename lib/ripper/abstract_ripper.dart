@@ -111,8 +111,6 @@ abstract class AbstractRipper {
 
   Duration? get downloadRetrySleepOverride => null;
 
-  bool get sendsDownloadStartedPerAttempt => false;
-
   bool get hasASAPRipping => false;
 
   Duration get downloadWorkerWaitTimeout => const Duration(seconds: 3600);
@@ -448,9 +446,6 @@ abstract class AbstractRipper {
         );
         updateTotalBytes(totalBytes);
       }
-      if (!sendsDownloadStartedPerAttempt) {
-        sendUpdate(RipStatus.downloadStarted, url.toString());
-      }
       saveAs = await Http.downloadFile(
         url,
         saveAs,
@@ -466,9 +461,10 @@ abstract class AbstractRipper {
         retryCount: downloadRetryCountOverride,
         disableTimeout: disablesDownloadTimeout,
         retrySleepOverride: downloadRetrySleepOverride,
-        onAttempt: sendsDownloadStartedPerAttempt
-            ? () => sendUpdate(RipStatus.downloadStarted, url.toString())
-            : null,
+        onAttempt: () => sendUpdate(
+          RipStatus.downloadStarted,
+          url.toString(),
+        ),
       );
       _completeDownload(url);
       sendUpdate(RipStatus.downloadComplete, saveAs.path);
