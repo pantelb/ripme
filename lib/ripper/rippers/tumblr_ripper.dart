@@ -38,6 +38,9 @@ class TumblrMedia {
 class TumblrRipper extends AbstractJSONRipper {
   TumblrRipper(super.url);
 
+  @override
+  bool get usesJavaSharedTestMode => false;
+
   static const String _authConfigKey = 'tumblr.auth';
   static const List<String> _defaultApiKeys = [
     'JFNLu3CbINQjRdUvZibXW9VpSEVYYtiPJ86o8YmvgLZIoKyuNX',

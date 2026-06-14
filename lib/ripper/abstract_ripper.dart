@@ -41,6 +41,7 @@ abstract class AbstractRipper {
   final Set<String> _pendingDownloads = <String>{};
   final Set<String> _completedDownloads = <String>{};
   final Set<String> _erroredDownloads = <String>{};
+  bool _testDownloadFinished = false;
   int _bytesTotal = 1;
   int _bytesCompleted = 1;
   bool _ripErrored = false;
@@ -362,6 +363,11 @@ abstract class AbstractRipper {
       bool allowDuplicate = false,
       bool getFileExtFromMIME = false}) async {
     if (isStopped) return;
+    if (isThisATest && _testDownloadFinished) {
+      _discardPreRegisteredDownload(url);
+      stop();
+      return;
+    }
     final preparedUrl = preflightDownloadUrl(url);
     if (preparedUrl == null) {
       _discardPreRegisteredDownload(url);
@@ -517,12 +523,14 @@ abstract class AbstractRipper {
     final key = url.toString();
     _pendingDownloads.remove(key);
     _completedDownloads.add(key);
+    if (isThisATest) _testDownloadFinished = true;
   }
 
   void _errorDownload(Uri url) {
     final key = url.toString();
     _pendingDownloads.remove(key);
     _erroredDownloads.add(key);
+    if (isThisATest) _testDownloadFinished = true;
   }
 
   File _sanitizeSaveAs(File saveAs) {
@@ -547,11 +555,12 @@ abstract class AbstractRipper {
   }
 
   bool _shouldRememberUrlHistory() {
-    return Utils.getConfigBooleanWithFallback(
-      'remember.url_history',
-      'history.skip_downloaded_urls',
-      true,
-    );
+    return !isThisATest &&
+        Utils.getConfigBooleanWithFallback(
+          'remember.url_history',
+          'history.skip_downloaded_urls',
+          true,
+        );
   }
 
   Future<File> _saveUrlOnly(Uri url) async {

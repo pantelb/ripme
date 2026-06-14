@@ -75,7 +75,9 @@ class ScrolllerRipper extends AbstractRipper {
 
     while (page != null && !isStopped) {
       final downloads = <RipperDownload>[];
-      for (final urlText in urlsFromJson(page)) {
+      final urls = urlsFromJson(page);
+      final effectiveUrls = isThisATest ? urls.take(1) : urls;
+      for (final urlText in effectiveUrls) {
         if (isStopped) break;
         index++;
         final uri = Uri.parse(urlText);
@@ -90,7 +92,7 @@ class ScrolllerRipper extends AbstractRipper {
       }
 
       await downloadFiles(downloads);
-      if (isStopped) break;
+      if (isStopped || isThisATest) break;
 
       try {
         page = await getNextPage(page);

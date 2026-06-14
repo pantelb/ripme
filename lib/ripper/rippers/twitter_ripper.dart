@@ -77,10 +77,11 @@ class TwitterRipper extends AbstractJSONRipper {
         ripRetweets: Utils.getConfigBoolean('twitter.rip_retweets', true),
       );
       requireMediaFound(extracted.urls, url);
+      final mediaUrls = limitJsonMediaForTest(extracted.urls);
       if (extracted.lastMaxId != null) _lastMaxId = extracted.lastMaxId!;
       final downloads = <RipperDownload>[];
-      for (var i = 0; i < extracted.urls.length; i++) {
-        final mediaUri = extracted.urls[i];
+      for (var i = 0; i < mediaUrls.length; i++) {
+        final mediaUri = mediaUrls[i];
         final prefix = Utils.getConfigBoolean('download.save_order', true)
             ? '${(i + 1).toString().padLeft(3, '0')}_'
             : '';
@@ -92,7 +93,7 @@ class TwitterRipper extends AbstractJSONRipper {
       }
       await downloadFiles(downloads);
       _currentRequest++;
-      if (_currentRequest > maxRequests) break;
+      if (_currentRequest > maxRequests || shouldStopJsonPagination) break;
       await Http.delay(const Duration(seconds: 2));
     }
   }

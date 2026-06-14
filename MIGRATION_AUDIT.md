@@ -2589,6 +2589,14 @@ Findings:
     `flutter analyze --no-pub` passed and
     `flutter test --no-pub --reporter expanded` passed 856 tests with 2
     skipped.
+  - CI: [run 27487542787](https://github.com/pantelb/ripme/actions/runs/27487542787)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27487542787/artifacts/7617240404),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27487542787/artifacts/7617230995),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27487542787/artifacts/7617224752),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27487542787/artifacts/7617216544)
+    artifacts.
 - [x] Java `DownloadFileThread.run()` sends `DOWNLOAD_STARTED` at the start of
       every download attempt before connection, status-code, redirect, and retry
       handling.
@@ -2608,13 +2616,39 @@ Findings:
     `flutter analyze --no-pub` passed and
     `flutter test --no-pub --reporter expanded` passed 857 tests with 2
     skipped.
-- [ ] Java shared test mode is a static `AbstractRipper.thisIsATest` flag set by
+  - CI: [run 27493535132](https://github.com/pantelb/ripme/actions/runs/27493535132)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27493535132/artifacts/7619337947),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27493535132/artifacts/7619329562),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27493535132/artifacts/7619326379),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27493535132/artifacts/7619303370)
+    artifacts.
+- [x] Java shared test mode is a static `AbstractRipper.thisIsATest` flag set by
       `markAsTest()`. `AbstractHTMLRipper` and `AbstractJSONRipper` remove all
       but one media URL per page, stop before fetching the next page, suppress
       history checks/writes, and `addURLToDownload(...)` stops later downloads
-      after the first completion/error while test mode is active. Flutter has no
-      equivalent shared test-mode surface, so Java live-test contracts and
-      test-only side effects are not reproducible outside ad hoc Dart mocks.
+      after the first completion/error while test mode is active.
+  - Completed: Flutter's already-existing process-wide `markAsTest()` flag now
+    drives the full shared lifecycle. HTML and Java-JSON ports retain only the
+    first media item and stop before next-page loading, URL-history lookup and
+    writes are bypassed, and a later download request stops after the first
+    completion or error.
+  - Source-model discrepancy: the previous audit text said Flutter had no
+    shared flag, but `AbstractRipper` already carried a static flag for video
+    tests. The missing behavior was its integration into album download and
+    pagination paths. Java `InstagramRipper` and `ScrolllerRipper` extend
+    `AbstractJSONRipper` while their Flutter ports use `AbstractRipper`, so
+    equivalent one-item/one-page guards are applied directly. Flutter
+    `RedditRipper` and `TumblrRipper` extend `AbstractJSONRipper`, but their Java
+    counterparts extend `AlbumRipper`; they are explicitly exempt from this
+    shared JSON policy and remain covered by their own Java behavior.
+  - Validation: deterministic fixtures prove process-wide flag visibility,
+    one-media/one-page HTML and JSON traversal, history bypass for existing and
+    new URLs, and rejection of a later download after the first result. The
+    affected concrete ripper suites pass. `flutter analyze --no-pub` passed and
+    `flutter test --no-pub --reporter expanded` passed 859 tests with 2
+    skipped.
 - [ ] Java `DownloadFileThread.run()` has an additional test-only download
       shortcut: when `HttpURLConnection.getContentLength() / 1000000 >= 10`
       and `AbstractRipper.isThisATest()` is true, it logs that the file is over

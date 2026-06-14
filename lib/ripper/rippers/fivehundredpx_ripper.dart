@@ -41,8 +41,9 @@ class FivehundredpxRipper extends AbstractJSONRipper {
     var index = 0;
 
     while (json != null && !isStopped) {
-      final urls = await getURLsFromJSON(json);
-      requireMediaFound(urls, url);
+      final allUrls = await getURLsFromJSON(json);
+      requireMediaFound(allUrls, url);
+      final urls = limitJsonMediaForTest(allUrls);
       final downloads = <RipperDownload>[];
       for (final urlText in urls) {
         if (isStopped) break;
@@ -56,7 +57,7 @@ class FivehundredpxRipper extends AbstractJSONRipper {
         );
       }
       await downloadFiles(downloads);
-      if (isStopped) break;
+      if (shouldStopJsonPagination) break;
       json = await getNextPage(json);
     }
   }

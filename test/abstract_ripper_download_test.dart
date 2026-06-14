@@ -316,6 +316,110 @@ class CyclicHtmlTestRipper extends AbstractHTMLRipper {
   }
 }
 
+class SharedHtmlTestModeRipper extends AbstractHTMLRipper {
+  SharedHtmlTestModeRipper(super.url, this.directory, this.page);
+
+  final Directory directory;
+  final Document page;
+  final downloadedUrls = <Uri>[];
+  int processedPages = 0;
+  int nextPageCalls = 0;
+
+  @override
+  Future<void> setup() async {
+    workingDir = directory;
+  }
+
+  @override
+  bool canRip(Uri url) => true;
+
+  @override
+  Future<String> getGID(Uri url) async => 'html-test-mode';
+
+  @override
+  String getHost() => 'html-test-mode';
+
+  @override
+  Future<Document> getFirstPage() async => page;
+
+  @override
+  Future<List<String>> getURLsFromPage(Document page) async {
+    processedPages++;
+    return const [
+      'https://example.com/one.jpg',
+      'https://example.com/two.jpg',
+      'https://example.com/three.jpg',
+    ];
+  }
+
+  @override
+  Future<Uri?> getNextPage(Document page) async {
+    nextPageCalls++;
+    return Uri.parse('https://example.com/next');
+  }
+
+  @override
+  Future<void> downloadFile(Uri url, File saveAs,
+      {Map<String, String>? headers,
+      Map<String, String>? cookies,
+      bool allowDuplicate = false,
+      bool getFileExtFromMIME = false}) async {
+    downloadedUrls.add(url);
+  }
+}
+
+class SharedJsonTestModeRipper extends AbstractJSONRipper {
+  SharedJsonTestModeRipper(super.url, this.directory);
+
+  final Directory directory;
+  final downloadedUrls = <Uri>[];
+  int processedPages = 0;
+  int nextPageFetches = 0;
+
+  @override
+  Future<void> setup() async {
+    workingDir = directory;
+  }
+
+  @override
+  bool canRip(Uri url) => true;
+
+  @override
+  Future<String> getGID(Uri url) async => 'json-test-mode';
+
+  @override
+  String getHost() => 'json-test-mode';
+
+  @override
+  Future<void> parseJSON(Uri url) async {
+    while (true) {
+      processedPages++;
+      final media = limitJsonMediaForTest([
+        Uri.parse('https://example.com/one.jpg'),
+        Uri.parse('https://example.com/two.jpg'),
+      ]);
+      await downloadFiles([
+        for (final mediaUrl in media)
+          RipperDownload(
+            url: mediaUrl,
+            saveAs: File(p.join(workingDir.path, mediaUrl.pathSegments.last)),
+          ),
+      ]);
+      if (shouldStopJsonPagination) break;
+      nextPageFetches++;
+    }
+  }
+
+  @override
+  Future<void> downloadFile(Uri url, File saveAs,
+      {Map<String, String>? headers,
+      Map<String, String>? cookies,
+      bool allowDuplicate = false,
+      bool getFileExtFromMIME = false}) async {
+    downloadedUrls.add(url);
+  }
+}
+
 class CachedFirstPageTestRipper extends AbstractHTMLRipper {
   CachedFirstPageTestRipper(
     super.url,
@@ -430,6 +534,7 @@ class FailingJsonLifecycleTestRipper extends AbstractJSONRipper {
 void main() {
   tearDown(() {
     AbstractRipper.folderNameSuffix = null;
+    AbstractRipper.resetTestMode();
   });
 
   test('setup uses Java-safe truncated working directory names', () async {
@@ -659,6 +764,44 @@ void main() {
     );
   });
 
+  test('shared test mode limits HTML and JSON to one media and one page',
+      () async {
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_shared_test_mode');
+    addTearDown(() => directory.delete(recursive: true));
+    final page = Http.attachDocumentLocation(
+      html.parse('<html></html>', sourceUrl: 'https://example.com/album'),
+      Uri.parse('https://example.com/album'),
+    );
+    final htmlRipper = SharedHtmlTestModeRipper(
+      Uri.parse('https://example.com/album'),
+      directory,
+      page,
+    );
+    final jsonRipper = SharedJsonTestModeRipper(
+      Uri.parse('https://example.com/api'),
+      directory,
+    );
+    await htmlRipper.setup();
+    await jsonRipper.setup();
+
+    htmlRipper.markAsTest();
+    expect(jsonRipper.isThisATest, isTrue);
+    await htmlRipper.rip();
+    await jsonRipper.rip();
+
+    expect(htmlRipper.downloadedUrls, [
+      Uri.parse('https://example.com/one.jpg'),
+    ]);
+    expect(htmlRipper.processedPages, 1);
+    expect(htmlRipper.nextPageCalls, 0);
+    expect(jsonRipper.downloadedUrls, [
+      Uri.parse('https://example.com/one.jpg'),
+    ]);
+    expect(jsonRipper.processedPages, 1);
+    expect(jsonRipper.nextPageFetches, 0);
+  });
+
   test('reuses Java cached first page between title lookup and rip', () async {
     final directory =
         await Directory.systemTemp.createTemp('ripme_html_cache_test');
@@ -878,6 +1021,62 @@ void main() {
     await ripper.downloadFile(url, File(p.join(directory.path, 'missing.jpg')));
 
     expect(await DownloadHistoryProvider.hasDownloaded(url), isTrue);
+  });
+
+  test('shared test mode bypasses history and stops later downloads', () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': true,
+      'download.retries': 0,
+      'download.timeout': 1000,
+    });
+    await Utils.init();
+
+    final requests = <String>[];
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    addTearDown(server.close);
+    server.listen((request) async {
+      requests.add(request.uri.path);
+      request.response.write('ok');
+      await request.response.close();
+    });
+    final existingUrl = Uri.parse(
+      'http://${server.address.host}:${server.port}/existing.jpg',
+    );
+    final blockedUrl = Uri.parse(
+      'http://${server.address.host}:${server.port}/blocked.jpg',
+    );
+    final freshUrl = Uri.parse(
+      'http://${server.address.host}:${server.port}/fresh.jpg',
+    );
+    await DownloadHistoryProvider.markDownloaded(existingUrl);
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_test_history_mode');
+    addTearDown(() => directory.delete(recursive: true));
+    final firstRipper =
+        TestRipper(Uri.parse('https://example.com/album'), directory);
+    final secondRipper =
+        TestRipper(Uri.parse('https://example.com/other'), directory);
+    await firstRipper.setup();
+    await secondRipper.setup();
+    firstRipper.markAsTest();
+
+    await firstRipper.downloadFile(
+      existingUrl,
+      File(p.join(directory.path, 'existing.jpg')),
+    );
+    await firstRipper.downloadFile(
+      blockedUrl,
+      File(p.join(directory.path, 'blocked.jpg')),
+    );
+    await secondRipper.downloadFile(
+      freshUrl,
+      File(p.join(directory.path, 'fresh.jpg')),
+    );
+
+    expect(requests, ['/existing.jpg', '/fresh.jpg']);
+    expect(firstRipper.isStopped, isTrue);
+    expect(await DownloadHistoryProvider.hasDownloaded(freshUrl), isFalse);
   });
 
   test('emits download started for every Java file retry attempt', () async {

@@ -84,8 +84,9 @@ class RedgifsRipper extends AbstractJSONRipper {
 
     while (!isStopped) {
       final json = await _loadPage(mode);
-      final urls = await _getUrlsFromJson(json, mode);
-      requireMediaFound(urls, url);
+      final allUrls = await _getUrlsFromJson(json, mode);
+      requireMediaFound(allUrls, url);
+      final urls = limitJsonMediaForTest(allUrls);
       final downloads = <RipperDownload>[];
       for (var i = 0; i < urls.length; i++) {
         if (isStopped) break;
@@ -101,7 +102,9 @@ class RedgifsRipper extends AbstractJSONRipper {
       }
       await downloadFiles(downloads);
 
-      if (mode == _RedgifsMode.singleton || _currentPage >= _maxPages) {
+      if (shouldStopJsonPagination ||
+          mode == _RedgifsMode.singleton ||
+          _currentPage >= _maxPages) {
         break;
       }
       _currentPage++;

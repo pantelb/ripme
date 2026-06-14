@@ -59,8 +59,9 @@ class VkRipper extends AbstractJSONRipper {
     while (!isStopped) {
       final page = await getImagePage();
       if (page == null) break;
-      final urls = imageUrlsFromJson(page);
-      requireMediaFound(urls, url);
+      final allUrls = imageUrlsFromJson(page);
+      requireMediaFound(allUrls, url);
+      final urls = limitJsonMediaForTest(allUrls);
 
       final downloads = <RipperDownload>[];
       for (final imageUrl in urls) {
@@ -72,6 +73,7 @@ class VkRipper extends AbstractJSONRipper {
         );
       }
       await downloadFiles(downloads);
+      if (shouldStopJsonPagination) break;
     }
   }
 
@@ -79,8 +81,9 @@ class VkRipper extends AbstractJSONRipper {
     final gid = await getGID(url);
     _oid = gid.replaceFirst('videos', '');
     final page = await getFirstVideoPage(_oid!);
-    final videoUrls = await videoUrlsFromJsonPage(page, _oid!);
-    requireMediaFound(videoUrls, url);
+    final allVideoUrls = await videoUrlsFromJsonPage(page, _oid!);
+    requireMediaFound(allVideoUrls, url);
+    final videoUrls = limitJsonMediaForTest(allVideoUrls);
     final downloads = <RipperDownload>[];
     for (var i = 0; i < videoUrls.length; i++) {
       final videoUrl = videoUrls[i];

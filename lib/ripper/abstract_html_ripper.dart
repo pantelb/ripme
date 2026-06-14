@@ -57,6 +57,9 @@ abstract class AbstractHTMLRipper extends AbstractRipper {
       if (!processedLocations.add(location)) break;
 
       List<String> imageURLs = await getURLsFromPage(doc);
+      if (isThisATest && imageURLs.length > 1) {
+        imageURLs = imageURLs.take(1).toList(growable: false);
+      }
       requireMediaFound(imageURLs, url);
       final downloads = <RipperDownload>[];
 
@@ -70,7 +73,7 @@ abstract class AbstractHTMLRipper extends AbstractRipper {
       }
       await downloadFiles(downloads);
 
-      if (isStopped) break;
+      if (isStopped || isThisATest) break;
 
       Uri? nextUri = await getNextPage(doc);
       if (nextUri == null) break;

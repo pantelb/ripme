@@ -44,6 +44,9 @@ class RedditSelfPostHtml {
 class RedditRipper extends AbstractJSONRipper {
   RedditRipper(Uri url) : super(sanitizeUrl(url));
 
+  @override
+  bool get usesJavaSharedTestMode => false;
+
   static const String _redditUserAgent =
       'RipMe:github.com/RipMeApp/ripme:flutter-port';
   DateTime? _lastRequestAt;

@@ -57,8 +57,9 @@ class CoomerPartyRipper extends AbstractJSONRipper {
 
     while (!isStopped) {
       final posts = await getJsonPostsForOffset(offset);
-      final urls = urlsFromPosts(posts);
-      requireMediaFound(urls, url);
+      final allUrls = urlsFromPosts(posts);
+      requireMediaFound(allUrls, url);
+      final urls = limitJsonMediaForTest(allUrls);
 
       final downloads = <RipperDownload>[];
       for (final urlText in urls) {
@@ -75,7 +76,7 @@ class CoomerPartyRipper extends AbstractJSONRipper {
       }
       await downloadFiles(downloads);
 
-      if (isStopped || posts.length < postCount) break;
+      if (shouldStopJsonPagination || posts.length < postCount) break;
       offset += postCount;
       sendUpdate(RipStatus.loadingResource, 'next page');
     }

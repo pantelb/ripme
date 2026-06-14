@@ -51,10 +51,11 @@ class MangadexRipper extends AbstractJSONRipper {
     await getGID(url);
 
     final firstJson = await getFirstPage();
-    final imageUrls = _isSingleChapter
+    final allImageUrls = _isSingleChapter
         ? urlsFromChapterJson(firstJson)
         : await urlsFromMangaJson(firstJson);
-    requireMediaFound(imageUrls, url);
+    requireMediaFound(allImageUrls, url);
+    final imageUrls = limitJsonMediaForTest(allImageUrls);
 
     var index = 0;
     for (final imageUrl in imageUrls) {
@@ -66,6 +67,7 @@ class MangadexRipper extends AbstractJSONRipper {
         uri,
         File(p.join(workingDir.path, fileNameForUrl(uri, index))),
       );
+      if (shouldStopJsonPagination) break;
     }
   }
 

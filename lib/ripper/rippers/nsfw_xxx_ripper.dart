@@ -63,8 +63,9 @@ class NsfwXxxRipper extends AbstractJSONRipper {
     var json = await getFirstPage();
 
     while (!isStopped) {
-      final urls = getURLsFromJSON(json);
-      requireMediaFound(urls, url);
+      final allUrls = getURLsFromJSON(json);
+      requireMediaFound(allUrls, url);
+      final urls = limitJsonMediaForTest(allUrls);
 
       final downloads = <RipperDownload>[];
       for (final urlText in urls) {
@@ -85,7 +86,7 @@ class NsfwXxxRipper extends AbstractJSONRipper {
       }
       await downloadFiles(downloads);
 
-      if (isStopped) break;
+      if (shouldStopJsonPagination) break;
       try {
         json = await getNextPage(json);
       } on NsfwXxxNoMorePagesException {

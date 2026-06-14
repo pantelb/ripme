@@ -104,9 +104,10 @@ class ArtStationRipper extends AbstractJSONRipper {
         final projectJson = await _getJson(projectUrl.jsonUrl!);
         await _downloadProject(projectJson, useProjectSubfolder: true);
         processed++;
+        if (shouldStopJsonPagination) break;
       }
 
-      if (processed >= total) break;
+      if (processed >= total || shouldStopJsonPagination) break;
       page++;
     }
   }
@@ -114,7 +115,7 @@ class ArtStationRipper extends AbstractJSONRipper {
   Future<void> _downloadProject(dynamic json,
       {bool useProjectSubfolder = false}) async {
     final downloads = <RipperDownload>[];
-    final assets = urlsFromProjectJson(json);
+    final assets = limitJsonMediaForTest(urlsFromProjectJson(json));
     requireMediaFound(assets, url);
     for (final asset in assets) {
       if (isStopped) break;

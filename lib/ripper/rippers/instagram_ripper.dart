@@ -110,8 +110,10 @@ class InstagramRipper extends AbstractRipper {
             )),
             cookies: _cookies,
           ));
+          if (isThisATest) break;
         }
 
+        if (isThisATest) break;
         currentJson = await _nextPage(currentJson, match, idString, qHash);
       }
 

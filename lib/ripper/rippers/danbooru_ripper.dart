@@ -57,8 +57,9 @@ class DanbooruRipper extends AbstractJSONRipper {
     var json = await getCurrentPage();
 
     while (json != null && !isStopped) {
-      final urls = urlsFromJson(json);
-      requireMediaFound(urls, url);
+      final allUrls = urlsFromJson(json);
+      requireMediaFound(allUrls, url);
+      final urls = limitJsonMediaForTest(allUrls);
 
       final downloads = <RipperDownload>[];
       for (final urlText in urls) {
@@ -74,7 +75,7 @@ class DanbooruRipper extends AbstractJSONRipper {
       }
       await downloadFiles(downloads);
 
-      if (isStopped) break;
+      if (shouldStopJsonPagination) break;
       sendUpdate(RipStatus.loadingResource, 'next page');
       json = await getCurrentPage();
     }
