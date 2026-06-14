@@ -42,6 +42,7 @@ class FivehundredpxRipper extends AbstractJSONRipper {
 
     while (json != null && !isStopped) {
       final urls = await getURLsFromJSON(json);
+      requireMediaFound(urls, url);
       final downloads = <RipperDownload>[];
       for (final urlText in urls) {
         if (isStopped) break;

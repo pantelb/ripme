@@ -57,6 +57,7 @@ abstract class AbstractHTMLRipper extends AbstractRipper {
       if (!processedLocations.add(location)) break;
 
       List<String> imageURLs = await getURLsFromPage(doc);
+      requireMediaFound(imageURLs, url);
       final downloads = <RipperDownload>[];
 
       for (String imageURL in imageURLs) {

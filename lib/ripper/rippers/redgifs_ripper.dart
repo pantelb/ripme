@@ -85,6 +85,7 @@ class RedgifsRipper extends AbstractJSONRipper {
     while (!isStopped) {
       final json = await _loadPage(mode);
       final urls = await _getUrlsFromJson(json, mode);
+      requireMediaFound(urls, url);
       final downloads = <RipperDownload>[];
       for (var i = 0; i < urls.length; i++) {
         if (isStopped) break;

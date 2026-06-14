@@ -48,6 +48,9 @@ class FlickrRipper extends AbstractHTMLRipper {
   String getHost() => 'flickr';
 
   @override
+  bool get hasASAPRipping => true;
+
+  @override
   bool canRip(Uri url) => url.host.endsWith('flickr.com');
 
   @override

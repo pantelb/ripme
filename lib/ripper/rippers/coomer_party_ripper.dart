@@ -58,9 +58,7 @@ class CoomerPartyRipper extends AbstractJSONRipper {
     while (!isStopped) {
       final posts = await getJsonPostsForOffset(offset);
       final urls = urlsFromPosts(posts);
-      if (urls.isEmpty && offset == 0) {
-        throw StateError('No images found at $url');
-      }
+      requireMediaFound(urls, url);
 
       final downloads = <RipperDownload>[];
       for (final urlText in urls) {

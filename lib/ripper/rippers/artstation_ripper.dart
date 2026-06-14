@@ -114,7 +114,9 @@ class ArtStationRipper extends AbstractJSONRipper {
   Future<void> _downloadProject(dynamic json,
       {bool useProjectSubfolder = false}) async {
     final downloads = <RipperDownload>[];
-    for (final asset in urlsFromProjectJson(json)) {
+    final assets = urlsFromProjectJson(json);
+    requireMediaFound(assets, url);
+    for (final asset in assets) {
       if (isStopped) break;
       final saveAs = useProjectSubfolder && asset.projectTitle != null
           ? File(p.join(workingDir.path, projectFolderName(asset.projectTitle!),

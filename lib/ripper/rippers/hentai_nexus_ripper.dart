@@ -36,9 +36,11 @@ class HentaiNexusRipper extends AbstractJSONRipper {
   @override
   Future<void> parseJSON(Uri url) async {
     final json = await getFirstPage();
+    final imageUrls = urlsFromJson(json);
+    requireMediaFound(imageUrls, url);
     final downloads = <RipperDownload>[];
     var index = 0;
-    for (final imageUrl in urlsFromJson(json)) {
+    for (final imageUrl in imageUrls) {
       if (isStopped) break;
       index++;
       final uri = Uri.parse(imageUrl);

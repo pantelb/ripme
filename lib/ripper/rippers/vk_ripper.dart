@@ -60,9 +60,7 @@ class VkRipper extends AbstractJSONRipper {
       final page = await getImagePage();
       if (page == null) break;
       final urls = imageUrlsFromJson(page);
-      if (urls.isEmpty) {
-        throw HttpException('No images found at $url');
-      }
+      requireMediaFound(urls, url);
 
       final downloads = <RipperDownload>[];
       for (final imageUrl in urls) {
@@ -82,6 +80,7 @@ class VkRipper extends AbstractJSONRipper {
     _oid = gid.replaceFirst('videos', '');
     final page = await getFirstVideoPage(_oid!);
     final videoUrls = await videoUrlsFromJsonPage(page, _oid!);
+    requireMediaFound(videoUrls, url);
     final downloads = <RipperDownload>[];
     for (var i = 0; i < videoUrls.length; i++) {
       final videoUrl = videoUrls[i];

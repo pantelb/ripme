@@ -58,9 +58,7 @@ class DanbooruRipper extends AbstractJSONRipper {
 
     while (json != null && !isStopped) {
       final urls = urlsFromJson(json);
-      if (urls.isEmpty) {
-        throw StateError('No images found at $url');
-      }
+      requireMediaFound(urls, url);
 
       final downloads = <RipperDownload>[];
       for (final urlText in urls) {

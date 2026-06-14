@@ -19,6 +19,9 @@ class ErofusRipper extends AbstractHTMLRipper {
   @override
   String getHost() => 'erofus';
 
+  @override
+  bool get hasASAPRipping => true;
+
   String getDomain() => 'erofus.com';
 
   @override

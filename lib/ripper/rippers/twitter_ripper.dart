@@ -44,6 +44,9 @@ class TwitterRipper extends AbstractJSONRipper {
   String getHost() => 'twitter';
 
   @override
+  bool get hasASAPRipping => true;
+
+  @override
   bool canRip(Uri url) => url.host.toLowerCase().endsWith('twitter.com');
 
   @override
@@ -73,6 +76,7 @@ class TwitterRipper extends AbstractJSONRipper {
         json,
         ripRetweets: Utils.getConfigBoolean('twitter.rip_retweets', true),
       );
+      requireMediaFound(extracted.urls, url);
       if (extracted.lastMaxId != null) _lastMaxId = extracted.lastMaxId!;
       final downloads = <RipperDownload>[];
       for (var i = 0; i < extracted.urls.length; i++) {

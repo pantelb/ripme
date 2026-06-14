@@ -320,6 +320,9 @@ class CachedFirstPageTestRipper extends AbstractHTMLRipper {
   int firstPageFetches = 0;
 
   @override
+  bool get hasASAPRipping => true;
+
+  @override
   Future<void> setup() async {
     workingDir = directory;
   }
@@ -352,6 +355,41 @@ class CachedFirstPageTestRipper extends AbstractHTMLRipper {
 
   @override
   Future<List<String>> getURLsFromPage(Document page) async => const [];
+}
+
+class EmptyHtmlMediaTestRipper extends CachedFirstPageTestRipper {
+  EmptyHtmlMediaTestRipper(super.url, super.directory, super.page);
+
+  @override
+  bool get hasASAPRipping => false;
+}
+
+class JsonMediaGuardTestRipper extends AbstractJSONRipper {
+  JsonMediaGuardTestRipper(
+    super.url, {
+    required this.media,
+    this.asap = false,
+  });
+
+  final List<String> media;
+  final bool asap;
+
+  @override
+  bool get hasASAPRipping => asap;
+
+  @override
+  bool canRip(Uri url) => true;
+
+  @override
+  Future<String> getGID(Uri url) async => 'guard';
+
+  @override
+  String getHost() => 'guard';
+
+  @override
+  Future<void> parseJSON(Uri url) async {
+    requireMediaFound(media, url);
+  }
 }
 
 void main() {
@@ -591,6 +629,51 @@ void main() {
         ripper.getCachedFirstPage(), throwsA(isA<HttpException>()));
     expect(await ripper.getCachedFirstPage(), same(page));
     expect(ripper.firstPageFetches, 2);
+  });
+
+  test('HTML ripper throws Java no-images failure for an empty page', () async {
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_html_empty_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper = EmptyHtmlMediaTestRipper(
+      Uri.parse('https://example.com/empty'),
+      directory,
+      html.parse('<html></html>'),
+    );
+    await ripper.setup();
+
+    await expectLater(
+      ripper.rip(),
+      throwsA(
+        isA<HttpException>().having(
+          (error) => error.message,
+          'message',
+          'No images found at https://example.com/empty',
+        ),
+      ),
+    );
+  });
+
+  test('JSON media guard preserves Java ASAP empty-list exemption', () async {
+    final url = Uri.parse('https://example.com/empty');
+    final guarded = JsonMediaGuardTestRipper(url, media: const []);
+    final asap = JsonMediaGuardTestRipper(
+      url,
+      media: const [],
+      asap: true,
+    );
+
+    await expectLater(
+      guarded.parseJSON(url),
+      throwsA(
+        isA<HttpException>().having(
+          (error) => error.message,
+          'message',
+          'No images found at https://example.com/empty',
+        ),
+      ),
+    );
+    await expectLater(asap.parseJSON(url), completes);
   });
 
   test('shared filename helper preserves Java extension edge cases', () {

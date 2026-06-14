@@ -54,6 +54,7 @@ class MangadexRipper extends AbstractJSONRipper {
     final imageUrls = _isSingleChapter
         ? urlsFromChapterJson(firstJson)
         : await urlsFromMangaJson(firstJson);
+    requireMediaFound(imageUrls, url);
 
     var index = 0;
     for (final imageUrl in imageUrls) {

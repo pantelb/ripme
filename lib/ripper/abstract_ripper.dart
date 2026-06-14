@@ -112,7 +112,15 @@ abstract class AbstractRipper {
 
   bool get sendsDownloadStartedPerAttempt => false;
 
+  bool get hasASAPRipping => false;
+
   Duration get downloadWorkerWaitTimeout => const Duration(seconds: 3600);
+
+  void requireMediaFound(Iterable<Object?> media, [Uri? source]) {
+    if (media.isEmpty && !hasASAPRipping) {
+      throw HttpException('No images found at ${source ?? url}');
+    }
+  }
 
   Map<String, String>? resolveDownloadHeaders(
     Uri url,

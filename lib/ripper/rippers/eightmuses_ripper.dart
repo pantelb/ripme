@@ -24,6 +24,9 @@ class EightmusesRipper extends AbstractHTMLRipper {
   String getHost() => '8muses';
 
   @override
+  bool get hasASAPRipping => true;
+
+  @override
   bool canRip(Uri url) => _albumPattern.hasMatch(url.toString());
 
   @override

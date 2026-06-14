@@ -29,6 +29,9 @@ class XhamsterRipper extends AbstractHTMLRipper {
   @override
   String getHost() => 'xhamster';
 
+  @override
+  bool get hasASAPRipping => true;
+
   String getDomain() => domain;
 
   @override

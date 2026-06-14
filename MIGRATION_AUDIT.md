@@ -2535,11 +2535,33 @@ Findings:
     `flutter analyze --no-pub` passed and
     `flutter test --no-pub --reporter expanded` passed 851 tests with 2
     skipped.
-- [ ] Java shared HTML/JSON ripper layers throw `IOException("No images found
+  - CI: [run 27486980095](https://github.com/pantelb/ripme/actions/runs/27486980095)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27486980095/artifacts/7617060329),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27486980095/artifacts/7617046374),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27486980095/artifacts/7617049528),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27486980095/artifacts/7617030477)
+    artifacts.
+- [x] Java shared HTML/JSON ripper layers throw `IOException("No images found
       at ...")` when URL extraction returns no media and the ripper is not
-      doing ASAP/custom downloading. Flutter `AbstractHTMLRipper` currently
-      treats an empty download list as a normal completed rip, and
-      `AbstractJSONRipper` leaves this guard to each concrete parser.
+      doing ASAP/custom downloading.
+  - Completed: Flutter now centralizes the exact message in
+    `requireMediaFound(...)`. `AbstractHTMLRipper` checks every extracted page,
+    and every Flutter port that also extends Java `AbstractJSONRipper` checks
+    each extracted JSON page/project before scheduling.
+  - Java's five ASAP overrides are restored as a shared contract:
+    `EightmusesRipper`, `ErofusRipper`, `FlickrRipper`, `TwitterRipper`, and
+    `XhamsterRipper`. Empty results from those custom download paths bypass the
+    guard as in Java.
+  - Source-model note: Flutter `RedditRipper` and `TumblrRipper` inherit
+    `AbstractJSONRipper`, but their Java counterparts do not, so the Java
+    shared empty-media guard was not imposed on those two ports.
+  - Validation: deterministic shared HTML and JSON tests verify the exact
+    failure text and ASAP exemption; concrete JSON parser suites cover their
+    per-page extraction paths. `flutter analyze --no-pub` passed and
+    `flutter test --no-pub --reporter expanded` passed 853 tests with 2
+    skipped.
 - [ ] Java error/completion status ordering is not equivalent. Java
       `AbstractRipper.run()` catches failed `rip()` calls, waits for threads,
       and sends `RIP_ERRORED`, while `RIP_COMPLETE` is emitted separately from

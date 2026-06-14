@@ -64,9 +64,7 @@ class NsfwXxxRipper extends AbstractJSONRipper {
 
     while (!isStopped) {
       final urls = getURLsFromJSON(json);
-      if (urls.isEmpty) {
-        throw StateError('No images found at $url');
-      }
+      requireMediaFound(urls, url);
 
       final downloads = <RipperDownload>[];
       for (final urlText in urls) {
