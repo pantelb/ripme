@@ -68,7 +68,10 @@ class XhamsterRipper extends AbstractHTMLRipper {
 
   @override
   Future<List<String>> getAlbumsToQueue(Document page) async {
-    return albumUrlsFromDocument(page);
+    final albums = albumUrlsFromDocument(page);
+    return isStopped || isThisATest
+        ? albums.take(1).toList(growable: false)
+        : albums;
   }
 
   @override
@@ -124,6 +127,7 @@ class XhamsterRipper extends AbstractHTMLRipper {
       }
 
       if (isStopped) break;
+      if (isThisATest) break;
       final next = await getNextPage(page);
       if (next == null) break;
 
@@ -140,6 +144,13 @@ class XhamsterRipper extends AbstractHTMLRipper {
 
   @override
   Future<List<String>> getURLsFromPage(Document page) async {
+    return galleryUrlsFromPage(page);
+  }
+
+  Future<List<String>> galleryUrlsFromPage(
+    Document page, {
+    Future<Document> Function(Uri uri)? pageFetcher,
+  }) async {
     if (isVideoUrl(url)) return videoUrlsFromDocument(page);
 
     if (usesOldGalleryStructure(page)) {
@@ -147,12 +158,15 @@ class XhamsterRipper extends AbstractHTMLRipper {
       for (final imagePageUrl in oldImagePageUrlsFromDocument(page)) {
         if (isStopped) break;
         try {
-          final imagePage = await Http.get(Uri.parse(imagePageUrl));
+          final imagePage = pageFetcher == null
+              ? await Http.get(Uri.parse(imagePageUrl))
+              : await pageFetcher(Uri.parse(imagePageUrl));
           final image = imageFromOldImagePage(imagePage);
           if (image != null) results.add(image);
         } catch (_) {
           continue;
         }
+        if (isThisATest) break;
       }
       return results;
     }

@@ -76,7 +76,7 @@ class TapasticRipper extends AbstractHTMLRipper {
         sendUpdate(RipStatus.loadingResource, episodeUrl.toString());
         final episodePage = await Http.get(episodeUrl);
         downloads.addAll(
-          downloadsFromEpisodePage(
+          downloadsFromEpisodePageForCurrentMode(
             episodePage,
             episodes[index],
             episodeIndex: index + 1,
@@ -108,6 +108,23 @@ class TapasticRipper extends AbstractHTMLRipper {
   @override
   Future<Uri?> getNextPage(Document page) async => null;
 
+  List<RipperDownload> downloadsFromEpisodePageForCurrentMode(
+    Document page,
+    TapasticEpisode episode, {
+    required int episodeIndex,
+    required int episodeDigitCount,
+    required Directory workingDirectory,
+  }) {
+    return downloadsFromEpisodePage(
+      page,
+      episode,
+      episodeIndex: episodeIndex,
+      episodeDigitCount: episodeDigitCount,
+      workingDirectory: workingDirectory,
+      limitToFirstImage: isThisATest,
+    );
+  }
+
   static List<TapasticEpisode> episodesFromDocument(Document page) {
     final html = page.outerHtml;
     if (!html.contains('episodeList : ')) return const [];
@@ -134,33 +151,39 @@ class TapasticRipper extends AbstractHTMLRipper {
     required int episodeIndex,
     required int episodeDigitCount,
     required Directory workingDirectory,
+    bool limitToFirstImage = false,
   }) {
     final images = page.querySelectorAll('article.ep-contents img');
     final imgLog = digitCount(images.length);
-
-    return [
-      for (var i = 0; i < images.length; i++)
-        if ((images[i].attributes['src'] ?? '').isNotEmpty)
-          RipperDownload(
-            url: Uri.parse(images[i].attributes['src']!),
-            saveAs: File(
-              p.join(
-                workingDirectory.path,
-                fileNameForUrl(
-                  Uri.parse(images[i].attributes['src']!),
-                  prefix: filenamePrefix(
-                    episode,
-                    episodeIndex: episodeIndex,
-                    episodeDigitCount: episodeDigitCount,
-                    imageIndex: i + 1,
-                    imageCount: images.length,
-                    imageDigitCount: imgLog,
-                  ),
+    final downloads = <RipperDownload>[];
+    for (var i = 0; i < images.length; i++) {
+      final source = images[i].attributes['src'] ?? '';
+      if (source.isEmpty) continue;
+      final uri = Uri.parse(source);
+      downloads.add(
+        RipperDownload(
+          url: uri,
+          saveAs: File(
+            p.join(
+              workingDirectory.path,
+              fileNameForUrl(
+                uri,
+                prefix: filenamePrefix(
+                  episode,
+                  episodeIndex: episodeIndex,
+                  episodeDigitCount: episodeDigitCount,
+                  imageIndex: i + 1,
+                  imageCount: images.length,
+                  imageDigitCount: imgLog,
                 ),
               ),
             ),
           ),
-    ];
+        ),
+      );
+      if (limitToFirstImage) break;
+    }
+    return downloads;
   }
 
   static String? betweenFirst(String value, String start, String end) {

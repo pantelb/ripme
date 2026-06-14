@@ -68,6 +68,7 @@ class MotherlessRipper extends AbstractHTMLRipper {
           [
             for (final item in indexedPageUrls)
               () async {
+                if (!shouldRunImageTask) return null;
                 final fileUri = await fileUrlFromImagePage(Uri.parse(item.url));
                 if (fileUri == null) return null;
                 return RipperDownload(
@@ -89,6 +90,7 @@ class MotherlessRipper extends AbstractHTMLRipper {
       );
 
       if (isStopped) break;
+      if (isThisATest) break;
 
       final nextUri = await getNextPage(page);
       if (nextUri == null) break;
@@ -110,8 +112,12 @@ class MotherlessRipper extends AbstractHTMLRipper {
 
   @override
   Future<List<String>> getURLsFromPage(Document page) async {
-    return pageUrlsFromDocument(page);
+    if (isStopped) return const [];
+    final urls = pageUrlsFromDocument(page);
+    return isThisATest ? urls.take(1).toList(growable: false) : urls;
   }
+
+  bool get shouldRunImageTask => !isStopped || isThisATest;
 
   @override
   Future<Uri?> getNextPage(Document page) async {

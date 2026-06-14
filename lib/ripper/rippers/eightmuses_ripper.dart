@@ -70,7 +70,8 @@ class EightmusesRipper extends AbstractHTMLRipper {
 
   @override
   Future<List<String>> getURLsFromPage(Document page) async {
-    return imageUrlsFromPage(page);
+    final urls = imageUrlsFromPage(page);
+    return isThisATest ? urls.take(1).toList(growable: false) : urls;
   }
 
   static List<String> imageUrlsFromPage(Document page) {
@@ -122,6 +123,7 @@ class EightmusesRipper extends AbstractHTMLRipper {
         subdirectory: subdirFromTitle(page.querySelector('title')?.text ?? ''),
         prefix: getPrefixShort(index),
       ));
+      if (isThisATest) break;
     }
 
     return downloads;

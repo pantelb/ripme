@@ -95,7 +95,8 @@ class NatalieMuRipper extends AbstractHTMLRipper {
 
   @override
   Future<List<String>> getURLsFromPage(Document page) async {
-    return imageUrlsFromDocument(page, url);
+    final urls = imageUrlsFromDocument(page, url);
+    return isThisATest ? urls.take(1).toList(growable: false) : urls;
   }
 
   @override

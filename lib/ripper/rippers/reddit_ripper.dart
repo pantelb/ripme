@@ -94,6 +94,13 @@ class RedditRipper extends AbstractJSONRipper {
   Future<void> parseJSON(Uri url) async {
     Uri? jsonUrl = getJsonUrl(this.url);
     while (jsonUrl != null && !isStopped) {
+      if (shouldEndForHistory) {
+        sendUpdate(
+          RipStatus.downloadCompleteHistory,
+          'Already seen the last $alreadyDownloadedUrls images ending rip',
+        );
+        break;
+      }
       final json = await _getRedditJson(jsonUrl);
       await _saveSelfPostHtmlFiles(json);
       final media = await extractMediaFromJson(json);
@@ -114,8 +121,19 @@ class RedditRipper extends AbstractJSONRipper {
         );
       }
       await downloadFiles(downloads);
+      if (shouldStopAfterCurrentPage) break;
       jsonUrl = nextPageUrl(json, jsonUrl);
     }
+  }
+
+  bool get shouldStopAfterCurrentPage => isStopped || isThisATest;
+
+  bool get shouldEndForHistory {
+    final limit = Utils.getConfigInteger(
+      'history.end_rip_after_already_seen',
+      1000000000,
+    );
+    return !isThisATest && alreadyDownloadedUrls >= limit;
   }
 
   Future<void> _saveSelfPostHtmlFiles(dynamic json) async {

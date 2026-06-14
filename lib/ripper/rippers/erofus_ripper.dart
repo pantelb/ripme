@@ -70,19 +70,24 @@ class ErofusRipper extends AbstractHTMLRipper {
     }
 
     final downloads = <RipperDownload>[];
-    for (final subUrl in subalbumUrlsFromDocument(page)) {
+    for (final pageLink in page.querySelectorAll('a.a-click')) {
       if (isStopped) break;
-      try {
-        sendUpdate(RipStatus.loadingResource, subUrl);
-        final subPage = pageFetcher == null
-            ? await Http.get(Uri.parse(subUrl))
-            : await pageFetcher(Uri.parse(subUrl));
-        downloads.addAll(
-          await _downloadsFromPage(subPage, pageFetcher: pageFetcher),
-        );
-      } catch (e) {
-        sendUpdate(RipStatus.downloadWarn, 'Error loading $subUrl: $e');
+      final href = pageLink.attributes['href'] ?? '';
+      if (href.contains('comics')) {
+        final subUrl = 'https://erofus.com$href';
+        try {
+          sendUpdate(RipStatus.loadingResource, subUrl);
+          final subPage = pageFetcher == null
+              ? await Http.get(Uri.parse(subUrl))
+              : await pageFetcher(Uri.parse(subUrl));
+          downloads.addAll(
+            await _downloadsFromPage(subPage, pageFetcher: pageFetcher),
+          );
+        } catch (e) {
+          sendUpdate(RipStatus.downloadWarn, 'Error loading $subUrl: $e');
+        }
       }
+      if (isThisATest) break;
     }
     return downloads;
   }

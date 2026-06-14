@@ -90,6 +90,7 @@ class ImagefapRipper extends AbstractHTMLRipper {
       }
 
       if (isStopped) break;
+      if (isThisATest) break;
 
       final nextUri = await getNextPage(page);
       if (nextUri == null) break;
@@ -138,6 +139,7 @@ class ImagefapRipper extends AbstractHTMLRipper {
       }
 
       imageUrls.add(image);
+      if (isThisATest) break;
     }
 
     return imageUrls;

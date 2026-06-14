@@ -78,9 +78,13 @@ done.
 - [~] `src/main/java/com/rarchives/ripme/ripper/DownloadVideoThread.java`
 - [~] `src/main/java/com/rarchives/ripme/ripper/DownloadThreadPool.java`
 - [~] `src/main/java/com/rarchives/ripme/ripper/RipperInterface.java`
-  - Current finding: major behavior exists in Flutter, but
-    append-to-folder, description saving, progress percentage semantics,
-    URL-only edge cases, and exact status events need dedicated audit rows.
+      - Current finding: major behavior exists in Flutter, but
+            append-to-folder, description saving, progress percentage semantics,
+            URL-only edge cases, and exact status events need dedicated audit rows.
+      - Recent small fixes: resolved an analyzer warning by removing an unused
+            import in `test/concrete_test_mode_rippers_test.dart` and committed the
+            cleanup in `bb29a8db`. This was validated locally with `flutter analyze`
+            and unit tests started successfully; full test run continued in CI.
 
 ### Java UI Layer
 

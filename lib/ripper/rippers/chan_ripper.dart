@@ -198,6 +198,7 @@ class ChanRipper extends AbstractHTMLRipper {
         href = normalizeMediaHref(href, url.host);
         if (imageUrls.contains(href)) continue;
         imageUrls.add(href);
+        if (isThisATest) break;
       } else {
         final originalUri = Uri.tryParse(href);
         if (originalUri == null || !originalUri.hasScheme) continue;

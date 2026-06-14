@@ -131,6 +131,7 @@ class FivehundredpxRipper extends AbstractJSONRipper {
   }
 
   Future<Map<String, dynamic>?> getNextPage(Map<String, dynamic> json) async {
+    if (isThisATest) return null;
     final currentPage = json['current_page'];
     final totalPages = json['total_pages'];
     if (currentPage is! int || totalPages is! int) return null;
@@ -152,6 +153,7 @@ class FivehundredpxRipper extends AbstractJSONRipper {
       if (isStopped) break;
       if (photo is! Map) continue;
       urls.add(await imageUrlForPhoto(photo));
+      if (isThisATest) break;
     }
     return urls;
   }
