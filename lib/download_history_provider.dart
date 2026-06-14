@@ -68,21 +68,21 @@ class DownloadHistoryProvider {
 
   static Future<bool> hasDownloaded(Uri url) async {
     final urls = await loadDownloadedUrls();
-    return urls.contains(_normalize(url));
+    return urls.contains(url.toString());
   }
 
   static Future<void> markDownloaded(Uri url) async {
     final configuredFile = _configuredFile();
     if (configuredFile != null) {
       await configuredFile.writeAsString(
-        _normalize(url),
+        url.toString(),
         mode: FileMode.append,
       );
       return;
     }
 
     final urls = await loadDownloadedUrls();
-    urls.add(_normalize(url));
+    urls.add(url.toString());
     await saveDownloadedUrls(urls);
   }
 
@@ -102,9 +102,5 @@ class DownloadHistoryProvider {
   static File? _configuredFile() {
     final path = Utils.getConfigString('history.location', null);
     return path == null || path.isEmpty ? null : File(path);
-  }
-
-  static String _normalize(Uri url) {
-    return url.removeFragment().toString();
   }
 }

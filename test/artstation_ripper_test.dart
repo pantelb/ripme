@@ -64,4 +64,22 @@ void main() {
         'Artist Name');
     expect(ArtStationRipper.projectFolderName('A:B*C?D...   '), 'A_B_C_D');
   });
+
+  test('normalizes URL history keys with Java terminal query regex', () {
+    final ripper =
+        ArtStationRipper(Uri.parse('https://www.artstation.com/user'));
+
+    expect(
+      ripper.normalizeUrl(
+        Uri.parse('https://cdn.artstation.com/image.jpg?token_123'),
+      ),
+      Uri.parse('https://cdn.artstation.com/image.jpg'),
+    );
+    expect(
+      ripper.normalizeUrl(
+        Uri.parse('https://cdn.artstation.com/image.jpg?token=123'),
+      ),
+      Uri.parse('https://cdn.artstation.com/image.jpg?token=123'),
+    );
+  });
 }

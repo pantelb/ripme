@@ -2389,15 +2389,27 @@ Findings:
   - Reconciled duplicate: shared `AbstractRipper.getFileName` ports the shipped
     regex bug intentionally, and focused tests cover custom names with and
     without explicit extensions, query/fragment delimiters, and trailing dots.
-- [ ] Java writes downloaded URLs to URL history before handing a download to
-      the thread pool. Flutter marks downloads after `Http.downloadFile`
-      succeeds; this changes retry/interruption semantics.
-- [ ] Java normalizes URL-history keys through overridable
+  - CI: [run 27472470144](https://github.com/pantelb/ripme/actions/runs/27472470144)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27472470144/artifacts/7612560231),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27472470144/artifacts/7612544034),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27472470144/artifacts/7612534968),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27472470144/artifacts/7612527030)
+    artifacts.
+- [x] Java writes downloaded URLs to URL history before handing a download to
+      the thread pool.
+  - Reconciled stale finding: Flutter writes history before checking an
+    existing destination and before calling `Http.downloadFile`, so failures
+    and interruptions retain the attempted URL like Java. The failed-download
+    fixture in `test/abstract_ripper_download_test.dart` locks the ordering.
+- [x] Java normalizes URL-history keys through overridable
       `AbstractRipper.normalizeUrl` before both history lookup and history
       write. Current Java overrides are `ArtStationRipper` (strips a terminal
       query word) and `DeviantartRipper` (uses the current offset URL).
-      Flutter download history marks/checks raw download URIs with no verified
-      equivalent per-ripper normalization.
+  - Flutter now routes both operations through the same overridable hook.
+    Exact base, ArtStation, and DeviantArt behavior is documented and tested in
+    the ripper reconciliation findings below.
 - [ ] Java shared `AbstractRipper.addURLToDownload` rejects bare `http:` and
       `https:` download URLs and rewrites spaces in `url.toExternalForm()` to
       `%20` before save-path creation, history checks/writes, and queueing.
@@ -5055,24 +5067,26 @@ Findings:
       `imageFromOldImagePage(...)` returns `null` for missing/empty `src` and
       skips the item, so malformed old gallery pages no longer exercise Java's
       empty-download/logging path.
-- [ ] Java downloaded-URL history normalization is per-ripper:
+- [x] Java downloaded-URL history normalization is per-ripper:
       `AbstractRipper.normalizeUrl(...)` returns the original URL unchanged,
       while `ArtStationRipper` strips only a terminal `?\w+` suffix and
       `DeviantartRipper` replaces the URL with `urlWithParams(offset)`.
-      Flutter `DownloadHistoryProvider._normalize(...)` removes fragments for
-      every URL and has no per-ripper normalization hook, so duplicate/skip
-      behavior differs both globally and for ArtStation/DeviantArt.
-- [ ] Java `ArtStationRipper.normalizeUrl(...)` uses the narrow regex
+      Flutter now preserves the base URL unchanged and routes both history
+      lookup and writes through overridable `AbstractRipper.normalizeUrl(...)`.
+      Validation: `download_history_provider_test.dart` and
+      `abstract_ripper_download_test.dart`.
+- [x] Java `ArtStationRipper.normalizeUrl(...)` uses the narrow regex
       `url.replaceAll("\\?\\w+$", "")`, so query strings containing `=`, `&`,
       or non-word characters are preserved in downloaded-URL history. Flutter's
-      global history normalizer preserves all query strings but strips fragments
-      and does not exercise the ArtStation-specific terminal-query behavior.
-- [ ] Java `DeviantartRipper.normalizeUrl(...)` records
+      Flutter now applies the same terminal-query regex while preserving query
+      strings containing `=`, `&`, or non-word characters. Validation:
+      `artstation_ripper_test.dart`.
+- [x] Java `DeviantartRipper.normalizeUrl(...)` records
       `urlWithParams(this.offset).toExternalForm()` for every downloaded URL,
       tying history entries to the ripper's current pagination offset instead
       of the actual downloaded deviation URL. Flutter records the media URL
-      after global fragment removal, so Java's DeviantArt already-downloaded
-      skip semantics are not reproduced.
+      through the ripper's current `urlWithParams(offset)` value. Validation:
+      `deviantart_ripper_test.dart`.
 - [ ] Java `GirlsOfDesireRipper` inherits the broad
       `AbstractHTMLRipper.canRip(...)` host check for `girlsofdesire.org`, but
       `getGID(...)` then matches `^www\\.girlsofdesire\\.org/...` against

@@ -42,6 +42,10 @@ class ArtStationRipper extends AbstractJSONRipper {
   bool canRip(Uri url) => url.host.endsWith('artstation.com');
 
   @override
+  Uri normalizeUrl(Uri url) =>
+      Uri.parse(url.toString().replaceFirst(RegExp(r'\?\w+$'), ''));
+
+  @override
   Future<String> getGID(Uri url) async {
     final parsed = await parseUrl(url);
     _albumUrl = parsed;

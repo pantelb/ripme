@@ -52,6 +52,28 @@ void main() {
       ),
       'https://www.deviantart.com/kageuri/gallery/',
     );
+    expect(
+      ripper.normalizeUrl(Uri.parse('https://images.example/image.jpg')),
+      Uri.parse(
+        'https://www.deviantart.com/apofiss/gallery/41388863/sceneries?offset=0',
+      ),
+    );
+  });
+
+  test('normalizes URL history keys with the current Java page offset',
+      () async {
+    final ripper = DeviantartRipper(
+      Uri.parse('https://www.deviantart.com/apofiss/gallery'),
+    );
+
+    await ripper.getNextPage(parse('<div></div>'));
+
+    expect(
+      ripper.normalizeUrl(Uri.parse('https://images.example/image.jpg')),
+      Uri.parse(
+        'https://www.deviantart.com/apofiss/gallery?offset=24',
+      ),
+    );
   });
 
   test('extracts gallery art page links from folderview and catpath pages', () {

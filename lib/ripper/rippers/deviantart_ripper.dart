@@ -35,6 +35,9 @@ class DeviantartRipper extends AbstractHTMLRipper {
   bool canRip(Uri url) => url.host.toLowerCase().endsWith(domain);
 
   @override
+  Uri normalizeUrl(Uri url) => urlWithParams(_offset);
+
+  @override
   Future<String> getGID(Uri url) async {
     final text = url.toString();
     if (text.contains('catpath=/')) {

@@ -52,6 +52,19 @@ class LifecycleTestRipper extends TestRipper {
   }
 }
 
+class NormalizingHistoryTestRipper extends TestRipper {
+  NormalizingHistoryTestRipper(
+    super.url,
+    super.directory,
+    this.historyUrl,
+  );
+
+  final Uri historyUrl;
+
+  @override
+  Uri normalizeUrl(Uri url) => historyUrl;
+}
+
 class GaussianSleepTestRipper extends TestRipper {
   GaussianSleepTestRipper(super.url, super.directory, this.sample);
 
@@ -495,6 +508,57 @@ void main() {
     await ripper.downloadFile(url, File(p.join(directory.path, 'missing.jpg')));
 
     expect(await DownloadHistoryProvider.hasDownloaded(url), isTrue);
+  });
+
+  test('uses ripper URL normalization for history lookup and writes', () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': true,
+      'download.retries': 0,
+    });
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_normalized_history_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final historyUrl = Uri.parse('https://example.com/normalized');
+    final rawUrl = Uri.parse('https://example.com/raw.jpg#fragment');
+    await DownloadHistoryProvider.markDownloaded(historyUrl);
+
+    final lookupRipper = NormalizingHistoryTestRipper(
+      Uri.parse('https://example.com/album'),
+      directory,
+      historyUrl,
+    );
+    await lookupRipper.setup();
+    await lookupRipper.downloadFile(
+      rawUrl,
+      File(p.join(directory.path, 'skipped.jpg')),
+    );
+    expect(lookupRipper.alreadyDownloadedUrls, 1);
+
+    await DownloadHistoryProvider.clear();
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    addTearDown(server.close);
+    server.listen((request) async {
+      request.response.statusCode = HttpStatus.notFound;
+      await request.response.close();
+    });
+    final failedUrl = Uri.parse(
+      'http://${server.address.host}:${server.port}/missing.jpg',
+    );
+    final writeRipper = NormalizingHistoryTestRipper(
+      Uri.parse('https://example.com/album'),
+      directory,
+      historyUrl,
+    );
+    await writeRipper.setup();
+    await writeRipper.downloadFile(
+      failedUrl,
+      File(p.join(directory.path, 'missing.jpg')),
+    );
+
+    expect(await DownloadHistoryProvider.hasDownloaded(historyUrl), isTrue);
+    expect(await DownloadHistoryProvider.hasDownloaded(failedUrl), isFalse);
   });
 
   test('skips URLs already present in persisted download history', () async {

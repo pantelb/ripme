@@ -123,6 +123,8 @@ abstract class AbstractRipper {
   ) =>
       requestedCookies;
 
+  Uri normalizeUrl(Uri url) => url;
+
   Future<void> setup() async {
     workingDir = await _getWorkingDir(url);
     if (!await workingDir.exists()) {
@@ -275,7 +277,7 @@ abstract class AbstractRipper {
       }
 
       if (_shouldRememberUrlHistory() &&
-          await DownloadHistoryProvider.hasDownloaded(url)) {
+          await DownloadHistoryProvider.hasDownloaded(normalizeUrl(url))) {
         _discardPreRegisteredDownload(url);
         alreadyDownloadedUrls++;
         sendUpdate(RipStatus.downloadWarn, 'Already downloaded $url');
@@ -305,7 +307,7 @@ abstract class AbstractRipper {
       }
 
       if (_shouldRememberUrlHistory()) {
-        await _rememberDownloadUrl(url);
+        await _rememberDownloadUrl(normalizeUrl(url));
       }
 
       if (!Utils.getConfigBoolean('file.overwrite', false) &&

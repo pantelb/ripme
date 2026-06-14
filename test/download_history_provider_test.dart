@@ -8,16 +8,17 @@ import 'package:ripme/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  test('stores normalized downloaded URLs', () async {
+  test('preserves URL fragments like Java base normalization', () async {
     SharedPreferences.setMockInitialValues({});
 
     final url = Uri.parse('https://example.com/image.jpg#fragment');
     await DownloadHistoryProvider.markDownloaded(url);
 
+    expect(await DownloadHistoryProvider.hasDownloaded(url), isTrue);
     expect(
       await DownloadHistoryProvider.hasDownloaded(
           Uri.parse('https://example.com/image.jpg')),
-      isTrue,
+      isFalse,
     );
   });
 
@@ -62,7 +63,7 @@ void main() {
     );
     expect(
       await DownloadHistoryProvider.hasDownloaded(
-        Uri.parse('https://example.com/two.jpg'),
+        Uri.parse('https://example.com/two.jpg#fragment'),
       ),
       isTrue,
     );
@@ -72,7 +73,7 @@ void main() {
 
     expect(
       await historyFile.readAsString(),
-      'https://example.com/two.jpghttps://example.com/one.jpg',
+      'https://example.com/two.jpg#fragmenthttps://example.com/one.jpg',
     );
     expect(
       await DownloadHistoryProvider.hasDownloaded(
@@ -109,8 +110,7 @@ void main() {
 
     expect((await HistoryProvider.loadHistory()).single.url,
         'https://example.com/album');
-    expect(await historyFile.readAsString(),
-        'https://example.com/image.jpg');
+    expect(await historyFile.readAsString(), 'https://example.com/image.jpg');
 
     await DownloadHistoryProvider.clear();
     expect(await HistoryProvider.loadHistory(), hasLength(1));
