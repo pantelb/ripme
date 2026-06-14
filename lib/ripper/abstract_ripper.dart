@@ -471,6 +471,7 @@ abstract class AbstractRipper {
           RipStatus.downloadStarted,
           url.toString(),
         ),
+        skipLargeTestDownload: isThisATest,
       );
       _completeDownload(url);
       sendUpdate(RipStatus.downloadComplete, saveAs.path);

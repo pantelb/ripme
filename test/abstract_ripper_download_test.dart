@@ -1079,6 +1079,65 @@ void main() {
     expect(await DownloadHistoryProvider.hasDownloaded(freshUrl), isFalse);
   });
 
+  test('test mode completes large downloads without reading the body',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': false,
+      'download.retries': 0,
+      'download.timeout': 1000,
+    });
+    await Utils.init();
+
+    final sockets = <Socket>[];
+    final server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+    addTearDown(() async {
+      for (final socket in sockets) {
+        socket.destroy();
+      }
+      await server.close();
+    });
+    server.listen((socket) {
+      sockets.add(socket);
+      var responded = false;
+      socket.listen((_) {
+        if (responded) return;
+        responded = true;
+        socket.write(
+          'HTTP/1.1 200 OK\r\n'
+          'Content-Length: 10000000\r\n'
+          'Connection: keep-alive\r\n'
+          '\r\n',
+        );
+        socket.flush();
+      });
+    });
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_large_test_download');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+    ripper.markAsTest();
+    final statuses = <RipStatusMessage>[];
+    final subscription = ripper.statusStream.listen(statuses.add);
+    addTearDown(subscription.cancel);
+    final saveAs = File(p.join(directory.path, 'large.bin'));
+
+    await ripper.downloadFile(
+      Uri.parse('http://${server.address.host}:${server.port}/large.bin'),
+      saveAs,
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(await saveAs.exists(), isTrue);
+    expect(await saveAs.length(), 0);
+    expect(
+      statuses.map((message) => message.status),
+      [RipStatus.downloadStarted, RipStatus.downloadComplete],
+    );
+  });
+
   test('emits download started for every Java file retry attempt', () async {
     SharedPreferences.setMockInitialValues({
       'remember.url_history': false,

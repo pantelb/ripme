@@ -124,6 +124,13 @@ void main() {
     expect(await saveAs.readAsString(), 'large');
   });
 
+  test('uses Java decimal 10 MB test-download threshold', () {
+    expect(Http.shouldSkipTestDownloadBody(-1), isFalse);
+    expect(Http.shouldSkipTestDownloadBody(9999999), isFalse);
+    expect(Http.shouldSkipTestDownloadBody(10000000), isTrue);
+    expect(Http.shouldSkipTestDownloadBody(10999999), isTrue);
+  });
+
   test('uses download timeout for file downloads', () async {
     SharedPreferences.setMockInitialValues({
       'download.timeout': 1000,

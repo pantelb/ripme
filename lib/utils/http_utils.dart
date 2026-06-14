@@ -107,6 +107,7 @@ class Http {
     bool disableTimeout = false,
     Duration? retrySleepOverride,
     void Function()? onAttempt,
+    bool skipLargeTestDownload = false,
   }) async {
     final combinedHeaders = _buildHeaders(
       url,
@@ -159,7 +160,10 @@ class Http {
           lastError = HttpException(
               'Failed to load $url: Status ${response.statusCode}');
         } else {
-          onTotalBytes?.call(_javaInt32(response.contentLength ?? -1));
+          final contentLength = response.contentLength ?? -1;
+          final skipBody = skipLargeTestDownload &&
+              shouldSkipTestDownloadBody(contentLength);
+          onTotalBytes?.call(_javaInt32(contentLength));
           if (getFileExtFromMIME) {
             final iterator = StreamIterator<List<int>>(
               disableTimeout
@@ -181,38 +185,42 @@ class Http {
               await saveAs.parent.create(recursive: true);
             }
             sink = saveAs.openWrite();
-            for (final chunk in bufferedChunks) {
-              if (shouldStop?.call() ?? false) {
-                throw const DownloadInterruptedException();
+            if (!skipBody) {
+              for (final chunk in bufferedChunks) {
+                if (shouldStop?.call() ?? false) {
+                  throw const DownloadInterruptedException();
+                }
+                sink.add(chunk);
+                completedBytes = _javaInt32(completedBytes + chunk.length);
+                onBytesCompleted?.call(completedBytes);
               }
-              sink.add(chunk);
-              completedBytes = _javaInt32(completedBytes + chunk.length);
-              onBytesCompleted?.call(completedBytes);
-            }
-            while (await iterator.moveNext()) {
-              if (shouldStop?.call() ?? false) {
-                throw const DownloadInterruptedException();
+              while (await iterator.moveNext()) {
+                if (shouldStop?.call() ?? false) {
+                  throw const DownloadInterruptedException();
+                }
+                final chunk = iterator.current;
+                sink.add(chunk);
+                completedBytes = _javaInt32(completedBytes + chunk.length);
+                onBytesCompleted?.call(completedBytes);
               }
-              final chunk = iterator.current;
-              sink.add(chunk);
-              completedBytes = _javaInt32(completedBytes + chunk.length);
-              onBytesCompleted?.call(completedBytes);
             }
           } else {
             if (!await saveAs.parent.exists()) {
               await saveAs.parent.create(recursive: true);
             }
             sink = saveAs.openWrite();
-            final stream = disableTimeout
-                ? response.stream
-                : response.stream.timeout(timeout!);
-            await for (final chunk in stream) {
-              if (shouldStop?.call() ?? false) {
-                throw const DownloadInterruptedException();
+            if (!skipBody) {
+              final stream = disableTimeout
+                  ? response.stream
+                  : response.stream.timeout(timeout!);
+              await for (final chunk in stream) {
+                if (shouldStop?.call() ?? false) {
+                  throw const DownloadInterruptedException();
+                }
+                sink.add(chunk);
+                completedBytes = _javaInt32(completedBytes + chunk.length);
+                onBytesCompleted?.call(completedBytes);
               }
-              sink.add(chunk);
-              completedBytes = _javaInt32(completedBytes + chunk.length);
-              onBytesCompleted?.call(completedBytes);
             }
           }
           await sink.close();
@@ -242,6 +250,9 @@ class Http {
     }
     throw HttpException('Failed to download $url');
   }
+
+  static bool shouldSkipTestDownloadBody(int contentLength) =>
+      contentLength ~/ 1000000 >= 10;
 
   static String? fileExtensionFromBytes(List<int> bytes) {
     if (bytes.length >= 4 &&

@@ -2649,13 +2649,35 @@ Findings:
     affected concrete ripper suites pass. `flutter analyze --no-pub` passed and
     `flutter test --no-pub --reporter expanded` passed 859 tests with 2
     skipped.
-- [ ] Java `DownloadFileThread.run()` has an additional test-only download
+  - CI: [run 27494038788](https://github.com/pantelb/ripme/actions/runs/27494038788)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27494038788/artifacts/7619505231),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27494038788/artifacts/7619493423),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27494038788/artifacts/7619490173),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27494038788/artifacts/7619474824)
+    artifacts.
+- [x] Java `DownloadFileThread.run()` has an additional test-only download
       shortcut: when `HttpURLConnection.getContentLength() / 1000000 >= 10`
       and `AbstractRipper.isThisATest()` is true, it logs that the file is over
-      10 MB and does not read/write the response body. Flutter
-      `Http.downloadFile(...)` always fetches the full response bytes before
-      applying the normal `download.max_size` limit, and there is no shared
-      test-mode flag or content-length-based skip path.
+      10 MB and does not read/write the response body.
+  - Completed: Flutter passes the shared Java test marker into
+    `Http.downloadFile(...)` and uses Java integer division with the decimal
+    `10,000,000`-byte threshold. The response body is not consumed, while the
+    destination file is still created and the normal download-complete status
+    is sent, leaving the same zero-byte test artifact as Java.
+  - Corrected: the earlier audit text incorrectly described
+    `download.max_size` as an active limit and said Flutter had no shared test
+    marker. The inactive configuration key and process-wide test marker are
+    covered by their completed audit rows. MIME-based extension probing remains
+    before this shortcut, matching Java's ordering.
+  - Validation: focused tests cover both sides of the exact decimal threshold
+    and a server that advertises 10,000,000 bytes without sending body data;
+    the test-mode download completes with a zero-byte file and
+    `DOWNLOAD_STARTED` / `DOWNLOAD_COMPLETE` equivalents.
+    `flutter analyze --no-pub` passed and
+    `flutter test --no-pub --reporter expanded` passed 861 tests with 2
+    skipped.
 - [ ] Java concrete rippers also add subclass-specific `isThisATest()` branches
       outside the shared abstract loops: `ChanRipper`, `EightmusesRipper`,
       `ErofusRipper`, `FivehundredpxRipper`, `ImagefapRipper`,
