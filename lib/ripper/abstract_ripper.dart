@@ -223,6 +223,23 @@ abstract class AbstractRipper {
     return Utils.sanitizeSaveAs(resolvedName);
   }
 
+  static String? preflightDownloadUrlText(String url) {
+    if (url == 'http:' || url == 'https:') return null;
+    return url.replaceAll(' ', '%20');
+  }
+
+  static Uri? preflightDownloadUrl(Uri url) {
+    final external = url.toString();
+    final prepared = preflightDownloadUrlText(external);
+    if (prepared == null) return null;
+    if (prepared == external) return url;
+    try {
+      return Uri.parse(prepared);
+    } on FormatException {
+      return url;
+    }
+  }
+
   void sendUpdate(RipStatus status, dynamic message) {
     _statusController.add(RipStatusMessage(status, message));
   }
@@ -263,6 +280,12 @@ abstract class AbstractRipper {
       bool allowDuplicate = false,
       bool getFileExtFromMIME = false}) async {
     if (isStopped) return;
+    final preparedUrl = preflightDownloadUrl(url);
+    if (preparedUrl == null) {
+      _discardPreRegisteredDownload(url);
+      return;
+    }
+    url = preparedUrl;
     try {
       if (_shouldIgnoreUrl(url)) {
         _discardPreRegisteredDownload(url);

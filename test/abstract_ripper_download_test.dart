@@ -1050,6 +1050,53 @@ void main() {
         isNotEmpty);
   });
 
+  test('rejects Java bare download schemes before history or output', () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': true,
+      'urls_only.save': true,
+    });
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_bare_scheme_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        TestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+    final statuses = <RipStatusMessage>[];
+    final subscription = ripper.statusStream.listen(statuses.add);
+    addTearDown(subscription.cancel);
+
+    for (final scheme in ['http:', 'https:']) {
+      await ripper.downloadFile(
+        Uri.parse(scheme),
+        File(p.join(directory.path, 'invalid')),
+      );
+    }
+    await Future<void>.delayed(Duration.zero);
+
+    expect(statuses, isEmpty);
+    expect(await DownloadHistoryProvider.loadDownloadedUrls(), isEmpty);
+    expect(await File(p.join(directory.path, 'urls.txt')).exists(), isFalse);
+  });
+
+  test('rewrites literal spaces in download URL text like Java', () {
+    expect(AbstractRipper.preflightDownloadUrlText('http:'), isNull);
+    expect(AbstractRipper.preflightDownloadUrlText('https:'), isNull);
+    expect(
+      AbstractRipper.preflightDownloadUrlText(
+        'https://example.com/image name one.jpg',
+      ),
+      'https://example.com/image%20name%20one.jpg',
+    );
+    expect(
+      AbstractRipper.preflightDownloadUrl(
+        Uri.parse('https://example.com/image%20name.jpg'),
+      ).toString(),
+      'https://example.com/image%20name.jpg',
+    );
+  });
+
   test('matches Java ignored extensions from the final URL path suffix',
       () async {
     SharedPreferences.setMockInitialValues({

@@ -2410,11 +2410,15 @@ Findings:
   - Flutter now routes both operations through the same overridable hook.
     Exact base, ArtStation, and DeviantArt behavior is documented and tested in
     the ripper reconciliation findings below.
-- [ ] Java shared `AbstractRipper.addURLToDownload` rejects bare `http:` and
+- [x] Java shared `AbstractRipper.addURLToDownload` rejects bare `http:` and
       `https:` download URLs and rewrites spaces in `url.toExternalForm()` to
       `%20` before save-path creation, history checks/writes, and queueing.
-      Flutter shared download scheduling does not have an equivalent
-      Java-compatible preflight guard.
+  - Flutter now applies the same guard at the shared `downloadFile` boundary
+    before ignore, duplicate, history, URL-only, save-path, and transport
+    handling. Dart `Uri` normally encodes spaces before this boundary, while
+    the explicit text preflight preserves Java behavior for raw URL fixtures.
+    Focused tests verify silent rejection leaves no history or URL-only output
+    and lock literal-space replacement.
 - [x] Java `urls_only.save=true` writes `urls.txt`, counts it as completed, and
       attempts to open `urls.txt` after rip completion.
   - Completed: Flutter writes and reports each URL as completed, preserves the
@@ -5087,6 +5091,14 @@ Findings:
       of the actual downloaded deviation URL. Flutter records the media URL
       through the ripper's current `urlWithParams(offset)` value. Validation:
       `deviantart_ripper_test.dart`.
+  - CI: [run 27485761691](https://github.com/pantelb/ripme/actions/runs/27485761691)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27485761691/artifacts/7616653436),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27485761691/artifacts/7616641993),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27485761691/artifacts/7616636704),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27485761691/artifacts/7616629443)
+    artifacts.
 - [ ] Java `GirlsOfDesireRipper` inherits the broad
       `AbstractHTMLRipper.canRip(...)` host check for `girlsofdesire.org`, but
       `getGID(...)` then matches `^www\\.girlsofdesire\\.org/...` against
