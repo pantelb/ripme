@@ -112,6 +112,8 @@ abstract class AbstractRipper {
 
   bool get sendsDownloadStartedPerAttempt => false;
 
+  Duration get downloadWorkerWaitTimeout => const Duration(seconds: 3600);
+
   Map<String, String>? resolveDownloadHeaders(
     Uri url,
     Map<String, String>? requestedHeaders,
@@ -270,7 +272,12 @@ abstract class AbstractRipper {
       }
     }
 
-    await Future.wait(List.generate(workerCount, (_) => worker()));
+    await Future.wait<void>(
+      List.generate(workerCount, (_) => worker()),
+    ).timeout(
+      downloadWorkerWaitTimeout,
+      onTimeout: () => <void>[],
+    );
     _stopIfHistoryLimitReached();
   }
 

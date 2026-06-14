@@ -2438,10 +2438,14 @@ Findings:
       item completed.
   - Completed: Flutter emits warning statuses with Java text, and existing files
     no longer affect the URL-history counter.
-- [ ] Java `DownloadThreadPool.waitForThreads()` shuts down the fixed thread
+- [x] Java `DownloadThreadPool.waitForThreads()` shuts down the fixed thread
       pool and waits at most 3600 seconds for termination. Flutter
-      `AbstractRipper.downloadFiles` waits on all worker futures with no
-      Java-compatible timeout or interrupted-wait status behavior.
+      `AbstractRipper.downloadFiles` now waits at most the same 3600 seconds
+      and returns while already-started workers continue, matching
+      `awaitTermination` timeout behavior. Dart futures have no Java thread
+      interruption equivalent; Java only logs an interrupted wait and emits no
+      rip status. An overridable timeout provides deterministic focused
+      coverage without weakening the production duration.
 - [ ] Java `AbstractHTMLRipper`/`AbstractJSONRipper` wait on overridable
       `getThreadPool()` hooks, and concrete rippers can replace the default
       pool with per-ripper pools. Current Java overrides are

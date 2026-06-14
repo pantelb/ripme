@@ -126,6 +126,26 @@ class ParallelTestRipper extends TestRipper {
   }
 }
 
+class TimedWaitTestRipper extends TestRipper {
+  TimedWaitTestRipper(super.url, super.directory);
+
+  final started = Completer<void>();
+  final release = Completer<void>();
+
+  @override
+  Duration get downloadWorkerWaitTimeout => const Duration(milliseconds: 10);
+
+  @override
+  Future<void> downloadFile(Uri url, File saveAs,
+      {Map<String, String>? headers,
+      Map<String, String>? cookies,
+      bool allowDuplicate = false,
+      bool getFileExtFromMIME = false}) async {
+    if (!started.isCompleted) started.complete();
+    await release.future;
+  }
+}
+
 class HeaderCookieTestRipper extends TestRipper {
   HeaderCookieTestRipper(super.url, super.directory);
 
@@ -700,6 +720,31 @@ void main() {
 
     expect(ripper.startedUrls, hasLength(5));
     expect(ripper.maxActiveDownloads, 2);
+  });
+
+  test('stops waiting for workers after the Java termination timeout',
+      () async {
+    SharedPreferences.setMockInitialValues({'threads.size': 1});
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_worker_timeout_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final ripper =
+        TimedWaitTestRipper(Uri.parse('https://example.com/album'), directory);
+    await ripper.setup();
+
+    final completed = ripper.downloadFiles([
+      RipperDownload(
+        url: Uri.parse('https://example.com/slow.jpg'),
+        saveAs: File(p.join(directory.path, 'slow.jpg')),
+      ),
+    ]);
+    await ripper.started.future;
+    await completed;
+
+    expect(ripper.release.isCompleted, isFalse);
+    ripper.release.complete();
   });
 
   test('uses Java pending completed and errored progress percentage', () async {
