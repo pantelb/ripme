@@ -11,12 +11,14 @@ abstract class AbstractHTMLRipper extends AbstractRipper {
   @override
   RipStatus get historyLimitStatus => RipStatus.downloadCompleteHistory;
 
+  Future<Document> fetchPage(Uri uri) => Http.get(uri);
+
   @override
   Future<void> rip() async {
     sendUpdate(RipStatus.loadingResource, url.toString());
     Document doc;
     try {
-      doc = await Http.get(url);
+      doc = await fetchPage(url);
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
       return;
@@ -33,7 +35,11 @@ abstract class AbstractHTMLRipper extends AbstractRipper {
     }
 
     int index = 0;
+    final processedLocations = <String>{};
     while (true) {
+      final location = Http.documentLocation(doc)?.toString() ?? url.toString();
+      if (!processedLocations.add(location)) break;
+
       List<String> imageURLs = await getURLsFromPage(doc);
       final downloads = <RipperDownload>[];
 
@@ -54,7 +60,7 @@ abstract class AbstractHTMLRipper extends AbstractRipper {
 
       try {
         sendUpdate(RipStatus.loadingResource, nextUri.toString());
-        doc = await Http.get(nextUri);
+        doc = await fetchPage(nextUri);
       } catch (e) {
         break;
       }

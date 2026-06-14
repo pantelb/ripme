@@ -12,6 +12,16 @@ class Http {
   static const String userAgent =
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
   static Future<void> Function(Duration duration) delay = Future.delayed;
+  static final Expando<Uri> _documentLocations =
+      Expando<Uri>('documentLocation');
+
+  static Document attachDocumentLocation(Document document, Uri location) {
+    _documentLocations[document] = location;
+    return document;
+  }
+
+  static Uri? documentLocation(Document document) =>
+      _documentLocations[document];
 
   static Future<Document> get(Uri url,
       {Map<String, String>? headers, Map<String, String>? cookies}) async {
@@ -19,7 +29,14 @@ class Http {
         await _getResponse(url, headers: headers, cookies: cookies);
 
     if (response.statusCode == 200) {
-      return parse(response.body);
+      final location = response.request?.url ?? url;
+      return attachDocumentLocation(
+        parse(
+          response.body,
+          sourceUrl: location.toString(),
+        ),
+        location,
+      );
     } else {
       throw HttpException('Failed to load $url: Status ${response.statusCode}');
     }
@@ -475,7 +492,7 @@ class Http {
   ) {
     switch (method.toUpperCase()) {
       case 'GET':
-        return client.get(url, headers: headers);
+        return _sendGetFollowingRedirects(client, url, headers);
       case 'POST':
         return client.post(url, headers: headers, body: data);
       default:
@@ -486,6 +503,29 @@ class Http {
         }
         return client.send(request).then(http.Response.fromStream);
     }
+  }
+
+  static Future<http.Response> _sendGetFollowingRedirects(
+    http.Client client,
+    Uri url,
+    Map<String, String> headers,
+  ) async {
+    var current = url;
+    for (var redirects = 0; redirects <= 5; redirects++) {
+      final request = http.Request('GET', current)
+        ..headers.addAll(headers)
+        ..followRedirects = false;
+      final response = await http.Response.fromStream(
+        await client.send(request),
+      );
+      final location = response.headers[HttpHeaders.locationHeader];
+      if (!response.isRedirect || location == null) return response;
+      if (redirects == 5) {
+        throw http.ClientException('Redirect limit exceeded', current);
+      }
+      current = current.resolve(location);
+    }
+    throw http.ClientException('Redirect limit exceeded', current);
   }
 
   static http.Client _createClient() {
@@ -669,13 +709,21 @@ class JavaHttpRequest {
   Future<Document> get() async {
     _method = 'GET';
     final result = await response();
-    return parse(result.body);
+    final location = result.request?.url ?? _url;
+    return Http.attachDocumentLocation(
+      parse(result.body, sourceUrl: location.toString()),
+      location,
+    );
   }
 
   Future<Document> post() async {
     _method = 'POST';
     final result = await response();
-    return parse(result.body);
+    final location = result.request?.url ?? _url;
+    return Http.attachDocumentLocation(
+      parse(result.body, sourceUrl: location.toString()),
+      location,
+    );
   }
 
   Future<dynamic> getJSON() async {

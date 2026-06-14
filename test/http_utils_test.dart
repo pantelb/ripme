@@ -632,6 +632,35 @@ void main() {
     expect(html.querySelector('h1')?.text, 'ok');
   });
 
+  test('stores the final response URL as the Java document location', () async {
+    SharedPreferences.setMockInitialValues({
+      'download.retries': 1,
+      'page.timeout': 1000,
+    });
+    await Utils.init();
+
+    final server = await _server((request) async {
+      if (request.uri.path == '/redirect') {
+        request.response
+          ..statusCode = HttpStatus.found
+          ..headers.set(HttpHeaders.locationHeader, '/final');
+      } else {
+        request.response.write('<html><body>final</body></html>');
+      }
+      await request.response.close();
+    });
+    addTearDown(server.close);
+
+    final document = await Http.get(
+      Uri.parse('http://127.0.0.1:${server.port}/redirect'),
+    );
+
+    expect(
+      Http.documentLocation(document),
+      Uri.parse('http://127.0.0.1:${server.port}/final'),
+    );
+  });
+
   test('Java-style request builder applies headers cookies and form data',
       () async {
     SharedPreferences.setMockInitialValues({

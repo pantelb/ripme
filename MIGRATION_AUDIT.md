@@ -2480,6 +2480,14 @@ Findings:
     active callers use it before handing resolved media to `downloadFiles`.
     Shared tests verify width, result order, and task-failure isolation; each
     affected ripper suite verifies its parser and download metadata paths.
+  - CI: [run 27486471048](https://github.com/pantelb/ripme/actions/runs/27486471048)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27486471048/artifacts/7616874935),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27486471048/artifacts/7616859837),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27486471048/artifacts/7616854281),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27486471048/artifacts/7616845131)
+    artifacts.
 - [x] Java stops an HTML rip after `history.end_rip_after_already_seen` already
       downloaded URLs and sends `DOWNLOAD_COMPLETE_HISTORY`.
   - Completed: Flutter emits `downloadCompleteHistory` after the current
@@ -2490,10 +2498,13 @@ Findings:
       `Already seen the last N images ending rip` before breaking.
   - Completed: Flutter emits `downloadComplete` with the same text after the
     current scheduled page batch.
-- [ ] Java `AbstractHTMLRipper` remembers each processed `doc.location()` and
+- [x] Java `AbstractHTMLRipper` remembers each processed `doc.location()` and
       breaks when a next page resolves to a previously processed location.
-      Flutter `AbstractHTMLRipper` has no visited-location guard, so bad or
-      cyclic pagination can loop until stopped or until a fetch fails.
+  - Flutter now preserves the final response URL as each parsed document's
+    source location and checks an instance-local processed-location set before
+    URL extraction. A deterministic two-page cycle fixture verifies that the
+    repeated location is fetched, matching Java, but is not processed or
+    downloaded twice.
 - [ ] Java `AbstractHTMLRipper` exposes one instance-level
       `cachedFirstPage` through `getCachedFirstPage()`, so a first page fetched
       while deriving the working-directory title is reused by the later rip

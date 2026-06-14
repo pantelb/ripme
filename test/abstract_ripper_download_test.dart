@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/dom.dart';
+import 'package:html/parser.dart' as html;
 import 'package:ripme/download_history_provider.dart';
 import 'package:ripme/ripper/abstract_html_ripper.dart';
 import 'package:ripme/ripper/abstract_json_ripper.dart';
@@ -261,6 +262,50 @@ class HtmlWorkingDirectoryTestRipper extends AbstractHTMLRipper {
   Future<List<String>> getURLsFromPage(Document page) async => const [];
 }
 
+class CyclicHtmlTestRipper extends AbstractHTMLRipper {
+  CyclicHtmlTestRipper(super.url, this.directory);
+
+  final Directory directory;
+  final fetched = <Uri>[];
+  int processedPages = 0;
+
+  @override
+  Future<void> setup() async {
+    workingDir = directory;
+  }
+
+  @override
+  bool canRip(Uri url) => true;
+
+  @override
+  Future<String> getGID(Uri url) async => 'cycle';
+
+  @override
+  String getHost() => 'cycle';
+
+  @override
+  Future<Document> fetchPage(Uri uri) async {
+    fetched.add(uri);
+    return Http.attachDocumentLocation(
+      html.parse('<html></html>', sourceUrl: uri.toString()),
+      uri,
+    );
+  }
+
+  @override
+  Future<List<String>> getURLsFromPage(Document page) async {
+    processedPages++;
+    return ['https://example.com/image-$processedPages.jpg'];
+  }
+
+  @override
+  Future<Uri?> getNextPage(Document page) async {
+    return Http.documentLocation(page)!.path.endsWith('/first')
+        ? Uri.parse('https://example.com/second')
+        : Uri.parse('https://example.com/first');
+  }
+}
+
 void main() {
   tearDown(() {
     AbstractRipper.folderNameSuffix = null;
@@ -429,6 +474,38 @@ void main() {
     await ripper.setup();
 
     expect(p.basename(ripper.workingDir.path), 'custom title');
+  });
+
+  test('stops HTML pagination before reprocessing a document location',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'urls_only.save': true,
+      'remember.url_history': false,
+    });
+    await Utils.init();
+
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_html_cycle_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final first = Uri.parse('https://example.com/first');
+    final ripper = CyclicHtmlTestRipper(first, directory);
+    await ripper.setup();
+
+    await ripper.rip();
+
+    expect(ripper.processedPages, 2);
+    expect(ripper.fetched, [
+      first,
+      Uri.parse('https://example.com/second'),
+      first,
+    ]);
+    expect(
+      await File(p.join(directory.path, 'urls.txt')).readAsLines(),
+      [
+        'https://example.com/image-1.jpg',
+        'https://example.com/image-2.jpg',
+      ],
+    );
   });
 
   test('shared filename helper preserves Java extension edge cases', () {
