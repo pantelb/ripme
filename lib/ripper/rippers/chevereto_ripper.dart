@@ -30,7 +30,7 @@ class CheveretoRipper extends AbstractHTMLRipper {
   @override
   Future<String> getAlbumTitle(Uri url) async {
     try {
-      final page = await getFirstPage();
+      final page = await getCachedFirstPage();
       final title = albumTitleFromDocument(page);
       if (title != null) return '${getHost()}_$title';
     } catch (_) {
@@ -55,7 +55,7 @@ class CheveretoRipper extends AbstractHTMLRipper {
 
     Document page;
     try {
-      page = await getFirstPage();
+      page = await getCachedFirstPage();
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
       return;
@@ -98,6 +98,7 @@ class CheveretoRipper extends AbstractHTMLRipper {
     sendUpdate(RipStatus.ripComplete, workingDir.path);
   }
 
+  @override
   Future<Document> getFirstPage() => Http.get(url, cookies: consentCookie);
 
   @override

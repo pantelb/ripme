@@ -306,6 +306,54 @@ class CyclicHtmlTestRipper extends AbstractHTMLRipper {
   }
 }
 
+class CachedFirstPageTestRipper extends AbstractHTMLRipper {
+  CachedFirstPageTestRipper(
+    super.url,
+    this.directory,
+    this.page, {
+    this.firstFailure,
+  });
+
+  final Directory directory;
+  final Document page;
+  Object? firstFailure;
+  int firstPageFetches = 0;
+
+  @override
+  Future<void> setup() async {
+    workingDir = directory;
+  }
+
+  @override
+  bool canRip(Uri url) => true;
+
+  @override
+  Future<String> getAlbumTitle(Uri url) async {
+    return (await getCachedFirstPage()).querySelector('title')!.text;
+  }
+
+  @override
+  Future<String> getGID(Uri url) async => 'cache';
+
+  @override
+  String getHost() => 'cache';
+
+  @override
+  Future<Document> getFirstPage() async {
+    firstPageFetches++;
+    final failure = firstFailure;
+    firstFailure = null;
+    if (failure != null) throw failure;
+    return page;
+  }
+
+  @override
+  Future<Uri?> getNextPage(Document page) async => null;
+
+  @override
+  Future<List<String>> getURLsFromPage(Document page) async => const [];
+}
+
 void main() {
   tearDown(() {
     AbstractRipper.folderNameSuffix = null;
@@ -506,6 +554,43 @@ void main() {
         'https://example.com/image-2.jpg',
       ],
     );
+  });
+
+  test('reuses Java cached first page between title lookup and rip', () async {
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_html_cache_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final page = html.parse('<title>Cached title</title>');
+    final ripper = CachedFirstPageTestRipper(
+      Uri.parse('https://example.com/album'),
+      directory,
+      page,
+    );
+    await ripper.setup();
+
+    expect(await ripper.getAlbumTitle(ripper.url), 'Cached title');
+    await ripper.rip();
+
+    expect(ripper.firstPageFetches, 1);
+    expect(await ripper.getCachedFirstPage(), same(page));
+  });
+
+  test('does not cache failed Java first-page loads', () async {
+    final directory =
+        await Directory.systemTemp.createTemp('ripme_html_cache_retry_test');
+    addTearDown(() => directory.delete(recursive: true));
+    final page = html.parse('<title>Retry title</title>');
+    final ripper = CachedFirstPageTestRipper(
+      Uri.parse('https://example.com/album'),
+      directory,
+      page,
+      firstFailure: const HttpException('temporary failure'),
+    );
+
+    await expectLater(
+        ripper.getCachedFirstPage(), throwsA(isA<HttpException>()));
+    expect(await ripper.getCachedFirstPage(), same(page));
+    expect(ripper.firstPageFetches, 2);
   });
 
   test('shared filename helper preserves Java extension edge cases', () {

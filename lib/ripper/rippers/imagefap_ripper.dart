@@ -31,8 +31,6 @@ class ImagefapRipper extends AbstractHTMLRipper {
 
   int _callsMade = 0;
   final DateTime _startTime = DateTime.now().toUtc();
-  Document? _firstPage;
-
   ImagefapRipper(super.url);
 
   @override
@@ -48,8 +46,8 @@ class ImagefapRipper extends AbstractHTMLRipper {
   Future<String> getAlbumTitle(Uri url) async {
     try {
       final title =
-          (await _cachedFirstPage()).head?.querySelector('title')?.text ??
-              (await _cachedFirstPage()).querySelector('title')?.text ??
+          (await getCachedFirstPage()).head?.querySelector('title')?.text ??
+              (await getCachedFirstPage()).querySelector('title')?.text ??
               '';
       if (title.isNotEmpty) {
         return albumTitleFromPageTitle(title, await getGID(url));
@@ -66,7 +64,7 @@ class ImagefapRipper extends AbstractHTMLRipper {
 
     Document page;
     try {
-      page = await _cachedFirstPage();
+      page = await getCachedFirstPage();
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
       return;
@@ -167,9 +165,8 @@ class ImagefapRipper extends AbstractHTMLRipper {
     }
   }
 
-  Future<Document> _cachedFirstPage() async {
-    return _firstPage ??= await getPageWithRetries(sanitizeUrl(url));
-  }
+  @override
+  Future<Document> getFirstPage() => getPageWithRetries(sanitizeUrl(url));
 
   Future<Document> getPageWithRetries(Uri uri) async {
     var retries = retryLimit;

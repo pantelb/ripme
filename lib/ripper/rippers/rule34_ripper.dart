@@ -44,6 +44,7 @@ class Rule34Ripper extends AbstractHTMLRipper {
     );
   }
 
+  @override
   Future<Document> getFirstPage() async {
     final api = await getAPIUrl();
     _apiUrl = api.toString();

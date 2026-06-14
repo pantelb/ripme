@@ -48,6 +48,7 @@ class SankakuComplexRipper extends AbstractHTMLRipper {
     return Uri.decodeComponent(match.group(1) ?? '');
   }
 
+  @override
   Future<Document> getFirstPage() async {
     if (_albumDoc != null) return _albumDoc!;
 

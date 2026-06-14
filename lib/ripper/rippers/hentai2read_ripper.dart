@@ -106,6 +106,7 @@ class Hentai2readRipper extends AbstractHTMLRipper {
     sendUpdate(RipStatus.ripComplete, workingDir.path);
   }
 
+  @override
   Future<Document> getFirstPage() async {
     if (pageContainsAlbums(url)) return Http.get(url);
 

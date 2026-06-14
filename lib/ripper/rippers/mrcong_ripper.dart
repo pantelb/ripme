@@ -55,6 +55,7 @@ class MrCongRipper extends AbstractHTMLRipper {
     );
   }
 
+  @override
   Future<Document> getFirstPage() async {
     final rootUrl = _tagPage ? rootTagUrl(url) : rootGalleryUrl(url);
     _currentUrl = rootUrl;

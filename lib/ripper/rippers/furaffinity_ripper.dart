@@ -89,6 +89,7 @@ class FuraffinityRipper extends AbstractHTMLRipper {
     sendUpdate(RipStatus.ripComplete, workingDir.path);
   }
 
+  @override
   Future<Document> getFirstPage() async {
     setCookies();
     return Http.get(url, cookies: _cookies);

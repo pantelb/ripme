@@ -21,7 +21,6 @@ class EromeRipper extends AbstractHTMLRipper {
       RegExp(r'https?://www\.erome\.com/([a-zA-Z0-9_\-?=]*)/?$');
 
   final Map<String, String> _cookies = <String, String>{};
-  Document? _firstPage;
 
   @override
   String getHost() => 'erome';
@@ -53,8 +52,8 @@ class EromeRipper extends AbstractHTMLRipper {
   @override
   Future<String> getAlbumTitle(Uri url) async {
     try {
-      _firstPage ??= await getFirstPage();
-      final title = _firstPage!
+      final firstPage = await getCachedFirstPage();
+      final title = firstPage
           .querySelector('meta[property="og:title"]')
           ?.attributes['content'];
       if (title != null) {
@@ -73,7 +72,7 @@ class EromeRipper extends AbstractHTMLRipper {
 
     Document page;
     try {
-      page = _firstPage ?? await getFirstPage();
+      page = await getCachedFirstPage();
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
       return;
@@ -106,10 +105,10 @@ class EromeRipper extends AbstractHTMLRipper {
     sendUpdate(RipStatus.ripComplete, workingDir.path);
   }
 
+  @override
   Future<Document> getFirstPage() async {
     setAuthCookie();
-    _firstPage = await Http.get(url, cookies: _cookies);
-    return _firstPage!;
+    return Http.get(url, cookies: _cookies);
   }
 
   void setAuthCookie() {

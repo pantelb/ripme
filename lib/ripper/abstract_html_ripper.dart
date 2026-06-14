@@ -8,17 +8,33 @@ import '../ui/rip_status_message.dart';
 abstract class AbstractHTMLRipper extends AbstractRipper {
   AbstractHTMLRipper(super.url);
 
+  Document? _cachedFirstPage;
+
   @override
   RipStatus get historyLimitStatus => RipStatus.downloadCompleteHistory;
 
   Future<Document> fetchPage(Uri uri) => Http.get(uri);
+
+  Future<Document?> getFirstPage() => fetchPage(url);
+
+  Future<Document> getCachedFirstPage() async {
+    final cached = _cachedFirstPage;
+    if (cached != null) return cached;
+
+    final page = await getFirstPage();
+    if (page == null) {
+      throw StateError('Unable to load first page: $url');
+    }
+    _cachedFirstPage = page;
+    return page;
+  }
 
   @override
   Future<void> rip() async {
     sendUpdate(RipStatus.loadingResource, url.toString());
     Document doc;
     try {
-      doc = await fetchPage(url);
+      doc = await getCachedFirstPage();
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
       return;

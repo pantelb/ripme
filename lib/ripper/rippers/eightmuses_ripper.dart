@@ -40,7 +40,7 @@ class EightmusesRipper extends AbstractHTMLRipper {
   @override
   Future<String> getAlbumTitle(Uri url) async {
     try {
-      final page = await _getFirstPage(url);
+      final page = await getCachedFirstPage();
       return albumTitleFromDocument(page) ??
           '${getHost()}_${await getGID(url)}';
     } catch (_) {
@@ -54,7 +54,7 @@ class EightmusesRipper extends AbstractHTMLRipper {
 
     Document page;
     try {
-      page = await _getFirstPage(url);
+      page = await getCachedFirstPage();
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
       return;
@@ -127,13 +127,14 @@ class EightmusesRipper extends AbstractHTMLRipper {
   @override
   Future<Uri?> getNextPage(Document page) async => null;
 
-  Future<Document> _getFirstPage(Uri uri) async {
-    final response = await Http.getResponse(uri);
+  @override
+  Future<Document> getFirstPage() async {
+    final response = await Http.getResponse(url);
     _cookies.addAll(cookiesFromSetCookieHeader(response.headers['set-cookie']));
     if (response.statusCode != 200) {
-      throw HttpException('Failed to load $uri: Status ${response.statusCode}');
+      throw HttpException('Failed to load $url: Status ${response.statusCode}');
     }
-    return html.parse(response.body, sourceUrl: uri.toString());
+    return html.parse(response.body, sourceUrl: url.toString());
   }
 
   Future<Document> _getPage(Uri uri) async {

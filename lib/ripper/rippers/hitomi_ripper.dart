@@ -83,6 +83,7 @@ class HitomiRipper extends AbstractHTMLRipper {
     sendUpdate(RipStatus.ripComplete, workingDir.path);
   }
 
+  @override
   Future<Document> getFirstPage() => Http.get(firstPageUrl(url));
 
   @override

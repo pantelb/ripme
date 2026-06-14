@@ -76,7 +76,7 @@ class FlickrRipper extends AbstractHTMLRipper {
     }
 
     try {
-      final page = await Http.get(sanitizeUrl(url));
+      final page = await getCachedFirstPage();
       final title = albumTitleFromDocument(url, page);
       if (title != null) return title;
     } catch (_) {
@@ -92,7 +92,7 @@ class FlickrRipper extends AbstractHTMLRipper {
 
     Document page;
     try {
-      page = await Http.get(sourceUrl);
+      page = await getCachedFirstPage();
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
       return;
@@ -146,6 +146,9 @@ class FlickrRipper extends AbstractHTMLRipper {
 
   @override
   Future<Uri?> getNextPage(Document page) async => null;
+
+  @override
+  Future<Document> getFirstPage() => Http.get(sanitizeUrl(url));
 
   Future<Map<String, dynamic>?> _fetchListing(
     FlickrAlbum album,

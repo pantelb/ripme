@@ -91,6 +91,7 @@ class TsuminoRipper extends AbstractHTMLRipper {
     );
   }
 
+  @override
   Future<Document?> getFirstPage() async {
     final response = await Http.getResponse(url);
     _cookies.addAll(

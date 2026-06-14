@@ -153,6 +153,7 @@ class E621Ripper extends AbstractHTMLRipper {
         Http.userAgent;
   }
 
+  @override
   Future<Document> getFirstPage() {
     if (url.path.startsWith('/pool')) {
       return getDocument(

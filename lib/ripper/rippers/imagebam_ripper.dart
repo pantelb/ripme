@@ -38,7 +38,7 @@ class ImagebamRipper extends AbstractHTMLRipper {
   @override
   Future<String> getAlbumTitle(Uri url) async {
     try {
-      final page = await Http.get(url);
+      final page = await getCachedFirstPage();
       final title = albumTitleFromDocument(page);
       if (title != null) return '${getHost()}_${await getGID(url)} ($title)';
     } catch (_) {
@@ -53,7 +53,7 @@ class ImagebamRipper extends AbstractHTMLRipper {
 
     Document page;
     try {
-      page = await Http.get(url);
+      page = await getCachedFirstPage();
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
       return;

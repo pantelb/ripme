@@ -41,7 +41,7 @@ class ZizkiRipper extends AbstractHTMLRipper {
   @override
   Future<String> getAlbumTitle(Uri url) async {
     try {
-      final page = await getFirstPage();
+      final page = await getCachedFirstPage();
       final title = albumTitleFromDocument(page);
       if (title != null) return title;
     } catch (_) {
@@ -56,7 +56,7 @@ class ZizkiRipper extends AbstractHTMLRipper {
 
     Document page;
     try {
-      page = await getFirstPage();
+      page = await getCachedFirstPage();
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
       return;
@@ -87,6 +87,7 @@ class ZizkiRipper extends AbstractHTMLRipper {
     sendUpdate(RipStatus.ripComplete, workingDir.path);
   }
 
+  @override
   Future<Document> getFirstPage() async {
     final response = await Http.getResponse(url);
     _cookies.addAll(cookiesFromSetCookieHeader(response.headers['set-cookie']));

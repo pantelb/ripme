@@ -86,6 +86,7 @@ class HentaifoundryRipper extends AbstractHTMLRipper {
     sendUpdate(RipStatus.ripComplete, workingDir.path);
   }
 
+  @override
   Future<Document> getFirstPage() async {
     final agreeUri = Uri.parse('$baseUrl/?enterAgree=1&size=1500');
     var response = await Http.getResponse(

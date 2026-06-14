@@ -65,7 +65,7 @@ class NfsfwRipper extends AbstractHTMLRipper {
     sendUpdate(RipStatus.loadingResource, sanitizedUrl.toString());
     Document page;
     try {
-      page = await Http.get(sanitizedUrl);
+      page = await getCachedFirstPage();
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
       return;
@@ -125,6 +125,9 @@ class NfsfwRipper extends AbstractHTMLRipper {
     _subalbumURLs.addAll(subalbumUrlsFromDocument(page));
     return imagePageUrlsFromDocument(page);
   }
+
+  @override
+  Future<Document> getFirstPage() => Http.get(sanitizedUrl);
 
   @override
   Future<Uri?> getNextPage(Document page) async {

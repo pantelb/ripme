@@ -89,6 +89,7 @@ class BooruRipper extends AbstractHTMLRipper {
     sendUpdate(RipStatus.ripComplete, workingDir.path);
   }
 
+  @override
   Future<Document> getFirstPage() => Http.get(getPage(0));
 
   @override

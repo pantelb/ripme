@@ -4,7 +4,6 @@ import 'package:html/dom.dart';
 import 'package:path/path.dart' as p;
 
 import '../../ui/rip_status_message.dart';
-import '../../utils/http_utils.dart';
 import '../../utils/utils.dart';
 import '../abstract_html_ripper.dart';
 import '../abstract_ripper.dart';
@@ -36,7 +35,7 @@ class GirlsOfDesireRipper extends AbstractHTMLRipper {
   @override
   Future<String> getAlbumTitle(Uri url) async {
     try {
-      final page = await Http.get(url);
+      final page = await getCachedFirstPage();
       final title = albumTitleFromPage(page);
       if (title != null) return '${getHost()}_$title';
     } catch (_) {
@@ -51,7 +50,7 @@ class GirlsOfDesireRipper extends AbstractHTMLRipper {
 
     Document page;
     try {
-      page = await Http.get(url);
+      page = await getCachedFirstPage();
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
       return;

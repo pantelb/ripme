@@ -71,7 +71,7 @@ class XhamsterRipper extends AbstractHTMLRipper {
   @override
   Future<String> getAlbumTitle(Uri url) async {
     try {
-      final page = await Http.get(sanitizeUrl(url));
+      final page = await getCachedFirstPage();
       final title = albumTitleFromDocument(page, sanitizeUrl(url));
       if (title != null) return title;
     } catch (_) {
@@ -86,7 +86,7 @@ class XhamsterRipper extends AbstractHTMLRipper {
 
     Document page;
     try {
-      page = await Http.get(url);
+      page = await getCachedFirstPage();
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
       return;

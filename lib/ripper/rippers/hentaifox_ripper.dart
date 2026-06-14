@@ -12,8 +12,6 @@ import '../abstract_ripper.dart';
 class HentaifoxRipper extends AbstractHTMLRipper {
   HentaifoxRipper(super.url);
 
-  Document? _cachedFirstPage;
-
   static const String domain = 'hentaifox.com';
   static final RegExp _galleryPattern =
       RegExp(r'^https://hentaifox\.com/gallery/([\d]+)/?$');
@@ -32,7 +30,7 @@ class HentaifoxRipper extends AbstractHTMLRipper {
 
     Document page;
     try {
-      page = await getFirstPage();
+      page = await getCachedFirstPage();
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
       return;
@@ -67,7 +65,7 @@ class HentaifoxRipper extends AbstractHTMLRipper {
   @override
   Future<String> getAlbumTitle(Uri url) async {
     try {
-      final page = await getFirstPage();
+      final page = await getCachedFirstPage();
       final title = albumTitleFromPage(page);
       if (title != null) return '${getHost()}_${title}_${await getGID(url)}';
     } catch (_) {
@@ -76,8 +74,9 @@ class HentaifoxRipper extends AbstractHTMLRipper {
     return super.getAlbumTitle(url);
   }
 
+  @override
   Future<Document> getFirstPage() async {
-    return _cachedFirstPage ??= await fetchFirstPage();
+    return fetchFirstPage();
   }
 
   Future<Document> fetchFirstPage() => Http.get(url);

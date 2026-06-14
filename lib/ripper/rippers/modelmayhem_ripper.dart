@@ -37,6 +37,7 @@ class ModelmayhemRipper extends AbstractHTMLRipper {
     );
   }
 
+  @override
   Future<Document> getFirstPage() {
     return Http.get(url, cookies: worksafeCookies);
   }

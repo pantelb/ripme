@@ -79,6 +79,7 @@ class ListalRipper extends AbstractHTMLRipper {
     throw const FormatException('Unable to fetch the gid for given url.');
   }
 
+  @override
   Future<Document> getFirstPage() async {
     final page = await Http.get(url);
     if (_urlType == ListalUrlType.list) {

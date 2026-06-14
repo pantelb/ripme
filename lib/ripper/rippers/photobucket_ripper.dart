@@ -123,6 +123,7 @@ class PhotobucketRipper extends AbstractHTMLRipper {
     sendUpdate(RipStatus.ripComplete, workingDir.path);
   }
 
+  @override
   Future<Document> getFirstPage() async {
     final albums = _albums ??= await getAlbumMetadata(url.toString());
     _currentAlbum = albums.removeAt(0);

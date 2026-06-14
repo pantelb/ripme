@@ -121,6 +121,7 @@ class DeviantartRipper extends AbstractHTMLRipper {
     sendUpdate(RipStatus.ripComplete, workingDir.path);
   }
 
+  @override
   Future<Document> getFirstPage() async {
     final response = await Http.getResponse(
       url,

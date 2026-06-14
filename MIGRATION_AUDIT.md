@@ -2505,18 +2505,36 @@ Findings:
     URL extraction. A deterministic two-page cycle fixture verifies that the
     repeated location is fetched, matching Java, but is not processed or
     downloaded twice.
-- [ ] Java `AbstractHTMLRipper` exposes one instance-level
+  - CI: [run 27486711647](https://github.com/pantelb/ripme/actions/runs/27486711647)
+    passed with
+    [Android](https://github.com/pantelb/ripme/actions/runs/27486711647/artifacts/7616949062),
+    [Windows](https://github.com/pantelb/ripme/actions/runs/27486711647/artifacts/7616944143),
+    [macOS](https://github.com/pantelb/ripme/actions/runs/27486711647/artifacts/7616932835),
+    and
+    [Linux](https://github.com/pantelb/ripme/actions/runs/27486711647/artifacts/7616926416)
+    artifacts.
+- [x] Java `AbstractHTMLRipper` exposes one instance-level
       `cachedFirstPage` through `getCachedFirstPage()`, so a first page fetched
       while deriving the working-directory title is reused by the later rip
       loop. Current Java concrete title/queue paths using that cache include
       `BatoRipper`, `ChanRipper`, `CheveretoRipper`, `EightmusesRipper`,
       `EromeRipper`, `FlickrRipper`, `GirlsOfDesireRipper`,
       `HentaifoxRipper`, `ImagebamRipper`, `ImagefapRipper`, `NfsfwRipper`,
-      `ViewcomicRipper`, `XhamsterRipper`, and `ZizkiRipper`. Flutter has no
-      shared `AbstractHTMLRipper` first-page cache; several ports fetch the
-      album-title page and the rip page independently, which can change request
-      counts, cookie/status side effects, and behavior when the two responses
-      differ.
+      `ViewcomicRipper`, `XhamsterRipper`, and `ZizkiRipper`.
+  - Completed: Flutter now exposes `getFirstPage()` and a retryable
+    instance-level `getCachedFirstPage()`. Successful first-page documents are
+    shared between setup/title lookup and ripping, while failed loads are not
+    cached, matching Java's field assignment behavior.
+  - The listed concrete rippers now consume the shared cache. Cookie-aware and
+    sanitized first-page behavior remains in concrete `getFirstPage()`
+    overrides. `NfsfwRipper` performs Java's queue-only classification from
+    the same cached document inside its custom rip loop.
+  - Validation: deterministic shared-layer tests prove one fetch across title
+    lookup and ripping and a second fetch after an initial exception. Existing
+    concrete parser/cache tests cover cookie-aware and sanitized overrides.
+    `flutter analyze --no-pub` passed and
+    `flutter test --no-pub --reporter expanded` passed 851 tests with 2
+    skipped.
 - [ ] Java shared HTML/JSON ripper layers throw `IOException("No images found
       at ...")` when URL extraction returns no media and the ripper is not
       doing ASAP/custom downloading. Flutter `AbstractHTMLRipper` currently

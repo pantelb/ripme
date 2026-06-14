@@ -78,7 +78,10 @@ void main() {
       parse('<div class="info"><h1>Gallery Title</h1></div>'),
     );
 
-    expect(await ripper.getFirstPage(), same(await ripper.getFirstPage()));
+    expect(
+      await ripper.getCachedFirstPage(),
+      same(await ripper.getCachedFirstPage()),
+    );
     expect(ripper.fetches, 1);
   });
 
