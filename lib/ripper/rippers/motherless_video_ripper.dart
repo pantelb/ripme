@@ -41,10 +41,10 @@ class MotherlessVideoRipper extends AbstractVideoRipper {
         videoUrl,
         File(p.join(workingDir.path, Utils.sanitizeSaveAs(fileName))),
       );
+      sendUpdate(RipStatus.ripComplete, workingDir.path);
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
     }
-    sendUpdate(RipStatus.ripComplete, workingDir.path);
   }
 
   @override

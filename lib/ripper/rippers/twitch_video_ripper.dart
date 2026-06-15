@@ -52,10 +52,10 @@ class TwitchVideoRipper extends AbstractVideoRipper {
           )
           .toList(growable: false);
       await downloadFiles(downloads);
+      sendUpdate(RipStatus.ripComplete, workingDir.path);
     } catch (e) {
       sendUpdate(RipStatus.ripErrored, e.toString());
     }
-    sendUpdate(RipStatus.ripComplete, workingDir.path);
   }
 
   @override

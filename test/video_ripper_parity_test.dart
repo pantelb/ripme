@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripme/ripper/abstract_ripper.dart';
 import 'package:ripme/ripper/rippers/motherless_video_ripper.dart';
+import 'package:ripme/ripper/rippers/twitch_video_ripper.dart';
 import 'package:ripme/ui/rip_status_message.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ripme/utils/utils.dart';
@@ -14,12 +15,12 @@ void main() {
     /// Java MotherlessVideoRipper.rip() checks if html.contains("__fileurl = '")
     /// and if so, calls logger.error("WTF"). This is a diagnostic side effect
     /// that should be honored in Dart.
-    final htmlWithMarker = """
+    const htmlWithMarker = """
       <html>
         <script>var __fileurl = 'https://cdn.example.com/video.mp4';</script>
       </html>
     """;
-    final htmlWithoutMarker = """
+    const htmlWithoutMarker = """
       <html>
         <script>var something_else = 'url';</script>
       </html>
@@ -44,7 +45,7 @@ void main() {
 
   test('MotherlessVideoRipper.rip() extracts first marker from HTML', () {
     /// Java behavior: extracts first occurrence, ignores subsequent ones
-    final html = """
+    const html = """
       <html>
         <script>var __fileurl = 'https://first.example.com/video.mp4';</script>
         <script>var __fileurl = 'https://second.example.com/video.mp4';</script>
@@ -53,5 +54,83 @@ void main() {
 
     final url = MotherlessVideoRipper.videoUrlFromHtml(html, Uri.parse('https://example.com'));
     expect(url.toString(), 'https://first.example.com/video.mp4');
+  });
+
+  test('MotherlessVideoRipper.rip() reports error without completion when marker is missing',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': false,
+      'download.timeout': 1000,
+    });
+    await Utils.init();
+
+    final directory = await Directory.systemTemp.createTemp('ripme_motherless_test');
+    addTearDown(() async {
+      if (await directory.exists()) await directory.delete(recursive: true);
+    });
+
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    addTearDown(() => server.close());
+    server.listen((request) async {
+      request.response.headers.contentType = ContentType.html;
+      request.response.write('<html><script>var foo = "bar";</script></html>');
+      await request.response.close();
+    });
+
+    final ripper = MotherlessVideoRipper(
+      Uri.parse('http://127.0.0.1:${server.port}/video'),
+    );
+    await ripper.setup();
+
+    final statuses = <RipStatusMessage>[];
+    final subscription = ripper.statusStream.listen(statuses.add);
+    addTearDown(subscription.cancel);
+
+    await ripper.run();
+    await Future<void>.delayed(Duration.zero);
+
+    expect(
+      statuses.map((status) => status.status),
+      [RipStatus.loadingResource, RipStatus.ripErrored],
+    );
+  });
+
+  test('TwitchVideoRipper.rip() completes when scripts exist without source markers',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'remember.url_history': false,
+      'download.timeout': 1000,
+    });
+    await Utils.init();
+
+    final directory = await Directory.systemTemp.createTemp('ripme_twitch_test');
+    addTearDown(() async {
+      if (await directory.exists()) await directory.delete(recursive: true);
+    });
+
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    addTearDown(() => server.close());
+    server.listen((request) async {
+      request.response.headers.contentType = ContentType.html;
+      request.response.write('<html><script>window.foo = true;</script></html>');
+      await request.response.close();
+    });
+
+    final ripper = TwitchVideoRipper(
+      Uri.parse('http://127.0.0.1:${server.port}/clip'),
+    );
+    await ripper.setup();
+
+    final statuses = <RipStatusMessage>[];
+    final subscription = ripper.statusStream.listen(statuses.add);
+    addTearDown(subscription.cancel);
+
+    await ripper.run();
+    await Future<void>.delayed(Duration.zero);
+
+    expect(
+      statuses.map((status) => status.status),
+      [RipStatus.loadingResource, RipStatus.ripComplete],
+    );
   });
 }

@@ -1886,8 +1886,8 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               ),
               title: Text(strings.autoUpdateNotAvailable),
               subtitle: Text(strings.openReleasePage),
-              value: false,
-              onChanged: null,
+              value: true,
+              onChanged: (_) => _refresh(),
             ),
             ListTile(
               leading: _IconBadge(
@@ -1993,7 +1993,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
     );
   }
 
-  void _refresh() {
+  void _refresh([bool? _]) {
     setState(() {});
   }
 
