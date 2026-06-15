@@ -1,0 +1,7 @@
+Analyzing RipMe Flutter Migration...                            
+
+   info - Use 'const' for final variables initialized to a constant value. Try replacing 'final' with 'const' - test\video_ripper_parity_test.dart:18:5 - prefer_const_declarations
+   info - Use 'const' for final variables initialized to a constant value. Try replacing 'final' with 'const' - test\video_ripper_parity_test.dart:23:5 - prefer_const_declarations
+   info - Use 'const' for final variables initialized to a constant value. Try replacing 'final' with 'const' - test\video_ripper_parity_test.dart:48:5 - prefer_const_declarations
+
+3 issues found. (ran in 9.5s)

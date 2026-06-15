@@ -1,0 +1,1192 @@
+00:00 +0: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart
+00:00 +0: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: setup uses Java-safe truncated working directory names
+00:00 +1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: run deletes an empty working directory after a successful rip
+00:00 +2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: run reports Java rip errors and deletes the empty directory
+[38;5;196mΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ[0m
+[38;5;196mΓöé Bad state: rip failed[0m
+[38;5;196mΓö£ΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöä[0m
+[38;5;196mΓöé #0   LifecycleTestRipper.rip (file:///C:/Users/pantelisb/Documents/RipMe%20Flutter%20Migration/test/abstract_ripper_download_test.dart:52:24)[0m
+[38;5;196mΓöé #1   AbstractRipper.run (package:ripme/ripper/abstract_ripper.dart:162:13)[0m
+[38;5;196mΓöé #2   main.<anonymous closure> (file:///C:/Users/pantelisb/Documents/RipMe%20Flutter%20Migration/test/abstract_ripper_download_test.dart:592:18)[0m
+[38;5;196mΓöé #3   <asynchronous suspension>[0m
+[38;5;196mΓöé #4   Declarer.test.<anonymous closure>.<anonymous closure> (package:test_api/src/backend/declarer.dart:253:15)[0m
+[38;5;196mΓöé #5   <asynchronous suspension>[0m
+[38;5;196mΓöé #6   Declarer.test.<anonymous closure> (package:test_api/src/backend/declarer.dart:250:11)[0m
+[38;5;196mΓöé #7   <asynchronous suspension>[0m
+[38;5;196mΓö£ΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöä[0m
+[38;5;196mΓöé Γ¢ö Got exception while running ripper[0m
+[38;5;196mΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ[0m
+00:00 +3: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: suppresses rip completion after a terminal rip error
+00:00 +4: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: run preserves a non-empty working directory
+00:00 +5: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: sleep applies Java gaussian jitter and integer truncation
+00:00 +6: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: sleep clamps Java gaussian jitter to 47 percent
+00:00 +7: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: album_titles.save false uses Java JSON fallback directory
+00:00 +8: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: album_titles.save true keeps Java JSON custom directory
+00:00 +9: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: album_titles.save false does not change Java HTML directory
+00:00 +10: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: stops HTML pagination before reprocessing a document location
+00:00 +11: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: shared test mode limits HTML and JSON to one media and one page
+00:00 +12: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: reuses Java cached first page between title lookup and rip
+00:00 +13: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: does not cache failed Java first-page loads
+00:00 +14: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: HTML ripper throws Java no-images failure for an empty page
+00:00 +15: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: JSON media guard preserves Java ASAP empty-list exemption
+00:00 +16: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: JSON rip errors do not fall through to rip completion
+[38;5;196mΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ[0m
+[38;5;196mΓöé FormatException: invalid JSON[0m
+[38;5;196mΓö£ΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöä[0m
+[38;5;196mΓöé #0   FailingJsonLifecycleTestRipper.parseJSON (file:///C:/Users/pantelisb/Documents/RipMe%20Flutter%20Migration/test/abstract_ripper_download_test.dart:530:5)[0m
+[38;5;196mΓöé #1   AbstractJSONRipper.rip (package:ripme/ripper/abstract_json_ripper.dart:32:11)[0m
+[38;5;196mΓöé #2   AbstractRipper.run (package:ripme/ripper/abstract_ripper.dart:162:13)[0m
+[38;5;196mΓöé #3   main.<anonymous closure> (file:///C:/Users/pantelisb/Documents/RipMe%20Flutter%20Migration/test/abstract_ripper_download_test.dart:902:18)[0m
+[38;5;196mΓöé #4   <asynchronous suspension>[0m
+[38;5;196mΓöé #5   Declarer.test.<anonymous closure>.<anonymous closure> (package:test_api/src/backend/declarer.dart:253:15)[0m
+[38;5;196mΓöé #6   <asynchronous suspension>[0m
+[38;5;196mΓöé #7   Declarer.test.<anonymous closure> (package:test_api/src/backend/declarer.dart:250:11)[0m
+[38;5;196mΓö£ΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöä[0m
+[38;5;196mΓöé Γ¢ö Got exception while running ripper[0m
+[38;5;196mΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ[0m
+00:00 +17: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: shared filename helper preserves Java extension edge cases
+00:00 +18: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: append-to-folder redirects file paths to a sibling album root
+00:00 +19: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: skips existing files when overwrite is disabled
+00:00 +20: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: records Java URL history before a failed download
+00:00 +21: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: shared test mode bypasses history and stops later downloads
+00:00 +22: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: test mode completes large downloads without reading the body
+00:00 +23: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: emits download started for every Java file retry attempt
+00:01 +24: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: uses ripper URL normalization for history lookup and writes
+00:01 +25: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: skips URLs already present in persisted download history
+00:01 +26: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: stops queued downloads after configured already-seen limit
+00:01 +27: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: HTML history threshold uses Java completion-history status
+00:01 +28: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: limits parallel downloads by threads.size
+00:01 +29: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: stops waiting for workers after the Java termination timeout
+00:01 +30: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: runs Java auxiliary pool tasks with configured width and isolation
+00:01 +31: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: uses Java pending completed and errored progress percentage
+00:01 +32: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: counts Java download errors as finished progress
+00:01 +33: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: single-file rippers emit Java GET byte progress and status text
+00:01 +34: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: passes headers and cookies through scheduled downloads
+00:01 +35: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: does not start queued downloads after stop is requested
+00:01 +36: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: interrupts an active download and reports Java status text
+00:01 +37: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: does not start downloads when already stopped
+00:01 +38: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: skips duplicate download URLs unless explicitly allowed
+00:01 +39: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: rejects Java bare download schemes before history or output
+00:01 +40: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: rewrites literal spaces in download URL text like Java
+00:01 +41: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: matches Java ignored extensions from the final URL path suffix
+00:01 +42: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: saves URLs to urls.txt instead of downloading when configured
+00:01 +43: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: URL-only mode keeps Java append-to-folder path side effects
+00:01 +44: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: legacy Flutter history key remains a fallback for URL history
+00:01 +45: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: sanitizes final save filename in the shared download path
+00:01 +46: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_ripper_download_test.dart: MIME extension detection appends the resolved Java image extension
+00:01 +47: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_video_ripper_test.dart
+00:03 +47: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_video_ripper_test.dart: test mode mutates the ripper URL without downloading the video
+00:03 +48: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_video_ripper_test.dart: URL-only mode takes precedence over video test mode
+00:03 +49: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_video_ripper_test.dart: video resolution errors do not fall through to rip completion
+[38;5;196mΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ[0m
+[38;5;196mΓöé FormatException: missing video[0m
+[38;5;196mΓö£ΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöä[0m
+[38;5;196mΓöé #0   FailingVideoRipper.getVideoDownloadForRip (file:///C:/Users/pantelisb/Documents/RipMe%20Flutter%20Migration/test/abstract_video_ripper_test.dart:77:5)[0m
+[38;5;196mΓöé #1   AbstractVideoRipper.rip (package:ripme/ripper/abstract_video_ripper.dart:61:27)[0m
+[38;5;196mΓöé #2   AbstractRipper.run (package:ripme/ripper/abstract_ripper.dart:162:13)[0m
+[38;5;196mΓöé #3   main.<anonymous closure> (file:///C:/Users/pantelisb/Documents/RipMe%20Flutter%20Migration/test/abstract_video_ripper_test.dart:154:18)[0m
+[38;5;196mΓöé #4   <asynchronous suspension>[0m
+[38;5;196mΓöé #5   Declarer.test.<anonymous closure>.<anonymous closure> (package:test_api/src/backend/declarer.dart:253:15)[0m
+[38;5;196mΓöé #6   <asynchronous suspension>[0m
+[38;5;196mΓöé #7   Declarer.test.<anonymous closure> (package:test_api/src/backend/declarer.dart:250:11)[0m
+[38;5;196mΓö£ΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöäΓöä[0m
+[38;5;196mΓöé Γ¢ö Got exception while running ripper[0m
+[38;5;196mΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ[0m
+00:03 +50: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_video_ripper_test.dart: uses Java HEAD then GET byte progress for video rips
+00:03 +51: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_video_ripper_test.dart: uses Java video retry attempts without retry sleep
+00:04 +52: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_video_ripper_test.dart: uses shared download path for video rips
+00:04 +53: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_video_ripper_test.dart: uses videos album title and Java media URL referer for video downloads
+00:04 +54: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_video_ripper_test.dart: honors video filenames but ignores explicit referrers and cookies
+00:04 +55: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_video_ripper_test.dart: selects highest DASH representation from manifest
+00:04 +56: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/abstract_video_ripper_test.dart: selects highest HLS variant from manifest
+00:04 +57: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/allporncomic_ripper_test.dart
+00:05 +57: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/allporncomic_ripper_test.dart: matches Java host and GID behavior
+00:05 +58: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/allporncomic_ripper_test.dart: extracts chapter images from wp-manga data-src attributes
+00:05 +59: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/allporncomic_ripper_test.dart: queues chapters from comic album pages
+00:06 +60: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/app_localizations_test.dart
+00:07 +60: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/app_localizations_test.dart: exposes Java bundle locale set to Flutter
+00:07 +61: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/app_localizations_test.dart: falls back to migrated English UI labels
+00:07 +62: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/app_localizations_test.dart: loads restored Java label bundles for matching keys
+00:07 +63: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/app_localizations_test.dart: every packaged Java default label is available through lookup
+00:07 +64: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/app_localizations_test.dart: decodes Java unicode escapes in migrated label bundles
+00:07 +65: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/app_logger_test.dart
+00:09 +65: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/app_logger_test.dart: uses Java log labels and defaults invalid values to error
+00:09 +66: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/app_logger_test.dart: filters configured levels and saves Java-style ripme.log
+00:09 +67: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/app_logger_test.dart: rolls ripme.log into Java-compatible gzip archives
+00:09 +68: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/artstation_ripper_test.dart
+00:10 +68: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/artstation_ripper_test.dart: discovers project JSON links from ArtStation HTML
+00:11 +69: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/artstation_ripper_test.dart: discovers user portfolio JSON links from ArtStation HTML
+00:11 +70: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/artstation_ripper_test.dart: falls back from artwork URL to project JSON when HTML is unavailable
+00:11 +71: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/artstation_ripper_test.dart: extracts hosted image assets and ignores external embeds
+00:11 +72: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/artstation_ripper_test.dart: uses Java-compatible metadata and portfolio folder sanitization
+00:11 +73: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/artstation_ripper_test.dart: normalizes URL history keys with Java terminal query regex
+00:11 +74: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/artstn_ripper_test.dart
+00:12 +74: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/artstn_ripper_test.dart: matches Java short-domain canRip behavior
+00:12 +75: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/artstn_ripper_test.dart: resolves absolute redirect locations recursively like the Java ripper
+00:12 +76: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/artstn_ripper_test.dart: surfaces unresolved redirect failures through null path like Java
+00:12 +77: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/base64_compat_test.dart
+00:14 +77: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/base64_compat_test.dart: Java Base64.decode compatibility decodes the Java Base64Test fixture
+00:14 +78: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/base64_compat_test.dart: Java Base64.decode compatibility decodes credentials used by Java TwodgalleriesRipper
+00:14 +79: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/base64_compat_test.dart: Java Base64.decode compatibility decodes nested JSON payloads used by Java CliphunterRipper
+00:14 +80: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/bato_ripper_test.dart
+00:15 +80: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/bato_ripper_test.dart: BatoRipper matches Java chapter and series URL behavior
+00:15 +81: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/bato_ripper_test.dart: BatoRipper queues series chapter links like Java
+00:15 +82: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/bato_ripper_test.dart: BatoRipper scans imgHttps JSON arrays from scripts
+00:15 +83: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/bato_ripper_test.dart: BatoRipper extracts chapter image URLs from script data
+00:15 +84: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/booru_ripper_test.dart
+00:17 +84: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/booru_ripper_test.dart: BooruRipper matches Java URL detection, host, domain, and GID
+00:17 +85: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/booru_ripper_test.dart: BooruRipper constructs Java-compatible DAPI page URLs
+00:17 +86: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/booru_ripper_test.dart: BooruRipper paginates using posts offset and count like Java
+00:17 +87: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/booru_ripper_test.dart: BooruRipper extracts file_url values and preserves post ids
+00:17 +88: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/booru_ripper_test.dart: BooruRipper uses Java post-id filename prefixes
+00:17 +89: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/byte_progress_test.dart
+00:18 +89: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/byte_progress_test.dart: formats bytes with Java IEC magnitude and precision
+00:18 +90: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/byte_progress_test.dart: restores Java AbstractSingleFileRipper inheritance
+00:18 +91: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cfake_ripper_test.dart
+00:20 +91: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cfake_ripper_test.dart: CfakeRipper matches Java URL detection, host, domain, and GID
+00:20 +92: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cfake_ripper_test.dart: CfakeRipper extracts gallery thumbnails as full photo URLs
+00:20 +93: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cfake_ripper_test.dart: CfakeRipper follows Java pagination span rules
+00:20 +94: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cfake_ripper_test.dart: CfakeRipper uses Java-style ordered filenames
+00:20 +95: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chan_ripper_test.dart
+00:21 +95: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chan_ripper_test.dart: ChanRipper parses Java chan config strings
+00:21 +96: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chan_ripper_test.dart: ChanSite keeps Java malformed config exceptions
+00:21 +97: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chan_ripper_test.dart: ChanRipper matches Java baked-in chan URLs, hosts, domains, and GIDs
+00:21 +98: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chan_ripper_test.dart: ChanRipper extracts normal 55chan thread IDs
+00:21 +99: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chan_ripper_test.dart: ChanRipper getHost keeps Java split-index board behavior
+00:21 +100: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chan_ripper_test.dart: ChanRipper supports user configured explicit domains
+00:21 +101: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chan_ripper_test.dart: ChanRipper freezes configured domains like Java class load
+00:21 +102: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chan_ripper_test.dart: ChanRipper keeps Java shared explicit domain list mutation
+00:22 +103: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chan_ripper_test.dart: ChanRipper extracts direct media URLs with Java normalization rules
+00:22 +104: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chan_ripper_test.dart: ChanRipper expands non-CDN links on explicit archive sites
+00:22 +105: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chan_ripper_test.dart: ChanRipper uses Java-style ordered filenames and video detection
+00:22 +106: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chevereto_ripper_test.dart
+00:23 +106: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chevereto_ripper_test.dart: CheveretoRipper matches Java host, domain, canRip, and GID behavior
+00:23 +107: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chevereto_ripper_test.dart: CheveretoRipper derives Java album title from og:title content
+00:24 +108: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chevereto_ripper_test.dart: CheveretoRipper extracts full-size image URLs from medium thumbnails
+00:24 +109: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chevereto_ripper_test.dart: CheveretoRipper follows Java pagination selector
+00:24 +110: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/chevereto_ripper_test.dart: CheveretoRipper uses Java-style ordered filenames
+00:24 +111: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/clipboard_autorip_test.dart
+00:25 +111: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/clipboard_autorip_test.dart: uses the Java 1000 ms clipboard polling interval
+00:25 +112: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/clipboard_autorip_test.dart: matches Java clipboard URL schemes only at the start
+00:25 +113: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/clipboard_autorip_test.dart: keeps the first Java regex match once per autorip session
+00:25 +114: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/clipboard_autorip_test.dart: keeps Java trailing punctuation and final-character boundaries
+00:25 +115: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cliphunter_ripper_test.dart
+00:26 +115: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cliphunter_ripper_test.dart: matches Java URL detection and GID parsing
+00:27 +116: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cliphunter_ripper_test.dart: decodes nested Base64 flashVars and decrypts video URL like Java
+00:27 +117: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cliphunter_ripper_test.dart: uses Java video filename and leaves transport headers unset
+00:27 +118: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart
+00:28 +118: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: arguments or a Linux no-display session select headless mode
+00:28 +119: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: no-argument headless invocation prints Java help
+00:28 +120: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: short and long help options print the Java CLI option surface
+00:28 +121: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: short and long version options print the Flutter app version
+00:28 +122: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: single URL options run through the injected headless ripper
+00:28 +123: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: single URL mode rejects malformed URLs like Java
+00:28 +124: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: URL-file parsing skips only lines beginning with Java comments
+00:28 +125: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: URL-file mode rips valid lines sequentially and continues on errors
+00:28 +126: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: CLI setting options use Java config keys and values
+00:28 +127: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: CLI settings survive configuration backend reinitialization
+00:28 +128: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: nosaveorder disables ordering
+00:28 +129: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: no-prop-file is the same no-op as current Java behavior
+00:28 +130: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: saveorder and nosaveorder are rejected after Java side effects
+00:28 +131: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: HTTP proxy maps Java CLI syntax to active Flutter settings
+00:29 +132: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: SOCKS proxy is rejected explicitly
+00:29 +133: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: append-to-folder preserves the exact Java suffix value
+00:29 +134: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: rerip processes all history entries and delays after successes
+00:29 +135: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: rerip rejects empty history like Java
+00:29 +136: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: rerip-selected processes only checked Java history entries
+00:29 +137: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: rerip-selected rejects history with no checked entries
+00:29 +138: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: update reports GitHub release availability without self-replacing
+00:29 +139: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: update runs after a URL rip like Java option ordering
+00:29 +140: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/cli_controller_test.dart: update lookup failures are reported as CLI errors
+00:29 +141: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/completion_sound_player_test.dart
+00:31 +141: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/completion_sound_player_test.dart: uses the packaged Java camera WAV
+00:31 +142: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/concrete_test_mode_rippers_test.dart
+00:32 +142: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/concrete_test_mode_rippers_test.dart: Chan test mode stops after the first self-hosted media URL
+00:32 +143: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/concrete_test_mode_rippers_test.dart: Eightmuses test mode keeps one hosted picture per page
+00:32 +144: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/concrete_test_mode_rippers_test.dart: Erofus test mode examines only the first page link
+00:32 +145: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/concrete_test_mode_rippers_test.dart: 500px test mode limits extraction and bypasses next-page parsing
+00:32 +146: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/concrete_test_mode_rippers_test.dart: Imagefap test mode resolves only the first gallery thumbnail
+00:32 +147: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/concrete_test_mode_rippers_test.dart: Motherless limits page URLs and preserves queued test tasks on stop
+00:32 +148: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/concrete_test_mode_rippers_test.dart: Natalie.mu test mode keeps the first unique gallery image
+00:32 +149: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/concrete_test_mode_rippers_test.dart: Reddit test mode ignores history cutoff and stops after one page
+00:32 +150: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/concrete_test_mode_rippers_test.dart: Tapastic test mode keeps one image from the selected episode
+00:32 +151: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/concrete_test_mode_rippers_test.dart: Xhamster test mode limits queues and only old-gallery extraction
+00:33 +152: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/configuration_controls_widget_test.dart
+00:35 +152: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/configuration_controls_widget_test.dart: every generic configuration control persists its Java key
+00:50 +153: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/configuration_controls_widget_test.dart: URL-list configuration action is wired to RipManager import
+00:50 +154: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_defaults_test.dart
+00:52 +154: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_defaults_test.dart: reconciles every active Java rip.properties default
+00:53 +155: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_defaults_test.dart: inventories every Java runtime configuration key
+00:53 +156: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_defaults_test.dart: uses Java rip.properties defaults when preferences are unset
+00:53 +157: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_defaults_test.dart: stored preferences override default config values
+00:53 +158: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_defaults_test.dart: non-portable config persists through the platform preference backend
+00:53 +159: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_defaults_test.dart: all non-portable config setters complete backend writes immediately
+00:53 +160: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_defaults_test.dart: parses comma-separated string list config values
+00:53 +161: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_defaults_test.dart: desktop portable config overrides preferences and Java defaults
+00:53 +162: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_defaults_test.dart: portable config uses Java call-site defaults for omitted keys
+00:53 +163: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_defaults_test.dart: portable config setters persist immediately to rip.properties
+00:53 +164: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_defaults_test.dart: obsolete external config is deleted and bundled defaults reload
+00:53 +165: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_defaults_test.dart: all seven exact Java sentinels are required for external config
+00:53 +166: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_defaults_test.dart: portable config path is adjacent to the desktop executable
+00:53 +167: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_key_inventory_test.dart
+00:55 +167: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_key_inventory_test.dart: extracts literal, constant, dynamic, and required Java config keys
+00:55 +168: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_key_inventory_test.dart: extracts active Java property defaults only
+00:55 +169: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_parity_test.dart
+00:56 +169: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_parity_test.dart: classifies every Java configuration key exactly once
+00:56 +170: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_parity_test.dart: records source-backed hidden key exceptions explicitly
+00:56 +171: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/config_parity_test.dart: maps every Flutter-only compatibility key to Java behavior
+00:57 +172: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/coomer_party_ripper_test.dart
+00:58 +172: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/coomer_party_ripper_test.dart: matches Java URL detection and GID parsing
+00:58 +173: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/coomer_party_ripper_test.dart: extracts Java-compatible file and attachment URLs
+00:58 +174: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/coomer_party_ripper_test.dart: uses Java-style ordered filename prefixes
+00:58 +175: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/danbooru_ripper_test.dart
+01:00 +175: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/danbooru_ripper_test.dart: matches Java host, domain, tags, and GIDs
+01:00 +176: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/danbooru_ripper_test.dart: constructs Java-compatible posts.json page URLs
+01:00 +177: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/danbooru_ripper_test.dart: extracts file_url resources like Java
+01:00 +178: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/danbooru_ripper_test.dart: uses Java-style ordered filename prefixes
+01:00 +179: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/derpi_ripper_test.dart
+01:01 +179: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/derpi_ripper_test.dart: sanitizes Java URL forms into Derpibooru JSON endpoints
+01:01 +180: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/derpi_ripper_test.dart: appends configured API key like Java sanitizeURL
+01:01 +181: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/derpi_ripper_test.dart: matches Java host, domain, and sanitized GIDs
+01:01 +182: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/derpi_ripper_test.dart: extracts image URLs from images, search, and single-image JSON
+01:01 +183: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/derpi_ripper_test.dart: does not add ordered filename prefixes
+01:01 +184: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/desktop_rip_start_notifier_test.dart
+01:03 +184: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/desktop_rip_start_notifier_test.dart: does not notify while disabled
+01:03 +185: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/desktop_rip_start_notifier_test.dart: does not notify while the main window is visible and focused
+01:03 +186: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/desktop_rip_start_notifier_test.dart: uses Java notification title and body for an inactive window
+01:03 +187: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/desktop_runner_arguments_test.dart
+01:05 +187: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/desktop_runner_arguments_test.dart: desktop runners forward process arguments to Dart
+01:05 +188: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/desktop_tray_controller_test.dart
+01:07 +188: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/desktop_tray_controller_test.dart: tray toggle hides an active visible window like Java
+01:07 +189: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/desktop_tray_controller_test.dart: tray toggle restores and focuses an inactive window like Java
+01:07 +190: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/desktop_tray_controller_test.dart: tray actions dispatch about, autorip, and exit
+01:07 +191: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/desktop_window_geometry_test.dart
+01:09 +191: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/desktop_window_geometry_test.dart: restores valid Java window bounds on supported desktop
+01:09 +192: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/desktop_window_geometry_test.dart: invalid or disabled Java geometry centers the desktop window
+01:09 +193: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/desktop_window_geometry_test.dart: saves Linux and macOS geometry using Java integer truncation
+01:09 +194: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/desktop_window_geometry_test.dart: matches Java Windows exclusion and Android no-op
+01:10 +195: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/deviantart_ripper_test.dart
+01:12 +195: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/deviantart_ripper_test.dart: matches Java host, domain, URL support, GIDs, and catpath state
+01:12 +196: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/deviantart_ripper_test.dart: constructs Java-compatible clean offset URLs
+01:12 +197: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/deviantart_ripper_test.dart: normalizes URL history keys with the current Java page offset
+01:12 +198: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/deviantart_ripper_test.dart: extracts gallery art page links from folderview and catpath pages
+01:12 +199: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/deviantart_ripper_test.dart: matches Java title and full-image fallback parsing
+01:12 +200: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/deviantart_ripper_test.dart: skips avatar-only text art and parses download-button extensions
+01:12 +201: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/download_history_provider_test.dart
+01:14 +201: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/download_history_provider_test.dart: preserves URL fragments like Java base normalization
+01:14 +202: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/download_history_provider_test.dart: exports and imports downloaded URL history JSON
+01:14 +203: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/download_history_provider_test.dart: uses Java append behavior when history.location is configured
+01:15 +204: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/download_history_provider_test.dart: configured downloaded URL history stays distinct from album history
+01:15 +205: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/dribbble_ripper_test.dart
+01:17 +205: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/dribbble_ripper_test.dart: matches Java host, domain, URL support, and GIDs
+01:17 +206: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/dribbble_ripper_test.dart: selects the largest srcset URL like Java
+01:17 +207: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/dribbble_ripper_test.dart: extracts thumbnail images from Java selector
+01:17 +208: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/dribbble_ripper_test.dart: constructs next page URLs with Java host and delay
+01:17 +209: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/dribbble_ripper_test.dart: uses Java-style ordered filename prefixes
+01:17 +210: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/dynastyscans_ripper_test.dart
+01:19 +210: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/dynastyscans_ripper_test.dart: matches Java host, domain, URL support, and GIDs
+01:19 +211: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/dynastyscans_ripper_test.dart: extracts Java var pages JSON and image URLs
+01:19 +212: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/dynastyscans_ripper_test.dart: constructs next page URLs and stops at # like Java
+01:19 +213: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/dynastyscans_ripper_test.dart: uses Java-style ordered filename prefixes
+01:19 +214: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/e621_ripper_test.dart
+01:21 +214: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/e621_ripper_test.dart: matches Java host, domain, URL support, term parsing, and GIDs
+01:21 +215: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/e621_ripper_test.dart: sanitizes old post search URLs like Java
+01:21 +216: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/e621_ripper_test.dart: extracts post links and next page URLs
+01:21 +217: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/e621_ripper_test.dart: extracts full-size image URLs from post pages
+01:21 +218: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/e621_ripper_test.dart: parses configured cookies and uses Java-style ordered filenames
+01:22 +219: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ehentai_ripper_test.dart
+01:23 +219: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ehentai_ripper_test.dart: matches Java host, domain, URL support, and GIDs
+01:24 +220: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ehentai_ripper_test.dart: extracts gallery image pages and tags like Java
+01:24 +221: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ehentai_ripper_test.dart: extracts image URLs from preferred and fallback selectors
+01:24 +222: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ehentai_ripper_test.dart: constructs next page URLs with Java last-page and delay behavior
+01:24 +223: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ehentai_ripper_test.dart: uses Java filename behavior including ehg manual filenames
+01:24 +224: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/eightmuses_ripper_test.dart
+01:26 +224: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/eightmuses_ripper_test.dart: EightmusesRipper matches Java album URLs and GIDs
+01:26 +225: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/eightmuses_ripper_test.dart: EightmusesRipper derives album title from Java meta description
+01:26 +226: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/eightmuses_ripper_test.dart: EightmusesRipper normalizes title text into Java subdirectory names
+01:26 +227: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/eightmuses_ripper_test.dart: EightmusesRipper extracts Java-compatible picture image URLs
+01:26 +228: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/eightmuses_ripper_test.dart: EightmusesRipper creates ASAP-style download metadata
+01:26 +229: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/eightmuses_ripper_test.dart: EightmusesRipper parses response cookies for follow-up downloads
+01:26 +230: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/erofus_ripper_test.dart
+01:28 +230: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/erofus_ripper_test.dart: matches Java Erofus host support and strict GID parsing
+01:28 +231: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/erofus_ripper_test.dart: detects album pages and rewrites thumbnail sources like Java
+01:28 +232: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/erofus_ripper_test.dart: builds subalbum URLs and title subdirectories with Java strings
+01:28 +233: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/erofus_ripper_test.dart: creates Java-style subdirectory downloads recursively
+01:28 +234: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/erome_ripper_test.dart
+01:30 +234: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/erome_ripper_test.dart: matches Java host, domain, URL sanitization, support, and GIDs
+01:30 +235: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/erome_ripper_test.dart: matches Java queue detection and album link extraction
+01:31 +236: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/erome_ripper_test.dart: extracts lazy images and HD/SD video sources in Java order
+01:31 +237: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/erome_ripper_test.dart: loads optional laravel_session auth cookie only when configured
+01:31 +238: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/erome_ripper_test.dart: uses Java-style ordered filenames
+01:31 +239: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fapdungeon_ripper_test.dart
+01:33 +239: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fapdungeon_ripper_test.dart: matches Java URL detection, host, domain, GID, and album title
+01:33 +240: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fapdungeon_ripper_test.dart: selects largest srcset image and falls back to src like Java
+01:33 +241: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fapdungeon_ripper_test.dart: extracts entry-content images and videos in Java order
+01:34 +242: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fapdungeon_ripper_test.dart: uses Java-style ordered filenames
+01:34 +243: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fapwiz_ripper_test.dart
+01:36 +243: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fapwiz_ripper_test.dart: matches Java host, domain, URL support, and GIDs
+01:37 +244: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fapwiz_ripper_test.dart: extracts user/category thumbnails as mp4 URLs and skips icons
+01:37 +245: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fapwiz_ripper_test.dart: category pages also process post video sources like Java
+01:37 +246: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fapwiz_ripper_test.dart: post pages extract video sources and next page links
+01:37 +247: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fapwiz_ripper_test.dart: uses Java-style ordered filenames
+01:37 +248: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/femjoyhunter_ripper_test.dart
+01:39 +248: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/femjoyhunter_ripper_test.dart: matches Java URL detection, host, domain, and GID
+01:39 +249: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/femjoyhunter_ripper_test.dart: extracts all image src attributes like Java
+01:39 +250: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/femjoyhunter_ripper_test.dart: uses Java download referer and ordered filenames
+01:39 +251: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fitnakedgirls_ripper_test.dart
+01:42 +251: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fitnakedgirls_ripper_test.dart: matches Java URL detection, host, domain, and GID
+01:42 +252: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fitnakedgirls_ripper_test.dart: extracts entry-inner images preferring data-src over src
+01:42 +253: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fitnakedgirls_ripper_test.dart: uses Java-style ordered filenames
+01:42 +254: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fivehundredpx_ripper_test.dart
+01:44 +254: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fivehundredpx_ripper_test.dart: matches Java host, domain, GIDs, and API base URLs
+01:44 +255: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fivehundredpx_ripper_test.dart: extracts preload images and Java-style download filenames
+01:45 +256: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/flickr_ripper_test.dart
+01:47 +256: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/flickr_ripper_test.dart: FlickrRipper matches Java URL sanitization and GID behavior
+01:47 +257: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/flickr_ripper_test.dart: FlickrRipper classifies Java API-supported URL types
+01:47 +258: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/flickr_ripper_test.dart: FlickrRipper extracts API key from page JavaScript with fallback
+01:47 +259: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/flickr_ripper_test.dart: FlickrRipper builds Java-compatible listing API URLs
+01:47 +260: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/flickr_ripper_test.dart: FlickrRipper extracts paginated photo ids from photoset and user JSON
+01:47 +261: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/flickr_ripper_test.dart: FlickrRipper picks largest source from getSizes response
+01:47 +262: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/flickr_ripper_test.dart: FlickrRipper derives set titles like Java
+01:48 +263: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/free_comic_online_ripper_test.dart
+01:50 +263: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/free_comic_online_ripper_test.dart: matches Java URL detection, host, domain, and GIDs
+01:50 +264: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/free_comic_online_ripper_test.dart: extracts chapter image sources like Java
+01:50 +265: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/free_comic_online_ripper_test.dart: uses the second select-pagination link for next chapter
+01:51 +266: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/furaffinity_ripper_test.dart
+01:53 +266: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/furaffinity_ripper_test.dart: matches Java URL detection, host, domain, and GIDs
+01:53 +267: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/furaffinity_ripper_test.dart: extracts gallery post links and download links like Java
+01:53 +268: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/furaffinity_ripper_test.dart: uses the first right-link href for next page
+01:54 +269: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/furaffinity_ripper_test.dart: parses configured cookies and honors disabled login
+01:54 +270: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/furaffinity_ripper_test.dart: uses Java-style ordered filename prefixes
+01:54 +271: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fuskator_ripper_test.dart
+01:56 +271: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fuskator_ripper_test.dart: matches Java URL sanitization, host, domain, and GIDs
+01:56 +272: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fuskator_ripper_test.dart: extracts protocol-relative image URLs from gallery JSON
+01:56 +273: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fuskator_ripper_test.dart: parses response cookies and builds Java-style cookie headers
+01:56 +274: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/fuskator_ripper_test.dart: uses Java-style ordered filename prefixes
+01:56 +275: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/girls_of_desire_ripper_test.dart
+01:58 +275: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/girls_of_desire_ripper_test.dart: matches Java host, domain, URL support, and GIDs
+01:58 +276: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/girls_of_desire_ripper_test.dart: extracts album title from albumName like Java
+01:58 +277: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/girls_of_desire_ripper_test.dart: normalizes thumbnail image URLs like Java
+01:58 +278: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/girls_of_desire_ripper_test.dart: uses Java-style ordered filename prefixes
+01:58 +279: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentai2read_ripper_test.dart
+02:00 +279: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentai2read_ripper_test.dart: matches Java host, domain, queue support, and GIDs
+02:00 +280: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentai2read_ripper_test.dart: extracts chapter queue URLs like Java
+02:00 +281: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentai2read_ripper_test.dart: discovers thumbnail page links from reader controls
+02:00 +282: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentai2read_ripper_test.dart: normalizes thumbnail image URLs like Java
+02:00 +283: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentai2read_ripper_test.dart: uses Java-style ordered filename prefixes
+02:00 +284: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaifoundry_ripper_test.dart
+02:02 +284: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaifoundry_ripper_test.dart: matches Java host, domain, URL support, and GIDs
+02:02 +285: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaifoundry_ripper_test.dart: builds Java filter POST data
+02:02 +286: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaifoundry_ripper_test.dart: extracts story PDF URLs and picture page URLs like Java
+02:02 +287: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaifoundry_ripper_test.dart: extracts full image URLs including resized thumbnail onclicks
+02:02 +288: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaifoundry_ripper_test.dart: uses Java-style configurable filename prefixes
+02:02 +289: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaifox_ripper_test.dart
+02:04 +289: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaifox_ripper_test.dart: matches Java host, domain, URL support, and GIDs
+02:04 +290: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaifox_ripper_test.dart: extracts album title from div.info h1 like Java
+02:04 +291: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaifox_ripper_test.dart: builds album title with empty h1 text like Java
+02:04 +292: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaifox_ripper_test.dart: caches first page like Java AbstractHTMLRipper
+02:04 +293: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaifox_ripper_test.dart: normalizes preview thumbnails to full image URLs like Java
+02:04 +294: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaifox_ripper_test.dart: builds Java-compatible ordered filenames by default
+02:04 +295: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaifox_ripper_test.dart: omits ordered filename prefixes when disabled
+02:04 +296: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaiimage_ripper_test.dart
+02:05 +296: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaiimage_ripper_test.dart: matches Java URL support, host, domain, and GID quirks
+02:05 +297: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaiimage_ripper_test.dart: extracts icon-overlay image src attributes like Java
+02:05 +298: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaiimage_ripper_test.dart: finds next paginator span using Java selector and label
+02:05 +299: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentaiimage_ripper_test.dart: uses Java-style ordered filename prefixes
+02:05 +300: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentai_nexus_ripper_test.dart
+02:06 +300: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentai_nexus_ripper_test.dart: matches Java host, domain, URL support, and GIDs
+02:06 +301: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentai_nexus_ripper_test.dart: extracts encoded initReader payloads from scripts
+02:06 +302: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentai_nexus_ripper_test.dart: decodes initReader JSON and builds image URLs like Java
+02:06 +303: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hentai_nexus_ripper_test.dart: uses Java-style ordered filename prefixes
+02:06 +304: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_actions_widget_test.dart
+02:08 +304: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_actions_widget_test.dart: history row actions and warned clear match Java
+02:14 +305: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart
+02:16 +305: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart: clears persisted rip history
+02:16 +306: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart: exports and imports Flutter rip history JSON
+02:16 +307: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart: imports Java history export JSON
+02:16 +308: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart: imports every Java history field without data loss
+02:16 +309: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart: rejects malformed Java history entries like Java fromFile
+02:16 +310: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart: keeps tolerant loading for legacy Flutter preference history
+02:16 +311: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart: preserves Java selected state and metadata through export
+02:16 +312: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart: writes Java history timestamps as epoch milliseconds
+02:16 +313: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart: documents the Java-compatible Flutter history format extension
+02:16 +314: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart: exports indented Java-style history JSON
+02:16 +315: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart: reconstructs Java URLs from supported bare directory names
+02:16 +316: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart: preserves Java full-path and Reddit fallback limitations
+02:16 +317: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart: loads legacy download.history before guessing directories
+02:16 +318: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart: does not guess when persisted album history exists
+02:16 +319: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_provider_test.dart: ignores malformed Java fallback candidates without crashing
+02:16 +320: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_table_widget_test.dart
+02:18 +320: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/history_table_widget_test.dart: history displays Java table columns and date format
+02:21 +321: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hitomi_ripper_test.dart
+02:22 +321: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hitomi_ripper_test.dart: matches Java host, domain, URL support, and GID behavior
+02:22 +322: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hitomi_ripper_test.dart: constructs ltn.hitomi JavaScript page URLs like Java
+02:22 +323: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hitomi_ripper_test.dart: strips the Java title suffix only
+02:22 +324: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hitomi_ripper_test.dart: extracts galleryinfo image names using Java CDN path behavior
+02:22 +325: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hitomi_ripper_test.dart: uses Java-style ordered filename prefixes
+02:22 +326: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hqporner_ripper_test.dart
+02:23 +326: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hqporner_ripper_test.dart: matches Java host, domain, URL support, and GIDs
+02:23 +327: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hqporner_ripper_test.dart: extracts listing video URLs and subdirectories like Java
+02:23 +328: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hqporner_ripper_test.dart: finds next pagination link only when last page link says Next
+02:23 +329: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hqporner_ripper_test.dart: normalizes embed URLs and picks Java best quality order
+02:23 +330: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart
+02:24 +330: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: detects Java image extensions from stream signatures
+02:24 +331: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: uses Java configured value as the total request attempt count
+02:24 +332: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: sends the exact Java AbstractRipper user agent
+02:25 +333: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: does not enforce Java inactive download.max_size key
+02:25 +334: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: uses Java decimal 10 MB test-download threshold
+02:25 +335: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: uses download timeout for file downloads
+02:25 +336: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: interrupts a streamed file download between chunks
+02:25 +337: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: page requests enforce the configured page timeout
+02:25 +338: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: file downloads enforce the configured download timeout
+02:25 +339: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: sends custom headers and cookies on downloads
+02:25 +340: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: download headers match Java defaults and exclude configured cookies
+02:25 +341: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: adds configured domain cookies to requests
+02:25 +342: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: configured cookies use Java parent lookup and parser edge cases
+02:25 +343: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: configured cookie parser fails on malformed Java pairs
+02:25 +344: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: semicolon cookie parser matches Java RipUtils split behavior
+02:25 +345: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: routes requests through configured HTTP proxy
+02:25 +346: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: uses Java proxy.http config with credentials and key precedence
+02:25 +347: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: rejects configured Java SOCKS proxy explicitly
+02:25 +348: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: disables certificate verification only when Java setting is enabled
+02:25 +349: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: ignores retry-after and uses Java configured retry sleep
+02:25 +350: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: page retries use Java 5000 ms fallback when the key is absent
+02:25 +351: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: file retries use Java zero-delay fallback when the key is absent
+02:25 +352: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: waits after every failed Java attempt including the final one
+02:25 +353: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: parses JSON and HTML without relying on content type
+02:25 +354: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: stores the final response URL as the Java document location
+02:25 +355: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: Java-style request builder applies headers cookies and form data
+02:25 +356: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: Java-style request builder supports JSON objects and arrays
+02:25 +357: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: Java-style request builder honors retry and timeout overrides
+02:25 +358: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: page requests never retry Java 404 responses
+02:25 +359: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: page status 401 stops with Java cookie guidance
+02:25 +360: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: page status 403 stops with Java cookie guidance
+02:25 +361: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: download 404 is non-retriable before Java skip key branch
+02:25 +362: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: download 5xx uses Java initial attempt plus configured retries
+02:25 +363: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/http_utils_test.dart: performs no request when Java attempt count is zero
+02:25 +364: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hypnohub_ripper_test.dart
+02:26 +364: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hypnohub_ripper_test.dart: matches Java host, domain, broad URL support, and GIDs
+02:26 +365: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hypnohub_ripper_test.dart: extracts post img#image using Java URL normalization
+02:27 +366: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hypnohub_ripper_test.dart: keeps Java malformed Original-image selector behavior
+02:27 +367: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hypnohub_ripper_test.dart: expands pool thumbnails by fetching each post like Java
+02:27 +368: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/hypnohub_ripper_test.dart: uses Java-style ordered filenames
+02:27 +369: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagebam_ripper_test.dart
+02:28 +369: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagebam_ripper_test.dart: matches Java host, domain, broad URL support, and GID quirk
+02:28 +370: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagebam_ripper_test.dart: extracts gallery title like Java
+02:28 +371: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagebam_ripper_test.dart: extracts thumbnail image page links while skipping footera links
+02:28 +372: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagebam_ripper_test.dart: finds next page using adjacent pagination links
+02:28 +373: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagebam_ripper_test.dart: extracts main-image URLs and uses Java-style ordered filenames
+02:28 +374: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagefap_ripper_test.dart
+02:29 +374: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagefap_ripper_test.dart: ImagefapRipper matches Java GID formats and URL sanitization
+02:29 +375: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagefap_ripper_test.dart: ImagefapRipper derives Java album titles
+02:29 +376: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagefap_ripper_test.dart: ImagefapRipper extracts full-size image href from image page
+02:29 +377: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagefap_ripper_test.dart: ImagefapRipper finds Java-style next page links
+02:29 +378: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagefap_ripper_test.dart: ImagefapRipper requires src and width thumbnails like Java
+02:29 +379: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagevenue_ripper_test.dart
+02:31 +379: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagevenue_ripper_test.dart: matches Java host, domain, broad URL support, and gallery GID
+02:31 +380: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagevenue_ripper_test.dart: extracts target-blank image page links like Java
+02:31 +381: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagevenue_ripper_test.dart: builds direct image URL from image page host and nested image src
+02:31 +382: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imagevenue_ripper_test.dart: uses Java-style ordered filenames
+02:31 +383: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgbox_ripper_test.dart
+02:32 +383: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgbox_ripper_test.dart: matches Java host, domain, broad URL support, and album GID
+02:32 +384: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgbox_ripper_test.dart: extracts boxed-content thumbnail images like Java
+02:32 +385: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgbox_ripper_test.dart: rewrites thumbnail URLs to original image URLs like Java
+02:32 +386: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgbox_ripper_test.dart: uses Java-style configurable ordered filenames
+02:32 +387: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart
+02:34 +387: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper getHost
+02:34 +388: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper canRip
+02:34 +389: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper getGID for album URLs
+02:34 +390: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper getGID for user URLs
+02:34 +391: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper getGID for user images URLs
+02:34 +392: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper getGID for user album URLs
+02:34 +393: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper getGID for subreddit URLs
+02:34 +394: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper getGID for single image URLs
+02:34 +395: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper getGID for subreddit album URLs
+02:34 +396: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper throws FormatException for invalid URLs
+02:34 +397: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper album title parsing follows Java fallback behavior
+02:34 +398: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper allowDuplicates
+02:34 +399: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper extracts album API images like Java
+02:34 +400: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper parses noscript fallback images and prefer.mp4
+02:34 +401: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper builds single media URL from post API JSON
+02:34 +402: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper parses user ajax image pages
+02:34 +403: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/imgur_ripper_test.dart: ImgurRipper converts album ids to Java page URLs
+02:34 +404: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/instagram_ripper_test.dart
+02:35 +404: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/instagram_ripper_test.dart: InstagramRipper matches Java URL classification and GIDs
+02:35 +405: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/instagram_ripper_test.dart: InstagramRipper extracts shared-data JSON from Java script forms
+02:35 +406: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/instagram_ripper_test.dart: InstagramRipper selects preload JavaScript like Java
+02:35 +407: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/instagram_ripper_test.dart: InstagramRipper extracts query hashes from JavaScript windows
+02:35 +408: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/instagram_ripper_test.dart: InstagramRipper resolves id strings and media root paths
+02:35 +409: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/instagram_ripper_test.dart: InstagramRipper parses stories with Java prefix ordering
+02:35 +410: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/instagram_ripper_test.dart: InstagramRipper recurses sidecars and builds timestamp prefixes
+02:35 +411: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jabarchives_ripper_test.dart
+02:36 +411: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jabarchives_ripper_test.dart: matches Java host, domain, broad URL support, and view GID
+02:36 +412: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jabarchives_ripper_test.dart: extracts content images, rewrites thumbs, and stores title prefixes
+02:36 +413: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jabarchives_ripper_test.dart: builds Java-style slug strings
+02:36 +414: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jabarchives_ripper_test.dart: constructs next page URL with Java hardcoded host prefix
+02:36 +415: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jabarchives_ripper_test.dart: uses title slug prefixes for filenames
+02:36 +416: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jagodibuja_ripper_test.dart
+02:37 +416: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jagodibuja_ripper_test.dart: matches Java host, domain, broad URL support, and strict GID
+02:38 +417: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jagodibuja_ripper_test.dart: extracts gallery comic-page links like Java
+02:38 +418: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jagodibuja_ripper_test.dart: extracts full-size image href from comic page like Java
+02:38 +419: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jagodibuja_ripper_test.dart: loads comic pages, waits 500ms, and returns full-size URLs
+02:38 +420: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jagodibuja_ripper_test.dart: uses unprefixed Java filenames
+02:38 +421: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/java_test_inventory_test.dart
+02:39 +421: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/java_test_inventory_test.dart: extracts unique Java test class names from source paths
+02:39 +422: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/java_test_inventory_test.dart: derives direct Dart test stems with Java acronym behavior
+02:39 +423: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/java_test_inventory_test.dart: uses explicit aliases for naming and broader integration coverage
+02:40 +424: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jpg3_ripper_test.dart
+02:41 +424: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jpg3_ripper_test.dart: matches Java host, domain, broad URL support, and split GID
+02:41 +425: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jpg3_ripper_test.dart: sanitizes album URLs like Java constructor sanitizeURL
+02:41 +426: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jpg3_ripper_test.dart: extracts image-container sources and removes literal .md like Java
+02:41 +427: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jpg3_ripper_test.dart: finds data-pagination next href exactly like Java
+02:41 +428: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/jpg3_ripper_test.dart: uses Java-style configurable ordered filenames
+02:41 +429: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/kingcomix_ripper_test.dart
+02:42 +429: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/kingcomix_ripper_test.dart: matches Java host, domain, broad URL support, and comic GID
+02:42 +430: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/kingcomix_ripper_test.dart: extracts entry-content paragraph images like Java
+02:42 +431: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/kingcomix_ripper_test.dart: uses Java-style configurable ordered filenames
+02:42 +432: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/language_selection_widget_test.dart
+02:45 +432: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/language_selection_widget_test.dart: language selection persists and reloads localized UI
+02:50 +433: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/language_switching_widget_test.dart
+02:51 +433: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/language_switching_widget_test.dart: language selection persists and relocalizes immediately
+02:53 +434: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/legacy_ripper_inventory_test.dart
+02:54 +434: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/legacy_ripper_inventory_test.dart: extracts unique Java ripper classes from base and video paths
+02:54 +435: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/linux_packaging_metadata_test.dart
+02:55 +435: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/linux_packaging_metadata_test.dart: Linux metadata identifies the packaged ripme executable
+02:55 +436: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/linux_packaging_metadata_test.dart: Linux CMake installs a relocatable complete bundle
+02:55 +437: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/linux_packaging_metadata_test.dart: CI verifies Linux bundle contents before archiving
+02:55 +438: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/linux_packaging_metadata_test.dart: CI uses resilient shared Linux dependency setup
+02:56 +439: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/listal_ripper_test.dart
+02:57 +439: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/listal_ripper_test.dart: matches Java host, domain, broad support, and strict list GID
+02:57 +440: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/listal_ripper_test.dart: matches Java folder GID rules for actor picture URLs
+02:57 +441: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/listal_ripper_test.dart: extracts Java list and folder intermediate image URLs
+02:57 +442: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/listal_ripper_test.dart: extracts final pure-img source and Java image-page filenames
+02:57 +443: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/listal_ripper_test.dart: posts list id and offset to load more list items
+02:57 +444: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/live_ripper_smoke_test.dart
+02:58 +444: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/live_ripper_smoke_test.dart: live Reddit smoke: configured URL returns extractable media or self-posts
+  Skip: Set RIPME_LIVE_REDDIT_URL to enable this fragile-site smoke test.
+02:58 +444 ~1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/live_ripper_smoke_test.dart: live Redgifs smoke: configured singleton URL resolves a video URL
+  Skip: Set RIPME_LIVE_REDGIFS_URL to enable this fragile-site smoke test.
+02:58 +444 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/localization_key_inventory_test.dart
+02:59 +444 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/localization_key_inventory_test.dart: extracts Java localized string call keys
+02:59 +445 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/localization_key_inventory_test.dart: extracts active Java localization properties only
+02:59 +446 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/localization_key_inventory_test.dart: Java bundle parity permits missing localized keys
+02:59 +447 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/localization_key_inventory_test.dart: Java bundle parity rejects localized-only keys
+02:59 +448 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/logging_configuration_widget_test.dart
+03:01 +448 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/logging_configuration_widget_test.dart: logging controls persist Java configuration values
+03:06 +449 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/log_view_clear_test.dart
+03:08 +449 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/log_view_clear_test.dart: LogView clear action removes manager logs
+Shell: 2026-06-15 21:59:02 ERROR Rip Errored: Download interrupted
+03:10 +450 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/log_view_filter_copy_test.dart
+03:12 +450 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/log_view_filter_copy_test.dart: LogView filters and copies only visible lines
+03:15 +451 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/log_view_test.dart
+03:19 +451 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/log_view_test.dart: LogView renders Java-style plain text lines instead of rows
+03:22 +452 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/luscious_ripper_test.dart
+03:24 +452 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/luscious_ripper_test.dart: sanitizes Java URL forms and matches host, domain, and GID
+03:25 +453 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/luscious_ripper_test.dart: builds Java-compatible encoded GraphQL API URLs
+03:25 +454 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/luscious_ripper_test.dart: extracts total pages and url_to_original values like Java
+03:25 +455 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/luscious_ripper_test.dart: uses Java-style ordered filename prefixes
+03:25 +456 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/luscious_ripper_test.dart: requests API with Java Firefox user-agent and parses JSON body
+03:25 +457 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/macos_platform_metadata_test.dart
+03:27 +457 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/macos_platform_metadata_test.dart: macOS release preserves Java filesystem access without sandboxing
+03:27 +458 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/macos_platform_metadata_test.dart: macOS deployment target is consistently 12.0
+03:27 +459 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/malformed_url_message_parity_test.dart
+03:29 +459 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/malformed_url_message_parity_test.dart: preserves audited Java malformed GID messages including typos
+03:29 +460 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mangadex_ripper_test.dart
+03:30 +460 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mangadex_ripper_test.dart: matches Java host, domain, broad support, and legacy numeric GIDs
+03:30 +461 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mangadex_ripper_test.dart: extracts Java chapter and manga IDs only from old URL shapes
+03:30 +462 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mangadex_ripper_test.dart: builds image URLs from chapter hash, page array, and server like Java
+03:31 +463 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mangadex_ripper_test.dart: keeps only English manga chapters and sorts by chapter number
+03:31 +464 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mangadex_ripper_test.dart: fetches manga chapters from the Java API endpoints in sorted order
+03:31 +465 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mangadex_ripper_test.dart: waits one second per download and uses Java-style ordered filenames
+03:31 +466 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mastodon_ripper_test.dart
+03:32 +466 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mastodon_ripper_test.dart: Mastodon-family rippers match Java host/domain GID behavior
+03:32 +467 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mastodon_ripper_test.dart: MastodonRipper appends /media unless URL is already media page
+03:32 +468 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mastodon_ripper_test.dart: MastodonRipper extracts gallery media URLs and IDs from data-props
+03:32 +469 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mastodon_ripper_test.dart: MastodonRipper finds Java load-more pagination link
+03:32 +470 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/modelmayhem_ripper_test.dart
+03:34 +470 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/modelmayhem_ripper_test.dart: matches Java host, domain, broad support, and strict GID
+03:34 +471 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/modelmayhem_ripper_test.dart: sends Java worksafe bypass cookie on first page request
+03:34 +472 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/modelmayhem_ripper_test.dart: extracts Java gallery image URLs from table thumbnails
+03:34 +473 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/modelmayhem_ripper_test.dart: uses Java ordered filename prefixes when enabled
+03:34 +474 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/motherless_ripper_test.dart
+03:37 +474 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/motherless_ripper_test.dart: MotherlessRipper matches Java GID URL patterns and canRip
+03:37 +475 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/motherless_ripper_test.dart: MotherlessRipper rewrites gallery home to all uploads
+03:37 +476 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/motherless_ripper_test.dart: MotherlessRipper extracts intermediate image page URLs like Java
+03:37 +477 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/motherless_ripper_test.dart: MotherlessRipper extracts file URLs and pagination metadata
+03:37 +478 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/motherless_video_ripper_test.dart
+03:39 +478 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/motherless_video_ripper_test.dart: matches Java direct video URL detection and GID parsing
+03:39 +479 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/motherless_video_ripper_test.dart: extracts the first Java __fileurl video URL
+03:39 +480 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/motherless_video_ripper_test.dart: builds Java Motherless video download filenames
+03:39 +481 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mrcong_ripper_test.dart
+03:41 +481 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mrcong_ripper_test.dart: matches Java host, domain, gallery GIDs, and tag GIDs
+03:42 +482 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mrcong_ripper_test.dart: normalizes first pages and builds Java-compatible next page URLs
+03:42 +483 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mrcong_ripper_test.dart: extracts max page numbers using Java selectors
+03:42 +484 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mrcong_ripper_test.dart: extracts gallery images and tag child gallery URLs like Java
+03:42 +485 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/mrcong_ripper_test.dart: uses Java-style configurable ordered filenames
+03:42 +486 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/multporn_ripper_test.dart
+03:43 +486 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/multporn_ripper_test.dart: MultpornRipper matches Java node URL detection, host, domain, and GID
+03:43 +487 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/multporn_ripper_test.dart: MultpornRipper resolves simple-mode comic links like Java fallback
+03:44 +488 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/multporn_ripper_test.dart: MultpornRipper extracts gallery item hrefs without filtering
+03:44 +489 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/multporn_ripper_test.dart: MultpornRipper carries Java canonical referrer into downloads
+03:44 +490 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/multporn_ripper_test.dart: MultpornRipper uses Java-style ordered filenames
+03:44 +491 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/myhentaicomics_ripper_test.dart
+03:45 +491 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/myhentaicomics_ripper_test.dart: MyhentaicomicsRipper matches Java host, domain, support, and GIDs
+03:45 +492 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/myhentaicomics_ripper_test.dart: MyhentaicomicsRipper detects search and tag queue pages like Java
+03:45 +493 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/myhentaicomics_ripper_test.dart: MyhentaicomicsRipper extracts album links from queue pages
+03:46 +494 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/myhentaicomics_ripper_test.dart: MyhentaicomicsRipper extracts relative images and expands thumbs
+03:46 +495 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/myhentaicomics_ripper_test.dart: MyhentaicomicsRipper follows Java single-digit next-page rule
+03:46 +496 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/myhentaicomics_ripper_test.dart: MyhentaicomicsRipper uses Java-style ordered filenames
+03:46 +497 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/myhentaigallery_ripper_test.dart
+03:48 +497 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/myhentaigallery_ripper_test.dart: MyhentaigalleryRipper matches Java host, domain, support, and GID
+03:48 +498 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/myhentaigallery_ripper_test.dart: MyhentaigalleryRipper rewrites comic thumbnails to originals
+03:48 +499 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/myhentaigallery_ripper_test.dart: MyhentaigalleryRipper uses Java-style ordered filenames
+03:48 +500 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/myreadingmanga_ripper_test.dart
+03:49 +500 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/myreadingmanga_ripper_test.dart: MyreadingmangaRipper matches Java host, domain, support, and GID
+03:49 +501 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/myreadingmanga_ripper_test.dart: MyreadingmangaRipper extracts data-lazy-src images like Java
+03:49 +502 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/myreadingmanga_ripper_test.dart: MyreadingmangaRipper uses Java-style ordered filenames
+03:50 +503 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/natalie_mu_ripper_test.dart
+03:51 +503 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/natalie_mu_ripper_test.dart: NatalieMuRipper matches Java URL detection, host, domain, and GIDs
+03:51 +504 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/natalie_mu_ripper_test.dart: NatalieMuRipper extracts and normalizes gallery thumbnails like Java
+03:51 +505 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/natalie_mu_ripper_test.dart: NatalieMuRipper uses Java-style ordered filenames
+03:51 +506 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/natalie_mu_ripper_test.dart: NatalieMuRipper uses the source page as Java download referrer
+03:51 +507 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/newgrounds_ripper_test.dart
+03:53 +507 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/newgrounds_ripper_test.dart: NewgroundsRipper matches Java host, domain, support, and GID
+03:53 +508 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/newgrounds_ripper_test.dart: NewgroundsRipper parses thumbnails and probes detail pages like Java
+03:53 +509 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/newgrounds_ripper_test.dart: NewgroundsRipper skips detail pages that fail while checking extension
+03:53 +510 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/newgrounds_ripper_test.dart: NewgroundsRipper mirrors Java pagination state and AJAX headers
+03:53 +511 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/newgrounds_ripper_test.dart: NewgroundsRipper uses Java-style ordered filenames
+03:53 +512 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nfsfw_ripper_test.dart
+03:55 +512 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nfsfw_ripper_test.dart: NfsfwRipper matches Java URL sanitization, support, host, and GIDs
+03:55 +513 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nfsfw_ripper_test.dart: NfsfwRipper extracts image pages and subalbums like Java selectors
+03:55 +514 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nfsfw_ripper_test.dart: NfsfwRipper detects queue-only subalbum pages like Java
+03:55 +515 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nfsfw_ripper_test.dart: NfsfwRipper follows next links before queued subalbums
+03:55 +516 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nfsfw_ripper_test.dart: NfsfwRipper resolves .gbBlock image pages and download metadata
+03:55 +517 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nfsfw_ripper_test.dart: NfsfwRipper returns null for image pages without .gbBlock images
+03:55 +518 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nfsfw_ripper_test.dart: NfsfwRipper omits ordered filename prefixes when disabled
+03:55 +519 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nhentai_ripper_test.dart
+03:56 +519 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nhentai_ripper_test.dart: NhentaiRipper matches Java host, GID, and tag-page detection
+03:56 +520 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nhentai_ripper_test.dart: NhentaiRipper derives Java album title and tags
+03:57 +521 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nhentai_ripper_test.dart: NhentaiRipper queues gallery URLs from tag pages
+03:57 +522 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nhentai_ripper_test.dart: NhentaiRipper converts gallery thumbnails like Java
+03:57 +523 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nsfw_album_ripper_test.dart
+03:58 +523 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nsfw_album_ripper_test.dart: NsfwAlbumRipper matches Java host, domain, support, and GIDs
+03:58 +524 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nsfw_album_ripper_test.dart: NsfwAlbumRipper rewrites supported thumbnails like Java
+03:58 +525 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nsfw_album_ripper_test.dart: NsfwAlbumRipper extracts .album data-src images in page order
+03:58 +526 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nsfw_album_ripper_test.dart: NsfwAlbumRipper uses Java-style ordered filenames
+03:58 +527 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nsfw_xxx_ripper_test.dart
+04:00 +527 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nsfw_xxx_ripper_test.dart: NsfwXxxRipper sanitizes Java user URL forms
+04:00 +528 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nsfw_xxx_ripper_test.dart: NsfwXxxRipper matches Java host, domain, support, GID, and API URL
+04:00 +529 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nsfw_xxx_ripper_test.dart: NsfwXxxRipper extracts image src and video HTML sources like Java
+04:00 +530 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nsfw_xxx_ripper_test.dart: NsfwXxxRipper keeps Java strict item parsing failures
+04:00 +531 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nsfw_xxx_ripper_test.dart: NsfwXxxRipper getNextPage follows Java page and items contracts
+04:00 +532 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nsfw_xxx_ripper_test.dart: NsfwXxxRipper stores descriptions in JSON extraction order
+04:00 +533 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nsfw_xxx_ripper_test.dart: NsfwXxxRipper uses Java-style title filename prefixes
+04:00 +534 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nude_gals_ripper_test.dart
+04:02 +534 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nude_gals_ripper_test.dart: NudeGalsRipper matches Java host, domain, support, and GIDs
+04:02 +535 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nude_gals_ripper_test.dart: NudeGalsRipper extracts album thumbnails like Java
+04:02 +536 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nude_gals_ripper_test.dart: NudeGalsRipper extracts video sources like Java
+04:02 +537 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/nude_gals_ripper_test.dart: NudeGalsRipper uses source page referrer and ordered filenames
+04:03 +538 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/oglaf_ripper_test.dart
+04:04 +538 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/oglaf_ripper_test.dart: OglafRipper matches Java host, domain, support, GID, and title
+04:04 +539 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/oglaf_ripper_test.dart: OglafRipper extracts strip image src attributes like Java
+04:05 +540 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/oglaf_ripper_test.dart: OglafRipper builds next page URLs from Java nav selector
+04:05 +541 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/oglaf_ripper_test.dart: OglafRipper uses Java-style configurable ordered filenames
+04:05 +542 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/open_folder_button_test.dart
+04:07 +542 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/open_folder_button_test.dart: completion shows Java open-folder button until the next rip
+04:09 +543 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/open_folder_button_test.dart: shortens completion paths with Java twelve-character ends
+04:10 +544 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/paheal_ripper_test.dart
+04:11 +544 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/paheal_ripper_test.dart: PahealRipper matches Java host, domain, support, terms, and GIDs
+04:11 +545 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/paheal_ripper_test.dart: PahealRipper builds Java first-page URL and listing cookies
+04:11 +546 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/paheal_ripper_test.dart: PahealRipper extracts thumbnail links like Java
+04:11 +547 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/paheal_ripper_test.dart: PahealRipper finds Java next paginator link
+04:11 +548 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/paheal_ripper_test.dart: PahealRipper uses Java download filenames without order prefixes
+04:11 +549 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/photobucket_ripper_test.dart
+04:13 +549 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/photobucket_ripper_test.dart: PhotobucketRipper sanitizes Java gallery URL forms
+04:13 +550 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/photobucket_ripper_test.dart: PhotobucketRipper matches Java host, domain, support, and GIDs
+04:13 +551 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/photobucket_ripper_test.dart: PhotobucketRipper constructs Java metadata API URLs
+04:13 +552 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/photobucket_ripper_test.dart: PhotobucketRipper parses album metadata like Java
+04:13 +553 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/photobucket_ripper_test.dart: PhotobucketRipper extracts Java collectionData fullsize URLs
+04:13 +554 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/photobucket_ripper_test.dart: PhotobucketRipper creates Java download metadata
+04:13 +555 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pichunter_ripper_test.dart
+04:15 +555 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pichunter_ripper_test.dart: PichunterRipper matches Java host, domain, support, and GIDs
+04:15 +556 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pichunter_ripper_test.dart: PichunterRipper extracts listing thumbnails like Java
+04:15 +557 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pichunter_ripper_test.dart: PichunterRipper extracts photo-set thumbnails like Java
+04:15 +558 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pichunter_ripper_test.dart: PichunterRipper builds Java arrow pagination URLs
+04:15 +559 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pichunter_ripper_test.dart: PichunterRipper uses Java-style ordered filenames
+04:15 +560 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/picstatio_ripper_test.dart
+04:17 +560 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/picstatio_ripper_test.dart: PicstatioRipper matches Java URL detection, host, domain, and GID
+04:17 +561 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/picstatio_ripper_test.dart: PicstatioRipper extracts wallpaper slugs from img parents like Java
+04:17 +562 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/picstatio_ripper_test.dart: PicstatioRipper builds download pages and extracts full-size hrefs
+04:17 +563 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/picstatio_ripper_test.dart: PicstatioRipper resolves gallery images through download pages
+04:17 +564 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/picstatio_ripper_test.dart: PicstatioRipper builds Java-style next page URLs
+04:17 +565 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/picstatio_ripper_test.dart: PicstatioRipper uses Java-style ordered filenames
+04:17 +566 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/platform_icon_resources_test.dart
+04:19 +566 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/platform_icon_resources_test.dart: Windows executable icon carries the exact Java ICO
+04:19 +567 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/platform_icon_resources_test.dart: macOS icon set contains non-empty Java-derived sizes
+04:19 +568 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/platform_icon_resources_test.dart: Android launcher icons contain non-empty density sizes
+04:19 +569 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/platform_icon_resources_test.dart: Linux bundle installs the Java-derived hicolor application icon
+04:19 +570 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/platform_integration_metadata_test.dart
+04:21 +570 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/platform_integration_metadata_test.dart: desktop targets register every Java desktop integration replacement
+04:21 +571 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/platform_integration_metadata_test.dart: Android registers its launcher without desktop-only integrations
+04:21 +572 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/porncomixinfo_ripper_test.dart
+04:22 +572 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/porncomixinfo_ripper_test.dart: PorncomixinfoRipper matches Java URL detection, host, domain, and GID
+04:23 +573 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/porncomixinfo_ripper_test.dart: PorncomixinfoRipper extracts chapter images like Java
+04:23 +574 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/porncomixinfo_ripper_test.dart: PorncomixinfoRipper follows Java next-page behavior
+04:23 +575 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/porncomixinfo_ripper_test.dart: PorncomixinfoRipper uses Java-style ordered filenames
+04:23 +576 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/porncomix_ripper_test.dart
+04:25 +576 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/porncomix_ripper_test.dart: PorncomixRipper matches Java URL detection, host, domain, and GID
+04:25 +577 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/porncomix_ripper_test.dart: PorncomixRipper extracts lazy gallery images like Java
+04:25 +578 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/porncomix_ripper_test.dart: PorncomixRipper only removes Java three-digit thumbnail sizes
+04:25 +579 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/porncomix_ripper_test.dart: PorncomixRipper uses Java-style ordered filenames
+04:25 +580 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornhub_ripper_test.dart
+04:27 +580 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornhub_ripper_test.dart: PornhubRipper matches Java host, domain, support, and album GIDs
+04:27 +581 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornhub_ripper_test.dart: PornhubRipper strips query strings from album start URLs like Java
+04:27 +582 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornhub_ripper_test.dart: PornhubRipper extracts photo page URLs from thumbnails like Java
+04:27 +583 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornhub_ripper_test.dart: PornhubRipper discovers direct image URLs from photo pages
+04:27 +584 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornhub_ripper_test.dart: PornhubRipper resolves next pages against sanitized album URL
+04:27 +585 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornhub_ripper_test.dart: PornhubRipper uses Java-style referrers and ordered filenames
+04:27 +586 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornhub_video_ripper_test.dart
+04:28 +586 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornhub_video_ripper_test.dart: matches Java Pornhub video URL support and GID parsing
+04:29 +587 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornhub_video_ripper_test.dart: reconstructs Java quality variables and selects highest quality
+04:29 +588 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornhub_video_ripper_test.dart: throws Java-style missing encrypted video errors
+04:29 +589 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornhub_video_ripper_test.dart: builds Java-style quality and viewkey filename prefix
+04:29 +590 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornpics_ripper_test.dart
+04:30 +590 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornpics_ripper_test.dart: PornpicsRipper matches Java URL detection, host, domain, and GID
+04:30 +591 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornpics_ripper_test.dart: PornpicsRipper extracts rel-link hrefs like Java
+04:31 +592 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/pornpics_ripper_test.dart: PornpicsRipper uses Java-style ordered filenames
+04:31 +593 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ported_ripper_parser_test.dart
+04:32 +593 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ported_ripper_parser_test.dart: unfinished HTML ripper scaffolds advertise Java-compatible hosts
+04:32 +594 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ported_ripper_parser_test.dart: unfinished JSON ripper scaffolds advertise Java-compatible hosts
+04:32 +595 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ported_ripper_parser_test.dart: Imgur parser extracts i.imgur.com images and normalizes protocol
+04:33 +596 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ported_ripper_parser_test.dart: Nhentai parser converts thumbnail URLs to full image URLs
+04:33 +597 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ported_ripper_parser_test.dart: 8muses parser converts picture thumbnails to full image URLs
+04:33 +598 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ported_ripper_parser_test.dart: Imagefap parser finds Java-style next page links
+04:33 +599 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ported_ripper_parser_test.dart: Motherless parser finds rel=next pagination links
+04:33 +600 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/proxy_config_test.dart
+04:34 +600 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/proxy_config_test.dart: parses Java host and optional port forms
+04:34 +601 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/proxy_config_test.dart: uses the last at sign and Java credential splitting
+04:35 +602 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/proxy_config_test.dart: uses the same Java parser for HTTP and SOCKS config strings
+04:35 +603 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/proxy_config_test.dart: rejects malformed Java proxy credentials and ports
+04:35 +604 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/queue_actions_widget_test.dart
+04:37 +604 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/queue_actions_widget_test.dart: queue removal and confirmed clear match Java actions
+04:43 +605 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/queue_count_widget_test.dart
+04:45 +605 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/queue_count_widget_test.dart: Queue tab shows Java-style pending count
+04:49 +606 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/readcomic_ripper_test.dart
+04:51 +606 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/readcomic_ripper_test.dart: ReadcomicRipper matches Java URL detection, host, domain, and GID
+04:51 +607 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/readcomic_ripper_test.dart: ReadcomicRipper extracts pinbin-copy image sources like Java
+04:51 +608 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/readcomic_ripper_test.dart: ReadcomicRipper keeps missing src entries in download queue like Java
+04:51 +609 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/readcomic_ripper_test.dart: ReadcomicRipper applies inherited Viewcomic title cleanup
+04:51 +610 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/readcomic_ripper_test.dart: ReadcomicRipper surfaces missing title failures like Java
+04:51 +611 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/readcomic_ripper_test.dart: ReadcomicRipper uses Java-style ordered filenames
+04:51 +612 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart
+04:53 +612 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: builds Reddit JSON URLs like the Java ripper
+04:53 +613 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: extracts Reddit GIDs for users, posts, galleries, and subreddits
+04:53 +614 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: extracts direct media and gallery media from listing JSON
+04:53 +615 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: honors migrated Reddit filter and naming settings
+04:53 +616 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: builds Java-compatible Reddit download filenames
+04:53 +617 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: selects Reddit DASH video with Java height-only semantics
+04:53 +618 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: matches Java single-link title behavior when subfolders are disabled
+04:53 +619 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: expands Imgur gifv links like Java RipUtils
+04:53 +620 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: expands Java RipUtils direct passthrough URLs
+04:53 +621 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: expands Redgifs singleton links like Java RipUtils
+04:53 +622 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: leaves gifdeliverynetwork empty like Java RipUtils helper failure
+04:53 +623 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: extracts Imgur page media from Java meta tags
+04:53 +624 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: extracts Soundgasm m4a links like Java RipUtils
+04:53 +625 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: extracts Vidble album images like Java RipUtils
+04:53 +626 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: extracts Erome image and video sources like Java RipUtils
+04:53 +627 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: builds self-post HTML export with comments
+04:53 +628 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: does not export self-post HTML from listing-only JSON
+04:53 +629 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/reddit_ripper_test.dart: builds next page URL from listing after token
+04:53 +630 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/redgifs_ripper_test.dart
+04:55 +630 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/redgifs_ripper_test.dart: sanitizes legacy Redgifs URL forms
+04:55 +631 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/redgifs_ripper_test.dart: extracts Redgifs GIDs for singleton, profile, search, and tags
+04:55 +632 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/redgifs_ripper_test.dart: getVideoUrl follows Java static helper auth and hd URL behavior
+04:55 +633 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/redgifs_ripper_test.dart: getVideoUrl rejects gallery responses like Java helper
+04:55 +634 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/release_artifact_naming_test.dart
+04:57 +634 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/release_artifact_naming_test.dart: release files preserve Java version-first naming with platform suffixes
+04:57 +635 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/release_artifact_naming_test.dart: Actions artifact containers remain stable across release versions
+04:57 +636 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/resource_packaging_test.dart
+04:58 +636 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/resource_packaging_test.dart: all Java-derived runtime resources exist and are non-empty
+04:58 +637 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/resource_packaging_test.dart: license is declared in every platform package
+04:58 +638 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/responsive_layout_test.dart
+05:00 +638 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/responsive_layout_test.dart: all main tabs adapt from Android phone to desktop width
+05:06 +639 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ripper_factory_test.dart
+05:07 +639 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ripper_factory_test.dart: ported URLs still resolve to their Dart ripper
+05:08 +640 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ripper_factory_test.dart: unknown URLs still return null
+05:08 +641 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ripper_factory_test.dart: factory honors Java constructor canRip guard
+05:08 +642 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ripper_factory_test.dart: factory does not route hosts rejected by Java canRip checks
+05:08 +643 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ripper_factory_test.dart: migration catalog tracks feature parity progress
+05:08 +644 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ripper_reconciliation_inventory_test.dart
+05:10 +644 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ripper_reconciliation_inventory_test.dart: keeps duplicate Java album and video classes distinct in Dart
+05:10 +645 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ripper_reconciliation_inventory_test.dart: preserves unique video classes and identifies helper paths
+05:10 +646 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ripper_reconciliation_inventory_test.dart: rejects non-Java source paths
+05:10 +647 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart
+05:11 +647 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: plays completion sound when enabled
+Shell: 2026-06-15 22:01:05 INFO Rip Complete: C:\Users\PANTEL~1\AppData\Local\Temp\ripme_manager_test49f7764f
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: PathNotFoundException: Directory listing failed, path = 'C:\Users\PANTEL~1\AppData\Local\Temp\ripme_manager_test49f7764f\*' (OS Error: The system cannot find the path specified, errno = 3)
+05:11 +648 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: does not play completion sound when disabled
+Shell: 2026-06-15 22:01:05 INFO Rip Complete: C:\Users\PANTEL~1\AppData\Local\Temp\ripme_manager_test4b0a0e61
+05:12 +649 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: preserves Java history fields and updates repeat rip metadata
+Shell: 2026-06-15 22:01:05 INFO Loading Resource: https://example.com/metadata
+Shell: 2026-06-15 22:01:05 INFO Download Started: https://example.com/one.jpg
+Shell: 2026-06-15 22:01:05 INFO Download Started: https://example.com/two.jpg
+Shell: 2026-06-15 22:01:05 INFO Download Complete: /tmp/one.jpg
+Shell: 2026-06-15 22:01:05 INFO Download Complete: /tmp/two.jpg
+Shell: 2026-06-15 22:01:05 INFO Rip Complete: C:\Users\PANTEL~1\AppData\Local\Temp\ripme_manager_metadata_testd5bb2a19
+Shell: 2026-06-15 22:01:05 INFO Loading Resource: https://example.com/metadata
+Shell: 2026-06-15 22:01:05 INFO Download Started: https://example.com/one.jpg
+Shell: 2026-06-15 22:01:05 INFO Download Started: https://example.com/two.jpg
+Shell: 2026-06-15 22:01:05 INFO Download Complete: /tmp/one.jpg
+Shell: 2026-06-15 22:01:05 INFO Download Complete: /tmp/two.jpg
+Shell: 2026-06-15 22:01:05 INFO Rip Complete: C:\Users\PANTEL~1\AppData\Local\Temp\ripme_manager_metadata_testd5bb2a19
+05:12 +650 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: replaces and removes persisted history entries
+05:12 +651 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: clears album and downloaded URL history together like Java
+05:12 +652 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: re-rips every selected history row in order including duplicates
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: Download interrupted
+05:12 +653 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: selected history re-rip distinguishes empty and unchecked history
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: PathNotFoundException: Directory listing failed, path = 'C:\Users\PANTEL~1\AppData\Local\Temp\ripme_selected_history_teste80d4c06\*' (OS Error: The system cannot find the path specified, errno = 3)
+05:12 +654 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: tracks status counters and queue controls
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: Download interrupted
+05:12 +655 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: runs Java finish command before advancing the queue
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: PathNotFoundException: Directory listing failed, path = 'C:\Users\PANTEL~1\AppData\Local\Temp\ripme_manager_queue_test43482113\*' (OS Error: The system cannot find the path specified, errno = 3)
+Shell: 2026-06-15 22:01:05 INFO Rip Complete: C:\Users\PANTEL~1\AppData\Local\Temp\ripme_finish_command_test2b307c87
+Shell: 2026-06-15 22:01:05 INFO Loading Resource: command output
+Shell: 2026-06-15 22:01:05 WARN Download problem: command warning
+Shell: 2026-06-15 22:01:05 INFO Rip Complete: C:\Users\PANTEL~1\AppData\Local\Temp\ripme_finish_command_test2b307c87
+Shell: 2026-06-15 22:01:05 INFO Loading Resource: command output
+Shell: 2026-06-15 22:01:05 WARN Download problem: command warning
+05:12 +656 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: matches Java finish command single-space tokenization
+05:12 +657 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: stop leaves pending queue entries until a new submission resumes it
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: Download interrupted
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: Download interrupted
+05:12 +658 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: ignores status events emitted after the active ripper is stopped
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: Download interrupted
+05:12 +659 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: restores the persisted queue without starting it
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: PathNotFoundException: Directory listing failed, path = 'C:\Users\PANTEL~1\AppData\Local\Temp\ripme_manager_late_event_testa628b1c\*' (OS Error: The system cannot find the path specified, errno = 3)
+05:12 +660 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: persists pending queue updates in order like Java
+05:12 +661 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: matches Java non-empty update behavior when clearing a queue
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: PathNotFoundException: Directory listing failed, path = 'C:\Users\PANTEL~1\AppData\Local\Temp\ripme_manager_persist_testdc13f1af\*' (OS Error: The system cannot find the path specified, errno = 3)
+05:12 +662 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: rejects exact duplicate URLs already in the pending queue
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: This URL is already in queue: https://example.com/duplicate
+05:12 +663 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: expands inclusive manual URL ranges before queueing
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: PathNotFoundException: Directory listing failed, path = 'C:\Users\PANTEL~1\AppData\Local\Temp\ripme_manager_duplicate_teste3323969\*' (OS Error: The system cannot find the path specified, errno = 3)
+05:12 +664 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: invalid manual URL ranges report errors without queueing
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: Invalid URL range: https://example.com/{1-x}
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: Invalid URL range: https://example.com/{4-2}
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: Invalid URL range: https://example.com/{1-3
+05:12 +665 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: normalizes bare and gonewild input when starting a rip
+05:12 +666 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: GUI URL-list import queues only trimmed http lines like Java
+Shell: 2026-06-15 22:01:05 WARN Download problem: Skipping url ftp://example.com/file because it looks malformed (doesn't start with http)
+Shell: 2026-06-15 22:01:05 WARN Download problem: Skipping url  because it looks malformed (doesn't start with http)
+05:12 +667 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: URL input validation detects bare hosts through the resolved ripper
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: PathNotFoundException: Directory listing failed, path = 'C:\Users\PANTEL~1\AppData\Local\Temp\ripme_manager_url_list_test3b16e9a4\*' (OS Error: The system cannot find the path specified, errno = 3)
+05:12 +668 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: URL input validation reports malformed and unsupported URLs
+05:12 +669 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: adds child URLs emitted by queue-capable rippers
+Shell: 2026-06-15 22:01:05 INFO Queue Add: https://example.com/child
+Shell: 2026-06-15 22:01:05 INFO Rip Complete: C:\Users\PANTEL~1\AppData\Local\Temp\ripme_manager_child_queue_test9238eeed
+Shell: 2026-06-15 22:01:05 ERROR Rip Errored: Download interrupted
+05:12 +670 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: notifies after setup and before starting the ripper
+Shell: 2026-06-15 22:01:05 INFO Rip Complete: C:\Users\PANTEL~1\AppData\Local\Temp\ripme_manager_notify_test113397cc
+05:12 +671 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_manager_test.dart: tracks current rip status text and determinate progress
+Shell: 2026-06-15 22:01:05 INFO Loading Resource: https://example.com/progress
+Shell: 2026-06-15 22:01:05 INFO Download Started: https://example.com/one.jpg
+Shell: 2026-06-15 22:01:05 INFO Download Started: https://example.com/two.jpg
+Shell: 2026-06-15 22:01:05 INFO Download Complete: /tmp/one.jpg
+Shell: 2026-06-15 22:01:05 INFO Download Complete: /tmp/two.jpg
+Shell: 2026-06-15 22:01:05 INFO Rip Complete: C:\Users\PANTEL~1\AppData\Local\Temp\ripme_manager_progress_test2beb7830
+05:12 +672 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_status_message_test.dart
+05:14 +672 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rip_status_message_test.dart: renders Java status display labels
+05:14 +673 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rule34_ripper_test.dart
+05:15 +673 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rule34_ripper_test.dart: Rule34Ripper matches Java URL detection, host, domain, and GID
+05:15 +674 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rule34_ripper_test.dart: Rule34Ripper constructs Java-compatible DAPI page URLs
+05:15 +675 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rule34_ripper_test.dart: Rule34Ripper paginates by appending Java pid values
+05:16 +676 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rule34_ripper_test.dart: Rule34Ripper throws Java no-more-pages error on API limit marker
+05:16 +677 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rule34_ripper_test.dart: Rule34Ripper extracts post file_url values like Java
+05:16 +678 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/rule34_ripper_test.dart: Rule34Ripper uses Java-style ordered filenames
+05:16 +679 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ruleporn_ripper_test.dart
+05:17 +679 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ruleporn_ripper_test.dart: RulePornRipper matches Java host support, domain, and GID
+05:17 +680 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ruleporn_ripper_test.dart: RulePornRipper extracts the first mp4 source like Java
+05:17 +681 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ruleporn_ripper_test.dart: RulePornRipper returns an empty source entry like Java attr()
+05:17 +682 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ruleporn_ripper_test.dart: RulePornRipper uses Java-style ordered filenames
+05:17 +683 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sankaku_complex_ripper_test.dart
+05:19 +683 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sankaku_complex_ripper_test.dart: SankakuComplexRipper matches Java URL detection, host, domain, and GID
+05:19 +684 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sankaku_complex_ripper_test.dart: SankakuComplexRipper keeps Java malformed URL error text
+05:19 +685 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sankaku_complex_ripper_test.dart: SankakuComplexRipper extracts highres URLs from thumbnail post pages
+05:19 +686 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sankaku_complex_ripper_test.dart: SankakuComplexRipper parses highres attr like Java Elements.attr
+05:19 +687 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sankaku_complex_ripper_test.dart: SankakuComplexRipper paginates with next-page-url and stops at page 26
+05:19 +688 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sankaku_complex_ripper_test.dart: SankakuComplexRipper parses response cookies for subsequent pages
+05:19 +689 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sankaku_complex_ripper_test.dart: SankakuComplexRipper uses Java-style ordered filenames
+05:19 +690 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/save_directory_widget_test.dart
+05:21 +690 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/save_directory_widget_test.dart: desktop save directory selection and cancellation
+05:25 +691 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/scrolller_ripper_test.dart
+05:27 +691 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/scrolller_ripper_test.dart: ScrolllerRipper matches Java URL detection, host, domain, and GID
+05:27 +692 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/scrolller_ripper_test.dart: ScrolllerRipper matches Java filter and parameter handling
+05:27 +693 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/scrolller_ripper_test.dart: ScrolllerRipper prepares Java GraphQL query variables
+05:27 +694 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/scrolller_ripper_test.dart: ScrolllerRipper extracts media source using Java bestArea state
+05:27 +695 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/scrolller_ripper_test.dart: ScrolllerRipper extracts sorted websocket response shape
+05:27 +696 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/scrolller_ripper_test.dart: ScrolllerRipper uses Java-style ordered filenames
+05:27 +697 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/shesfreaky_ripper_test.dart
+05:29 +697 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/shesfreaky_ripper_test.dart: ShesFreakyRipper matches Java URL detection, host, domain, and GID
+05:29 +698 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/shesfreaky_ripper_test.dart: ShesFreakyRipper keeps Java malformed URL error text
+05:29 +699 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/shesfreaky_ripper_test.dart: ShesFreakyRipper extracts lightbox hrefs with Java https prefix
+05:29 +700 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/shesfreaky_ripper_test.dart: ShesFreakyRipper uses Java-style ordered filenames
+05:29 +701 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sinfest_ripper_test.dart
+05:31 +701 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sinfest_ripper_test.dart: SinfestRipper matches Java URL detection, host, domain, and GID
+05:31 +702 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sinfest_ripper_test.dart: SinfestRipper extracts the last comic image like Java
+05:31 +703 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sinfest_ripper_test.dart: SinfestRipper follows Java td.style5 next-page rules
+05:31 +704 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sinfest_ripper_test.dart: SinfestRipper uses Java-style configurable ordered filenames
+05:31 +705 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/skip404_widget_test.dart
+05:34 +705 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/skip404_widget_test.dart: 404 switch persists Java plural runtime key
+05:39 +706 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/smutty_ripper_test.dart
+05:41 +706 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/smutty_ripper_test.dart: SmuttyRipper matches Java host, domain, broad support, and GIDs
+05:41 +707 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/smutty_ripper_test.dart: SmuttyRipper rewrites thumbnails with Java string splitting
+05:41 +708 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/smutty_ripper_test.dart: SmuttyRipper prefixes absolute thumbnail URLs like Java
+05:41 +709 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/smutty_ripper_test.dart: SmuttyRipper follows Java next-page rules
+05:41 +710 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/smutty_ripper_test.dart: SmuttyRipper uses Java-style configurable ordered filenames
+05:41 +711 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/soundgasm_ripper_test.dart
+05:42 +711 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/soundgasm_ripper_test.dart: SoundgasmRipper matches Java host, domain, support, and GID
+05:42 +712 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/soundgasm_ripper_test.dart: SoundgasmRipper extracts script m4a URLs like Java
+05:42 +713 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/soundgasm_ripper_test.dart: SoundgasmRipper keeps Java greedy m4a regex behavior
+05:42 +714 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/soundgasm_ripper_test.dart: SoundgasmRipper uses Java-style configurable ordered filenames
+05:42 +715 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/spankbang_ripper_test.dart
+05:44 +715 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/spankbang_ripper_test.dart: SpankbangRipper matches Java URL detection, host, domain, and GID
+05:44 +716 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/spankbang_ripper_test.dart: SpankbangRipper extracts .video-js source src like Java
+05:44 +717 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/spankbang_ripper_test.dart: SpankbangRipper keeps Java missing and empty source behavior
+05:44 +718 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/spankbang_ripper_test.dart: SpankbangRipper uses Java-style configurable ordered filenames
+05:44 +719 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ssl_verification_widget_test.dart
+05:45 +719 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/ssl_verification_widget_test.dart: SSL verification control persists Java configuration key
+05:49 +720 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sta_ripper_test.dart
+05:51 +720 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sta_ripper_test.dart: StaRipper matches Java host, domain, support, and strict GID
+05:51 +721 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sta_ripper_test.dart: StaRipper extracts Java thumb and download selectors
+05:51 +722 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sta_ripper_test.dart: StaRipper validates absolute thumb URLs like Java checkURL
+05:51 +723 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sta_ripper_test.dart: StaRipper follows download redirects with Java cookies
+05:51 +724 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/sta_ripper_test.dart: StaRipper parses Java response cookies and ordered filenames
+05:51 +725 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tapastic_ripper_test.dart
+05:52 +725 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tapastic_ripper_test.dart: TapasticRipper matches Java host, domain, support, and GIDs
+05:52 +726 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tapastic_ripper_test.dart: TapasticRipper extracts episodeList JSON like Java
+05:52 +727 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tapastic_ripper_test.dart: TapasticRipper extracts episode images and Java filename prefixes
+05:52 +728 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tapastic_ripper_test.dart: TapasticRipper matches Java digit and prefix behavior
+05:52 +729 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/teenplanet_ripper_test.dart
+05:53 +729 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/teenplanet_ripper_test.dart: TeenplanetRipper matches Java host, domain, support, and GID
+05:54 +730 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/teenplanet_ripper_test.dart: TeenplanetRipper extracts thumbnail URLs like Java
+05:54 +731 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/teenplanet_ripper_test.dart: TeenplanetRipper uses Java-style configurable ordered filenames
+05:54 +732 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/text_field_context_actions_test.dart
+05:55 +732 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/text_field_context_actions_test.dart: URL field exposes native context actions and undo
+05:58 +733 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/thechive_ripper_test.dart
+05:59 +733 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/thechive_ripper_test.dart: ThechiveRipper matches Java host, domain, support, and GIDs
+05:59 +734 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/thechive_ripper_test.dart: ThechiveRipper extracts CHIVE_GALLERY_ITEMS images like Java
+05:59 +735 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/thechive_ripper_test.dart: ThechiveRipper parses i.thechive JSON uploads like Java
+05:59 +736 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/thechive_ripper_test.dart: ThechiveRipper parses cookies and ordered filenames
+05:59 +737 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/theyiffgallery_ripper_test.dart
+06:00 +737 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/theyiffgallery_ripper_test.dart: TheyiffgalleryRipper matches Java host, domain, support, and GID
+06:00 +738 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/theyiffgallery_ripper_test.dart: TheyiffgalleryRipper rewrites thumbnail paths like Java
+06:00 +739 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/theyiffgallery_ripper_test.dart: TheyiffgalleryRipper follows Java next page span rules
+06:00 +740 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/theyiffgallery_ripper_test.dart: TheyiffgalleryRipper uses Java-style configurable ordered filenames
+06:00 +741 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tsumino_ripper_test.dart
+06:02 +741 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tsumino_ripper_test.dart: TsuminoRipper matches Java host, domain, support, and GIDs
+06:02 +742 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tsumino_ripper_test.dart: TsuminoRipper extracts tags and checks blacklists like Java
+06:02 +743 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tsumino_ripper_test.dart: TsuminoRipper parses reader JSON from Java HTML wrapper
+06:02 +744 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tsumino_ripper_test.dart: TsuminoRipper builds encoded image URLs like Java
+06:02 +745 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tsumino_ripper_test.dart: TsuminoRipper uses Java-style configurable ordered filenames
+06:02 +746 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tsumino_ripper_test.dart: TsuminoRipper keeps Java duplicate suppression
+06:02 +747 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tumblr_ripper_test.dart
+06:03 +747 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tumblr_ripper_test.dart: matches Java GID behavior for subdomain, tag, post, and likes
+06:03 +748 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tumblr_ripper_test.dart: builds Java-compatible Tumblr API URLs
+06:03 +749 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tumblr_ripper_test.dart: extracts photos, video, audio, album art, and body images like Java
+06:03 +750 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/tumblr_ripper_test.dart: post mode stops after first post and likes use liked_posts
+06:03 +751 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twitch_video_ripper_test.dart
+06:05 +751 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twitch_video_ripper_test.dart: matches Java Twitch clip URL detection and GID parsing
+06:05 +752 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twitch_video_ripper_test.dart: extracts first source URL from each script like Java
+06:05 +753 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twitch_video_ripper_test.dart: throws Java no-script error but tolerates scripts without sources
+06:05 +754 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twitch_video_ripper_test.dart: builds Java Twitch video filenames from title prefix and URL basename
+06:05 +755 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twitch_video_ripper_test.dart: builds video download requests with page title prefix
+06:05 +756 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twitter_ripper_test.dart
+06:07 +756 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twitter_ripper_test.dart: matches Java account and search URL classification
+06:07 +757 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twitter_ripper_test.dart: builds Java-compatible v1.1 API URLs
+06:07 +758 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twitter_ripper_test.dart: extracts photo originals and highest video variants like Java
+06:07 +759 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twitter_ripper_test.dart: honors retweet filtering and animated gif variant behavior
+06:07 +760 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twodgalleries_ripper_test.dart
+06:08 +760 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twodgalleries_ripper_test.dart: matches Java host, domain, support, and artist GID parsing
+06:08 +761 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twodgalleries_ripper_test.dart: builds Java AJAX gallery URLs
+06:08 +762 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twodgalleries_ripper_test.dart: extracts login token and Java Base64 login form data
+06:08 +763 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twodgalleries_ripper_test.dart: rewrites thumbnail image URLs like Java
+06:08 +764 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twodgalleries_ripper_test.dart: next document increments offset and stops on empty image pages
+06:09 +765 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/twodgalleries_ripper_test.dart: uses Java-style configurable ordered filenames
+06:10 +766 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/update_checker_test.dart
+06:11 +766 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/update_checker_test.dart: matches Java four-component version comparisons
+06:11 +767 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/update_checker_test.dart: matches Java exact-string fallback after numeric equality
+06:11 +768 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/update_checker_test.dart: adapts v-prefixed Flutter release tags before Java comparison
+06:11 +769 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/update_checker_test.dart: builds GitHub latest release URL and parses update result
+06:11 +770 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/update_checker_test.dart: rejects malformed latest release responses
+06:11 +771 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/update_checker_test.dart: honors Java testing.always_try_to_update override
+06:11 +772 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/url_validation_widget_test.dart
+06:12 +772 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/url_validation_widget_test.dart: URL field reports detected and unsupported ripper hosts
+06:14 +773 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/utils_query_test.dart
+06:15 +773 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/utils_query_test.dart: Utils.parseUrlQuery returns an empty map for an empty query like Java
+06:15 +774 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/utils_query_test.dart: Utils.parseUrlQuery decodes keys and values with Java URLDecoder semantics
+06:15 +775 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/utils_query_test.dart: Utils.parseUrlQuery preserves empty values for parts without equals signs
+06:15 +776 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/utils_query_test.dart: Utils.parseUrlQuery matches Java duplicate and equals-sign behavior
+06:15 +777 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/utils_query_test.dart: Utils.parseUrlQuery keeps Java split behavior for empty middle parts and trailing amps
+06:16 +778 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/utils_test.dart
+06:17 +778 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/utils_test.dart: Utils getCookies uses Java space-delimited cached pairs
+06:17 +779 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/utils_test.dart: Utils filesystemSafe
+06:17 +780 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/utils_test.dart: Utils filesystemSanitized matches Java replacement rules
+06:17 +781 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/utils_test.dart: Utils getOriginalDirectory preserves existing directory case
+06:17 +782 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/utils_test.dart: Utils sanitizeSaveAs
+06:17 +783 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/utils_test.dart: Utils shortenSaveAsWindows matches Java path fixture
+06:17 +784 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/utils_test.dart: Utils shortenSaveAsWindows rejects an exhausted parent path
+06:17 +785 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/version_metadata_test.dart
+06:18 +785 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/version_metadata_test.dart: Dart defaults match the Flutter package version and build number
+06:18 +786 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/version_metadata_test.dart: release workflow injects one version identity into every build
+06:18 +787 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/version_metadata_test.dart: GUI and CLI expose the synchronized version identity
+06:18 +788 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vidble_ripper_test.dart
+06:19 +788 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vidble_ripper_test.dart: matches Java host, domain, broad support, and album GID
+06:19 +789 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vidble_ripper_test.dart: extracts content images with Java absUrl and thumbnail stripping
+06:19 +790 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vidble_ripper_test.dart: uses Java-style ordered filenames
+06:19 +791 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/viddme_ripper_test.dart
+06:21 +791 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/viddme_ripper_test.dart: matches Java vid.me URL detection and GID parsing
+06:21 +792 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/viddme_ripper_test.dart: extracts twitter player stream content like Java
+06:21 +793 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/viddme_ripper_test.dart: builds Java Viddme video download filenames
+06:21 +794 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/videarn_ripper_test.dart
+06:23 +794 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/videarn_ripper_test.dart: matches Java Videarn URL detection and GID parsing
+06:23 +795 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/videarn_ripper_test.dart: extracts the first file URL like Java Utils.between
+06:23 +796 ~2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/videarn_ripper_test.dart: builds Java Videarn video download filenames
+06:23 +797 ~2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/video_ripper_parity_test.dart
+test/video_ripper_parity_test.dart:55:66: Error: Method invocation is not a constant expression.
+    const url = MotherlessVideoRipper.videoUrlFromHtml(html, Uri.parse('https://example.com'));
+                                                                 ^^^^^
+test/video_ripper_parity_test.dart:55:39: Error: Method invocation is not a constant expression.
+    const url = MotherlessVideoRipper.videoUrlFromHtml(html, Uri.parse('https://example.com'));
+                                      ^^^^^^^^^^^^^^^^
+06:23 +797 ~2 -1: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/video_ripper_parity_test.dart [E]
+  Failed to load "C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/video_ripper_parity_test.dart":
+  Compilation failed for testPath=C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/video_ripper_parity_test.dart: test/video_ripper_parity_test.dart:55:66: Error: Method invocation is not a constant expression.
+      const url = MotherlessVideoRipper.videoUrlFromHtml(html, Uri.parse('https://example.com'));
+                                                                   ^^^^^
+  test/video_ripper_parity_test.dart:55:39: Error: Method invocation is not a constant expression.
+      const url = MotherlessVideoRipper.videoUrlFromHtml(html, Uri.parse('https://example.com'));
+                                        ^^^^^^^^^^^^^^^^
+  .
+06:23 +797 ~2 -1: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/viewcomic_ripper_test.dart
+06:28 +797 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/viewcomic_ripper_test.dart: ViewcomicRipper matches Java URL detection, host, domain, and GID
+06:28 +798 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/viewcomic_ripper_test.dart: ViewcomicRipper extracts separator image sources like Java
+06:28 +799 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/viewcomic_ripper_test.dart: ViewcomicRipper keeps missing src entries in download queue like Java
+06:28 +800 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/viewcomic_ripper_test.dart: ViewcomicRipper applies Java title cleanup
+06:28 +801 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/viewcomic_ripper_test.dart: ViewcomicRipper surfaces missing title failures like Java
+06:28 +802 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/viewcomic_ripper_test.dart: ViewcomicRipper uses Java-style ordered filenames
+06:28 +803 ~2 -1: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vk_ripper_test.dart
+06:30 +803 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vk_ripper_test.dart: matches Java VK URL detection and GID parsing
+06:30 +804 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vk_ripper_test.dart: finds recursively nested photo object like Java
+06:30 +805 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vk_ripper_test.dart: selects best source URL and fallback order like Java
+06:30 +806 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vk_ripper_test.dart: extracts unique photo ids after JavaScript unescape
+06:30 +807 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vk_ripper_test.dart: extracts VK video URL by Java quality preference
+06:30 +808 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vk_ripper_test.dart: extracts video ids from VK all array and Java URL filenames
+06:30 +809 ~2 -1: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vk_video_ripper_test.dart
+06:31 +809 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vk_video_ripper_test.dart: matches Java individual VK video URL support and GID parsing
+06:31 +810 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vk_video_ripper_test.dart: reuses Java VK video quality selection
+06:31 +811 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vk_video_ripper_test.dart: builds Java-style individual video filename prefix
+06:31 +812 ~2 -1: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vsco_ripper_test.dart
+06:32 +812 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vsco_ripper_test.dart: matches Java VSCO host support and GID parsing
+06:32 +813 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vsco_ripper_test.dart: keeps Java strict GID regex behavior
+06:32 +814 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vsco_ripper_test.dart: extracts single media og:image and strips height query like Java
+06:32 +815 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vsco_ripper_test.dart: expands profile responsive URLs like Java
+06:32 +816 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/vsco_ripper_test.dart: uses Java-style configurable ordered filenames
+06:32 +817 ~2 -1: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/webtoons_ripper_test.dart
+06:33 +817 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/webtoons_ripper_test.dart: matches Java Webtoons URL detection and album titles
+06:33 +818 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/webtoons_ripper_test.dart: keeps Java stricter GID regex separate from album title regex
+06:33 +819 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/webtoons_ripper_test.dart: extracts viewer images and strips ?type like Java
+06:33 +820 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/webtoons_ripper_test.dart: finds next episode link like Java
+06:34 +821 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/webtoons_ripper_test.dart: uses Java-style ordered filenames
+06:34 +822 ~2 -1: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/widget_test.dart
+06:35 +822 ~2 -1: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/widget_test.dart: RipMe app shows primary rip controls
+ΓòÉΓòÉΓòí EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK Γò₧ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+The following TestFailure was thrown running a test:
+Expected: false
+  Actual: <true>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/pantelisb/Documents/RipMe%20Flutter%20Migration/test/widget_test.dart:114:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/pantelisb/Documents/RipMe%20Flutter%20Migration/test/widget_test.dart line 114
+The test description was:
+  RipMe app shows primary rip controls
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+06:41 +822 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/widget_test.dart: RipMe app shows primary rip controls [E]
+  Test failed. See exception logs above.
+  The test description was: RipMe app shows primary rip controls
+  
+06:41 +822 ~2 -2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/windows_packaging_metadata_test.dart
+06:42 +822 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/windows_packaging_metadata_test.dart: Windows resource embeds Java icon and native version metadata
+06:42 +823 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/windows_packaging_metadata_test.dart: Windows bundle installs native runtime beside ripme.exe
+06:42 +824 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/windows_packaging_metadata_test.dart: CI verifies Windows bundle before archiving
+06:42 +825 ~2 -2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/wordpress_comic_ripper_test.dart
+06:43 +825 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/wordpress_comic_ripper_test.dart: matches Java explicit domain URL support and empty GID
+06:43 +826 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/wordpress_comic_ripper_test.dart: matches Java special album titles
+06:43 +827 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/wordpress_comic_ripper_test.dart: extracts queue links and host-specific image URLs like Java
+06:43 +828 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/wordpress_comic_ripper_test.dart: extracts theme image, title prefix, and next page like Java
+06:43 +829 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/wordpress_comic_ripper_test.dart: uses Java-style ordered filenames for non-title-prefix hosts
+06:43 +830 ~2 -2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/workflow_separation_test.dart
+06:44 +830 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/workflow_separation_test.dart: (setUpAll)
+06:45 +830 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/workflow_separation_test.dart: ordinary CI is read-only and cannot publish releases
+06:45 +831 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/workflow_separation_test.dart: release builds are explicit and only publish job can write
+06:45 +832 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/workflow_separation_test.dart: manual wrapper preserves Java branch release inputs
+06:45 +833 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/workflow_separation_test.dart: (tearDownAll)
+06:45 +833 ~2 -2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/working_directory_test.dart
+06:46 +833 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/working_directory_test.dart: desktop default rip directory is adjacent to the executable
+06:46 +834 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/working_directory_test.dart: desktop creates the Java executable-adjacent rips directory
+06:46 +835 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/working_directory_test.dart: configured rip directory uses Java creation behavior
+06:46 +836 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/working_directory_test.dart: failed directory creation falls back to user home like Java
+06:46 +837 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/working_directory_test.dart: Android retains its writable platform-native rips directory
+06:46 +838 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/working_directory_test.dart: custom rip directories remain desktop-only
+06:46 +839 ~2 -2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xcartx_ripper_test.dart
+06:47 +839 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xcartx_ripper_test.dart: matches Java Xcartx host support and GID parsing
+06:47 +840 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xcartx_ripper_test.dart: extracts f-desc data-src image URLs like Java
+06:47 +841 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xcartx_ripper_test.dart: always uses Java forced ordered filename prefixes
+06:47 +842 ~2 -2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xhamster_ripper_test.dart
+06:48 +842 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xhamster_ripper_test.dart: matches Java Xhamster URL support and GID parsing
+06:48 +843 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xhamster_ripper_test.dart: sanitizes non-video URLs to mobile like Java
+06:48 +844 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xhamster_ripper_test.dart: extracts user queue albums like Java
+06:48 +845 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xhamster_ripper_test.dart: extracts old and new gallery URLs like Java
+06:48 +846 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xhamster_ripper_test.dart: extracts video href, next page, album title, and filenames
+06:48 +847 ~2 -2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xlecx_ripper_test.dart
+06:49 +847 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xlecx_ripper_test.dart: matches Java Xlecx host support and GID parsing
+06:49 +848 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xlecx_ripper_test.dart: inherits Xcartx image extraction and filenames like Java
+06:49 +849 ~2 -2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xvideos_ripper_test.dart
+06:51 +849 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xvideos_ripper_test.dart: matches Java Xvideos URL support, GIDs, and album titles
+06:51 +850 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xvideos_ripper_test.dart: extracts high video URLs from scripts like Java
+06:51 +851 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xvideos_ripper_test.dart: extracts album thumb hrefs and ordered filenames like Java
+06:51 +852 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xvideos_ripper_test.dart: rejects relative album hrefs before queueing like Java
+06:51 +853 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/xvideos_ripper_test.dart: honors Java download.save_order prefix setting
+06:51 +854 ~2 -2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/youporn_ripper_test.dart
+06:52 +854 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/youporn_ripper_test.dart: matches Java Youporn URL support and GID parsing
+06:52 +855 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/youporn_ripper_test.dart: extracts first video src and missing-video errors like Java
+06:52 +856 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/youporn_ripper_test.dart: uses Java-style ordered filenames
+06:52 +857 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/youporn_ripper_test.dart: honors Java download.save_order prefix setting
+06:52 +858 ~2 -2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/yuvutu_ripper_test.dart
+06:53 +858 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/yuvutu_ripper_test.dart: matches Java Yuvutu URL support and GID parsing
+06:53 +859 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/yuvutu_ripper_test.dart: extracts galleria image src attributes like Java
+06:53 +860 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/yuvutu_ripper_test.dart: uses Java-style ordered filenames
+06:54 +861 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/yuvutu_ripper_test.dart: honors Java download.save_order prefix setting
+06:54 +862 ~2 -2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/yuvutu_video_ripper_test.dart
+06:55 +862 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/yuvutu_video_ripper_test.dart: matches Java Yuvutu video URL support and GID parsing
+06:55 +863 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/yuvutu_video_ripper_test.dart: extracts iframe src and Java file marker
+06:55 +864 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/yuvutu_video_ripper_test.dart: keeps Java missing iframe and script errors
+06:55 +865 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/yuvutu_video_ripper_test.dart: builds Java-style prefixed video filenames
+06:55 +866 ~2 -2: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/zizki_ripper_test.dart
+06:56 +866 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/zizki_ripper_test.dart: matches Java Zizki host and GID parsing
+06:56 +867 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/zizki_ripper_test.dart: extracts Java album title from title and creator elements
+06:56 +868 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/zizki_ripper_test.dart: extracts colorbox foaf images and rewrites medium to large
+06:56 +869 ~2 -2: C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/zizki_ripper_test.dart: uses Java forced ordered filenames and response cookie parsing
+06:56 +870 ~2 -2: Some tests failed.
+
+Failing tests:
+  C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/video_ripper_parity_test.dart: loading C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/video_ripper_parity_test.dart
+  C:/Users/pantelisb/Documents/RipMe Flutter Migration/test/widget_test.dart: RipMe app shows primary rip controls
