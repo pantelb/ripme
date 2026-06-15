@@ -29,7 +29,7 @@ void main() {
     },
     skip: Platform.environment['RIPME_LIVE_REDDIT_URL'] == null
         ? 'Set RIPME_LIVE_REDDIT_URL to enable this fragile-site smoke test.'
-        : false,
+        : null,
   );
 
   test(
@@ -43,6 +43,6 @@ void main() {
     },
     skip: Platform.environment['RIPME_LIVE_REDGIFS_URL'] == null
         ? 'Set RIPME_LIVE_REDGIFS_URL to enable this fragile-site smoke test.'
-        : false,
+        : null,
   );
 }
